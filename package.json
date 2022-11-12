@@ -1,7 +1,53 @@
 {
-  "name": "F1MV-Govee-Tradfri-LightBridge2",
-  "version": "1.0.0",
+  "name": "F1MV-Tradfri-Integration",
+  "version": "1.0.0-beta",
+  "description": "Connect your Tradfri lights to your F1MV",
+  "author": "koningcool",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "package": "electron-builder --dir",
+    "make": "electron-builder",
+    "postinstall": "electron-builder install-app-deps"
+  },
+  "build": {
+    "appId": "com.koningcool.f1mv.govee.tradfri.integration",
+    "productName": "F1MV-Tradfri-Integration",
+    "copyright": "Copyright © year ${author}",
+    "generateUpdatesFilesForAllChannels": true,
+    "asar": true,
+    "asarUnpack": [
+      "config.js"
+    ],
+    "directories": {
+      "output": "out"
+    },
+    "win": {
+      "publish": [
+        "github"
+      ]
+    },
+    "mac": {
+      "publish": [
+        "github"
+      ]
+    },
+    "linux": {
+      "publish": [
+        "github"
+      ]
+    }
+  },
   "dependencies": {
-    
+    "electron-store": "^8.1.0",
+    "electron-updater": "^5.3.0",
+    "jquery": "^3.6.1",
+    "node-fetch": "^2.6.1",
+    "node-tradfri-client": "^3.1.1",
+    "process": "^0.11.10"
+  },
+  "devDependencies": {
+    "electron": "^21.2.0",
+    "electron-builder": "^23.6.0"
   }
 }
