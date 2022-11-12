@@ -1,0 +1,11 @@
+/node_modules/*
+.idea/*
+*.iml
+.idea/*.xml
+.idea/.gitignore
+.idea
+
+out/
+output/*
+output/
+output
