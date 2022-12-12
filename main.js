@@ -7,8 +7,6 @@ const process = require('process');
 const configDefault = require("./config");
 const Store = require('electron-store');
 const {Bulb} = require("yeelight.io");
-const https = require("https");
-const http = require("http");
 const userConfig = new Store({name: 'settings', defaults: configDefault});
 let debugPreference = userConfig.get('Settings.advancedSettings.debugMode');
 const f1mvURL = userConfig.get('Settings.MultiViewerForF1Settings.liveTimingURL')
@@ -30,7 +28,7 @@ let TState;
 let SState;
 let TStateCheck;
 let win;
-let f1mvcheck = true;
+let f1mvCheck = true;
 let alwaysFalse = false;
 
 let lightsOnCounter = 0;
@@ -40,7 +38,6 @@ let simulatedFlagCounter = 0;
 let timesF1MVApiCalled = 0;
 let timesCheckAPIS = 0;
 let developerModeWasActivated = false;
-let userActive;
 
 const fetch = require('node-fetch').default;
 
@@ -128,7 +125,7 @@ app.whenReady().then(() => {
         }
     })
     const body = `"userActive": "true"`
-    const res = fetch("https://api.joost.systems/f1mv-lights-integration/analytics/useractive", {
+    fetch("https://api.joost.systems/f1mv-lights-integration/analytics/useractive", {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -254,13 +251,13 @@ ipcMain.on('send-analytics-button', async () => {
 })
 
 ipcMain.on('f1mv-check', () => {
-    if(f1mvcheck){
-        f1mvcheck = false;
+    if(f1mvCheck){
+        f1mvCheck = false;
         win.webContents.send('log', 'Disabled F1MV Api check')
         console.log('Disabled F1MV api check!')
     }
-    else if(!f1mvcheck){
-        f1mvcheck = true;
+    else if(!f1mvCheck){
+        f1mvCheck = true;
         win.webContents.send('log', 'Enabled F1MV Api check')
         console.log('Enabled F1MV api check!')
     }
@@ -281,7 +278,7 @@ ipcMain.on('auto-devtools', () => {
 })
 
 async function f1mvAPICall() {
-    if(f1mvcheck) {
+    if(f1mvCheck) {
         try {
             timesF1MVApiCalled++
             const response = await fetch(f1mvURL, {
@@ -381,7 +378,7 @@ async function f1mvLightSync(){
 }
 
 setInterval(function() {
-    if(f1mvcheck) {
+    if(f1mvCheck) {
         f1mvAPICall().then(r => {
             if (alwaysFalse) {
                 console.log(r)
