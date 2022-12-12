@@ -1,5 +1,4 @@
 const { ipcRenderer } = require('electron');
-let config = [];
 
 $(function() {
     ipcRenderer.on('f1mvAPI', (event, arg) => {
@@ -9,6 +8,16 @@ $(function() {
 
         if (arg === 'offline') {
             $('#f1mv').find('.status').removeClass('success').addClass('error')
+        }
+    })
+
+    ipcRenderer.on('goveeAPI', (event, arg) => {
+        if (arg === 'online') {
+            $('#goveeAPI').find('.status').removeClass('error').addClass('success')
+        }
+
+        if (arg === 'offline') {
+            $('#goveeAPI').find('.status').removeClass('success').addClass('error')
         }
     })
 
@@ -22,11 +31,16 @@ $(function() {
         }
     })
 
-    ipcRenderer.on('log', (event, arg) => {
-        $('#log').prepend(`<p style="color: white;">[${new Date().toLocaleTimeString('en-GB', {hour12: false})}] ${arg}</p>`)
+    ipcRenderer.on('f1tvAPI', (event, arg) => {
+        if (arg === 'online') {
+            $('#f1tvAPI').find('.status').removeClass('error').addClass('success')
+        }
+
+        if (arg === 'offline') {
+            $('#f1tvAPI').find('.status').removeClass('success').addClass('error')
+        }
     })
 
-    // receive the config-open event
     ipcRenderer.on('config', (event, arg) => {
         console.log('recieved config.')
         config = arg;
@@ -41,14 +55,33 @@ $(function() {
 
     // TODO: Create event.
     ipcRenderer.on('lightchange', (event, arg) => {
-       if (arg.status === 'online') {
+        if (arg.status === 'online') {
             $(`#${arg.lightIP}`).find('.status').removeClass('error').addClass('success')
-       }
-       if (arg.status === 'offline') {
-        $(`#${arg.lightIP}`).find('.status').removeClass('success').addClass('error')
-   }
+        }
+        if (arg.status === 'offline') {
+            $(`#${arg.lightIP}`).find('.status').removeClass('success').addClass('error')
+        }
     })
 })
+
+    ipcRenderer.on('log', (event, arg) => {
+        $('#log').prepend(`<p style="color: white;">[${new Date().toLocaleTimeString('en-GB', {hour12: false})}] ${arg}</p>`)
+    })
+    
+    
+    ipcRenderer.on('dev', (event, arg) => {
+        if (arg === true) {
+            $('#dev').show()
+
+        } else if(arg === false) {
+            $('#dev').hide()
+        }
+    })
+
+    ipcRenderer.on('auto-devtools', (event, arg) => {
+        // change the icon from code to code_off
+        $('#dev').find('i').removeClass('code').addClass('code_off')
+    })
 
 
 function simulateGreen() {
@@ -102,7 +135,16 @@ function simulateVSCEnding() {
         displayLength: 2000
     })
 
-    ipcRenderer.send('simulate', 'vcsEnding')
+    ipcRenderer.send('simulate', 'vscEnding')
+}
+
+function turnAllLightsOff() {
+    M.toast({
+        html: 'Turning all lights off...',
+        displayLength: 2000
+    })
+
+    ipcRenderer.send('simulate', 'alloff')
 }
 
 function checkForUpdates() {
@@ -116,11 +158,27 @@ function checkForUpdates() {
 
 function openConfig() {
     M.toast({
-        html: 'Opening config file..',
+        html: 'Opening config file...',
         displayLength: 2000
     })
     ipcRenderer.send('open-config')
 }
 
-// html example for opening the config file
-// <a class="waves-effect waves-light btn" onclick="openConfig()">Open config file</a>
+function toggleDevTools() {
+    ipcRenderer.send('toggle-devtools')
+}
+
+function toggleDebugMode() {
+    ipcRenderer.send('toggle-debug')
+}
+
+function toggleF1MVApiCheck() {
+    ipcRenderer.send('f1mv-check')
+}
+
+function toggleAutoDevToolsCheck() {
+    ipcRenderer.send('auto-devtools')
+}
+function testButton() {
+    ipcRenderer.send('test-button')
+}

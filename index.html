@@ -12,17 +12,17 @@
     <script>
         const $ = jQuery = require("jquery");
     </script>
-    <title>F1MV-Tradfri-Integration</title>
+    <title>F1MV-G-T-Y-Integration</title>
 </head>
 
 <body>
 <nav>
     <div class="nav-wrapper container">
-        <a href="#" class="brand-logo">F1MV-Tradfri Integration</a>
+        <a href="#" class="brand-logo">F1MV-Lights-Integration</a>
 
         <ul id="nav-mobile" class="right hide-on-med-and-down">
             <li>
-                <a href="https://github.com/koningcool/F1MV-Govee-Tradfri-LightBridge" class="github">
+                <a href="https://github.com/koningcool/F1MV-Lights-Integration" class="github">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Pro 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2022 Fonticons, Inc. --><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
                 </a>
             </li>
@@ -32,22 +32,21 @@
 
 <div class="container easy-access">
     <div class="easy-access__buttons">
-        <a class="waves-effect waves-light btn-large simulation__button tooltipped" onclick="openConfig()" data-position="bottom" data-tooltip="Check for newer version">
-            <i class="material-icons">open_in_new</i>
+        <a style="color:deepskyblue" class="waves-effect waves-light btn-large simulation__button tooltipped" onclick="openConfig()" data-position="bottom" data-tooltip="Check for newer version">
+            <em class="material-icons">open_in_new</em>
             Open Config
         </a>
-        <a class="waves-effect waves-light btn-large simulation__button tooltipped" onclick="checkForUpdates()" data-position="bottom" data-tooltip="Check for newer version">
-            <i class="material-icons">repeat</i>
+        <a style="color:orange" class="waves-effect waves-light btn-large simulation__button tooltipped" onclick="checkForUpdates()" data-position="bottom" data-tooltip="Check for newer version">
+            <em class="material-icons">repeat</em>
             Check for updates
         </a>
     </div>
 </div>
 
 <div class="checks container">
-
     <div class="services">
           <span class="services__title">
-            API's
+            API Check's
           </span>
         <div class="check" id="f1mv">
             <span class="status error"></span>
@@ -57,38 +56,53 @@
             <span class="status error"></span>
             <p>Update API</p>
         </div>
-    </div>
-    <div class="services" id="lights">
-          <span class="services__title">
-            Lights
-          </span>
+        <div class="check" id="goveeAPI">
+            <span class="status error"></span>
+            <p>Govee API</p>
+        </div>
     </div>
 </div>
+<div class="checks container">
+    <div class="services">
+          <span class="services__title">
+            Formula 1 Live Session Check
+          </span>
+        <div class="check" id="f1tvAPI">
+            <span class="status error"></span>
+            <p>Live session</p>
+        </div>
+    </div>
+</div>
+<!--    <div class="services" id="lights">-->
+<!--          <span class="services__title">-->
+<!--            Lights-->
+<!--          </span>-->
+<!--    </div>-->
 <div class="container simulation">
     <h2 class="simulation__title">Simulation area</h2>
     <div class="simulation__buttons">
         <a class="waves-effect waves-light btn-large simulation__button tooltipped" onclick="simulateGreen()" data-position="bottom" data-tooltip="Turn all the lights on and simulate a green flag">
-            <i class="material-icons">assistant_photo</i>
+            <em style="color:lawngreen" class="material-icons">assistant_photo</em>
             Green flag
         </a>
         <a class="waves-effect waves-light btn-large simulation__button tooltipped" onclick="simulateYellow()" data-position="bottom" data-tooltip="Turn all the lights on and simulate a yellow flag">
-            <i class="material-icons">assistant_photo</i>
+            <em style="color:yellow" class="material-icons">assistant_photo</em>
             Yellow flag
         </a>
         <a class="waves-effect waves-light btn-large simulation__button tooltipped" onclick="simulateRed()" data-position="bottom" data-tooltip="Turn all the lights on and simulate a red flag">
-            <i class="material-icons">assistant_photo</i>
+            <em style="color:red" class="material-icons">assistant_photo</em>
             Red flag
         </a>
         <a class="waves-effect waves-light btn-large simulation__button tooltipped" onclick="simulateSC()" data-position="bottom" data-tooltip="Turn all the lights on and simulate a safety car">
-            <i class="material-icons">directions_car</i>
+            <em style="color:yellow" class="material-icons">directions_car</em>
             Safety car
         </a>
         <a class="waves-effect waves-light btn-large simulation__button tooltipped" onclick="simulateVSC()" data-position="bottom" data-tooltip="Turn all the lights on and simulate a Virtual Safety Car">
-            <i class="material-icons">assistant_photo</i>
+            <em style="color:yellow" class="material-icons">assistant_photo</em>
             VSC
         </a>
         <a class="waves-effect waves-light btn-large simulation__button tooltipped" onclick="simulateVSCEnding()" data-position="bottom" data-tooltip="Turn all the lights on and simulate a Virtual Safety Car Ending">
-            <i class="material-icons">assistant_photo</i>
+            <em style="color:yellow" class="material-icons">assistant_photo</em>
             VSC Ending
         </a>
     </div>
@@ -103,6 +117,38 @@
         <p>Logging started!</p>
     </div>
 </div>
+
+<div style="display:none" class="container simulation" id="dev">
+    <h2 class="simulation__title">Developer area</h2>
+    <div class="simulation__buttons">
+        <a class="waves-effect waves-light btn-large simulation__button tooltipped" onclick="toggleDevTools()" data-position="bottom" data-tooltip="Open the chrome devtools">
+            <em style="color:deepskyblue" class="material-icons">developer_mode</em>
+            Toggle DevTools
+        <a class="waves-effect waves-light btn-large simulation__button tooltipped" onclick="toggleDebugMode()" data-position="bottom" data-tooltip="Toggle debug mode on or off">
+            <em style="color:lawngreen" class="material-icons">code</em>
+            Toggle debug mode
+        <a class="waves-effect waves-light btn-large simulation__button tooltipped" onclick="toggleF1MVApiCheck()" data-position="bottom" data-tooltip="Toggle on or off the F1MV Api check">
+            <em style="color:darkorange" class="material-icons">webhook</em>
+            Toggle F1MV Api Check
+        </a>
+        <a class="waves-effect waves-light btn-large simulation__button tooltipped" onclick="toggleAutoDevToolsCheck()" data-position="bottom" data-tooltip="Toggle on or off the F1MV Api check">
+            <em class="material-icons">code_off</em>
+            Toggle auto-start devtools
+        </a>
+        <a class="waves-effect waves-light btn-large simulation__button tooltipped" onclick="testButton()" data-position="bottom" data-tooltip="Run the action currently mapped on the test button">
+            <em class="material-icons">smart_button</em>
+            Test Button
+        </a>
+    </div>
+</div>
+
+<div style="visibility: hidden" class="container simulation" id="nothing">
+    <h2 class="simulation__title">Nothing here</h2>
+    <div class="simulation__buttons">
+    </div>
+</div>
+
+
 <script src="js/materialize.min.js"></script>
 <script src="js/custom.js"></script>
 </body>

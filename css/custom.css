@@ -94,6 +94,7 @@ nav {
 .checks {
     margin-top: 20px;
 }
+
 .check {
     width: 100%;
     display: flex;
@@ -102,9 +103,9 @@ nav {
     align-items: center;
 }
 
+
 .check p {
-    margin: 0;
-    margin-bottom: 5px;
+    margin: 0 0 5px;
     font-size: 22px;
     font-weight: 600;
 }

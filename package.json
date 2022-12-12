@@ -1,9 +1,10 @@
 {
-  "name": "F1MV-Tradfri-Integration",
+  "name": "F1MV-Lights-Integration",
   "version": "1.0.0-beta",
-  "description": "Connect your Tradfri lights to your F1MV",
+  "description": "Connect your Govee, Tradfri and YeeLight lights to your F1MV",
   "author": "koningcool",
   "main": "main.js",
+  "type": "commonjs",
   "scripts": {
     "start": "electron .",
     "package": "electron-builder --dir",
@@ -11,14 +12,12 @@
     "postinstall": "electron-builder install-app-deps"
   },
   "build": {
-    "appId": "com.koningcool.f1mv.govee.tradfri.integration",
-    "productName": "F1MV-Tradfri-Integration",
-    "copyright": "Copyright © year ${author}",
+    "appId": "com.koningcool.f1mv.lights.integration",
+    "productName": "F1MV-Lights-Integration",
+    "copyright": "Copyright © 2022 ${author}",
     "generateUpdatesFilesForAllChannels": true,
     "asar": true,
-    "asarUnpack": [
-      "config.js"
-    ],
+    "asarUnpack": [],
     "directories": {
       "output": "out"
     },
@@ -39,12 +38,20 @@
     }
   },
   "dependencies": {
+    "@sentry/electron": "^4.1.2",
+    "@sentry/tracing": "^7.24.2",
+    "colorsys": "^1.0.22",
+    "electron-reload": "^2.0.0-alpha.1",
     "electron-store": "^8.1.0",
     "electron-updater": "^5.3.0",
+    "govee-lan-control": "^2.0.1",
+    "ikea-tradfri": "^5.2.0",
     "jquery": "^3.6.1",
     "node-fetch": "^2.6.1",
-    "node-tradfri-client": "^3.1.1",
-    "process": "^0.11.10"
+    "node-govee-led": "^1.5.1",
+    "node-tradfri-client": "3.1.1",
+    "process": "^0.11.10",
+    "yeelight.io": "^1.1.7"
   },
   "devDependencies": {
     "electron": "^21.2.0",
