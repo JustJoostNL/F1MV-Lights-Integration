@@ -51,7 +51,7 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-[![Product Name Screen Shot][product-screenshot]](https://i.ibb.co/b5rZb63/icon.png)
+[![Product Name Screen Shot][product-screenshot]](https://i.ibb.co/df5WVkN/icon.png)
 
 This project is a bridge between F1MV and your smart home lights. It allows you to sync the lights with the current session open in F1MV. This is done by using JavaScript Libraries. This program is designed to run on the computer where F1MV also runs, but you can also run it for example on a little VPS.
 
@@ -166,7 +166,7 @@ Distributed under the GNU General Public License v3.0. See `LICENSE.md` for more
 [issues-url]: https://github.com/koningcool/F1MV-Lights-Integration/issues
 [license-shield]: https://img.shields.io/github/license/koningcool/F1MV-Lights-Integration.svg?style=for-the-badge
 [license-url]: https://github.com/koningcool/F1MV-Lights-Integration/blob/main/LICENSE.MD
-[product-screenshot]: https://i.ibb.co/b5rZb63/icon.png
+[product-screenshot]: https://i.ibb.co/df5WVkN/icon.png
 [javascript]: https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black
 [javascript-url]: https://www.javascript.com/
 [electron]: https://img.shields.io/badge/Electron-47848F?style=for-the-badge&logo=electron&logoColor=white
