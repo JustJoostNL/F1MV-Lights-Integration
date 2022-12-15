@@ -3,8 +3,6 @@ const { app, BrowserWindow, dialog, ipcMain, globalShortcut } = require('electro
 
 const { autoUpdater } = require("electron-updater")
 const process = require('process');
-const sleep = ms => new Promise(r => setTimeout(r, ms));
-
 const configDefault = require("./config");
 const Store = require('electron-store');
 const {Bulb} = require("yeelight.io");
@@ -40,15 +38,11 @@ let simulatedFlagCounter = 0;
 let timesF1MVApiCalled = 0;
 let timesCheckAPIS = 0;
 let developerModeWasActivated = false;
-
-let clickedIds
-
 const fetch = require('node-fetch').default;
 
 const Sentry = require("@sentry/electron");
-const Govee = require("govee-lan-control");
-const fs = require("fs");
-
+require("govee-lan-control");
+require("fs");
 Sentry.init({
     dsn: "https://e64c3ec745124566b849043192e58711@o4504289317879808.ingest.sentry.io/4504289338392576",
     release: "F1MV-G-T-Y-Integration@" + app.getVersion(),
@@ -94,7 +88,7 @@ function createWindow () {
 app.whenReady().then(() => {
     createWindow()
     const { exec } = require('child_process');
-    exec('node -v', (err, stdout, stderr) => {
+    exec('node -v', (err) => {
         if (err) {
             // node is not installed
             dialog.showErrorBox("Node.js is not installed", "Node.js is not installed, please install Node.js to use this application. You can download Node.js from https://nodejs.org/en/download/")
@@ -580,7 +574,7 @@ async function ikeaInitialize(){
     const tradfriDev = userConfig.get('devConfig.tradfriDev');
     let child;
     if (tradfriDev){
-        child = exec(startCommandDev, (err, stdout, stderr) => {
+        child = exec(startCommandDev, (err) => {
             if (err) {
                 console.log("Failed to start the IKEA Tradfri plugin: " + err);
                 win.webContents.send('log', "Failed to start the IKEA Tradfri plugin: " + err);
@@ -590,7 +584,7 @@ async function ikeaInitialize(){
             win.webContents.send('log', "Started the IKEA Tradfri plugin");
         });
     } else if(!tradfriDev){
-        child = exec(startCommand, (err, stdout, stderr) => {
+        child = exec(startCommand, (err) => {
             if (err) {
                 console.log("Failed to start the IKEA Tradfri plugin: " + err);
                 win.webContents.send('log', "Failed to start the IKEA Tradfri plugin: " + err);
@@ -741,12 +735,6 @@ async function yeelightControl(r, g, b, brightness, action) {
         });
     }
 }
-
-function rgbToHex(r, g, b) {
-    const colorsys = require('colorsys');
-    return colorsys.rgbToHex(r, g, b);
-}
-
 function checkApis() {
     timesCheckAPIS++
     const yeelightIPs = userConfig.get('Settings.yeeLightSettings.deviceIPs');
