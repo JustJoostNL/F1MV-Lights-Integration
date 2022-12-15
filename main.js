@@ -3,6 +3,7 @@ const { app, BrowserWindow, dialog, ipcMain, globalShortcut } = require('electro
 
 const { autoUpdater } = require("electron-updater")
 const process = require('process');
+const sleep = ms => new Promise(r => setTimeout(r, ms));
 
 const configDefault = require("./config");
 const Store = require('electron-store');
@@ -29,6 +30,7 @@ let SState;
 let TStateCheck;
 let win;
 let f1mvCheck = true;
+f1mvCheck = userConfig.get('devConfig.f1mvCheck')
 let alwaysFalse = false;
 
 let lightsOnCounter = 0;
@@ -39,28 +41,18 @@ let timesF1MVApiCalled = 0;
 let timesCheckAPIS = 0;
 let developerModeWasActivated = false;
 
+let clickedIds
+
 const fetch = require('node-fetch').default;
 
 const Sentry = require("@sentry/electron");
+const Govee = require("govee-lan-control");
+const fs = require("fs");
 
 Sentry.init({
     dsn: "https://e64c3ec745124566b849043192e58711@o4504289317879808.ingest.sentry.io/4504289338392576",
     release: "F1MV-G-T-Y-Integration@" + app.getVersion(),
     tracesSampleRate: 0.2,
-    transportOptions: {
-    // The maximum number of days to keep an event in the queue.
-    maxQueueAgeDays: 30,
-        // The maximum number of events to keep in the queue.
-        maxQueueCount: 30,
-        // Called every time the number of requests in the queue changes.
-        queuedLengthChanged: (length) => { },
-        // Called before attempting to send an event to Sentry. Used to override queuing behavior.
-        //
-        // Return 'send' to attempt to send the event.
-        // Return 'queue' to queue and persist the event for sending later.
-        // Return 'drop' to drop the event.
-        beforeSend: (request) => isOnline() ? 'send' : 'queue'
-}
 });
 
 function createWindow () {
@@ -72,6 +64,7 @@ function createWindow () {
             contextIsolation: false,
         }
     })
+    win.removeMenu();
     // use better scrollbar
     win.webContents.on('did-finish-load', () => {
         win.webContents.insertCSS(`
@@ -100,17 +93,28 @@ function createWindow () {
 
 app.whenReady().then(() => {
     createWindow()
+    const { exec } = require('child_process');
+    exec('node -v', (err, stdout, stderr) => {
+        if (err) {
+            // node is not installed
+            dialog.showErrorBox("Node.js is not installed", "Node.js is not installed, please install Node.js to use this application. You can download Node.js from https://nodejs.org/en/download/")
+            app.quit();
+        } else {
+            if(debugPreference) {
+                console.log("Node.js is installed")
+            }
+        }
+    });
 
     // register the keyboard shortcut shift+d
     globalShortcut.register('shift+d', () => {
         if (!devMode) {
             devMode = true;
             developerModeWasActivated = true;
-            const devConfig = new Store({name: 'devConfig', defaults: {autoStartDevTools: false}});
             userConfig.set('Settings.advancedSettings.debugMode', true);
-            debugPreference = true;
+            //debugPreference = true;
             win.webContents.send('dev', true);
-            if (devConfig.get('autoStartDevTools')) {
+            if (userConfig.get('devConfig.autoStartDevTools')) {
                 win.webContents.openDevTools();
             }
             win.webContents.send('log', 'Developer Mode Activated!')
@@ -118,7 +122,7 @@ app.whenReady().then(() => {
         else if (devMode) {
             devMode = false;
             userConfig.set('Settings.advancedSettings.debugMode', false);
-            debugPreference = false;
+            //debugPreference = false;
             win.webContents.send('dev', false);
             win.webContents.closeDevTools()
             win.webContents.send('log', 'Developer Mode Deactivated!')
@@ -196,38 +200,51 @@ ipcMain.on('toggle-debug', () => {
 
 async function simulateFlag(arg) {
     if(arg === 'Green'){
-        await goveeControl(0, 255, 0, 100, "on");
-        await yeelight(0,255,0,100, "on");
-        simulatedFlagCounter++
-    }
-    if(arg === 'Yellow'){
-        await goveeControl(255, 255, 0, 100, "on");
-        await yeelight(255,255,0,100, "on");
+        if(!goveeDisabled){
+            await goveeControl(0, 255, 0, 100, "on");
+        }
+        if(!yeelightDisabled){
+            await yeelightControl(0, 255, 0, 100, "on");
+        }
+        if(!ikeaDisabled){
+            await ikeaControl(0, 255, 0, 100, "on");
+        }
         simulatedFlagCounter++
     }
     if(arg === 'Red'){
-        await goveeControl(255, 0, 0, 100, "on");
-        await yeelight(255,0,0,100, "on");
+        if(!goveeDisabled){
+            await goveeControl(255, 0, 0, 100, "on");
+        }
+        if(!yeelightDisabled){
+            await yeelightControl(255, 0, 0, 100, "on");
+        }
+        if(!ikeaDisabled){
+            await ikeaControl(255, 0, 0, 100, "on");
+        }
         simulatedFlagCounter++
     }
-    if(arg === 'SC'){
-        await goveeControl(255,255,0,100, "on");
-        await yeelight(255,255,0,100, "on");
-        simulatedFlagCounter++
-    }
-    if(arg === 'VSC'){
-        await goveeControl(255,255,0,100, "on");
-        await yeelight(255,255,0,100, "on");
-        simulatedFlagCounter++
-    }
-    if(arg === 'vscEnding'){
-        await goveeControl(255,255,0,100, "on");
-        await yeelight(255,255,0,100, "on");
+    if(arg === 'SC' || arg === 'VSC' || arg === 'vscEnding' || arg === 'Yellow'){
+        if(!goveeDisabled){
+            await goveeControl(255, 255, 0, 100, "on");
+        }
+        if(!yeelightDisabled){
+            await yeelightControl(255, 255, 0, 100, "on");
+        }
+        if(!ikeaDisabled){
+            await ikeaControl(255, 255, 0, 100, "on");
+        }
         simulatedFlagCounter++
     }
     if(arg === 'alloff'){
-        await goveeControl(0,0,0,0, "off");
-        await yeelight(0,0,0,0, "off");
+        if(!goveeDisabled){
+            await goveeControl(0, 0, 0, 0, "off");
+        }
+        if(!yeelightDisabled){
+            await yeelightControl(0, 0, 0, 0, "off");
+        }
+        if(!ikeaDisabled){
+            await ikeaControl(0, 0, 0, 0, "off");
+        }
         simulatedFlagCounter++
     }
     win.webContents.send('log', "Simulated " + arg + "!");
@@ -242,7 +259,12 @@ ipcMain.on('updatecheck', () => {
 ipcMain.on('test-button', async () => {
     console.log("Running action mapped on test button...")
     win.webContents.send('log', 'Running action mapped on test button...')
-    await goveeControl()
+    await ikeaControl(0, 255, 0, 100, "getDevices");
+})
+ipcMain.on('ikea-get-ids', async () => {
+    console.log("Getting Ikea Device IDs...")
+    win.webContents.send('log', 'Getting Ikea Device IDs...')
+    await ikeaControl(0, 255, 0, 100, "getDevices");
 })
 ipcMain.on('send-analytics-button', async () => {
     console.log("Running send analytics code...")
@@ -253,25 +275,26 @@ ipcMain.on('send-analytics-button', async () => {
 ipcMain.on('f1mv-check', () => {
     if(f1mvCheck){
         f1mvCheck = false;
+        userConfig.set('devConfig.f1mvCheck', false);
         win.webContents.send('log', 'Disabled F1MV Api check')
         console.log('Disabled F1MV api check!')
     }
     else if(!f1mvCheck){
         f1mvCheck = true;
+        userConfig.set('devConfig.f1mvCheck', true);
         win.webContents.send('log', 'Enabled F1MV Api check')
         console.log('Enabled F1MV api check!')
     }
 })
 ipcMain.on('auto-devtools', () => {
-    const devConfig = new Store({name: 'devConfig', defaults: {autoStartDevTools: false}});
-    const autoDevTools = devConfig.get('autoStartDevTools')
+    const autoDevTools = userConfig.get('devConfig.autoStartDevTools');
     if (autoDevTools) {
-        devConfig.set('autoStartDevTools', false);
+        userConfig.set('devConfig.autoStartDevTools', false);
         win.webContents.send('log', 'Disabled auto start dev tools')
         console.log('Disabled auto dev tools')
     }
     else if (!autoDevTools) {
-        devConfig.set('autoStartDevTools', true);
+        userConfig.set('devConfig.autoStartDevTools', true);
         win.webContents.send('log', 'Enabled auto start dev tools')
         console.log('Enabled auto dev tools')
     }
@@ -314,7 +337,10 @@ async function f1mvLightSync(){
                     await goveeControl(0, 255, 0, 100, "on")
                 }
                 if(!yeelightDisabled) {
-                    await yeelight(0, 255, 0, 100, "on")
+                    await yeelightControl(0, 255, 0, 100, "on")
+                }
+                if(!ikeaDisabled) {
+                    await ikeaControl(0, 255, 0, 100, "on")
                 }
                 TStateCheck = TState
                 break;
@@ -325,7 +351,10 @@ async function f1mvLightSync(){
                     await goveeControl(255, 255, 0, 100, "on")
                 }
                 if(!yeelightDisabled) {
-                    await yeelight(255, 255, 0, 100, "on")
+                    await yeelightControl(255, 255, 0, 100, "on")
+                }
+                if(!ikeaDisabled) {
+                    await ikeaControl(255, 255, 0, 100, "on")
                 }
                 TStateCheck = TState
                 break;
@@ -336,7 +365,10 @@ async function f1mvLightSync(){
                     await goveeControl(255, 255, 255, 100, "on")
                 }
                 if(!yeelightDisabled) {
-                    await yeelight(255, 255, 255, 100, "on")
+                    await yeelightControl(255, 255, 255, 100, "on")
+                }
+                if(!ikeaDisabled) {
+                    await ikeaControl(255, 255, 255, 100, "on")
                 }
                 TStateCheck = TState
                 break;
@@ -347,7 +379,10 @@ async function f1mvLightSync(){
                     await goveeControl(255, 0, 0, 100, "on")
                 }
                 if(!yeelightDisabled) {
-                    await yeelight(255, 0, 0, 100, "on")
+                    await yeelightControl(255, 0, 0, 100, "on")
+                }
+                if(!ikeaDisabled) {
+                    await ikeaControl(255, 0, 0, 100, "on")
                 }
                 TStateCheck = TState
                 break;
@@ -358,7 +393,10 @@ async function f1mvLightSync(){
                     await goveeControl(255, 255, 255, 100, "on")
                 }
                 if(!yeelightDisabled) {
-                    await yeelight(255, 255, 255, 100, "on")
+                    await yeelightControl(255, 255, 255, 100, "on")
+                }
+                if(!ikeaDisabled) {
+                    await ikeaControl(255, 255, 255, 100, "on")
                 }
                 TStateCheck = TState
                 break;
@@ -369,10 +407,29 @@ async function f1mvLightSync(){
                     await goveeControl(255, 255, 255, 100, "on")
                 }
                 if(!yeelightDisabled) {
-                    await yeelight(255, 255, 255, 100, "on")
+                    await yeelightControl(255, 255, 255, 100, "on")
+                }
+                if(!ikeaDisabled) {
+                    await ikeaControl(255, 255, 255, 100, "on")
                 }
                 TStateCheck = TState
                 break;
+        }
+    }
+    else if (SState === "Ends" || SState === "Finalised"){
+        const autoOff = userConfig.get('config.autoTurnOffLights')
+        if(autoOff){
+            console.log("Session ended, turning off lights...")
+            win.webContents.send('log', "Session ended, turning off lights...")
+            if(!goveeDisabled) {
+                await goveeControl(0, 255, 0, 100, "off")
+            }
+            if(!yeelightDisabled) {
+                await yeelightControl(0, 255, 0, 100, "off")
+            }
+            if(!ikeaDisabled) {
+                await ikeaControl(0, 255, 0, 100, "off")
+            }
         }
     }
 }
@@ -394,7 +451,7 @@ setInterval(function() {
 
 setInterval(function() {
     checkApis()
-}, 5000);
+}, 3000);
 
 setTimeout(function() {
     checkApis()
@@ -402,17 +459,24 @@ setTimeout(function() {
 
 setTimeout(function() {
     console.log("Ikea Disabled: " + ikeaDisabled);
+    win.webContents.send('log', "Ikea Disabled: " + ikeaDisabled);
     console.log("Govee Disabled: " + goveeDisabled);
+    win.webContents.send('log', "Govee Disabled: " + goveeDisabled);
     console.log("Yeelight Disabled: " + yeelightDisabled);
-    if(!ikeaDisabled) {
-        ikea().then(r => {
+    win.webContents.send('log', "Yeelight Disabled: " + yeelightDisabled);
+    if(debugPreference) {
+        console.log("F1MV Api Disabled: " + !f1mvCheck);
+        win.webContents.send('log', "F1MV Api Disabled: " + !f1mvCheck);
+    }
+    if(!goveeDisabled) {
+        goveeInitialize().then(r => {
             if(debugPreference) {
                 console.log(r)
             }
         });
     }
-    if(!goveeDisabled) {
-        govee().then(r => {
+    if(!ikeaDisabled) {
+        ikeaInitialize().then(r => {
             if(debugPreference) {
                 console.log(r)
             }
@@ -420,144 +484,31 @@ setTimeout(function() {
     }
 }, 300);
 
-async function ikea() {
-    const tradfriLib = require("node-tradfri-client");
-    const tradfriClient = tradfriLib.TradfriClient;
-    const discoverGateway = tradfriLib.discoverGateway;
-    const securityCode = userConfig.get('Settings.ikeaSettings.securityCode');
-    const discovered = discoverGateway(5000);
 
-// discover the gateway and try to connect
-    discovered.then(async (gateway) => {
-        if (debugPreference) {
-            console.log("Gateway found!");
-            console.log("Gateway IP: " + gateway.addresses[0]);
-            console.log("Gateway Name: " + gateway.name);
-            console.log("Gateway Hostname: " + gateway.host);
-        }
-        const gatewayIP = gateway.addresses[0];
-        const tradfri = new tradfriClient(gatewayIP);
-
-        try {
-            console.log("Connecting to gateway...");
-            win.webContents.send('log', "Connecting to gateway...");
-            const {identity, psk} = await tradfri.authenticate(securityCode);
-            // convert the identity and psk to arrays
-            const identityArray = new Buffer(identity, "utf8");
-            const pskArray = new Buffer(psk, "utf8");
-            // connect to the gateway
-            await tradfri.connect(identityArray, pskArray).then(() => {
-                console.log("Connected to gateway!");
-                win.webContents.send('log', "Connected to gateway!");
-            });
-
-
-        } catch (e) {
-            console.log("Failed to connect to gateway: " + e);
-            win.webContents.send('log', "Failed to connect to gateway: " + e);
-        }
-    });
-}
-
-
-async function goveeOld(r, g, b, brightness, action) {
-    try{
-    const Govee = require("node-govee-led");
-    const goveeAPIKey = userConfig.get('Settings.goveeSettings.apiKey').toString();
-    const goveeDeviceMacs = userConfig.get('Settings.goveeSettings.deviceMac')
-    const goveeDeviceModels = userConfig.get('Settings.goveeSettings.deviceModel')
-    goveeDeviceModels.forEach((model) => {
-        const mac = goveeDeviceMacs[goveeDeviceModels.indexOf(model)];
-        if (debugPreference) {
-            console.log("Selected Mac: " + mac);
-            win.webContents.send('log', "Selected Mac: " + mac);
-            console.log("Selected Model: " + model);
-            win.webContents.send('log', "Selected Model: " + model);
-            console.log("Creating device with the mac: " + mac + " and the model: " + model + "...");
-            win.webContents.send('log', "Creating device with the mac: " + mac + " and the model: " + model + "...");
-
-        }
-
-        const light = new Govee({
-            apiKey: goveeAPIKey,
-            model: model.toString(),
-            mac: mac.toString()
-        });
-        const hexCode = rgbToHex(r, g, b);
-        if (action === "on") {
-            lightsOnCounter++
-            if (debugPreference) {
-                console.log("action: " + action);
-                win.webContents.send('log', "action: " + action);
-            }
-            try {
-                light.turnOn()
-                light.setColor(hexCode);
-                light.setBrightness(brightness);
-            } catch (e) {
-                console.log("Failed to turn on the light: " + e);
-                win.webContents.send('log', "Failed to turn on the light: " + e);
-            }
-        }
-        if (action === "off") {
-            lightsOffCounter++
-            if (debugPreference) {
-                console.log("action: " + action);
-                win.webContents.send('log', "action: " + action);
-            }
-            try {
-                light.turnOff();
-            } catch (e) {
-                console.log("Failed to turn off the light: " + e);
-                win.webContents.send('log', "Failed to turn off the light: " + e);
-            }
-        }
-        if (action === "getState") {
-            if (debugPreference) {
-                console.log("action: " + action);
-                win.webContents.send('log', "action: " + action);
-            }
-            try {
-                light.getState().then((state) => {
-                    console.log(JSON.stringify(state));
-                    win.webContents.send('log', JSON.stringify(state));
-                });
-            } catch (e) {
-                console.log("Failed to get the state of the light: " + e);
-                win.webContents.send('log', "Failed to get the state of the light: " + e);
-            }
-        }
-        if (debugPreference) {
-            console.log("Finished creating device with the mac: " + mac + " and the model: " + model);
-            win.webContents.send('log', "Finished creating device with the mac: " + mac + " and the model: " + model);
-        }
-    });
-    } catch (e) {
-        console.log("Failed to create the govee device: " + e);
-        win.webContents.send('log', "Failed to create the govee device: " + e);
-    }
-}
 async function goveeControl(r, g, b, brightness, action){
     const Govee = require("govee-lan-control");
     const govee = new Govee.default();
 
-    console.log("Connecting to the local Govee API...");
-
-    govee.on("ready", () => {
-        console.log("Server/client is ready!");
-    });
-
-    govee.on("deviceAdded", (device) => {
-        console.log("Device added: " + device.model);
-
-    });
-
-    govee.devicesArray.forEach(device => {
-        console.log("Device selected: " + device.model);
-        win.webContents.send('log', "Device selected: " + device.model);
+    if(debugPreference){
+        console.log("Connecting to the Govee Lan API...");
+        win.webContents.send('log', "Connecting to the Govee Lan API...");
+    }
+    let allDevices = govee.devicesArray;
+    const disabledDevices = userConfig.get('Settings.goveeSettings.devicesDisabledIPS');
+    if(disabledDevices > 0) {
+        allDevices = govee.devicesArray.filter(device => device.ip !== disabledDevices);
+    }
+    allDevices.forEach(device => {
+        if(debugPreference) {
+            console.log("Device selected: " + device.model);
+            win.webContents.send('log', "Device selected: " + device.model);
+        }
         if(action === "on"){
-            console.log("Turning on the light with given options (when available)...");
-            win.webContents.send('log', "Turning on the light with given options (when available)...");
+            lightsOnCounter++
+            if(debugPreference) {
+                console.log("Turning on the light with given options (when available)...");
+                win.webContents.send('log', "Turning on the light with given options (when available)...");
+            }
             brightness = parseInt(brightness);
             r = parseInt(r);
             g = parseInt(g);
@@ -575,11 +526,16 @@ async function goveeControl(r, g, b, brightness, action){
             }
         }
         if(action === "off"){
-            console.log("Turning off the light...");
+            lightsOffCounter++
+            if(debugPreference) {
+                console.log("Turning off the light...");
+            }
             device.actions.setOff();
         }
         if(action === "getState"){
-            console.log("Getting the state of the light...");
+            if(debugPreference) {
+                console.log("Getting the state of the light...");
+            }
             if(device.state.isOn === 1){
                 console.log("The light is on");
             } else {
@@ -591,7 +547,160 @@ async function goveeControl(r, g, b, brightness, action){
     });
 }
 
-async function yeelight(r, g, b, brightness, action) {
+async function goveeInitialize(){
+    const Govee = require("govee-lan-control");
+    const govee = new Govee.default();
+
+    console.log("Connecting to the local Govee API...");
+
+    govee.on("ready", () => {
+        console.log("Server/client is ready!");
+    });
+
+    govee.on("deviceAdded", (device) => {
+        console.log("Govee device found: " + device.model);
+
+    });
+}
+async function ikeaInitialize(){
+    const { exec } = require('child_process');
+    console.log("Starting the IKEA Tradfri Server...");
+    win.webContents.send('log', "Starting the IKEA Tradfri Server...");
+    const securityCode = userConfig.get('Settings.ikeaSettings.securityCode');
+    let debug;
+    if (debugPreference) {
+        debug = "--debug";
+    } else {
+        debug = "";
+    }
+    const startCommandDev = 'node ikea.js --' + securityCode + ' ' + debug;
+    let startPath = app.getAppPath();
+    startPath = startPath + "\\ikea.js"
+    const startCommand = 'node ' + startPath + ' ' +  '--' + securityCode + ' ' + debug;
+    const tradfriDev = userConfig.get('devConfig.tradfriDev');
+    let child;
+    if (tradfriDev){
+        child = exec(startCommandDev, (err, stdout, stderr) => {
+            if (err) {
+                console.log("Failed to start the IKEA Tradfri plugin: " + err);
+                win.webContents.send('log', "Failed to start the IKEA Tradfri plugin: " + err);
+                return;
+            }
+            console.log("Started the IKEA Tradfri plugin");
+            win.webContents.send('log', "Started the IKEA Tradfri plugin");
+        });
+    } else if(!tradfriDev){
+        child = exec(startCommand, (err, stdout, stderr) => {
+            if (err) {
+                console.log("Failed to start the IKEA Tradfri plugin: " + err);
+                win.webContents.send('log', "Failed to start the IKEA Tradfri plugin: " + err);
+                return;
+            }
+            console.log("Started the IKEA Tradfri plugin");
+            win.webContents.send('log', "Started the IKEA Tradfri plugin");
+        });
+    }
+    child.stdout.on('data', (data) => {
+        console.log(data);
+        win.webContents.send('log', data);
+
+    });
+    child.stderr.on('data', (data) => {
+        console.log(data);
+        win.webContents.send('log', data);
+
+    });
+    // make sure to kill the child process when the app is closed
+    app.on('window-all-closed', () => {
+        fetch('http://localhost:9898/quit');
+    });
+
+}
+
+async function ikeaControl(r, g , b, brightness, action) {
+    const fs = require('fs');
+    if (action === "getDevices") {
+        // send a request to localhost:9898/getDevices, then create a html file with a table of all the devices with there names and ids, make sure the html is beautified and has a nice design, after that all, open the html in a new electron window
+        const response = await fetch('http://localhost:9898/getDevices');
+        const json = await response.json();
+        // create the html file, make sure it is dark mode
+        let html = '<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Devices</title><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.9.0/css/bulma.min.css"></head><body><div class="container"><table class="table is-fullwidth is-hoverable"><thead><tr><th>Device Name</th><th>Device ID</th></tr></thead><tbody>';
+        json.forEach(device => {
+            html += '<tr><td>' + device.name + '</td><td>' + device.id + '</td></tr>';
+        });
+        html += '</tbody></table></div></body></html>';
+        const savePath = app.getAppPath() + "\\devices.html";
+        fs.writeFile(savePath, html, function (err) {
+            if (err) throw err;
+            console.log('Saved!');
+        });
+        const win = new BrowserWindow({
+            width: 800,
+            height: 600,
+            webPreferences: {
+                nodeIntegration: true
+            }
+        });
+        win.removeMenu();
+        await win.loadFile(savePath);
+
+
+    }
+    if (action === "on") {
+        let hue;
+        if (debugPreference) {
+            console.log("Turning on the light with the given options...");
+        }
+        let colorDevices = userConfig.get('Settings.ikeaSettings.colorDevices');
+        let whiteDevices = userConfig.get('Settings.ikeaSettings.whiteDevices');
+
+        if(r === 0 && g === 255 && b === 0){
+            hue = 120;
+        }
+        if(r === 255 && g === 255 && b === 0){
+            hue = 45;
+        }
+        if(r === 255 && g === 0 && b === 0){
+            hue = 0;
+        }
+        // for each color device, send a request to localhost:9898/setHue?deviceID=DEVICEID&state=HUEVALUE
+        colorDevices.forEach(device => {
+            device = parseInt(device);
+            fetch('http://localhost:9898/setHue?deviceId=' + device + '&state=' + hue);
+        });
+        colorDevices.forEach(device => {
+            device = parseInt(device);
+            fetch('http://localhost:9898/toggleDevice?deviceId=' + device + '&state=on');
+            fetch('http://localhost:9898/setBrightness?deviceId=' + device + '&state=' + brightness);
+        });
+        whiteDevices.forEach(device => {
+            device = parseInt(device);
+            if(hue === 45) {
+                fetch('http://localhost:9898/toggleDevice?deviceId=' + device + '&state=on');
+            } else if(hue === 0){
+                fetch('http://localhost:9898/toggleDevice?deviceId=' + device + '&state=on');
+            }
+            else if(hue === 120){
+                fetch('http://localhost:9898/toggleDevice?deviceId=' + device + '&state=off');
+            }
+        });
+
+    }
+    if (action === "off") {
+        let colorDevices = userConfig.get('Settings.ikeaSettings.colorDevices');
+        let whiteDevices = userConfig.get('Settings.ikeaSettings.whiteDevices');
+        colorDevices.forEach(device => {
+            device = parseInt(device);
+            fetch('http://localhost:9898/toggleDevice?deviceId=' + device + '&state=off');
+        });
+        whiteDevices.forEach(device => {
+            device = parseInt(device);
+            fetch('http://localhost:9898/toggleDevice?deviceId=' + device + '&state=off');
+        });
+    }
+}
+
+async function yeelightControl(r, g, b, brightness, action) {
     if(!yeelightDisabled) {
         const yeelightIPs = userConfig.get('Settings.yeeLightSettings.deviceIPs');
 
@@ -676,7 +785,7 @@ function checkApis() {
             if (data.resultObj.items.length === 0) {
                 win.webContents.send('f1tvAPI', 'offline')
                 if(debugPreference) {
-                    console.log("No live session detected, API returned empty or an error was occurred: " + data.resultObj.items);
+                    console.log("No live session detected!");
                 }
 
             } else {
@@ -755,10 +864,11 @@ async function sendAnalytics() {
             },
             body: JSON.stringify(dataV2)
         }
+        let resv1;
+        let resv2;
         const responseV2 = await fetch(analyticsURLV2, optionsV2);{
             if(responseV2.status === 200) {
-                analyticsSent = true;
-                console.log("Analytics sent successfully!");
+                resv2 = true;
             } else {
                 console.log("Analytics failed to send, status code: " + responseV2.status);
             }
@@ -768,7 +878,13 @@ async function sendAnalytics() {
             if(debugPreference){
                 console.log(responseData);
             }
-            console.log("Analytics sent")
+            if(response.status === 200){
+                resv1 = true;
+            }
+        }
+        if(resv1 && resv2) {
+            console.log("Analytics sent successfully!");
+            analyticsSent = true;
         }
         const body = `"userActive": "false"`
         await fetch("https://api.joost.systems/f1mv-lights-integration/analytics/useractive", {

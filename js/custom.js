@@ -182,3 +182,6 @@ function toggleAutoDevToolsCheck() {
 function testButton() {
     ipcRenderer.send('test-button')
 }
+function ikeagetids() {
+    ipcRenderer.send('ikea-get-ids')
+}

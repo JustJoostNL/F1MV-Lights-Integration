@@ -16,8 +16,15 @@
     "productName": "F1MV-Lights-Integration",
     "copyright": "Copyright © 2022 ${author}",
     "generateUpdatesFilesForAllChannels": true,
-    "asar": true,
+    "asar": false,
     "asarUnpack": [],
+    "files": [
+      "!.node-persist/**/*",
+      "!.devcontainer/**/*",
+      "!.deepsource.toml",
+      "!dist/**/*",
+      "!devices.html"
+    ],
     "directories": {
       "output": "out"
     },
@@ -41,14 +48,17 @@
     "@sentry/electron": "^4.1.2",
     "@sentry/tracing": "^7.24.2",
     "colorsys": "^1.0.22",
+    "cors": "^2.8.5",
     "electron-reload": "^2.0.0-alpha.1",
     "electron-store": "^8.1.0",
     "electron-updater": "^5.3.0",
+    "express": "^4.18.2",
     "govee-lan-control": "^2.0.1",
     "ikea-tradfri": "^5.2.0",
     "jquery": "^3.6.1",
     "node-fetch": "^2.6.1",
     "node-govee-led": "^1.5.1",
+    "node-persist": "^3.1.0",
     "node-tradfri-client": "3.1.1",
     "process": "^0.11.10",
     "yeelight.io": "^1.1.7"

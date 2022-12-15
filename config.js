@@ -14,28 +14,17 @@ const config = {
 
                     // Here you need to fill in the security code from your IKEA Tradfri gateway, you can find it on the bottom of the gateway.
                     securityCode: "SECURITY_CODE_HERE",
-
-                    // Please do not change the "Identity" and "Psk" values, this will be filled in automatically after the first run (when everything is set up correctly).
-                    Identity: "IDENTITY_COMES_HERE",
-                    Psk: "PSK_COMES_HERE",
+                    // You can get these values by clicking the button "Get IKEA Tradfri devices" in app"
+                    colorDevices: ["DEVICE_ID_HERE", "DEVICE_ID_HERE"],
+                    whiteDevices: ["DEVICE_ID_HERE", "DEVICE_ID_HERE"]
                 },
 
             goveeSettings:
                 {
                     // set this to true if you don't want to use Govee lights
                     goveeDisable: false,
-
-                    // Here you need to fill in the API key from your Govee account, you can find it in the Govee app under "Account" -> "API Key".
-                    apiKey: "API_KEY_HERE",
-
-                    // Here you need to fill in your device MAC address from your Govee device(s), if you have multiple, separate them with a comma (Eg: "DEVICE_MAC_HERE-1", "DEVICE_MAC_HERE-2").
-                    // Also make sure if you have multiple devices, that the deviceMac and deviceModel are in the same order.
-                    deviceMac: ["DEVICE_MACS_HERE"],
-
-                    // Here you need to fill in the device model type from your Govee device(s), if you have multiple, separate them with a comma (Eg: "DEVICE_MODEL_HERE-1", "DEVICE_MODEL_HERE-2").
-                    // Also make sure if you have multiple devices, that the deviceMac and deviceModel are in the same order.
-                    deviceModel: ["DEVICE_MODELS_HERE"],
-
+                    // here you can give IPS of the govee devices you DON'T want to use, if you want to use all devices, leave this empty!
+                    devicesDisabledIPS: ["DEVICE_IPS_HERE"],
                 },
 
             yeeLightSettings:
@@ -66,6 +55,12 @@ const config = {
         // automatically turn off the lights when the session has ended
         autoTurnOffLights: true,
         // do not change this version!
-        version: 1
+        version: 1,
+    devConfig:
+        {
+            autoStartDevTools: false,
+            f1mvCheck: true,
+            tradfriDev: false,
+        }
 }
 module.exports = config;

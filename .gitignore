@@ -10,3 +10,9 @@ output/*
 output/
 output
 dist/*
+.node-persist/*
+build/*
+.env
+devConfig.json
+
+devices.html
