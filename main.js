@@ -21,6 +21,8 @@ const updateChannel = userConfig.get('Settings.advancedSettings.updateChannel')
 autoUpdater.channel = updateChannel;
 const updateURL = "https://github.com/koningcool/F1MV-G-T-Y-Integration/releases/"
 
+const defaultBrightness = userConfig.get('Settings.generalSettings.defaultBrightness')
+
 let devMode = false;
 
 let TState;
@@ -195,37 +197,37 @@ ipcMain.on('toggle-debug', () => {
 async function simulateFlag(arg) {
     if(arg === 'Green'){
         if(!goveeDisabled){
-            await goveeControl(0, 255, 0, 100, "on");
+            await goveeControl(0, 255, 0, defaultBrightness, "on");
         }
         if(!yeelightDisabled){
-            await yeelightControl(0, 255, 0, 100, "on");
+            await yeelightControl(0, 255, 0, defaultBrightness, "on");
         }
         if(!ikeaDisabled){
-            await ikeaControl(0, 255, 0, 100, "on");
+            await ikeaControl(0, 255, 0, defaultBrightness, "on");
         }
         simulatedFlagCounter++
     }
     if(arg === 'Red'){
         if(!goveeDisabled){
-            await goveeControl(255, 0, 0, 100, "on");
+            await goveeControl(255, 0, 0, defaultBrightness, "on");
         }
         if(!yeelightDisabled){
-            await yeelightControl(255, 0, 0, 100, "on");
+            await yeelightControl(255, 0, 0, defaultBrightness, "on");
         }
         if(!ikeaDisabled){
-            await ikeaControl(255, 0, 0, 100, "on");
+            await ikeaControl(255, 0, 0, defaultBrightness, "on");
         }
         simulatedFlagCounter++
     }
     if(arg === 'SC' || arg === 'VSC' || arg === 'vscEnding' || arg === 'Yellow'){
         if(!goveeDisabled){
-            await goveeControl(255, 255, 0, 100, "on");
+            await goveeControl(255, 255, 0, defaultBrightness, "on");
         }
         if(!yeelightDisabled){
-            await yeelightControl(255, 255, 0, 100, "on");
+            await yeelightControl(255, 255, 0, defaultBrightness, "on");
         }
         if(!ikeaDisabled){
-            await ikeaControl(255, 255, 0, 100, "on");
+            await ikeaControl(255, 255, 0, defaultBrightness, "on");
         }
         simulatedFlagCounter++
     }
@@ -253,12 +255,12 @@ ipcMain.on('updatecheck', () => {
 ipcMain.on('test-button', async () => {
     console.log("Running action mapped on test button...")
     win.webContents.send('log', 'Running action mapped on test button...')
-    await ikeaControl(0, 255, 0, 100, "getDevices");
+    await ikeaControl(0, 255, 0, defaultBrightness, "getDevices");
 })
 ipcMain.on('ikea-get-ids', async () => {
     console.log("Getting Ikea Device IDs...")
     win.webContents.send('log', 'Getting Ikea Device IDs...')
-    await ikeaControl(0, 255, 0, 100, "getDevices");
+    await ikeaControl(0, 255, 0, defaultBrightness, "getDevices");
 })
 ipcMain.on('send-analytics-button', async () => {
     console.log("Running send analytics code...")
@@ -328,13 +330,13 @@ async function f1mvLightSync(){
                 console.log("Green flag!")
                 win.webContents.send('log', "Green flag!")
                 if(!goveeDisabled) {
-                    await goveeControl(0, 255, 0, 100, "on")
+                    await goveeControl(0, 255, 0, defaultBrightness, "on")
                 }
                 if(!yeelightDisabled) {
-                    await yeelightControl(0, 255, 0, 100, "on")
+                    await yeelightControl(0, 255, 0, defaultBrightness, "on")
                 }
                 if(!ikeaDisabled) {
-                    await ikeaControl(0, 255, 0, 100, "on")
+                    await ikeaControl(0, 255, 0, defaultBrightness, "on")
                 }
                 TStateCheck = TState
                 break;
@@ -342,13 +344,13 @@ async function f1mvLightSync(){
                 console.log("Yellow flag!")
                 win.webContents.send('log', "Yellow flag!")
                 if(!goveeDisabled) {
-                    await goveeControl(255, 255, 0, 100, "on")
+                    await goveeControl(255, 255, 0, defaultBrightness, "on")
                 }
                 if(!yeelightDisabled) {
-                    await yeelightControl(255, 255, 0, 100, "on")
+                    await yeelightControl(255, 255, 0, defaultBrightness, "on")
                 }
                 if(!ikeaDisabled) {
-                    await ikeaControl(255, 255, 0, 100, "on")
+                    await ikeaControl(255, 255, 0, defaultBrightness, "on")
                 }
                 TStateCheck = TState
                 break;
@@ -356,13 +358,13 @@ async function f1mvLightSync(){
                 console.log("Safety car!")
                 win.webContents.send('log', "Safety car!")
                 if(!goveeDisabled) {
-                    await goveeControl(255, 255, 255, 100, "on")
+                    await goveeControl(255, 255, 255, defaultBrightness, "on")
                 }
                 if(!yeelightDisabled) {
-                    await yeelightControl(255, 255, 255, 100, "on")
+                    await yeelightControl(255, 255, 255, defaultBrightness, "on")
                 }
                 if(!ikeaDisabled) {
-                    await ikeaControl(255, 255, 255, 100, "on")
+                    await ikeaControl(255, 255, 255, defaultBrightness, "on")
                 }
                 TStateCheck = TState
                 break;
@@ -370,13 +372,13 @@ async function f1mvLightSync(){
                 console.log("Red flag!")
                 win.webContents.send('log', "Red flag!")
                 if(!goveeDisabled) {
-                    await goveeControl(255, 0, 0, 100, "on")
+                    await goveeControl(255, 0, 0, defaultBrightness, "on")
                 }
                 if(!yeelightDisabled) {
-                    await yeelightControl(255, 0, 0, 100, "on")
+                    await yeelightControl(255, 0, 0, defaultBrightness, "on")
                 }
                 if(!ikeaDisabled) {
-                    await ikeaControl(255, 0, 0, 100, "on")
+                    await ikeaControl(255, 0, 0, defaultBrightness, "on")
                 }
                 TStateCheck = TState
                 break;
@@ -384,13 +386,13 @@ async function f1mvLightSync(){
                 console.log("Virtual safety car!")
                 win.webContents.send('log', "Virtual safety car!")
                 if(!goveeDisabled) {
-                    await goveeControl(255, 255, 255, 100, "on")
+                    await goveeControl(255, 255, 255, defaultBrightness, "on")
                 }
                 if(!yeelightDisabled) {
-                    await yeelightControl(255, 255, 255, 100, "on")
+                    await yeelightControl(255, 255, 255, defaultBrightness, "on")
                 }
                 if(!ikeaDisabled) {
-                    await ikeaControl(255, 255, 255, 100, "on")
+                    await ikeaControl(255, 255, 255, defaultBrightness, "on")
                 }
                 TStateCheck = TState
                 break;
@@ -398,31 +400,31 @@ async function f1mvLightSync(){
                 console.log("VSC Ending")
                 win.webContents.send('log', "VSC Ending")
                 if(!goveeDisabled) {
-                    await goveeControl(255, 255, 255, 100, "on")
+                    await goveeControl(255, 255, 255, defaultBrightness, "on")
                 }
                 if(!yeelightDisabled) {
-                    await yeelightControl(255, 255, 255, 100, "on")
+                    await yeelightControl(255, 255, 255, defaultBrightness, "on")
                 }
                 if(!ikeaDisabled) {
-                    await ikeaControl(255, 255, 255, 100, "on")
+                    await ikeaControl(255, 255, 255, defaultBrightness, "on")
                 }
                 TStateCheck = TState
                 break;
         }
     }
     else if (SState === "Ends" || SState === "Finalised"){
-        const autoOff = userConfig.get('config.autoTurnOffLights')
+        const autoOff = userConfig.get('Settings.generalSettings.autoTurnOffLights')
         if(autoOff){
             console.log("Session ended, turning off lights...")
             win.webContents.send('log', "Session ended, turning off lights...")
             if(!goveeDisabled) {
-                await goveeControl(0, 255, 0, 100, "off")
+                await goveeControl(0, 255, 0, defaultBrightness, "off")
             }
             if(!yeelightDisabled) {
-                await yeelightControl(0, 255, 0, 100, "off")
+                await yeelightControl(0, 255, 0, defaultBrightness, "off")
             }
             if(!ikeaDisabled) {
-                await ikeaControl(0, 255, 0, 100, "off")
+                await ikeaControl(0, 255, 0, defaultBrightness, "off")
             }
         }
     }
@@ -463,11 +465,14 @@ setTimeout(function() {
         win.webContents.send('log', "F1MV Api Disabled: " + !f1mvCheck);
     }
     if(!goveeDisabled) {
+        win.webContents.send('goveeAPI', 'online');
         goveeInitialize().then(r => {
             if(debugPreference) {
                 console.log(r)
             }
         });
+    } else if(goveeDisabled) {
+        win.webContents.send('goveeAPI', 'offline');
     }
     if(!ikeaDisabled) {
         ikeaInitialize().then(r => {
@@ -548,9 +553,9 @@ async function goveeInitialize(){
     console.log("Connecting to the local Govee API...");
 
     govee.on("ready", () => {
-        console.log("Server/client is ready!");
+        console.log("Connected to the local Govee API");
+        win.webContents.send('log', "Connected to the local Govee API");
     });
-
     govee.on("deviceAdded", (device) => {
         console.log("Govee device found: " + device.model);
 
@@ -753,14 +758,6 @@ function checkApis() {
         })
         .catch(function () {
             win.webContents.send('f1mvAPI', 'offline')
-        });
-
-    fetch(goveeURL)
-        .then(function () {
-            win.webContents.send('goveeAPI', 'online')
-        })
-        .catch(function () {
-            win.webContents.send('goveeAPI', 'offline')
         });
 
     const f1tvURL = "https://f1tv.formula1.com/1.0/R/ENG/WEB_DASH/ALL/EVENTS/LIVENOW/F1_TV_Pro_Annual/2";

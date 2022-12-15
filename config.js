@@ -1,6 +1,13 @@
 const config = {
     Settings:
         {
+            generalSettings:
+                {
+                    // automatically turn off the lights when the session has ended
+                    autoTurnOffLights: true,
+                    // the default brightness of the lights
+                    defaultBrightness: 100,
+                },
 
             MultiViewerForF1Settings:
                 {
@@ -14,7 +21,7 @@ const config = {
 
                     // Here you need to fill in the security code from your IKEA Tradfri gateway, you can find it on the bottom of the gateway.
                     securityCode: "SECURITY_CODE_HERE",
-                    // You can get these values by clicking the button "Get IKEA Tradfri devices" in app"
+                    // You can get these values by clicking "Settings" in the app and then click "Get Ikea Device IDs"
                     colorDevices: ["DEVICE_ID_HERE", "DEVICE_ID_HERE"],
                     whiteDevices: ["DEVICE_ID_HERE", "DEVICE_ID_HERE"]
                 },
@@ -52,8 +59,6 @@ const config = {
                     analytics: true,
                 }
         },
-        // automatically turn off the lights when the session has ended
-        autoTurnOffLights: true,
         // do not change this version!
         version: 1,
     devConfig:
