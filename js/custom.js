@@ -41,27 +41,11 @@ $(function() {
         }
     })
 
-    ipcRenderer.on('config', (event, arg) => {
-        console.log('recieved config.')
-        config = arg;
-
-        console.log(1)
-        config.YeeLights.lights.forEach(function(light) {
-            console.log(light)
-
-            $('#lights').append(`<div class="check" id="${light}"><span class="status error"></span><p>${light}</p></div>`)
-        })
+    ipcRenderer.on('settings', (event, arg) => {
+        // search in the settings.html for the id 'brightness-input' and set the value to the defaultBrightness
+        $('#brightness-input').val(arg.Settings.generalSettings.defaultBrightness)
     })
 
-    // TODO: Create event.
-    ipcRenderer.on('lightchange', (event, arg) => {
-        if (arg.status === 'online') {
-            $(`#${arg.lightIP}`).find('.status').removeClass('error').addClass('success')
-        }
-        if (arg.status === 'offline') {
-            $(`#${arg.lightIP}`).find('.status').removeClass('success').addClass('error')
-        }
-    })
 })
 
     ipcRenderer.on('log', (event, arg) => {
@@ -184,4 +168,9 @@ function testButton() {
 }
 function ikeagetids() {
     ipcRenderer.send('ikea-get-ids')
+}
+function sendConfig() {
+    setTimeout(() => {
+        ipcRenderer.send('send-config')
+    }, 1000)
 }

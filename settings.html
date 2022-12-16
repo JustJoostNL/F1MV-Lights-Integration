@@ -12,7 +12,7 @@
     <script>
         const $ = jQuery = require("jquery");
     </script>
-    <title>F1MV-G-T-Y-Integration</title>
+    <title>F1MV-Lights-Integration</title>
 </head>
 
 <body>
@@ -32,13 +32,38 @@
     </div>
 </nav>
 
+<div class="container simulation">
+    <h2 class="simulation__title">Settings</h2>
+</div>
 <div class="container easy-access">
     <div class="easy-access__buttons">
         <a style="color:deepskyblue" class="waves-effect waves-light btn-large simulation__button tooltipped" onclick="openConfig()" data-position="bottom" data-tooltip="Check for newer version">
             <em class="material-icons">open_in_new</em>
             Open Config
         </a>
+        <a class="waves-effect waves-light btn-large simulation__button tooltipped" onclick="sendConfig()" data-position="bottom" data-tooltip="Get the values from your config file and load them in here, so you can easily change things">
+            <em class="material-icons">download</em>
+            Load Values From Your Config
+        </a>
     </div>
+</div>
+<div class="container simulation">
+    <h2 class="simulation__title">General Settings</h2>
+    <p>
+        <label>
+            <input type="checkbox" class="filled-in" checked="checked" />
+            <span>Automatically turn off lights when the session ended</span>
+        </label>
+    </p>
+    <p>
+        <label>
+            <span>Default brightness</span>
+            <input style="color:white" type="number" id="brightness-input" value= />
+        </label>
+    </p>
+</div>
+<div class="container simulation">
+    <h2 class="simulation__title">F1MV Settings</h2>
 </div>
 <div class="container simulation">
     <h2 class="simulation__title">Ikea Settings</h2>
@@ -48,6 +73,15 @@
             Get device Id's
         </a>
     </div>
+</div>
+<div class="container simulation">
+    <h2 class="simulation__title">Govee Settings</h2>
+</div>
+<div class="container simulation">
+    <h2 class="simulation__title">YeeLight Settings</h2>
+</div>
+<div class="container simulation">
+    <h2 class="simulation__title">Advanced Settings</h2>
 </div>
 
 

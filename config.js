@@ -64,8 +64,7 @@ const config = {
     devConfig:
         {
             autoStartDevTools: false,
-            f1mvCheck: true,
-            tradfriDev: false,
+            f1mvCheck: true
         }
 }
 module.exports = config;

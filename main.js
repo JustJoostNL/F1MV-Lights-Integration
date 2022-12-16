@@ -21,13 +21,14 @@ const updateChannel = userConfig.get('Settings.advancedSettings.updateChannel')
 autoUpdater.channel = updateChannel;
 const updateURL = "https://github.com/koningcool/F1MV-G-T-Y-Integration/releases/"
 
-const defaultBrightness = userConfig.get('Settings.generalSettings.defaultBrightness')
+const userBrightness = userConfig.get('Settings.generalSettings.defaultBrightness')
 
 let devMode = false;
 
 let TState;
 let SState;
 let TStateCheck;
+let SStateCheck;
 let win;
 let f1mvCheck = true;
 f1mvCheck = userConfig.get('devConfig.f1mvCheck')
@@ -197,37 +198,37 @@ ipcMain.on('toggle-debug', () => {
 async function simulateFlag(arg) {
     if(arg === 'Green'){
         if(!goveeDisabled){
-            await goveeControl(0, 255, 0, defaultBrightness, "on");
+            await goveeControl(0, 255, 0, userBrightness, "on");
         }
         if(!yeelightDisabled){
-            await yeelightControl(0, 255, 0, defaultBrightness, "on");
+            await yeelightControl(0, 255, 0, userBrightness, "on");
         }
         if(!ikeaDisabled){
-            await ikeaControl(0, 255, 0, defaultBrightness, "on");
+            await ikeaControl(0, 255, 0, userBrightness, "on");
         }
         simulatedFlagCounter++
     }
     if(arg === 'Red'){
         if(!goveeDisabled){
-            await goveeControl(255, 0, 0, defaultBrightness, "on");
+            await goveeControl(255, 0, 0, userBrightness, "on");
         }
         if(!yeelightDisabled){
-            await yeelightControl(255, 0, 0, defaultBrightness, "on");
+            await yeelightControl(255, 0, 0, userBrightness, "on");
         }
         if(!ikeaDisabled){
-            await ikeaControl(255, 0, 0, defaultBrightness, "on");
+            await ikeaControl(255, 0, 0, userBrightness, "on");
         }
         simulatedFlagCounter++
     }
     if(arg === 'SC' || arg === 'VSC' || arg === 'vscEnding' || arg === 'Yellow'){
         if(!goveeDisabled){
-            await goveeControl(255, 255, 0, defaultBrightness, "on");
+            await goveeControl(255, 255, 0, userBrightness, "on");
         }
         if(!yeelightDisabled){
-            await yeelightControl(255, 255, 0, defaultBrightness, "on");
+            await yeelightControl(255, 255, 0, userBrightness, "on");
         }
         if(!ikeaDisabled){
-            await ikeaControl(255, 255, 0, defaultBrightness, "on");
+            await ikeaControl(255, 255, 0, userBrightness, "on");
         }
         simulatedFlagCounter++
     }
@@ -255,12 +256,12 @@ ipcMain.on('updatecheck', () => {
 ipcMain.on('test-button', async () => {
     console.log("Running action mapped on test button...")
     win.webContents.send('log', 'Running action mapped on test button...')
-    await ikeaControl(0, 255, 0, defaultBrightness, "getDevices");
+    await settings();
 })
 ipcMain.on('ikea-get-ids', async () => {
     console.log("Getting Ikea Device IDs...")
     win.webContents.send('log', 'Getting Ikea Device IDs...')
-    await ikeaControl(0, 255, 0, defaultBrightness, "getDevices");
+    await ikeaControl(0, 255, 0, userBrightness, "getDevices");
 })
 ipcMain.on('send-analytics-button', async () => {
     console.log("Running send analytics code...")
@@ -294,6 +295,11 @@ ipcMain.on('auto-devtools', () => {
         win.webContents.send('log', 'Enabled auto start dev tools')
         console.log('Enabled auto dev tools')
     }
+})
+ipcMain.on('send-config', () => {
+    console.log("Loading config file...")
+    const config = userConfig.store;
+    win.webContents.send('settings', config);
 })
 
 async function f1mvAPICall() {
@@ -330,13 +336,13 @@ async function f1mvLightSync(){
                 console.log("Green flag!")
                 win.webContents.send('log', "Green flag!")
                 if(!goveeDisabled) {
-                    await goveeControl(0, 255, 0, defaultBrightness, "on")
+                    await goveeControl(0, 255, 0, userBrightness, "on")
                 }
                 if(!yeelightDisabled) {
-                    await yeelightControl(0, 255, 0, defaultBrightness, "on")
+                    await yeelightControl(0, 255, 0, userBrightness, "on")
                 }
                 if(!ikeaDisabled) {
-                    await ikeaControl(0, 255, 0, defaultBrightness, "on")
+                    await ikeaControl(0, 255, 0, userBrightness, "on")
                 }
                 TStateCheck = TState
                 break;
@@ -344,13 +350,13 @@ async function f1mvLightSync(){
                 console.log("Yellow flag!")
                 win.webContents.send('log', "Yellow flag!")
                 if(!goveeDisabled) {
-                    await goveeControl(255, 255, 0, defaultBrightness, "on")
+                    await goveeControl(255, 255, 0, userBrightness, "on")
                 }
                 if(!yeelightDisabled) {
-                    await yeelightControl(255, 255, 0, defaultBrightness, "on")
+                    await yeelightControl(255, 255, 0, userBrightness, "on")
                 }
                 if(!ikeaDisabled) {
-                    await ikeaControl(255, 255, 0, defaultBrightness, "on")
+                    await ikeaControl(255, 255, 0, userBrightness, "on")
                 }
                 TStateCheck = TState
                 break;
@@ -358,13 +364,13 @@ async function f1mvLightSync(){
                 console.log("Safety car!")
                 win.webContents.send('log', "Safety car!")
                 if(!goveeDisabled) {
-                    await goveeControl(255, 255, 255, defaultBrightness, "on")
+                    await goveeControl(255, 255, 255, userBrightness, "on")
                 }
                 if(!yeelightDisabled) {
-                    await yeelightControl(255, 255, 255, defaultBrightness, "on")
+                    await yeelightControl(255, 255, 255, userBrightness, "on")
                 }
                 if(!ikeaDisabled) {
-                    await ikeaControl(255, 255, 255, defaultBrightness, "on")
+                    await ikeaControl(255, 255, 255, userBrightness, "on")
                 }
                 TStateCheck = TState
                 break;
@@ -372,13 +378,13 @@ async function f1mvLightSync(){
                 console.log("Red flag!")
                 win.webContents.send('log', "Red flag!")
                 if(!goveeDisabled) {
-                    await goveeControl(255, 0, 0, defaultBrightness, "on")
+                    await goveeControl(255, 0, 0, userBrightness, "on")
                 }
                 if(!yeelightDisabled) {
-                    await yeelightControl(255, 0, 0, defaultBrightness, "on")
+                    await yeelightControl(255, 0, 0, userBrightness, "on")
                 }
                 if(!ikeaDisabled) {
-                    await ikeaControl(255, 0, 0, defaultBrightness, "on")
+                    await ikeaControl(255, 0, 0, userBrightness, "on")
                 }
                 TStateCheck = TState
                 break;
@@ -386,13 +392,13 @@ async function f1mvLightSync(){
                 console.log("Virtual safety car!")
                 win.webContents.send('log', "Virtual safety car!")
                 if(!goveeDisabled) {
-                    await goveeControl(255, 255, 255, defaultBrightness, "on")
+                    await goveeControl(255, 255, 255, userBrightness, "on")
                 }
                 if(!yeelightDisabled) {
-                    await yeelightControl(255, 255, 255, defaultBrightness, "on")
+                    await yeelightControl(255, 255, 255, userBrightness, "on")
                 }
                 if(!ikeaDisabled) {
-                    await ikeaControl(255, 255, 255, defaultBrightness, "on")
+                    await ikeaControl(255, 255, 255, userBrightness, "on")
                 }
                 TStateCheck = TState
                 break;
@@ -400,32 +406,33 @@ async function f1mvLightSync(){
                 console.log("VSC Ending")
                 win.webContents.send('log', "VSC Ending")
                 if(!goveeDisabled) {
-                    await goveeControl(255, 255, 255, defaultBrightness, "on")
+                    await goveeControl(255, 255, 255, userBrightness, "on")
                 }
                 if(!yeelightDisabled) {
-                    await yeelightControl(255, 255, 255, defaultBrightness, "on")
+                    await yeelightControl(255, 255, 255, userBrightness, "on")
                 }
                 if(!ikeaDisabled) {
-                    await ikeaControl(255, 255, 255, defaultBrightness, "on")
+                    await ikeaControl(255, 255, 255, userBrightness, "on")
                 }
                 TStateCheck = TState
                 break;
         }
     }
-    else if (SState === "Ends" || SState === "Finalised"){
+    else if (SState === "Ends" || SState === "Finalised" && SStateCheck !== SState){
         const autoOff = userConfig.get('Settings.generalSettings.autoTurnOffLights')
         if(autoOff){
             console.log("Session ended, turning off lights...")
             win.webContents.send('log', "Session ended, turning off lights...")
             if(!goveeDisabled) {
-                await goveeControl(0, 255, 0, defaultBrightness, "off")
+                await goveeControl(0, 255, 0, userBrightness, "off")
             }
             if(!yeelightDisabled) {
-                await yeelightControl(0, 255, 0, defaultBrightness, "off")
+                await yeelightControl(0, 255, 0, userBrightness, "off")
             }
             if(!ikeaDisabled) {
-                await ikeaControl(0, 255, 0, defaultBrightness, "off")
+                await ikeaControl(0, 255, 0, userBrightness, "off")
             }
+            SStateCheck = SState
         }
     }
 }
@@ -572,37 +579,22 @@ async function ikeaInitialize(){
     } else {
         debug = "";
     }
-    const startCommandDev = 'node ikea.js --' + securityCode + ' ' + debug;
     let startPath = app.getAppPath();
     startPath = startPath + "\\ikea.js"
     const startCommand = 'node ' + startPath + ' ' +  '--' + securityCode + ' ' + debug;
-    const tradfriDev = userConfig.get('devConfig.tradfriDev');
     let child;
-    if (tradfriDev){
-        child = exec(startCommandDev, (err) => {
-            if (err) {
-                console.log("Failed to start the IKEA Tradfri plugin: " + err);
-                win.webContents.send('log', "Failed to start the IKEA Tradfri plugin: " + err);
-                return;
-            }
-            console.log("Started the IKEA Tradfri plugin");
-            win.webContents.send('log', "Started the IKEA Tradfri plugin");
-        });
-    } else if(!tradfriDev){
-        child = exec(startCommand, (err) => {
-            if (err) {
-                console.log("Failed to start the IKEA Tradfri plugin: " + err);
-                win.webContents.send('log', "Failed to start the IKEA Tradfri plugin: " + err);
-                return;
-            }
-            console.log("Started the IKEA Tradfri plugin");
-            win.webContents.send('log', "Started the IKEA Tradfri plugin");
-        });
-    }
+    child = exec(startCommand, (err) => {
+        if (err) {
+            console.log("Failed to start the IKEA Tradfri plugin: " + err);
+            win.webContents.send('log', "Failed to start the IKEA Tradfri plugin: " + err);
+            return;
+        }
+        console.log("Started the IKEA Tradfri plugin");
+        win.webContents.send('log', "Started the IKEA Tradfri plugin");
+    });
     child.stdout.on('data', (data) => {
         console.log(data);
         win.webContents.send('log', data);
-
     });
     child.stderr.on('data', (data) => {
         console.log(data);
@@ -616,6 +608,10 @@ async function ikeaInitialize(){
 
 }
 
+async function settings(){
+    // send the whole config file to the renderer
+    win.webContents.send('settings', userConfig.store);
+}
 async function ikeaControl(r, g , b, brightness, action) {
     const fs = require('fs');
     if (action === "getDevices") {
