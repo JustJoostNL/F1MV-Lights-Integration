@@ -49,6 +49,7 @@
     "@sentry/tracing": "^7.24.2",
     "colorsys": "^1.0.22",
     "cors": "^2.8.5",
+    "electron-localshortcut": "^3.2.1",
     "electron-reload": "^2.0.0-alpha.1",
     "electron-store": "^8.1.0",
     "electron-updater": "^5.3.0",

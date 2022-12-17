@@ -47,7 +47,9 @@ const connectToGateway = async () => {
 
     try {
         await tradfriClient.connect(creds.identity, creds.psk);
-        console.log("[TRADFRI] Connected to gateway");
+        if(debug) {
+            console.log("[TRADFRI] Connected to gateway");
+        }
         await tradfriClient
             .on("device updated", (d) => {
                 if (debug){
@@ -72,7 +74,6 @@ const connectToGateway = async () => {
 app.use(cors());
 
 app.get("/getAll", (req, res) => {
-    console.log("Request for devices received");
     res.json({
         devices: tradfriClient.devices,
         groups: tradfriClient.groups,
@@ -80,21 +81,38 @@ app.get("/getAll", (req, res) => {
 });
 
 app.get("/getDevices", (req, res) => {
-    console.log("Request for devices received");
-    // output only the device id and name
-    let output = [];
-    for (let i = 0; i < devices.length; i++) {
-        if (devices[i] !== undefined) {
-            output.push({
-                id: devices[i].instanceId,
-                name: devices[i].name,
-            });
+
+    let deviceInfo = [];
+
+    for (const deviceId in devices) {
+        const device = devices[deviceId];
+        if (device.type !== 2) {
+            continue;
         }
+        // for each device, store the device id, name, state, and spectrum in a variable
+        deviceInfo.push({
+            id: device.instanceId,
+            name: device.name,
+            state: device.lightList[0].onOff,
+            spectrum: device.lightList[0].spectrum,
+        });
     }
-    res.json(output);
+    res.json(deviceInfo);
+});
+
+app.get("/getSpectrum/:id", (req, res) => {
+    const device = devices[req.params.id];
+    if (device.lightList[0].spectrum === "rgb") {
+        res.json({
+            spectrum: "rgb",
+        });
+    } else {
+        res.json({
+            spectrum: "white",
+        });
+    }
 });
 app.get("/getGroups", (req, res) => {
-    console.log("Request for groups received");
     res.json(tradfriClient.groups);
 });
 
@@ -138,7 +156,9 @@ app.get("/setHue", (req, res) => {
 });
 app.get("/quit", (req, res) => {
     res.json({ status: "exited" });
-    console.log("Quitting Ikea Tradfri Server...");
+    if(debug){
+        console.log("[TRADFRI] Quitting Tradfri Server...");
+    }
     process.exit();
 });
 
@@ -148,7 +168,9 @@ app.get("*", (req, res) => {
 
 connectToGateway().then(() => {
     app.listen(port, () => {
-        console.log(`Tradfri Server Started!`);
+        if(debug){
+            console.log(`[TRADFRI] Server listening at http://localhost:${port}`);
+        }
     });
 });
 

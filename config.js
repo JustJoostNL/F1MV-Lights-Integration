@@ -6,7 +6,7 @@ const config = {
                     // automatically turn off the lights when the session has ended
                     autoTurnOffLights: true,
                     // the default brightness of the lights
-                    defaultBrightness: 100,
+                    defaultBrightness: "100",
                 },
 
             MultiViewerForF1Settings:
@@ -21,9 +21,8 @@ const config = {
 
                     // Here you need to fill in the security code from your IKEA Tradfri gateway, you can find it on the bottom of the gateway.
                     securityCode: "SECURITY_CODE_HERE",
-                    // You can get these values by clicking "Settings" in the app and then click "Get Ikea Device IDs"
-                    colorDevices: ["DEVICE_ID_HERE", "DEVICE_ID_HERE"],
-                    whiteDevices: ["DEVICE_ID_HERE", "DEVICE_ID_HERE"]
+                    // You can get these values by clicking "Settings" in the app and then click "Get Device IDs"
+                    deviceIDs: ["DEVICE_ID_HERE", "DEVICE_ID_HERE"],
                 },
 
             goveeSettings:
@@ -31,7 +30,7 @@ const config = {
                     // set this to true if you don't want to use Govee lights
                     goveeDisable: false,
                     // here you can give IPS of the govee devices you DON'T want to use, if you want to use all devices, leave this empty!
-                    devicesDisabledIPS: ["DEVICE_IPS_HERE"],
+                    devicesDisabledIPs: [""],
                 },
 
             yeeLightSettings:

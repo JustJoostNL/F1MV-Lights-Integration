@@ -41,9 +41,65 @@ $(function() {
         }
     })
 
+    ipcRenderer.on('ikeaAPI', (event, arg) => {
+        if (arg === 'online') {
+            $('#ikeaAPI').find('.status').removeClass('error').addClass('success')
+        }
+
+        if (arg === 'offline') {
+            $('#ikeaAPI').find('.status').removeClass('success').addClass('error')
+        }
+    })
+
     ipcRenderer.on('settings', (event, arg) => {
-        // search in the settings.html for the id 'brightness-input' and set the value to the defaultBrightness
         $('#brightness-input').val(arg.Settings.generalSettings.defaultBrightness)
+        
+        if (arg.Settings.generalSettings.autoTurnOffLights) {
+            $('#auto-turn-off-setting').attr('checked', 'checked')
+        }else if (!arg.Settings.generalSettings.autoTurnOffLights) {
+            $('#auto-turn-off-setting').removeAttr('checked')
+        }
+        
+        $('#live-timing-url-input').val(arg.Settings.MultiViewerForF1Settings.liveTimingURL)
+
+        if (arg.Settings.ikeaSettings.ikeaDisable) {
+            $('#disable-ikea-setting').attr('checked', 'checked')
+        }else if (!arg.Settings.ikeaSettings.ikeaDisable) {
+            $('#disable-ikea-setting').removeAttr('checked')
+        }
+        
+        $('#sec-code-input').val(arg.Settings.ikeaSettings.securityCode)
+        $('#devices-input').val(arg.Settings.ikeaSettings.deviceIDs)
+        if (arg.Settings.goveeSettings.goveeDisable) {
+            $('#disable-govee-setting').attr('checked', 'checked')
+        }else if (!arg.Settings.goveeSettings.goveeDisable) {
+            $('#disable-govee-setting').removeAttr('checked')
+        }
+
+        $('#govee-dis-devices-input').val(arg.Settings.goveeSettings.devicesDisabledIPs)
+
+        if (arg.Settings.yeeLightSettings.yeeLightDisable) {
+            $('#disable-yeelight-setting').attr('checked', 'checked')
+        }else if (!arg.Settings.yeeLightSettings.yeeLightDisable) {
+            $('#disable-yeelight-setting').removeAttr('checked')
+        }
+
+        $('#yeelight-device-ip-input').val(arg.Settings.yeeLightSettings.deviceIPs)
+
+        // search in the settings for the dropdown menu with this id: 'update-channel-setting' and set the value to the current update channel
+        $('#update-channel-setting').val(arg.Settings.advancedSettings.updateChannel)
+
+        if (arg.Settings.advancedSettings.analytics) {
+            $('#analytics-setting').attr('checked', 'checked')
+        }else if (!arg.Settings.advancedSettings.analytics) {
+            $('#analytics-setting').removeAttr('checked')
+        }
+
+        if (arg.Settings.advancedSettings.debugMode) {
+            $('#debug-mode-setting').attr('checked', 'checked')
+        }else if (!arg.Settings.advancedSettings.debugMode) {
+            $('#debug-mode-setting').removeAttr('checked')
+        }
     })
 
 })
@@ -67,6 +123,23 @@ $(function() {
         $('#dev').find('i').removeClass('code').addClass('code_off')
     })
 
+function saveConfig() {
+    ipcRenderer.send('saveConfig', {
+        defaultBrightness: $('#brightness-input').val(),
+        autoTurnOffLights: $('#auto-turn-off-setting').is(':checked'),
+        liveTimingURL: $('#live-timing-url-input').val(),
+        ikeaDisable: $('#disable-ikea-setting').is(':checked'),
+        securityCode: $('#sec-code-input').val(),
+        deviceIDs: $('#devices-input').val(),
+        goveeDisable: $('#disable-govee-setting').is(':checked'),
+        devicesDisabledIPs: $('#govee-dis-devices-input').val(),
+        yeeLightDisable: $('#disable-yeelight-setting').is(':checked'),
+        deviceIPs: $('#yeelight-device-ip-input').val(),
+        updateChannel: $('#update-channel-setting').val(),
+        analytics: $('#analytics-setting').is(':checked'),
+        debugMode: $('#debug-mode-setting').is(':checked')
+    })
+}
 
 function simulateGreen() {
     M.toast({
@@ -166,11 +239,12 @@ function toggleAutoDevToolsCheck() {
 function testButton() {
     ipcRenderer.send('test-button')
 }
-function ikeagetids() {
+function ikeaGetIds() {
     ipcRenderer.send('ikea-get-ids')
 }
 function sendConfig() {
-    setTimeout(() => {
-        ipcRenderer.send('send-config')
-    }, 1000)
+    ipcRenderer.send('send-config')
+}
+function restartApp() {
+    ipcRenderer.send('restart-app')
 }

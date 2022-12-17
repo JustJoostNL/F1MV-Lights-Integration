@@ -1,5 +1,7 @@
 'use strict';
-const { app, BrowserWindow, dialog, ipcMain, globalShortcut } = require('electron')
+const { app, dialog, ipcMain } = require('electron')
+const BrowserWindow = require('electron').BrowserWindow
+const electronLocalShortcut = require('electron-localshortcut');
 
 const { autoUpdater } = require("electron-updater")
 const process = require('process');
@@ -21,9 +23,12 @@ const updateChannel = userConfig.get('Settings.advancedSettings.updateChannel')
 autoUpdater.channel = updateChannel;
 const updateURL = "https://github.com/koningcool/F1MV-G-T-Y-Integration/releases/"
 
-const userBrightness = userConfig.get('Settings.generalSettings.defaultBrightness')
+const userBrightness = parseInt(userConfig.get('Settings.generalSettings.defaultBrightness'))
 
 let devMode = false;
+
+let ikeaOnline = false;
+let goveeOnline = false;
 
 let TState;
 let SState;
@@ -44,8 +49,6 @@ let developerModeWasActivated = false;
 const fetch = require('node-fetch').default;
 
 const Sentry = require("@sentry/electron");
-require("govee-lan-control");
-require("fs");
 Sentry.init({
     dsn: "https://e64c3ec745124566b849043192e58711@o4504289317879808.ingest.sentry.io/4504289338392576",
     release: "F1MV-G-T-Y-Integration@" + app.getVersion(),
@@ -102,9 +105,13 @@ app.whenReady().then(() => {
             }
         }
     });
+    migrateConfig().then(r => {
+        if(debugPreference) {
+            console.log(r)
+        }
+    });
 
-    // register the keyboard shortcut shift+d
-    globalShortcut.register('shift+d', () => {
+    electronLocalShortcut.register(win, 'shift+d', () => {
         if (!devMode) {
             devMode = true;
             developerModeWasActivated = true;
@@ -125,6 +132,7 @@ app.whenReady().then(() => {
             win.webContents.send('log', 'Developer Mode Deactivated!')
         }
     })
+
     const body = `"userActive": "true"`
     fetch("https://api.joost.systems/f1mv-lights-integration/analytics/useractive", {
         method: 'POST',
@@ -244,8 +252,15 @@ async function simulateFlag(arg) {
         }
         simulatedFlagCounter++
     }
-    win.webContents.send('log', "Simulated " + arg + "!");
-    console.log(arg)
+    if(arg === 'alloff'){
+        win.webContents.send('log', "Turned off all lights!")
+    }
+    else if(arg !== 'vscEnding'){
+        win.webContents.send('log', "Simulated " + arg + "!")
+    }
+    if(arg === 'vscEnding'){
+        win.webContents.send('log', "Simulated VSC Ending!")
+    }
 }
 
 ipcMain.on('updatecheck', () => {
@@ -256,7 +271,7 @@ ipcMain.on('updatecheck', () => {
 ipcMain.on('test-button', async () => {
     console.log("Running action mapped on test button...")
     win.webContents.send('log', 'Running action mapped on test button...')
-    await settings();
+    // action here
 })
 ipcMain.on('ikea-get-ids', async () => {
     console.log("Getting Ikea Device IDs...")
@@ -301,7 +316,91 @@ ipcMain.on('send-config', () => {
     const config = userConfig.store;
     win.webContents.send('settings', config);
 })
+ipcMain.on('restart-app', (event, arg) => {
+    app.relaunch();
+    app.exit(0);
+})
 
+ipcMain.on('saveConfig', (event, arg) => {
+    const defaultBrightness = arg.defaultBrightness;
+    const autoTurnOffLights = arg.autoTurnOffLights
+    const liveTimingURL =  arg.liveTimingURL
+    const ikeaDisable = arg.ikeaDisable
+    const secCode = arg.securityCode
+    let deviceIDs = arg.deviceIDs
+    const goveeDisable = arg.goveeDisable
+    let goveeDisabledDevices = arg.devicesDisabledIPs
+    const yeelightDisable = arg.yeeLightDisable
+    let yeelightDeviceIPS =  arg.deviceIPs
+    const updateChannel = arg.updateChannel
+    const analyticsPref = arg.analytics
+    const debugMode = arg.debugMode
+
+
+    goveeDisabledDevices = goveeDisabledDevices.split(',');
+    yeelightDeviceIPS = yeelightDeviceIPS.split(',');
+    deviceIDs = deviceIDs.split(',');
+
+
+    userConfig.set('Settings.generalSettings.defaultBrightness', defaultBrightness);
+    userConfig.set('Settings.generalSettings.autoTurnOffLights', autoTurnOffLights);
+    userConfig.set('Settings.MultiViewerForF1Settings.liveTimingURL', liveTimingURL);
+    userConfig.set('Settings.ikeaSettings.securityCode', secCode);
+    userConfig.set('Settings.ikeaSettings.deviceIDs', deviceIDs);
+    userConfig.set('Settings.ikeaSettings.ikeaDisable', ikeaDisable);
+    userConfig.set('Settings.goveeSettings.goveeDisable', goveeDisable);
+    userConfig.set('Settings.goveeSettings.devicesDisabledIPs', goveeDisabledDevices);
+    userConfig.set('Settings.yeeLightSettings.yeeLightDisable', yeelightDisable);
+    userConfig.set('Settings.yeeLightSettings.deviceIPs', yeelightDeviceIPS);
+    userConfig.set('Settings.advancedSettings.updateChannel', updateChannel);
+    userConfig.set('Settings.advancedSettings.analytics', analyticsPref);
+    userConfig.set('Settings.advancedSettings.debugMode', debugMode);
+});
+
+async function migrateConfig() {
+    // if the config version is != 1 migrate the config
+    if (userConfig.get('version') !== 1) {
+        console.log('Migrating config...')
+        win.webContents.send('log', 'Migrating config...')
+        // migrate the config
+        const oldConfig = userConfig.store;
+        console.log(oldConfig)
+        const newConfig = {
+            "Settings": {
+                "generalSettings": {
+                    "autoTurnOffLights": oldConfig.Settings.generalSettings.autoTurnOffLights,
+                    "defaultBrightness": oldConfig.Settings.generalSettings.defaultBrightness
+                },
+                "MultiViewerForF1Settings": {
+                    "liveTimingURL": oldConfig.Settings.MultiViewerForF1Settings.liveTimingURL
+                },
+                "ikeaSettings": {
+                    "ikeaDisable": oldConfig.Settings.ikeaSettings.ikeaDisable,
+                    "securityCode": oldConfig.Settings.ikeaSettings.securityCode,
+                    "deviceIDs": oldConfig.Settings.ikeaSettings.deviceIDs
+                },
+                "goveeSettings": {
+                    "goveeDisable": oldConfig.Settings.goveeSettings.goveeDisable,
+                    "devicesDisabledIPs": oldConfig.Settings.goveeSettings.devicesDisabledIPs
+                },
+                "yeeLightSettings": {
+                    "yeeLightDisable": oldConfig.Settings.yeeLightSettings.yeeLightDisable,
+                    "deviceIPs": oldConfig.Settings.yeeLightSettings.deviceIPs
+                },
+                "advancedSettings": {
+                    "debugMode": oldConfig.Settings.advancedSettings.debugMode,
+                    "updateChannel": oldConfig.Settings.advancedSettings.updateChannel,
+                    "analytics": oldConfig.Settings.advancedSettings.analytics
+                }
+            },
+            "version": 1
+        }
+        userConfig.clear();
+        userConfig.set(newConfig);
+        console.log('Config migrated!')
+        win.webContents.send('log', 'Config migrated!')
+    }
+}
 async function f1mvAPICall() {
     if(f1mvCheck) {
         try {
@@ -458,29 +557,9 @@ setInterval(function() {
 
 setTimeout(function() {
     checkApis()
-}, 900);
+}, 1500);
 
 setTimeout(function() {
-    console.log("Ikea Disabled: " + ikeaDisabled);
-    win.webContents.send('log', "Ikea Disabled: " + ikeaDisabled);
-    console.log("Govee Disabled: " + goveeDisabled);
-    win.webContents.send('log', "Govee Disabled: " + goveeDisabled);
-    console.log("Yeelight Disabled: " + yeelightDisabled);
-    win.webContents.send('log', "Yeelight Disabled: " + yeelightDisabled);
-    if(debugPreference) {
-        console.log("F1MV Api Disabled: " + !f1mvCheck);
-        win.webContents.send('log', "F1MV Api Disabled: " + !f1mvCheck);
-    }
-    if(!goveeDisabled) {
-        win.webContents.send('goveeAPI', 'online');
-        goveeInitialize().then(r => {
-            if(debugPreference) {
-                console.log(r)
-            }
-        });
-    } else if(goveeDisabled) {
-        win.webContents.send('goveeAPI', 'offline');
-    }
     if(!ikeaDisabled) {
         ikeaInitialize().then(r => {
             if(debugPreference) {
@@ -488,19 +567,37 @@ setTimeout(function() {
             }
         });
     }
-}, 300);
+    if(!goveeDisabled) {
+        goveeInitialize().then(r => {
+            if(debugPreference) {
+                console.log(r)
+            }
+        });
+    }
+}, 500);
+
+setTimeout(function() {
+    setInterval(function() {
+    if(ikeaOnline) {
+        win.webContents.send('ikeaAPI', 'online');
+    } else if(ikeaOnline === false) {
+        win.webContents.send('ikeaAPI', 'offline');
+    }
+    if(goveeOnline) {
+        win.webContents.send('goveeAPI', 'online');
+    } else if(goveeOnline === false) {
+        win.webContents.send('goveeAPI', 'offline');
+    }
+    }, 1500);
+}, 900);
 
 
 async function goveeControl(r, g, b, brightness, action){
     const Govee = require("govee-lan-control");
     const govee = new Govee.default();
 
-    if(debugPreference){
-        console.log("Connecting to the Govee Lan API...");
-        win.webContents.send('log', "Connecting to the Govee Lan API...");
-    }
     let allDevices = govee.devicesArray;
-    const disabledDevices = userConfig.get('Settings.goveeSettings.devicesDisabledIPS');
+    const disabledDevices = userConfig.get('Settings.goveeSettings.devicesDisabledIPs');
     if(disabledDevices > 0) {
         allDevices = govee.devicesArray.filter(device => device.ip !== disabledDevices);
     }
@@ -557,21 +654,28 @@ async function goveeInitialize(){
     const Govee = require("govee-lan-control");
     const govee = new Govee.default();
 
-    console.log("Connecting to the local Govee API...");
+    goveeOnline = true;
 
     govee.on("ready", () => {
-        console.log("Connected to the local Govee API");
-        win.webContents.send('log', "Connected to the local Govee API");
+        if(debugPreference) {
+            console.log("Connected to the local Govee API");
+            win.webContents.send('log', "Connected to the local Govee API");
+        }
     });
     govee.on("deviceAdded", (device) => {
-        console.log("Govee device found: " + device.model);
+        if(debugPreference) {
+            console.log("New device added: " + device.model);
+            win.webContents.send('log', "New device added: " + device.model);
+        }
 
     });
 }
 async function ikeaInitialize(){
     const { exec } = require('child_process');
-    console.log("Starting the IKEA Tradfri Server...");
-    win.webContents.send('log', "Starting the IKEA Tradfri Server...");
+    if(debugPreference) {
+        console.log("Initializing IKEA Tradfri...");
+        win.webContents.send('log', "Initializing IKEA Tradfri...");
+    }
     const securityCode = userConfig.get('Settings.ikeaSettings.securityCode');
     let debug;
     if (debugPreference) {
@@ -589,9 +693,12 @@ async function ikeaInitialize(){
             win.webContents.send('log', "Failed to start the IKEA Tradfri plugin: " + err);
             return;
         }
-        console.log("Started the IKEA Tradfri plugin");
-        win.webContents.send('log', "Started the IKEA Tradfri plugin");
+        if(debugPreference) {
+            console.log("IKEA Tradfri server started");
+            win.webContents.send('log', "IKEA Tradfri server started");
+        }
     });
+    ikeaOnline = true;
     child.stdout.on('data', (data) => {
         console.log(data);
         win.webContents.send('log', data);
@@ -608,22 +715,32 @@ async function ikeaInitialize(){
 
 }
 
-async function settings(){
-    // send the whole config file to the renderer
-    win.webContents.send('settings', userConfig.store);
-}
 async function ikeaControl(r, g , b, brightness, action) {
+
+    const devices = userConfig.get('Settings.ikeaSettings.deviceIDs');
+    let colorDevices = [];
+    let whiteDevices = [];
+    for (let i = 0; i < devices.length; i++) {
+        const response = await fetch('http://localhost:9898/getSpectrum/' + devices[i]);
+        const json = await response.json();
+        if (json.spectrum === "rgb") {
+            colorDevices.push(devices[i]);
+        } else {
+            whiteDevices.push(devices[i]);
+        }
+    }
+
     const fs = require('fs');
     if (action === "getDevices") {
-        // send a request to localhost:9898/getDevices, then create a html file with a table of all the devices with there names and ids, make sure the html is beautified and has a nice design, after that all, open the html in a new electron window
+        // send a request to localhost:9898/getDevices, then create a html file with a table of all the devices with there names, ids, state, and spectrum, make sure the html is beautified and has a nice design, after that all, open the html in a new electron window
         const response = await fetch('http://localhost:9898/getDevices');
         const json = await response.json();
         // create the html file, make sure it is dark mode
-        let html = '<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Devices</title><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.9.0/css/bulma.min.css"></head><body><div class="container"><table class="table is-fullwidth is-hoverable"><thead><tr><th>Device Name</th><th>Device ID</th></tr></thead><tbody>';
+        let html = "<!DOCTYPE html><html><head><meta charset='utf-8'><meta name='viewport' content='width=device-width, initial-scale=1'><title>Devices</title><link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css'><script src='https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js'></script><script src='https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js'></script><script src='https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js'></script></head><body><div class='container'><table class='table table-dark table-striped'><thead><tr><th>Device Name</th><th>Device ID</th><th>Device Is On</th><th>Color support</th></tr></thead><tbody>";
         json.forEach(device => {
-            html += '<tr><td>' + device.name + '</td><td>' + device.id + '</td></tr>';
+            html = html + "<tr><td>" + device.name + "</td><td>" + device.id + "</td><td>" + device.state + "</td><td>" + device.spectrum + "</td></tr>";
         });
-        html += '</tbody></table></div></body></html>';
+        html = html + "</tbody></table></div></body></html>";
         const savePath = app.getAppPath() + "\\devices.html";
         fs.writeFile(savePath, html, function (err) {
             if (err) throw err;
@@ -642,18 +759,18 @@ async function ikeaControl(r, g , b, brightness, action) {
 
     }
     if (action === "on") {
+
         let hue;
         if (debugPreference) {
             console.log("Turning on the light with the given options...");
         }
-        let colorDevices = userConfig.get('Settings.ikeaSettings.colorDevices');
-        let whiteDevices = userConfig.get('Settings.ikeaSettings.whiteDevices');
+
 
         if(r === 0 && g === 255 && b === 0){
             hue = 120;
         }
         if(r === 255 && g === 255 && b === 0){
-            hue = 45;
+            hue = 50;
         }
         if(r === 255 && g === 0 && b === 0){
             hue = 0;
@@ -670,7 +787,7 @@ async function ikeaControl(r, g , b, brightness, action) {
         });
         whiteDevices.forEach(device => {
             device = parseInt(device);
-            if(hue === 45) {
+            if(hue === 50) {
                 fetch('http://localhost:9898/toggleDevice?deviceId=' + device + '&state=on');
             } else if(hue === 0){
                 fetch('http://localhost:9898/toggleDevice?deviceId=' + device + '&state=on');
@@ -682,8 +799,6 @@ async function ikeaControl(r, g , b, brightness, action) {
 
     }
     if (action === "off") {
-        let colorDevices = userConfig.get('Settings.ikeaSettings.colorDevices');
-        let whiteDevices = userConfig.get('Settings.ikeaSettings.whiteDevices');
         colorDevices.forEach(device => {
             device = parseInt(device);
             fetch('http://localhost:9898/toggleDevice?deviceId=' + device + '&state=off');
@@ -807,8 +922,9 @@ async function sendAnalytics() {
         const analyticsURLV2 = "https://api.joost.systems/f1mv-lights-integration/analytics/pretty"
 
         const config = userConfig.store;
-        //replace the api keys in the config with "hidden" so it doesn't get sent to the analytics server
-        delete config.Settings.goveeSettings.apiKey;
+
+        //remove personal data from config
+        delete config.Settings.ikeaSettings.securityCode;
 
         const data = {
             "time_of_sending": currentTime,

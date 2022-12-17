@@ -1,3 +1,5 @@
+<a name="readme-top"></a>
+
 <!-- PROJECT SHIELDS -->
 [![Contributors][contributors-shield]][contributors-url]
 [![Forks][forks-shield]][forks-url]
@@ -61,15 +63,15 @@ This project is a bridge between F1MV and your smart home lights. It allows you 
 
 ### Built With
 
-* [![F1MV][f1mv]][f1mv-url]
-* [![JavaScript][javascript]][javascript-url]
-* [![Electron][Electron]][electron-url]
-* [![Node.js][nodejs]][nodejs-url]
-* [![html][html]][html-url]
-* [![css][css]][css-url]
-* [![Tradfri][tradfri]][tradfri-url]
-* [![Govee][govee]][govee]
-* [![Yeelight][yeelight]][yeelight-url]
+[![F1MV][f1mv]][f1mv-url]
+[![JavaScript][javascript]][javascript-url]
+[![Electron][Electron]][electron-url]
+[![Node.js][nodejs]][nodejs-url]
+[![html][html]][html-url]
+[![css][css]][css-url]
+[![Tradfri][tradfri]][tradfri-url]
+[![Govee][govee]][govee]
+[![Yeelight][yeelight]][yeelight-url]
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -106,13 +108,15 @@ Please go to the [Wiki][wikiurl] for usage instructions.
 <!-- ROADMAP -->
 ## Roadmap
 
+- [x] Custom brightness support
 - [ ] Custom color suppprt
-- [ ] Custom brightness support
 - [ ] Go back to a static color when the session is over (optional)
 - [ ] Go back to a static color after a certain amount of time (optional)
 - [ ] Support more light brands
+  - [ ] Nanoleaf
+  - [ ] Philips Hue (maybe)
 
-See the [open issues][issuesurl]) for a full list of proposed features (and known issues).
+See the [open issues][issuesurl] for a full list of proposed features (and known issues).
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
