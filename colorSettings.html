@@ -37,6 +37,10 @@
 </div>
 <div class="container easy-access">
     <div class="easy-access__buttons">
+        <a class="waves-effect waves-light btn-large simulation__button tooltipped" href="settings.html" data-position="bottom" data-tooltip="Check for newer version">
+            <em class="material-icons">undo</em>
+            Back
+        </a>
         <a style="color:deepskyblue" class="waves-effect waves-light btn-large simulation__button tooltipped" onclick="openConfig()" data-position="bottom" data-tooltip="Check for newer version">
             <em class="material-icons">open_in_new</em>
             Open Config
@@ -48,142 +52,140 @@
     </div>
 </div>
 <div class="container simulation">
-    <h2 class="simulation__title">General Settings</h2>
+    <h2 class="simulation__title">Color Settings</h2>
+    <h2 class="simulation__title">Green Flag Color Settings</h2>
     <p>
         <label>
-            <input type="checkbox" id="auto-turn-off-setting" class="filled-in" />
-            <span>Automatically turn off lights when the session ended</span>
-        </label>
-    </p>
-    <span style="color:grey; font-size: 80%">This will turn off the lights automatically when the session has ended</span>
-    <p>
-        <label>
-            <span>Default brightness</span>
-            <input style="color:white" type="number" id="brightness-input" value= />
-            <span style="color:grey">This is the brightness the lights will have</span>
-        </label>
-    </p>
-</div>
-<div class="container simulation">
-    <h2 class="simulation__title">F1MV Settings</h2>
-    <p>
-        <label>
-            <span>Live Timing URL</span>
-            <input style="color:white" type="text" id="live-timing-url-input" value="" />
-            <span style="color:grey">This is the MultiViewer For F1 Live Timing URL</span>
-        </label>
-    </p>
-    <div class="simulation__buttons">
-        <a class="waves-effect waves-light btn-large simulation__button tooltipped" href="colorSettings.html" data-position="bottom" data-tooltip="Get a window with all the device's, there name and there ID">
-            <em class="material-icons">palette</em>
-            Color Settings
-        </a>
-    </div>
-</div>
-<div class="container simulation">
-    <h2 class="simulation__title">Ikea Settings</h2>
-    <div class="simulation__buttons">
-        <a class="waves-effect waves-light btn-large simulation__button tooltipped" onclick="ikeaGetIds()" data-position="bottom" data-tooltip="Get a window with all the device's, there name and there ID">
-            <em class="material-icons">pin</em>
-            Get device Id's
-        </a>
-    </div>
-    <span style="color:grey; font-size: 80%">If you click this button, a new window with a list of device's and there ID's will appear</span>
-    <p>
-        <label>
-            <input type="checkbox" id="disable-ikea-setting" class="filled-in" />
-            <span>Disable Ikea Integration</span>
-        </label>
-    </p>
-    <small style="font-size: 12px; color:gray">Enable this if you have no Ikea device's</small>
-    <p>
-        <label>
-            <span>Ikea Gateway Security Code</span>
-            <input style="color:white" type="text" id="sec-code-input" value="" />
-            <span style="color:grey">This is the security code you can find on the back of your gateway</span>
+            <span>Red Value</span>
+            <input style="color:white" type="number" id="green-flag-red" value= />
         </label>
     </p>
     <p>
         <label>
-            <span>Ikea Device's</span>
-            <input style="color:white" type="text" id="devices-input" value="" />
-            <span style="color:grey">Here you put your Ikea Device ID's from all device's that you want to use</span>
+            <span>Green Value</span>
+            <input style="color:white" type="number" id="green-flag-green" value= />
+        </label>
+    </p>
+    <p>
+        <label>
+            <span>Blue Value</span>
+            <input style="color:white" type="number" id="green-flag-blue" value= />
         </label>
     </p>
 </div>
 <div class="container simulation">
-    <h2 class="simulation__title">Govee Settings</h2>
+    <h2 class="simulation__title">Yellow Flag Color Settings</h2>
     <p>
         <label>
-            <input type="checkbox" id="disable-govee-setting" class="filled-in" />
-            <span>Disable Govee Integration</span>
+            <span>Red Value</span>
+            <input style="color:white" type="number" id="yellow-flag-red" value= />
         </label>
     </p>
-    <small style="font-size: 12px; color:gray">Enable this if you have no Govee device's</small>
     <p>
         <label>
-            <span>Govee Disabled Device IP's</span>
-            <input style="color:white" type="text" id="govee-dis-devices-input" value="" />
-            <span style="color:grey">Here you put every IP Address of Govee device's you don't want to use</span>
+            <span>Green Value</span>
+            <input style="color:white" type="number" id="yellow-flag-green" value= />
         </label>
     </p>
-</div>
-<div class="container simulation">
-    <h2 class="simulation__title">YeeLight Settings</h2>
     <p>
         <label>
-            <input type="checkbox" id="disable-yeelight-setting" class="filled-in" />
-            <span>Disable YeeLight Integration</span>
-        </label>
-    </p>
-    <small style="font-size: 12px; color:gray">Enable this if you have no YeeLight device's</small>
-    <p>
-        <label>
-            <span>YeeLight Device IP's </span>
-            <input style="color:white" type="text" id="yeelight-device-ip-input" value="" />
-            <span style="color:grey">Here you put every IP Address of YeeLight device's you want to use (if you have multiple, seperate with a comma, and without spaces)</span>
+            <span>Blue Value</span>
+            <input style="color:white" type="number" id="yellow-flag-blue" value= />
         </label>
     </p>
 </div>
 <div class="container simulation">
-    <h2 class="simulation__title">Advanced Settings</h2>
+    <h2 class="simulation__title">Red Flag Color Settings</h2>
     <p>
         <label>
-            <input type="checkbox" id="debug-mode-setting" class="filled-in" />
-            <span>Debug Mode</span>
-        </label>
-    </p>
-    <small style="font-size: 12px; color:gray">Enable this if you want to see debug messages (NOT RECOMMENDED!)</small>
-    <p>
-        <label>
-            <span>Update Channel</span>
-            <select style="background-color:#121212; color:white"  class="browser-default" id="update-channel-setting">
-                <option value="latest" selected>Latest</option>
-                <option value="beta">Beta</option>
-                <option value="alpha">Alpha</option>
-            </select>
+            <span>Red Value</span>
+            <input style="color:white" type="number" id="red-flag-red" value= />
         </label>
     </p>
     <p>
         <label>
-            <input type="checkbox" id="analytics-setting" class="filled-in" />
-            <span>Analytics</span>
+            <span>Green Value</span>
+            <input style="color:white" type="number" id="red-flag-green" value= />
         </label>
     </p>
-    <small style="font-size: 12px; color:gray">Disable this if you don't want to send analytics (personal things such as the security code are never send!)</small>
+    <p>
+        <label>
+            <span>Blue Value</span>
+            <input style="color:white" type="number" id="red-flag-blue" value= />
+        </label>
+    </p>
+</div>
+<div class="container simulation">
+    <h2 class="simulation__title">Safety Car Color Settings</h2>
+    <p>
+        <label>
+            <span>Red Value</span>
+            <input style="color:white" type="number" id="sc-flag-red" value= />
+        </label>
+    </p>
+    <p>
+        <label>
+            <span>Green Value</span>
+            <input style="color:white" type="number" id="sc-flag-green" value= />
+        </label>
+    </p>
+    <p>
+        <label>
+            <span>Blue Value</span>
+            <input style="color:white" type="number" id="sc-flag-blue" value= />
+        </label>
+    </p>
+</div>
+<div class="container simulation">
+    <h2 class="simulation__title">Virtual Safety Car Color Settings</h2>
+    <p>
+        <label>
+            <span>Red Value</span>
+            <input style="color:white" type="number" id="vsc-flag-red" value= />
+        </label>
+    </p>
+    <p>
+        <label>
+            <span>Green Value</span>
+            <input style="color:white" type="number" id="vsc-flag-green" value= />
+        </label>
+    </p>
+    <p>
+        <label>
+            <span>Blue Value</span>
+            <input style="color:white" type="number" id="vsc-flag-blue" value= />
+        </label>
+    </p>
+</div>
+<div class="container simulation">
+    <h2 class="simulation__title">Virtual Safety Car Ending Color Settings</h2>
+    <p>
+        <label>
+            <span>Red Value</span>
+            <input style="color:white" type="number" id="vscEnd-flag-red" value= />
+        </label>
+    </p>
+    <p>
+        <label>
+            <span>Green Value</span>
+            <input style="color:white" type="number" id="vscEnd-flag-green" value= />
+        </label>
+    </p>
+    <p>
+        <label>
+            <span>Blue Value</span>
+            <input style="color:white" type="number" id="vscEnd-flag-blue" value= />
+        </label>
+    </p>
 </div>
 <div class="container simulation">
     <h2 class="simulation__title">Save Settings</h2>
 </div>
 <div class="container easy-access">
     <div class="easy-access__buttons">
-        <a class="waves-effect waves-light btn-large simulation__button tooltipped" onclick="saveConfig()" data-position="bottom" data-tooltip="Save the values in this page to your config file">
+        <a class="waves-effect waves-light btn-large simulation__button tooltipped" onclick="saveConfigColors()" data-position="bottom" data-tooltip="Save the values in this page to your config file">
             <em class="material-icons">save</em>
             Save Values To Config
-        </a>
-        <a class="waves-effect waves-light btn-large simulation__button tooltipped" onclick="restartApp()" data-position="bottom" data-tooltip="Restart the application">
-            <em class="material-icons">restart_alt</em>
-            Restart App
         </a>
     </div>
 </div>

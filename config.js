@@ -7,6 +7,42 @@ const config = {
                     autoTurnOffLights: true,
                     // the default brightness of the lights
                     defaultBrightness: "100",
+
+                    // here you can define other colors then the default ones
+                    colorSettings:
+                        {
+                            green: {
+                                r: 0,
+                                g: 255,
+                                b: 0
+                            },
+                            yellow: {
+                                r: 255,
+                                g: 255,
+                                b: 0
+                            },
+                            red: {
+                                r: 255,
+                                g: 0,
+                                b: 0
+                            },
+                            safetyCar: {
+                                r: 255,
+                                g: 255,
+                                b: 0
+                            },
+                            vsc: {
+                                r: 255,
+                                g: 255,
+                                b: 0
+                            },
+                            vscEnding: {
+                                r: 255,
+                                g: 255,
+                                b: 0
+
+                            }
+                        }
                 },
 
             MultiViewerForF1Settings:

@@ -48,6 +48,15 @@ let timesCheckAPIS = 0;
 let developerModeWasActivated = false;
 const fetch = require('node-fetch').default;
 
+const greenColor = userConfig.get('Settings.generalSettings.colorSettings.green');
+const yellowColor = userConfig.get('Settings.generalSettings.colorSettings.yellow');
+const redColor = userConfig.get('Settings.generalSettings.colorSettings.red');
+const safetyCarColor = userConfig.get('Settings.generalSettings.colorSettings.safetyCar');
+const vscColor = userConfig.get('Settings.generalSettings.colorSettings.vsc');
+const vscEndingColor = userConfig.get('Settings.generalSettings.colorSettings.vscEnding');
+
+
+
 const Sentry = require("@sentry/electron");
 Sentry.init({
     dsn: "https://e64c3ec745124566b849043192e58711@o4504289317879808.ingest.sentry.io/4504289338392576",
@@ -206,37 +215,49 @@ ipcMain.on('toggle-debug', () => {
 async function simulateFlag(arg) {
     if(arg === 'Green'){
         if(!goveeDisabled){
-            await goveeControl(0, 255, 0, userBrightness, "on");
+            await goveeControl(greenColor.r, greenColor.g, greenColor.b, userBrightness, "on");
         }
         if(!yeelightDisabled){
-            await yeelightControl(0, 255, 0, userBrightness, "on");
+            await yeelightControl(greenColor.r, greenColor.g, greenColor.b, userBrightness, "on");
         }
         if(!ikeaDisabled){
-            await ikeaControl(0, 255, 0, userBrightness, "on");
+            await ikeaControl(greenColor.r, greenColor.g, greenColor.b, userBrightness, "on");
         }
         simulatedFlagCounter++
     }
     if(arg === 'Red'){
         if(!goveeDisabled){
-            await goveeControl(255, 0, 0, userBrightness, "on");
+            await goveeControl(redColor.r, redColor.g, redColor.b, userBrightness, "on");
         }
         if(!yeelightDisabled){
-            await yeelightControl(255, 0, 0, userBrightness, "on");
+            await yeelightControl(redColor.r, redColor.g, redColor.b, userBrightness, "on");
         }
         if(!ikeaDisabled){
-            await ikeaControl(255, 0, 0, userBrightness, "on");
+            await ikeaControl(redColor.r, redColor.g, redColor.b, userBrightness, "on");
         }
         simulatedFlagCounter++
     }
-    if(arg === 'SC' || arg === 'VSC' || arg === 'vscEnding' || arg === 'Yellow'){
+    if(arg === 'Yellow'){
         if(!goveeDisabled){
-            await goveeControl(255, 255, 0, userBrightness, "on");
+            await goveeControl(yellowColor.r, yellowColor.g, yellowColor.b, userBrightness, "on");
         }
         if(!yeelightDisabled){
-            await yeelightControl(255, 255, 0, userBrightness, "on");
+            await yeelightControl(yellowColor.r, yellowColor.g, yellowColor.b, userBrightness, "on");
         }
         if(!ikeaDisabled){
-            await ikeaControl(255, 255, 0, userBrightness, "on");
+            await ikeaControl(yellowColor.r, yellowColor.g, yellowColor.b, userBrightness, "on");
+        }
+        simulatedFlagCounter++
+    }
+    if(arg === 'SC'){
+        if(!goveeDisabled){
+            await goveeControl(safetyCarColor.r, safetyCarColor.g, safetyCarColor.b, userBrightness, "on");
+        }
+        if(!yeelightDisabled){
+            await yeelightControl(safetyCarColor.r, safetyCarColor.g, safetyCarColor.b, userBrightness, "on");
+        }
+        if(!ikeaDisabled){
+            await ikeaControl(safetyCarColor.r, safetyCarColor.g, safetyCarColor.b, userBrightness, "on");
         }
         simulatedFlagCounter++
     }
@@ -357,9 +378,37 @@ ipcMain.on('saveConfig', (event, arg) => {
     userConfig.set('Settings.advancedSettings.debugMode', debugMode);
 });
 
+ipcMain.on('saveConfigColors', (event, arg) => {
+    const green = arg.green;
+    const yellow = arg.yellow;
+    const red = arg.red;
+    const sc = arg.safetyCar;
+    const vsc = arg.vsc;
+    const vscEnding = arg.vscEnding;
+
+    userConfig.set('Settings.generalSettings.colorSettings.green.r', green.r);
+    userConfig.set('Settings.generalSettings.colorSettings.green.g', green.g);
+    userConfig.set('Settings.generalSettings.colorSettings.green.b', green.b);
+    userConfig.set('Settings.generalSettings.colorSettings.yellow.r', yellow.r);
+    userConfig.set('Settings.generalSettings.colorSettings.yellow.g', yellow.g);
+    userConfig.set('Settings.generalSettings.colorSettings.yellow.b', yellow.b);
+    userConfig.set('Settings.generalSettings.colorSettings.red.r', red.r);
+    userConfig.set('Settings.generalSettings.colorSettings.red.g', red.g);
+    userConfig.set('Settings.generalSettings.colorSettings.red.b', red.b);
+    userConfig.set('Settings.generalSettings.colorSettings.safetyCar.r', sc.r);
+    userConfig.set('Settings.generalSettings.colorSettings.safetyCar.g', sc.g);
+    userConfig.set('Settings.generalSettings.colorSettings.safetyCar.b', sc.b);
+    userConfig.set('Settings.generalSettings.colorSettings.vsc.r', vsc.r);
+    userConfig.set('Settings.generalSettings.colorSettings.vsc.g', vsc.g);
+    userConfig.set('Settings.generalSettings.colorSettings.vsc.b', vsc.b);
+    userConfig.set('Settings.generalSettings.colorSettings.vscEnding.r', vscEnding.r);
+    userConfig.set('Settings.generalSettings.colorSettings.vscEnding.g', vscEnding.g);
+    userConfig.set('Settings.generalSettings.colorSettings.vscEnding.b', vscEnding.b);
+})
+
 async function migrateConfig() {
     // if the config version is != 1 migrate the config
-    if (userConfig.get('version') !== 1) {
+    if (userConfig.get('version') !== 2) {
         console.log('Migrating config...')
         win.webContents.send('log', 'Migrating config...')
         // migrate the config
@@ -369,7 +418,40 @@ async function migrateConfig() {
             "Settings": {
                 "generalSettings": {
                     "autoTurnOffLights": oldConfig.Settings.generalSettings.autoTurnOffLights,
-                    "defaultBrightness": oldConfig.Settings.generalSettings.defaultBrightness
+                    "defaultBrightness": oldConfig.Settings.generalSettings.defaultBrightness,
+                    "colorSettings":{
+                        green: {
+                            r: 0,
+                            g: 255,
+                            b: 0
+                        },
+                        yellow: {
+                            r: 255,
+                            g: 255,
+                            b: 0
+                        },
+                        red: {
+                            r: 255,
+                            g: 0,
+                            b: 0
+                        },
+                        safetyCar: {
+                            r: 255,
+                            g: 255,
+                            b: 0
+                        },
+                        vsc: {
+                            r: 255,
+                            g: 255,
+                            b: 0
+                        },
+                        vscEnding: {
+                            r: 255,
+                            g: 255,
+                            b: 0
+
+                        }
+                    }
                 },
                 "MultiViewerForF1Settings": {
                     "liveTimingURL": oldConfig.Settings.MultiViewerForF1Settings.liveTimingURL
@@ -393,7 +475,7 @@ async function migrateConfig() {
                     "analytics": oldConfig.Settings.advancedSettings.analytics
                 }
             },
-            "version": 1
+            "version": 2
         }
         userConfig.clear();
         userConfig.set(newConfig);
