@@ -55,8 +55,6 @@ const safetyCarColor = userConfig.get('Settings.generalSettings.colorSettings.sa
 const vscColor = userConfig.get('Settings.generalSettings.colorSettings.vsc');
 const vscEndingColor = userConfig.get('Settings.generalSettings.colorSettings.vscEnding');
 
-
-
 const Sentry = require("@sentry/electron");
 Sentry.init({
     dsn: "https://e64c3ec745124566b849043192e58711@o4504289317879808.ingest.sentry.io/4504289338392576",
@@ -261,6 +259,30 @@ async function simulateFlag(arg) {
         }
         simulatedFlagCounter++
     }
+    if(arg === 'VSC'){
+        if(!goveeDisabled){
+            await goveeControl(vscColor.r, vscColor.g, vscColor.b, userBrightness, "on");
+        }
+        if(!yeelightDisabled){
+            await yeelightControl(vscColor.r, vscColor.g, vscColor.b, userBrightness, "on");
+        }
+        if(!ikeaDisabled){
+            await ikeaControl(vscColor.r, vscColor.g, vscColor.b, userBrightness, "on");
+        }
+        simulatedFlagCounter++
+    }
+    if(arg === 'vscEnding'){
+        if(!goveeDisabled){
+            await goveeControl(vscEndingColor.r, vscEndingColor.g, vscEndingColor.b, userBrightness, "on");
+        }
+        if(!yeelightDisabled){
+            await yeelightControl(vscEndingColor.r, vscEndingColor.g, vscEndingColor.b, userBrightness, "on");
+        }
+        if(!ikeaDisabled){
+            await ikeaControl(vscEndingColor.r, vscEndingColor.g, vscEndingColor.b, userBrightness, "on");
+        }
+        simulatedFlagCounter++
+    }
     if(arg === 'alloff'){
         if(!goveeDisabled){
             await goveeControl(0, 0, 0, 0, "off");
@@ -338,6 +360,7 @@ ipcMain.on('send-config', () => {
     win.webContents.send('settings', config);
 })
 ipcMain.on('restart-app', (event, arg) => {
+    fetch("http://localhost:9898/quit")
     app.relaunch();
     app.exit(0);
 })
@@ -363,7 +386,7 @@ ipcMain.on('saveConfig', (event, arg) => {
     deviceIDs = deviceIDs.split(',');
 
 
-    userConfig.set('Settings.generalSettings.defaultBrightness', defaultBrightness);
+    userConfig.set('Settings.generalSettings.defaultBrightness', parseInt(defaultBrightness));
     userConfig.set('Settings.generalSettings.autoTurnOffLights', autoTurnOffLights);
     userConfig.set('Settings.MultiViewerForF1Settings.liveTimingURL', liveTimingURL);
     userConfig.set('Settings.ikeaSettings.securityCode', secCode);
@@ -386,24 +409,24 @@ ipcMain.on('saveConfigColors', (event, arg) => {
     const vsc = arg.vsc;
     const vscEnding = arg.vscEnding;
 
-    userConfig.set('Settings.generalSettings.colorSettings.green.r', green.r);
-    userConfig.set('Settings.generalSettings.colorSettings.green.g', green.g);
-    userConfig.set('Settings.generalSettings.colorSettings.green.b', green.b);
-    userConfig.set('Settings.generalSettings.colorSettings.yellow.r', yellow.r);
-    userConfig.set('Settings.generalSettings.colorSettings.yellow.g', yellow.g);
-    userConfig.set('Settings.generalSettings.colorSettings.yellow.b', yellow.b);
-    userConfig.set('Settings.generalSettings.colorSettings.red.r', red.r);
-    userConfig.set('Settings.generalSettings.colorSettings.red.g', red.g);
-    userConfig.set('Settings.generalSettings.colorSettings.red.b', red.b);
-    userConfig.set('Settings.generalSettings.colorSettings.safetyCar.r', sc.r);
-    userConfig.set('Settings.generalSettings.colorSettings.safetyCar.g', sc.g);
-    userConfig.set('Settings.generalSettings.colorSettings.safetyCar.b', sc.b);
-    userConfig.set('Settings.generalSettings.colorSettings.vsc.r', vsc.r);
-    userConfig.set('Settings.generalSettings.colorSettings.vsc.g', vsc.g);
-    userConfig.set('Settings.generalSettings.colorSettings.vsc.b', vsc.b);
-    userConfig.set('Settings.generalSettings.colorSettings.vscEnding.r', vscEnding.r);
-    userConfig.set('Settings.generalSettings.colorSettings.vscEnding.g', vscEnding.g);
-    userConfig.set('Settings.generalSettings.colorSettings.vscEnding.b', vscEnding.b);
+    userConfig.set('Settings.generalSettings.colorSettings.green.r', parseInt(green.r));
+    userConfig.set('Settings.generalSettings.colorSettings.green.g', parseInt(green.g));
+    userConfig.set('Settings.generalSettings.colorSettings.green.b', parseInt(green.b));
+    userConfig.set('Settings.generalSettings.colorSettings.yellow.r', parseInt(yellow.r));
+    userConfig.set('Settings.generalSettings.colorSettings.yellow.g', parseInt(yellow.g));
+    userConfig.set('Settings.generalSettings.colorSettings.yellow.b', parseInt(yellow.b));
+    userConfig.set('Settings.generalSettings.colorSettings.red.r', parseInt(red.r));
+    userConfig.set('Settings.generalSettings.colorSettings.red.g', parseInt(red.g));
+    userConfig.set('Settings.generalSettings.colorSettings.red.b', parseInt(red.b));
+    userConfig.set('Settings.generalSettings.colorSettings.safetyCar.r', parseInt(sc.r));
+    userConfig.set('Settings.generalSettings.colorSettings.safetyCar.g', parseInt(sc.g));
+    userConfig.set('Settings.generalSettings.colorSettings.safetyCar.b', parseInt(sc.b));
+    userConfig.set('Settings.generalSettings.colorSettings.vsc.r', parseInt(vsc.r));
+    userConfig.set('Settings.generalSettings.colorSettings.vsc.g', parseInt(vsc.g));
+    userConfig.set('Settings.generalSettings.colorSettings.vsc.b', parseInt(vsc.b));
+    userConfig.set('Settings.generalSettings.colorSettings.vscEnding.r', parseInt(vscEnding.r));
+    userConfig.set('Settings.generalSettings.colorSettings.vscEnding.g', parseInt(vscEnding.g));
+    userConfig.set('Settings.generalSettings.colorSettings.vscEnding.b', parseInt(vscEnding.b));
 })
 
 async function migrateConfig() {
@@ -421,34 +444,34 @@ async function migrateConfig() {
                     "defaultBrightness": oldConfig.Settings.generalSettings.defaultBrightness,
                     "colorSettings":{
                         green: {
-                            r: 0,
-                            g: 255,
-                            b: 0
+                            r: oldConfig.Settings.generalSettings.colorSettings.green.r,
+                            g: oldConfig.Settings.generalSettings.colorSettings.green.g,
+                            b: oldConfig.Settings.generalSettings.colorSettings.green.b
                         },
                         yellow: {
-                            r: 255,
-                            g: 255,
-                            b: 0
+                            r: oldConfig.Settings.generalSettings.colorSettings.yellow.r,
+                            g: oldConfig.Settings.generalSettings.colorSettings.yellow.g,
+                            b: oldConfig.Settings.generalSettings.colorSettings.yellow.b
                         },
                         red: {
-                            r: 255,
-                            g: 0,
-                            b: 0
+                            r: oldConfig.Settings.generalSettings.colorSettings.red.r,
+                            g: oldConfig.Settings.generalSettings.colorSettings.red.g,
+                            b: oldConfig.Settings.generalSettings.colorSettings.red.b
                         },
                         safetyCar: {
-                            r: 255,
-                            g: 255,
-                            b: 0
+                            r: oldConfig.Settings.generalSettings.colorSettings.safetyCar.r,
+                            g: oldConfig.Settings.generalSettings.colorSettings.safetyCar.g,
+                            b: oldConfig.Settings.generalSettings.colorSettings.safetyCar.b
                         },
                         vsc: {
-                            r: 255,
-                            g: 255,
-                            b: 0
+                            r: oldConfig.Settings.generalSettings.colorSettings.vsc.r,
+                            g: oldConfig.Settings.generalSettings.colorSettings.vsc.g,
+                            b: oldConfig.Settings.generalSettings.colorSettings.vsc.b
                         },
                         vscEnding: {
-                            r: 255,
-                            g: 255,
-                            b: 0
+                            r: oldConfig.Settings.generalSettings.colorSettings.vscEnding.r,
+                            g: oldConfig.Settings.generalSettings.colorSettings.vscEnding.g,
+                            b: oldConfig.Settings.generalSettings.colorSettings.vscEnding.b
 
                         }
                     }
@@ -517,13 +540,13 @@ async function f1mvLightSync(){
                 console.log("Green flag!")
                 win.webContents.send('log', "Green flag!")
                 if(!goveeDisabled) {
-                    await goveeControl(0, 255, 0, userBrightness, "on")
+                    await goveeControl(greenColor.r, greenColor.g, greenColor.b, userBrightness, "on")
                 }
                 if(!yeelightDisabled) {
-                    await yeelightControl(0, 255, 0, userBrightness, "on")
+                    await yeelightControl(greenColor.r, greenColor.g, greenColor.b, userBrightness, "on")
                 }
                 if(!ikeaDisabled) {
-                    await ikeaControl(0, 255, 0, userBrightness, "on")
+                    await ikeaControl(greenColor.r, greenColor.g, greenColor.b, userBrightness, "on")
                 }
                 TStateCheck = TState
                 break;
@@ -841,7 +864,6 @@ async function ikeaControl(r, g , b, brightness, action) {
 
     }
     if (action === "on") {
-
         let hue;
         if (debugPreference) {
             console.log("Turning on the light with the given options...");

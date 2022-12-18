@@ -109,7 +109,7 @@ Please go to the [Wiki][wikiurl] for usage instructions.
 ## Roadmap
 
 - [x] Custom brightness support
-- [ ] Custom color suppprt
+- [x] Custom color suppprt
 - [ ] Go back to a static color when the session is over (optional)
 - [ ] Go back to a static color after a certain amount of time (optional)
 - [ ] Support more light brands
