@@ -110,13 +110,9 @@ Please go to the [Wiki][wikiurl] for usage instructions.
 
 - [x] Custom brightness support
 - [x] Custom color suppprt
-- [ ] Go back to a static color when the session is over (optional)
-- [ ] Go back to a static color after a certain amount of time (optional)
 - [ ] Support more light brands
-  - [ ] Nanoleaf
-  - [ ] Philips Hue (maybe)
 
-See the [open issues][issuesurl] for a full list of proposed features (and known issues).
+See the [open issues][issuesurl] for a list of known issues.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 

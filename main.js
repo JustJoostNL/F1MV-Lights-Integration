@@ -828,7 +828,6 @@ async function ikeaInitialize(){
 }
 
 async function ikeaControl(r, g , b, brightness, action) {
-
     const devices = userConfig.get('Settings.ikeaSettings.deviceIDs');
     let colorDevices = [];
     let whiteDevices = [];
