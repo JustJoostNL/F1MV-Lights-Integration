@@ -174,7 +174,14 @@ app.on('window-all-closed',  async() => {
 
 ipcMain.on('open-config', () => {
     win.webContents.send('log', "Opening config file...");
-    require('child_process').exec('start notepad.exe ' + userConfig.path);
+    // open the config file (path is the variable userConfig.path), use the text editor that is default for the OS
+    if(process.platform === 'win32') {
+        require('child_process').exec('start notepad.exe ' + userConfig.path);
+    } else if(process.platform === 'darwin') {
+        require('child_process').exec('open -e ' + userConfig.path);
+    } else if(process.platform === 'linux') {
+        require('child_process').exec('open -e ' + userConfig.path);
+    }
 })
 
 ipcMain.on('simulate', (event, arg) => {
