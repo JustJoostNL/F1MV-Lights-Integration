@@ -55,7 +55,7 @@
 
 [![Product Name Screen Shot][product-screenshot]](https://i.ibb.co/df5WVkN/icon.png)
 
-This project is a bridge between F1MV and your smart home lights. It allows you to sync the lights with the current session open in F1MV. This is done by using JavaScript Libraries. This program is designed to run on the computer where F1MV also runs, but you can also run it for example on a little VPS.
+This project is a bridge between F1MV and your smart home lights. It allows you to sync the lights with the current session open in F1MV.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -70,7 +70,7 @@ This project is a bridge between F1MV and your smart home lights. It allows you 
 [![html][html]][html-url]
 [![css][css]][css-url]
 [![Tradfri][tradfri]][tradfri-url]
-[![Govee][govee]][govee]
+[![Govee][govee]][govee-url]
 [![Yeelight][yeelight]][yeelight-url]
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
@@ -86,6 +86,15 @@ Getting started is very easy. Just follow the steps below. If you have any quest
 
 - You have [NodeJS](https://nodejs.org/en/) installed on your computer
 - You have [MultiViewer For F1](https://beta.f1mv.com) installed
+
+#### Lights
+- You also need one or multiple lights of the following brands:
+  - [Govee][govee-url]
+  - [Tradfri][tradfri-url]
+  - [YeeLight][yeelight-url]
+
+
+- *With more brands hopefully coming soon!*
 
 ### Installation
 
@@ -187,9 +196,9 @@ Distributed under the GNU General Public License v3.0. See `LICENSE.md` for more
 [css]: https://img.shields.io/badge/CSS-1572B6?style=for-the-badge&logo=css3&logoColor=white
 [css-url]: https://www.w3.org/Style/CSS/Overview.en.html
 [tradfri]: https://img.shields.io/badge/IKEA%20Tradfri-00539f.svg?style=for-the-badge&logo=ikea&logoColor=white
-[tradfri-url]: https://www.ikea.com/nl/nl/p/tradfri-lichtbron-e27-806-lumen-warm-wit-704.007.02-70400702/
+[tradfri-url]: https://www.ikea.com/us/en/cat/smart-lighting-36812/
 [govee]: https://img.shields.io/badge/Govee-000666.svg?style=for-the-badge&logo=govee&logoColor=white
-[govee-url]: https://www.govee.eu/
+[govee-url]: https://us.govee.com/
 [yeelight]: https://img.shields.io/badge/Yeelight-ff6c00.svg?style=for-the-badge&logo=yeelight&logoColor=white
 [yeelight-url]: https://www.yeelight.com/
 
