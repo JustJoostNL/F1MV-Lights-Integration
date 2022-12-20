@@ -95,7 +95,7 @@ const config = {
                 }
         },
         // do not change this version!
-        version: 1,
+        version: 2,
     devConfig:
         {
             autoStartDevTools: false,
