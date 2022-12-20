@@ -65,8 +65,6 @@ const config = {
                 {
                     // set this to true if you don't want to use Govee lights
                     goveeDisable: true,
-                    // here you can give IPS of the govee devices you DON'T want to use, if you want to use all devices, leave this empty!
-                    devicesDisabledIPs: [""],
                 },
 
             yeeLightSettings:

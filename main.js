@@ -492,8 +492,7 @@ async function migrateConfig() {
                     "deviceIDs": oldConfig.Settings.ikeaSettings.deviceIDs
                 },
                 "goveeSettings": {
-                    "goveeDisable": oldConfig.Settings.goveeSettings.goveeDisable,
-                    "devicesDisabledIPs": oldConfig.Settings.goveeSettings.devicesDisabledIPs
+                    "goveeDisable": oldConfig.Settings.goveeSettings.goveeDisable
                 },
                 "yeeLightSettings": {
                     "yeeLightDisable": oldConfig.Settings.yeeLightSettings.yeeLightDisable,
@@ -708,13 +707,7 @@ async function goveeControl(r, g, b, brightness, action){
     const Govee = require("govee-lan-control");
     const govee = new Govee.default();
 
-    let allDevices = govee.devicesArray;
-    // TODO: Fix this
-    const disabledDevices = userConfig.get('Settings.goveeSettings.devicesDisabledIPs');
-    if(disabledDevices > 0) {
-        allDevices = govee.devicesArray.filter(device => device.ip !== disabledDevices);
-    }
-    allDevices.forEach(device => {
+    govee.devicesArray.forEach(device => {
         if(debugPreference) {
             console.log("Device selected: " + device.model);
             win.webContents.send('log', "Device selected: " + device.model);
