@@ -438,7 +438,7 @@ ipcMain.on('saveConfigColors', (event, arg) => {
 
 async function migrateConfig() {
     // if the config version is != 1 migrate the config
-    if (userConfig.get('version') !== 2) {
+    if (userConfig.get('version') !== 1) {
         console.log('Migrating config...')
         win.webContents.send('log', 'Migrating config...')
         // migrate the config
@@ -505,7 +505,7 @@ async function migrateConfig() {
                     "analytics": oldConfig.Settings.advancedSettings.analytics
                 }
             },
-            "version": 2
+            "version": 1
         }
         userConfig.clear();
         userConfig.set(newConfig);
@@ -561,13 +561,13 @@ async function f1mvLightSync(){
                 console.log("Yellow flag!")
                 win.webContents.send('log', "Yellow flag!")
                 if(!goveeDisabled) {
-                    await goveeControl(255, 255, 0, userBrightness, "on")
+                    await goveeControl(yellowColor.r, yellowColor.g, yellowColor.b, userBrightness, "on")
                 }
                 if(!yeelightDisabled) {
-                    await yeelightControl(255, 255, 0, userBrightness, "on")
+                    await yeelightControl(yellowColor.r, yellowColor.g, yellowColor.b, userBrightness, "on")
                 }
                 if(!ikeaDisabled) {
-                    await ikeaControl(255, 255, 0, userBrightness, "on")
+                    await ikeaControl(yellowColor.r, yellowColor.g, yellowColor.b, userBrightness, "on")
                 }
                 TStateCheck = TState
                 break;
@@ -575,13 +575,13 @@ async function f1mvLightSync(){
                 console.log("Safety car!")
                 win.webContents.send('log', "Safety car!")
                 if(!goveeDisabled) {
-                    await goveeControl(255, 255, 255, userBrightness, "on")
+                    await goveeControl(safetyCarColor.r, safetyCarColor.g, safetyCarColor.b, userBrightness, "on")
                 }
                 if(!yeelightDisabled) {
-                    await yeelightControl(255, 255, 255, userBrightness, "on")
+                    await yeelightControl(safetyCarColor.r, safetyCarColor.g, safetyCarColor.b, userBrightness, "on")
                 }
                 if(!ikeaDisabled) {
-                    await ikeaControl(255, 255, 255, userBrightness, "on")
+                    await ikeaControl(safetyCarColor.r, safetyCarColor.g, safetyCarColor.b, userBrightness, "on")
                 }
                 TStateCheck = TState
                 break;
@@ -589,13 +589,13 @@ async function f1mvLightSync(){
                 console.log("Red flag!")
                 win.webContents.send('log', "Red flag!")
                 if(!goveeDisabled) {
-                    await goveeControl(255, 0, 0, userBrightness, "on")
+                    await goveeControl(redColor.r, redColor.g, redColor.b, userBrightness, "on")
                 }
                 if(!yeelightDisabled) {
-                    await yeelightControl(255, 0, 0, userBrightness, "on")
+                    await yeelightControl(redColor.r, redColor.g, redColor.b, userBrightness, "on")
                 }
                 if(!ikeaDisabled) {
-                    await ikeaControl(255, 0, 0, userBrightness, "on")
+                    await ikeaControl(redColor.r, redColor.g, redColor.b, userBrightness, "on")
                 }
                 TStateCheck = TState
                 break;
@@ -603,13 +603,13 @@ async function f1mvLightSync(){
                 console.log("Virtual safety car!")
                 win.webContents.send('log', "Virtual safety car!")
                 if(!goveeDisabled) {
-                    await goveeControl(255, 255, 255, userBrightness, "on")
+                    await goveeControl(vscColor.r, vscColor.g, vscColor.b, userBrightness, "on")
                 }
                 if(!yeelightDisabled) {
-                    await yeelightControl(255, 255, 255, userBrightness, "on")
+                    await yeelightControl(vscColor.r, vscColor.g, vscColor.b, userBrightness, "on")
                 }
                 if(!ikeaDisabled) {
-                    await ikeaControl(255, 255, 255, userBrightness, "on")
+                    await ikeaControl(vscColor.r, vscColor.g, vscColor.b, userBrightness, "on")
                 }
                 TStateCheck = TState
                 break;
@@ -617,13 +617,13 @@ async function f1mvLightSync(){
                 console.log("VSC Ending")
                 win.webContents.send('log', "VSC Ending")
                 if(!goveeDisabled) {
-                    await goveeControl(255, 255, 255, userBrightness, "on")
+                    await goveeControl(vscEndingColor.r, vscEndingColor.g, vscEndingColor.b, userBrightness, "on")
                 }
                 if(!yeelightDisabled) {
-                    await yeelightControl(255, 255, 255, userBrightness, "on")
+                    await yeelightControl(vscEndingColor.r, vscEndingColor.g, vscEndingColor.b, userBrightness, "on")
                 }
                 if(!ikeaDisabled) {
-                    await ikeaControl(255, 255, 255, userBrightness, "on")
+                    await ikeaControl(vscEndingColor.r, vscEndingColor.g, vscEndingColor.b, userBrightness, "on")
                 }
                 TStateCheck = TState
                 break;
@@ -709,6 +709,7 @@ async function goveeControl(r, g, b, brightness, action){
     const govee = new Govee.default();
 
     let allDevices = govee.devicesArray;
+    // TODO: Fix this
     const disabledDevices = userConfig.get('Settings.goveeSettings.devicesDisabledIPs');
     if(disabledDevices > 0) {
         allDevices = govee.devicesArray.filter(device => device.ip !== disabledDevices);
@@ -964,7 +965,6 @@ async function yeelightControl(r, g, b, brightness, action) {
 function checkApis() {
     timesCheckAPIS++
     const yeelightIPs = userConfig.get('Settings.yeeLightSettings.deviceIPs');
-    const goveeURL = "https://developer-api.govee.com/v1/devices";
     fetch(updateURL)
         .then(function () {
             win.webContents.send('updateAPI', 'online')
@@ -1004,19 +1004,6 @@ function checkApis() {
         .catch(function () {
             win.webContents.send('f1tvAPI', 'offline')
         });
-
-
-    yeelightIPs.forEach((light) => {
-        const bulb = new Bulb(light);
-        bulb.on('connected', (lamp) => {
-            win.webContents.send('lightAPI', {status: 'online', ip: light});
-            lamp.disconnect();
-        });
-        bulb.on('error', () => {
-            win.webContents.send('lightAPI', {status: 'offline', ip: light});
-        });
-        bulb.connect();
-    });
 }
 
 async function sendAnalytics() {

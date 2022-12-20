@@ -53,7 +53,7 @@ const config = {
             ikeaSettings:
                 {
                     // set this to true if you don't want to use IKEA lights
-                    ikeaDisable: false,
+                    ikeaDisable: true,
 
                     // Here you need to fill in the security code from your IKEA Tradfri gateway, you can find it on the bottom of the gateway.
                     securityCode: "SECURITY_CODE_HERE",
@@ -64,7 +64,7 @@ const config = {
             goveeSettings:
                 {
                     // set this to true if you don't want to use Govee lights
-                    goveeDisable: false,
+                    goveeDisable: true,
                     // here you can give IPS of the govee devices you DON'T want to use, if you want to use all devices, leave this empty!
                     devicesDisabledIPs: [""],
                 },
@@ -72,7 +72,7 @@ const config = {
             yeeLightSettings:
                 {
                     // set this to true if you don't want to use Yeelight lights
-                    yeeLightDisable: false,
+                    yeeLightDisable: true,
 
                     // Put the IP address of your Yeelight device(s) here, if you have multiple, separate them with a comma (Eg: "IP_ADDRESS_HERE-1", "IP_ADDRESS_HERE-2").
                     deviceIPs: ["IP_ADDRESS_HERE"],
