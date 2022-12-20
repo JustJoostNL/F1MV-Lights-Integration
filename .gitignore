@@ -6,5 +6,4 @@ out/
 output/*
 dist/*
 .node-persist/*
-build/*
 devices.html
