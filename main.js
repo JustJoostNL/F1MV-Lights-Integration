@@ -1028,7 +1028,7 @@ let hueApi;
 let hueClient;
 let hueLights;
 async function hueInitialize() {
-    hueApi = await hue.discovery.nupnpSearch();
+    hueApi = await hue.discovery.mdnsSearch();
     if (hueApi.length === 0) {
         win.webContents.send('toaster', "No Hue bridges found");
         console.error("Unable to find a Hue bridge on the network");
