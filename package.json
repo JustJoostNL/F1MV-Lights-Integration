@@ -47,6 +47,7 @@
   "dependencies": {
     "@sentry/electron": "^4.1.2",
     "@sentry/tracing": "^7.24.2",
+    "color-convert": "^2.0.1",
     "colorsys": "^1.0.22",
     "cors": "^2.8.5",
     "electron-localshortcut": "^3.2.1",
@@ -59,6 +60,7 @@
     "jquery": "^3.6.1",
     "node-fetch": "^2.6.1",
     "node-govee-led": "^1.5.1",
+    "node-hue-api": "^5.0.0-beta.15",
     "node-persist": "^3.1.0",
     "node-tradfri-client": "3.1.1",
     "process": "^0.11.10",

@@ -50,6 +50,11 @@ const config = {
                   liveTimingURL: "http://localhost:10101/api/graphql",
                 },
 
+            hueSettings:
+                {
+                    hueDisable: true,
+                },
+
             ikeaSettings:
                 {
                     // set this to true if you don't want to use IKEA lights

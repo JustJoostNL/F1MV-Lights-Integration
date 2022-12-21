@@ -50,6 +50,24 @@ $(function() {
             $('#ikeaAPI').find('.status').removeClass('success').addClass('error')
         }
     })
+    ipcRenderer.on('hueAPI', (event, arg) => {
+        if (arg === 'online') {
+            $('#hueAPI').find('.status').removeClass('error').addClass('success')
+        }
+
+        if (arg === 'offline') {
+            $('#hueAPI').find('.status').removeClass('success').addClass('error')
+        }
+    })
+    ipcRenderer.on('yeelightAPI', (event, arg) => {
+        if (arg === 'online') {
+            $('#yeelightAPI').find('.status').removeClass('error').addClass('success')
+        }
+
+        if (arg === 'offline') {
+            $('#yeelightAPI').find('.status').removeClass('success').addClass('error')
+        }
+    })
 
     ipcRenderer.on('settings', (event, arg) => {
         $('#brightness-input').val(arg.Settings.generalSettings.defaultBrightness)
@@ -101,7 +119,12 @@ $(function() {
             $('#debug-mode-setting').removeAttr('checked')
         }
 
-        // for the colors:
+        if (arg.Settings.hueSettings.hueDisable) {
+            $('#disable-hue-setting').attr('checked', 'checked')
+        }else if (!arg.Settings.hueSettings.hueDisable) {
+            $('#disable-hue-setting').removeAttr('checked')
+        }
+
         $('#green-flag-red').val(arg.Settings.generalSettings.colorSettings.green.r)
         $('#green-flag-green').val(arg.Settings.generalSettings.colorSettings.green.g)
         $('#green-flag-blue').val(arg.Settings.generalSettings.colorSettings.green.b)
@@ -150,6 +173,7 @@ function saveConfig() {
         defaultBrightness: $('#brightness-input').val(),
         autoTurnOffLights: $('#auto-turn-off-setting').is(':checked'),
         liveTimingURL: $('#live-timing-url-input').val(),
+        hueDisable: $('#disable-hue-setting').is(':checked'),
         ikeaDisable: $('#disable-ikea-setting').is(':checked'),
         securityCode: $('#sec-code-input').val(),
         deviceIDs: $('#devices-input').val(),
@@ -161,6 +185,10 @@ function saveConfig() {
         analytics: $('#analytics-setting').is(':checked'),
         debugMode: $('#debug-mode-setting').is(':checked')
     })
+}
+
+function linkHue() {
+    ipcRenderer.send('linkHue')
 }
 function saveConfigColors() {
     ipcRenderer.send('saveConfigColors', {
@@ -205,6 +233,12 @@ function simulateGreen() {
 
     ipcRenderer.send('simulate', 'Green')
 }
+ipcRenderer.on('toaster', (event, arg) => {
+    M.toast({
+        html: arg,
+        displayLength: 2000
+    })
+})
 
 function simulateYellow() {
     M.toast({
