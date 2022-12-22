@@ -29,16 +29,53 @@
       "output": "out"
     },
     "win": {
+        "target": [
+            "nsis",
+            "portable",
+            "zip",
+            "appx",
+            "msi"
+        ],
+      "arch": [
+        "x64",
+        "arm64",
+        "ia32"
+      ],
       "publish": [
         "github"
       ]
     },
     "mac": {
+      "target":[
+        "dmg",
+        "zip",
+        "mas",
+        "pkg"
+      ],
+      "arch": [
+        "x64",
+        "arm64"
+      ],
       "publish": [
         "github"
       ]
     },
     "linux": {
+      "target": [
+        "AppImage",
+        "flatpak",
+        "snap",
+        "deb",
+        "rpm",
+        "pacman",
+        "freebsd",
+        "zip"
+      ],
+      "arch": [
+        "x64",
+        "ia32",
+        "arm64"
+      ],
       "publish": [
         "github"
       ]
