@@ -1,6 +1,6 @@
 {
   "name": "F1MV-Lights-Integration",
-  "version": "1.0.0-beta",
+  "version": "1.0.1-alpha",
   "description": "Connect your Govee, Tradfri and YeeLight lights to your F1MV",
   "author": "koningcool",
   "main": "main.js",
@@ -34,9 +34,23 @@
       ]
     },
     "mac": {
+      "target": [
+        {
+          "target": "dmg",
+          "arch": [
+            "x64"
+          ]
+        },
+        {
+          "target": "zip",
+          "arch": [
+            "x64"
+          ]
+        }
+        ],
       "publish": [
-        "github"
-      ]
+          "github"
+          ]
     },
     "linux": {
       "publish": [

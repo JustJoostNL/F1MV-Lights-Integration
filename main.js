@@ -14,6 +14,8 @@ const f1mvURL = userConfig.get('Settings.MultiViewerForF1Settings.liveTimingURL'
 const ikeaDisabled = userConfig.get('Settings.ikeaSettings.ikeaDisable')
 const goveeDisabled = userConfig.get('Settings.goveeSettings.goveeDisable')
 const yeelightDisabled = userConfig.get('Settings.yeeLightSettings.yeeLightDisable')
+const hueDisabled = userConfig.get('Settings.hueSettings.hueDisable')
+
 
 const analyticsPreference = userConfig.get('Settings.advancedSettings.analytics')
 const analyticsURL = "https://api.joost.systems/f1mv-lights-integration/analytics"
@@ -29,6 +31,7 @@ let devMode = false;
 
 let ikeaOnline = false;
 let goveeOnline = false;
+let hueOnline = false;
 
 let TState;
 let SState;
@@ -56,6 +59,8 @@ const redColor = userConfig.get('Settings.generalSettings.colorSettings.red');
 const safetyCarColor = userConfig.get('Settings.generalSettings.colorSettings.safetyCar');
 const vscColor = userConfig.get('Settings.generalSettings.colorSettings.vsc');
 const vscEndingColor = userConfig.get('Settings.generalSettings.colorSettings.vscEnding');
+
+const exec = require('child_process').exec;
 
 const Sentry = require("@sentry/electron");
 Sentry.init({
@@ -103,14 +108,28 @@ function createWindow () {
 app.whenReady().then(() => {
     createWindow()
     const { exec } = require('child_process');
-    exec('node -v', (err) => {
+    // check if node js is installed using node -v, if not, give the user 2 options, exit or proceed
+    exec('node -v', (err, stdout, stderr) => {
         if (err) {
             // node is not installed
-            dialog.showErrorBox("Node.js is not installed", "Node.js is not installed, please install Node.js to use this application. You can download Node.js from https://nodejs.org/en/download/")
-            app.quit();
+            dialog.showMessageBox(win, {
+                type: "error",
+                title: "Node JS is not installed",
+                message: "Node JS is not installed, please install Node JS to continue, (only proceed if you know what you are doing!!!!!)",
+                buttons: ["Exit", "Proceed"],
+                defaultId: 0,
+                cancelId: 0
+            }).then(result => {
+                if(result.response === 0) {
+                    app.quit();
+                } else {
+
+                }
+            })
         } else {
+            // node is installed
             if(debugPreference) {
-                console.log("Node.js is installed")
+                console.log("Node JS is installed")
             }
         }
     });
@@ -178,11 +197,11 @@ ipcMain.on('open-config', () => {
     win.webContents.send('log', "Opening config file...");
     // open the config file (path is the variable userConfig.path), use the text editor that is default for the OS
     if(process.platform === 'win32') {
-        require('child_process').exec('start notepad.exe ' + userConfig.path);
+        exec('start notepad.exe ' + userConfig.path);
     } else if(process.platform === 'darwin') {
-        require('child_process').exec('open -e ' + userConfig.path);
+        exec('open -e ' + userConfig.path);
     } else if(process.platform === 'linux') {
-        require('child_process').exec('open -e ' + userConfig.path);
+        exec('open -e ' + userConfig.path);
     }
 })
 
@@ -374,10 +393,17 @@ ipcMain.on('restart-app', (event, arg) => {
     app.exit(0);
 })
 
+ipcMain.on('linkHue', async () => {
+    console.log("Linking Hue...")
+    win.webContents.send('log', 'Linking Hue...')
+    await hueInitialize();
+})
+
 ipcMain.on('saveConfig', (event, arg) => {
     const defaultBrightness = arg.defaultBrightness;
     const autoTurnOffLights = arg.autoTurnOffLights
     const liveTimingURL =  arg.liveTimingURL
+    const hueDisabled = arg.hueDisable
     const ikeaDisable = arg.ikeaDisable
     const secCode = arg.securityCode
     let deviceIDs = arg.deviceIDs
@@ -396,6 +422,7 @@ ipcMain.on('saveConfig', (event, arg) => {
     userConfig.set('Settings.generalSettings.defaultBrightness', parseInt(defaultBrightness));
     userConfig.set('Settings.generalSettings.autoTurnOffLights', autoTurnOffLights);
     userConfig.set('Settings.MultiViewerForF1Settings.liveTimingURL', liveTimingURL);
+    userConfig.set('Settings.hueSettings.hueDisable', hueDisabled);
     userConfig.set('Settings.ikeaSettings.securityCode', secCode);
     userConfig.set('Settings.ikeaSettings.deviceIDs', deviceIDs);
     userConfig.set('Settings.ikeaSettings.ikeaDisable', ikeaDisable);
@@ -437,7 +464,7 @@ ipcMain.on('saveConfigColors', (event, arg) => {
 
 async function migrateConfig() {
     // if the config version is != 1 migrate the config
-    if (userConfig.get('version') !== 2) {
+    if (userConfig.get('version') !== 3) {
         console.log('Migrating config...')
         win.webContents.send('log', 'Migrating config...')
         // migrate the config
@@ -485,6 +512,10 @@ async function migrateConfig() {
                 "MultiViewerForF1Settings": {
                     "liveTimingURL": oldConfig.Settings.MultiViewerForF1Settings.liveTimingURL
                 },
+                "hueSettings": {
+                        "hueDisable": true,
+                        "deviceIDs": ["DEVICE_ID_HERE", "DEVICE_ID_HERE"]
+                    },
                 "ikeaSettings": {
                     "ikeaDisable": oldConfig.Settings.ikeaSettings.ikeaDisable,
                     "securityCode": oldConfig.Settings.ikeaSettings.securityCode,
@@ -503,7 +534,7 @@ async function migrateConfig() {
                     "analytics": oldConfig.Settings.advancedSettings.analytics
                 }
             },
-            "version": 2
+            "version": 3
         }
         userConfig.clear();
         userConfig.set(newConfig);
@@ -682,6 +713,13 @@ setTimeout(function() {
     }
     if(!goveeDisabled) {
         goveeInitialize().then(r => {
+            if(debugPreference) {
+                console.log(r)
+            }
+        });
+    }
+    if(!hueDisabled) {
+        hueInitialize().then(r => {
             if(debugPreference) {
                 console.log(r)
             }
@@ -960,6 +998,66 @@ async function yeelightControl(r, g, b, brightness, action) {
         });
     }
 }
+
+const hue = require("node-hue-api");
+let hueApi;
+let hueClient;
+let hueLights;
+async function hueInitialize() {
+    hueApi = await hue.discovery.nupnpSearch();
+    if (hueApi.length === 0) {
+        win.webContents.send('toaster', "No Hue bridges found");
+        win.webContents.send('log', "No Hue bridges found");
+        console.error("Unable to find a Hue bridge on the network");
+        setInterval(() => {
+            win.webContents.send('hueAPI', 'offline');
+        }, 1000);
+        hueOnline = false;
+    } else {
+        hueOnline = true;
+        setInterval(() => {
+            win.webContents.send('hueAPI', 'online');
+        }, 1000);
+        hueClient = await hue.api.createLocal(hueApi[0].ipaddress);
+        // toast that the bridge is found + IP
+        win.webContents.send('toaster', "Hue bridge found at " + hueApi[0].ipaddress);
+        win.webContents.send('log', "Hue bridge found at " + hueApi[0].ipaddress);
+        hueLights = await hueClient.lights.getAll();
+
+        if(hueLights !== null || hueLights !== undefined) {
+            hueLights.forEach((light) => {
+                win.webContents.send('log', "Hue light found: " + light.name);
+            });
+        } else {
+            win.webContents.send('log', "No Hue lights found or an error occurred");
+        }
+    }
+}
+async function hueControl(r, g, b, brightness, action) {
+    const colorConvert = require("color-convert");
+    if (!hueDisabled && hueOnline) {
+        // Convert the RGB values to hue-saturation values
+        const [h, s, v] = colorConvert.rgb.hsv([r, g, b]);
+        const [hue, sat] = colorConvert.hsv.hsl([h, s, v]);
+
+        for (const light of hueLights) {
+            if (action === "on") {
+                // Set the brightness and color of the light
+                await hueClient.lights.setLightState(light.id, { bri: brightness, hue, sat });
+                if (light.state.on === false) {
+                    await hueClient.lights.setLightState(light.id, { on: true });
+                }
+            } else if (action === "off") {
+                await hueClient.lights.setLightState(light.id, { on: false });
+            } else if (action === "getState") {
+                console.log(`Light ${light.name} is ${light.state.on ? "on" : "off"}`);
+                console.log(`Brightness: ${light.state.bri}`);
+                console.log(`Color: ${light.state.xy}`);
+            }
+        }
+    }
+}
+
 function checkApis() {
     timesCheckAPIS++
     const yeelightIPs = userConfig.get('Settings.yeeLightSettings.deviceIPs');
