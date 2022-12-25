@@ -50,15 +50,6 @@ $(function() {
             $('#ikeaAPI').find('.status').removeClass('success').addClass('error')
         }
     })
-    ipcRenderer.on('hueAPI', (event, arg) => {
-        if (arg === 'online') {
-            $('#hueAPI').find('.status').removeClass('error').addClass('success')
-        }
-
-        if (arg === 'offline') {
-            $('#hueAPI').find('.status').removeClass('success').addClass('error')
-        }
-    })
     ipcRenderer.on('yeelightAPI', (event, arg) => {
         if (arg === 'online') {
             $('#yeelightAPI').find('.status').removeClass('error').addClass('success')
@@ -119,11 +110,6 @@ $(function() {
             $('#debug-mode-setting').removeAttr('checked')
         }
 
-        if (arg.Settings.hueSettings.hueDisable) {
-            $('#disable-hue-setting').attr('checked', 'checked')
-        }else if (!arg.Settings.hueSettings.hueDisable) {
-            $('#disable-hue-setting').removeAttr('checked')
-        }
 
         $('#green-flag-red').val(arg.Settings.generalSettings.colorSettings.green.r)
         $('#green-flag-green').val(arg.Settings.generalSettings.colorSettings.green.g)
@@ -173,7 +159,6 @@ function saveConfig() {
         defaultBrightness: $('#brightness-input').val(),
         autoTurnOffLights: $('#auto-turn-off-setting').is(':checked'),
         liveTimingURL: $('#live-timing-url-input').val(),
-        hueDisable: $('#disable-hue-setting').is(':checked'),
         ikeaDisable: $('#disable-ikea-setting').is(':checked'),
         securityCode: $('#sec-code-input').val(),
         deviceIDs: $('#devices-input').val(),
@@ -185,10 +170,6 @@ function saveConfig() {
         analytics: $('#analytics-setting').is(':checked'),
         debugMode: $('#debug-mode-setting').is(':checked')
     })
-}
-
-function linkHue() {
-    ipcRenderer.send('linkHue')
 }
 function saveConfigColors() {
     ipcRenderer.send('saveConfigColors', {

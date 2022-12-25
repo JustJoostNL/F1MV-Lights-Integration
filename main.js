@@ -14,7 +14,6 @@ const f1mvURL = userConfig.get('Settings.MultiViewerForF1Settings.liveTimingURL'
 const ikeaDisabled = userConfig.get('Settings.ikeaSettings.ikeaDisable')
 const goveeDisabled = userConfig.get('Settings.goveeSettings.goveeDisable')
 const yeelightDisabled = userConfig.get('Settings.yeeLightSettings.yeeLightDisable')
-const hueDisabled = userConfig.get('Settings.hueSettings.hueDisable')
 
 const analyticsPreference = userConfig.get('Settings.advancedSettings.analytics')
 const analyticsURL = "https://api.joost.systems/f1mv-lights-integration/analytics"
@@ -30,7 +29,6 @@ let devMode = false;
 
 let ikeaOnline = false;
 let goveeOnline = false;
-let hueOnline = false;
 
 let TState;
 let SState;
@@ -232,9 +230,6 @@ async function simulateFlag(arg) {
         if(!ikeaDisabled){
             await ikeaControl(greenColor.r, greenColor.g, greenColor.b, userBrightness, "on");
         }
-        if(!hueDisabled){
-            await hueControl(greenColor.r, greenColor.g, greenColor.b, userBrightness, "on");
-        }
         simulatedFlagCounter++
     }
     if(arg === 'Red'){
@@ -246,9 +241,6 @@ async function simulateFlag(arg) {
         }
         if(!ikeaDisabled){
             await ikeaControl(redColor.r, redColor.g, redColor.b, userBrightness, "on");
-        }
-        if(!hueDisabled){
-            await hueControl(redColor.r, redColor.g, redColor.b, userBrightness, "on");
         }
         simulatedFlagCounter++
     }
@@ -262,9 +254,6 @@ async function simulateFlag(arg) {
         if(!ikeaDisabled){
             await ikeaControl(yellowColor.r, yellowColor.g, yellowColor.b, userBrightness, "on");
         }
-        if(!hueDisabled){
-            await hueControl(yellowColor.r, yellowColor.g, yellowColor.b, userBrightness, "on");
-        }
         simulatedFlagCounter++
     }
     if(arg === 'SC'){
@@ -276,9 +265,6 @@ async function simulateFlag(arg) {
         }
         if(!ikeaDisabled){
             await ikeaControl(safetyCarColor.r, safetyCarColor.g, safetyCarColor.b, userBrightness, "on");
-        }
-        if(!hueDisabled){
-            await hueControl(safetyCarColor.r, safetyCarColor.g, safetyCarColor.b, userBrightness, "on");
         }
         simulatedFlagCounter++
     }
@@ -292,9 +278,6 @@ async function simulateFlag(arg) {
         if(!ikeaDisabled){
             await ikeaControl(vscColor.r, vscColor.g, vscColor.b, userBrightness, "on");
         }
-        if(!hueDisabled){
-            await hueControl(vscColor.r, vscColor.g, vscColor.b, userBrightness, "on");
-        }
         simulatedFlagCounter++
     }
     if(arg === 'vscEnding'){
@@ -307,9 +290,6 @@ async function simulateFlag(arg) {
         if(!ikeaDisabled){
             await ikeaControl(vscEndingColor.r, vscEndingColor.g, vscEndingColor.b, userBrightness, "on");
         }
-        if(!hueDisabled){
-            await hueControl(vscEndingColor.r, vscEndingColor.g, vscEndingColor.b, userBrightness, "on");
-        }
         simulatedFlagCounter++
     }
     if(arg === 'alloff'){
@@ -321,9 +301,6 @@ async function simulateFlag(arg) {
         }
         if(!ikeaDisabled){
             await ikeaControl(0, 0, 0, 0, "off");
-        }
-        if(!hueDisabled){
-            await hueControl(0, 0, 0, 0, "off");
         }
         simulatedFlagCounter++
     }
@@ -396,17 +373,11 @@ ipcMain.on('restart-app', (event, arg) => {
     app.relaunch();
     app.exit(0);
 })
-ipcMain.on('linkHue', async () => {
-    console.log("Linking Hue...")
-    win.webContents.send('log', 'Linking Hue...')
-    await hueInitialize();
-})
 
 ipcMain.on('saveConfig', (event, arg) => {
     const defaultBrightness = arg.defaultBrightness;
     const autoTurnOffLights = arg.autoTurnOffLights
     const liveTimingURL =  arg.liveTimingURL
-    const hueDisabled = arg.hueDisable
     const ikeaDisable = arg.ikeaDisable
     const secCode = arg.securityCode
     let deviceIDs = arg.deviceIDs
@@ -425,12 +396,10 @@ ipcMain.on('saveConfig', (event, arg) => {
     userConfig.set('Settings.generalSettings.defaultBrightness', parseInt(defaultBrightness));
     userConfig.set('Settings.generalSettings.autoTurnOffLights', autoTurnOffLights);
     userConfig.set('Settings.MultiViewerForF1Settings.liveTimingURL', liveTimingURL);
-    userConfig.set('Settings.hueSettings.hueDisable', hueDisabled);
     userConfig.set('Settings.ikeaSettings.securityCode', secCode);
     userConfig.set('Settings.ikeaSettings.deviceIDs', deviceIDs);
     userConfig.set('Settings.ikeaSettings.ikeaDisable', ikeaDisable);
     userConfig.set('Settings.goveeSettings.goveeDisable', goveeDisable);
-    userConfig.set('Settings.goveeSettings.devicesDisabledIPs', goveeDisabledDevices);
     userConfig.set('Settings.yeeLightSettings.yeeLightDisable', yeelightDisable);
     userConfig.set('Settings.yeeLightSettings.deviceIPs', yeelightDeviceIPS);
     userConfig.set('Settings.advancedSettings.updateChannel', updateChannel);
@@ -516,9 +485,6 @@ async function migrateConfig() {
                 "MultiViewerForF1Settings": {
                     "liveTimingURL": oldConfig.Settings.MultiViewerForF1Settings.liveTimingURL
                 },
-                "hueSettings": {
-                    "hueDisable": oldConfig.Settings.hueSettings.hueDisable
-                },
                 "ikeaSettings": {
                     "ikeaDisable": oldConfig.Settings.ikeaSettings.ikeaDisable,
                     "securityCode": oldConfig.Settings.ikeaSettings.securityCode,
@@ -590,9 +556,6 @@ async function f1mvLightSync(){
                 if(!ikeaDisabled) {
                     await ikeaControl(greenColor.r, greenColor.g, greenColor.b, userBrightness, "on")
                 }
-                if(!hueDisabled) {
-                    await hueControl(greenColor.r, greenColor.g, greenColor.b, userBrightness, "on")
-                }
                 TStateCheck = TState
                 break;
             case "2":
@@ -606,9 +569,6 @@ async function f1mvLightSync(){
                 }
                 if(!ikeaDisabled) {
                     await ikeaControl(yellowColor.r, yellowColor.g, yellowColor.b, userBrightness, "on")
-                }
-                if(!hueDisabled) {
-                    await hueControl(yellowColor.r, yellowColor.g, yellowColor.b, userBrightness, "on")
                 }
                 TStateCheck = TState
                 break;
@@ -624,9 +584,6 @@ async function f1mvLightSync(){
                 if(!ikeaDisabled) {
                     await ikeaControl(safetyCarColor.r, safetyCarColor.g, safetyCarColor.b, userBrightness, "on")
                 }
-                if(!hueDisabled) {
-                    await hueControl(safetyCarColor.r, safetyCarColor.g, safetyCarColor.b, userBrightness, "on")
-                }
                 TStateCheck = TState
                 break;
             case "5":
@@ -640,9 +597,6 @@ async function f1mvLightSync(){
                 }
                 if(!ikeaDisabled) {
                     await ikeaControl(redColor.r, redColor.g, redColor.b, userBrightness, "on")
-                }
-                if(!hueDisabled) {
-                    await hueControl(redColor.r, redColor.g, redColor.b, userBrightness, "on")
                 }
                 TStateCheck = TState
                 break;
@@ -658,9 +612,6 @@ async function f1mvLightSync(){
                 if(!ikeaDisabled) {
                     await ikeaControl(vscColor.r, vscColor.g, vscColor.b, userBrightness, "on")
                 }
-                if(!hueDisabled) {
-                    await hueControl(vscColor.r, vscColor.g, vscColor.b, userBrightness, "on")
-                }
                 TStateCheck = TState
                 break;
             case "7":
@@ -674,9 +625,6 @@ async function f1mvLightSync(){
                 }
                 if(!ikeaDisabled) {
                     await ikeaControl(vscEndingColor.r, vscEndingColor.g, vscEndingColor.b, userBrightness, "on")
-                }
-                if(!hueDisabled) {
-                    await hueControl(vscEndingColor.r, vscEndingColor.g, vscEndingColor.b, userBrightness, "on")
                 }
                 TStateCheck = TState
                 break;
@@ -695,9 +643,6 @@ async function f1mvLightSync(){
             }
             if(!ikeaDisabled) {
                 await ikeaControl(0, 255, 0, userBrightness, "off")
-            }
-            if(!hueDisabled) {
-                await hueControl(0, 255, 0, userBrightness, "off")
             }
             SStateCheck = SState
         }
@@ -737,13 +682,6 @@ setTimeout(function() {
     }
     if(!goveeDisabled) {
         goveeInitialize().then(r => {
-            if(debugPreference) {
-                console.log(r)
-            }
-        });
-    }
-    if(!hueDisabled) {
-        hueInitialize().then(r => {
             if(debugPreference) {
                 console.log(r)
             }
@@ -1022,57 +960,6 @@ async function yeelightControl(r, g, b, brightness, action) {
         });
     }
 }
-
-const hue = require("node-hue-api");
-let hueApi;
-let hueClient;
-let hueLights;
-async function hueInitialize() {
-    hueApi = await hue.discovery.nupnpSearch();
-    if (hueApi.length === 0) {
-        win.webContents.send('toaster', "No Hue bridges found");
-        console.error("Unable to find a Hue bridge on the network");
-        setInterval(() => {
-            win.webContents.send('hueAPI', 'offline');
-        }, 1000);
-        hueOnline = false;
-    } else {
-        hueOnline = true;
-        setInterval(() => {
-            win.webContents.send('hueAPI', 'online');
-        }, 1000);
-        hueClient = await hue.api.createLocal(hueApi[0].ipaddress);
-        // toast that the bridge is found + IP
-        win.webContents.send('toaster', "Hue bridge found at " + hueApi[0].ipaddress);
-        hueLights = await hueClient.lights.getAll();
-    }
-}
-async function hueControl(r, g, b, brightness, action) {
-    const colorConvert = require("color-convert");
-    if (!hueDisabled && hueOnline) {
-        // Convert the RGB values to hue-saturation values
-        const [h, s, v] = colorConvert.rgb.hsv([r, g, b]);
-        const [hue, sat] = colorConvert.hsv.hsl([h, s, v]);
-
-        for (const light of hueLights) {
-            if (action === "on") {
-                // Set the brightness and color of the light
-                await hueClient.lights.setLightState(light.id, { bri: brightness, hue, sat });
-                if (light.state.on === false) {
-                    await hueClient.lights.setLightState(light.id, { on: true });
-                }
-            } else if (action === "off") {
-                await hueClient.lights.setLightState(light.id, { on: false });
-            } else if (action === "getState") {
-                console.log(`Light ${light.name} is ${light.state.on ? "on" : "off"}`);
-                console.log(`Brightness: ${light.state.bri}`);
-                console.log(`Color: ${light.state.xy}`);
-            }
-        }
-    }
-}
-
-
 function checkApis() {
     timesCheckAPIS++
     const yeelightIPs = userConfig.get('Settings.yeeLightSettings.deviceIPs');
