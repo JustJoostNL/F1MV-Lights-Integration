@@ -53,6 +53,7 @@ const config = {
             hueSettings:
                 {
                     hueDisable: true,
+                    deviceIDs: ["DEVICE_ID_HERE", "DEVICE_ID_HERE"],
                 },
 
             ikeaSettings:
