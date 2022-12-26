@@ -1114,8 +1114,6 @@ async function hueInitialize() {
 
 async function hueControl(r, g, b, brightness, action) {
     const colorConvert = require("color-convert");
-    const hueModule = require("node-hue-api");
-    const LightState = hueModule.v3.lightStates.LightState;
     if (!hueDisabled && hueOnline) {
         // Convert the RGB values to hue-saturation values
         const [h, s, v] = colorConvert.rgb.hsv([r, g, b]);
