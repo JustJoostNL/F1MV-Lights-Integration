@@ -1,0 +1,56 @@
+productName: "F1MV-Lights-Integration"
+appId: "com.koningcool.f1mv.lights.integration"
+copyright: "Copyright © 2022 koningcool"
+
+generateUpdatesFilesForAllChannels: true
+asar: false
+
+files: [
+  "!.node-persist/**/*",
+  "!.devcontainer/**/*",
+  "!.deepsource.toml",
+  "!dist/**/*",
+  "!devices.html"
+]
+
+directories:
+  output: "out"
+
+win:
+  icon: "build/icon.png"
+  target:
+    - "zip"
+    - "nsis"
+  arch:
+    - "x64"
+
+mac:
+  category: "public.app-category.utilities"
+  minimumSystemVersion: "10.12.0"
+  icon: "build/icon.png"
+  target:
+    - "zip"
+    - "dmg"
+  arch:
+    - "universal"
+
+linux:
+    icon: "build/icon.png"
+    target:
+        - "zip"
+        - "AppImage"
+        - "deb"
+        - "rpm"
+    arch:
+        - "x64"
+
+nsis:
+  oneClick: true
+  perMachine: true
+  deleteAppDataOnUninstall: true
+
+appImage:
+  category: "Utility"
+
+publish:
+  provider: "github"

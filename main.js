@@ -23,7 +23,7 @@ let analyticsSent = false;
 
 const updateChannel = userConfig.get('Settings.advancedSettings.updateChannel')
 autoUpdater.channel = updateChannel;
-const updateURL = "https://github.com/koningcool/F1MV-G-T-Y-Integration/releases/"
+const updateURL = "https://api.github.com/repos/koningcool/f1mv-lights-integration/releases"
 
 const userBrightness = parseInt(userConfig.get('Settings.generalSettings.defaultBrightness'))
 
@@ -65,7 +65,7 @@ const exec = require('child_process').exec;
 const Sentry = require("@sentry/electron");
 Sentry.init({
     dsn: "https://e64c3ec745124566b849043192e58711@o4504289317879808.ingest.sentry.io/4504289338392576",
-    release: "F1MV-G-T-Y-Integration@" + app.getVersion(),
+    release: "F1MV-Lights-Integration@" + app.getVersion(),
     tracesSampleRate: 0.2,
 });
 
@@ -388,7 +388,9 @@ ipcMain.on('send-config', () => {
     win.webContents.send('settings', config);
 })
 ipcMain.on('restart-app', (event, arg) => {
-    fetch("http://localhost:9898/quit")
+    if(!ikeaDisabled) {
+        fetch("http://localhost:9898/quit")
+    }
     app.relaunch();
     app.exit(0);
 })
@@ -469,7 +471,6 @@ async function migrateConfig() {
         win.webContents.send('log', 'Migrating config...')
         // migrate the config
         const oldConfig = userConfig.store;
-        console.log(oldConfig)
         const newConfig = {
             "Settings": {
                 "generalSettings": {
@@ -680,20 +681,22 @@ async function f1mvLightSync(){
     }
 }
 
-setInterval(function() {
-    if(f1mvCheck) {
-        f1mvAPICall().then(r => {
-            if (alwaysFalse) {
-                console.log(r)
-            }
-        });
-        f1mvLightSync().then(r => {
-            if (alwaysFalse) {
-                console.log(r)
-            }
-        });
-    }
-}, 100);
+setTimeout(function() {
+    setInterval(function() {
+        if(f1mvCheck) {
+            f1mvAPICall().then(r => {
+                if (alwaysFalse) {
+                    console.log(r)
+                }
+            });
+            f1mvLightSync().then(r => {
+                if (alwaysFalse) {
+                    console.log(r)
+                }
+            });
+        }
+    }, 300);
+}, 1000);
 
 setInterval(function() {
     checkApis()
@@ -725,25 +728,22 @@ setTimeout(function() {
             }
         });
     }
-    if(!yeelightDisabled) {
-        win.webContents.send('yeelightAPI', 'online')
-    }
 }, 500);
 
 setTimeout(function() {
     setInterval(function() {
     if(ikeaOnline) {
         win.webContents.send('ikeaAPI', 'online');
-    } else if(ikeaOnline === false) {
-        win.webContents.send('ikeaAPI', 'offline');
     }
     if(goveeOnline) {
         win.webContents.send('goveeAPI', 'online');
-    } else if(goveeOnline === false) {
-        win.webContents.send('goveeAPI', 'offline');
     }
+    if(!yeelightDisabled) {
+        win.webContents.send('yeelightAPI', 'online')
+    }
+
     }, 1500);
-}, 900);
+}, 1000);
 
 
 async function goveeControl(r, g, b, brightness, action){
@@ -857,10 +857,11 @@ async function ikeaInitialize(){
         win.webContents.send('log', data);
 
     });
-    // make sure to kill the child process when the app is closed
-    app.on('window-all-closed', () => {
-        fetch('http://localhost:9898/quit');
-    });
+    if(!ikeaDisabled){
+        app.on('window-all-closed', () => {
+            fetch('http://localhost:9898/quit');
+        });
+    }
 
 }
 
@@ -1191,22 +1192,29 @@ async function sendAnalytics() {
 
 
 autoUpdater.on('update-downloaded', (event, releaseNotes, releaseName) => {
-    const dialogOpts = {
-        type: 'info',
-        buttons: ['Restart', 'Later'],
-        title: 'Application Update',
-        message: process.platform === 'win32' ? releaseNotes : releaseName,
-        detail:
-            'A new version has been downloaded. Restart the application to apply the updates.',
-    }
+    if(process.platform !== 'darwin') {
+        const dialogOpts = {
+            type: 'info',
+            buttons: ['Restart', 'Later'],
+            title: 'Application Update',
+            message: process.platform === 'win32' ? releaseNotes : releaseName,
+            detail:
+                'A new version has been downloaded. Restart the application to apply the updates.',
+        }
 
-    dialog.showMessageBox(dialogOpts).then((returnValue) => {
-        if (returnValue.response === 0) autoUpdater.quitAndInstall()
-    })
+        dialog.showMessageBox(dialogOpts).then((returnValue) => {
+            if (returnValue.response === 0) autoUpdater.quitAndInstall()
+        })
+    }
 })
 autoUpdater.on('update-available', () => {
-    console.log("There is an update available. Downloading now... You will be notified when the update is ready to install.")
-    win.webContents.send('log', 'There is an update available. Downloading now... You will be notified when the update is ready to install.')
+    if(process.platform !== "darwin") {
+        console.log("There is an update available. Downloading now... You will be notified when the update is ready to install.")
+        win.webContents.send('log', 'There is an update available. Downloading now... You will be notified when the update is ready to install.')
+    } else if (process.platform === "darwin"){
+        console.log("There is an update available. Unfortunately, auto-updating is not supported on macOS. Please download the latest version from GitHub.")
+        win.webContents.send('log', 'There is an update available. Unfortunately, auto-updating is not supported on macOS. Please download the latest version from GitHub.')
+    }
 })
 
 autoUpdater.on('error', (message) => {
@@ -1215,5 +1223,5 @@ autoUpdater.on('error', (message) => {
 })
 
 setInterval(() => {
-    autoUpdater.checkForUpdates().then(r => console.log(r) && win.webContents.send('log', r)).catch(e => console.log(e) && win.webContents.send('log', e))
-}, 60000)
+    autoUpdater.checkForUpdates()
+}, 30000)

@@ -11,53 +11,6 @@
     "make": "electron-builder",
     "postinstall": "electron-builder install-app-deps"
   },
-  "build": {
-    "appId": "com.koningcool.f1mv.lights.integration",
-    "productName": "F1MV-Lights-Integration",
-    "copyright": "Copyright © 2022 ${author}",
-    "generateUpdatesFilesForAllChannels": true,
-    "asar": false,
-    "asarUnpack": [],
-    "files": [
-      "!.node-persist/**/*",
-      "!.devcontainer/**/*",
-      "!.deepsource.toml",
-      "!dist/**/*",
-      "!devices.html"
-    ],
-    "directories": {
-      "output": "out"
-    },
-    "win": {
-      "publish": [
-        "github"
-      ]
-    },
-    "mac": {
-      "target": [
-        {
-          "target": "dmg",
-          "arch": [
-            "x64"
-          ]
-        },
-        {
-          "target": "zip",
-          "arch": [
-            "x64"
-          ]
-        }
-        ],
-      "publish": [
-          "github"
-          ]
-    },
-    "linux": {
-      "publish": [
-        "github"
-      ]
-    }
-  },
   "dependencies": {
     "@sentry/electron": "^4.1.2",
     "@sentry/tracing": "^7.24.2",
@@ -81,7 +34,7 @@
     "yeelight.io": "^1.1.7"
   },
   "devDependencies": {
-    "electron": "^21.2.0",
-    "electron-builder": "^23.6.0"
+    "electron": "^22.0.0",
+    "electron-builder": "^24.0.0-alpha.8"
   }
 }
