@@ -6,7 +6,7 @@ const config = {
                     // automatically turn off the lights when the session has ended
                     autoTurnOffLights: true,
                     // the default brightness of the lights
-                    defaultBrightness: "100",
+                    defaultBrightness: 100,
 
                     // here you can define other colors then the default ones
                     colorSettings:

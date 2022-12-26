@@ -249,6 +249,7 @@ ipcMain.on('toggle-debug', () => {
 })
 
 async function simulateFlag(arg) {
+    console.log(userConfig.get('Settings.generalSettings.defaultBrightness'));
     if (arg === 'Green') {
         if (!goveeDisabled) {
             await goveeControl(greenColor.r, greenColor.g, greenColor.b, userBrightness, "on");
@@ -258,6 +259,9 @@ async function simulateFlag(arg) {
         }
         if (!ikeaDisabled) {
             await ikeaControl(greenColor.r, greenColor.g, greenColor.b, userBrightness, "on");
+        }
+        if (!hueDisabled) {
+            await hueControl(greenColor.r, greenColor.g, greenColor.b, userBrightness, "on");
         }
         simulatedFlagCounter++
     }
@@ -271,6 +275,9 @@ async function simulateFlag(arg) {
         if (!ikeaDisabled) {
             await ikeaControl(redColor.r, redColor.g, redColor.b, userBrightness, "on");
         }
+        if (!hueDisabled) {
+            await hueControl(greenColor.r, greenColor.g, greenColor.b, userBrightness, "on");
+        }
         simulatedFlagCounter++
     }
     if (arg === 'Yellow') {
@@ -282,6 +289,9 @@ async function simulateFlag(arg) {
         }
         if (!ikeaDisabled) {
             await ikeaControl(yellowColor.r, yellowColor.g, yellowColor.b, userBrightness, "on");
+        }
+        if (!hueDisabled) {
+            await hueControl(greenColor.r, greenColor.g, greenColor.b, userBrightness, "on");
         }
         simulatedFlagCounter++
     }
@@ -295,6 +305,9 @@ async function simulateFlag(arg) {
         if (!ikeaDisabled) {
             await ikeaControl(safetyCarColor.r, safetyCarColor.g, safetyCarColor.b, userBrightness, "on");
         }
+        if (!hueDisabled) {
+            await hueControl(greenColor.r, greenColor.g, greenColor.b, userBrightness, "on");
+        }
         simulatedFlagCounter++
     }
     if (arg === 'VSC') {
@@ -306,6 +319,9 @@ async function simulateFlag(arg) {
         }
         if (!ikeaDisabled) {
             await ikeaControl(vscColor.r, vscColor.g, vscColor.b, userBrightness, "on");
+        }
+        if (!hueDisabled) {
+            await hueControl(greenColor.r, greenColor.g, greenColor.b, userBrightness, "on");
         }
         simulatedFlagCounter++
     }
@@ -319,6 +335,9 @@ async function simulateFlag(arg) {
         if (!ikeaDisabled) {
             await ikeaControl(vscEndingColor.r, vscEndingColor.g, vscEndingColor.b, userBrightness, "on");
         }
+        if (!hueDisabled) {
+            await hueControl(greenColor.r, greenColor.g, greenColor.b, userBrightness, "on");
+        }
         simulatedFlagCounter++
     }
     if (arg === 'alloff') {
@@ -330,6 +349,9 @@ async function simulateFlag(arg) {
         }
         if (!ikeaDisabled) {
             await ikeaControl(0, 0, 0, 0, "off");
+        }
+        if (!hueDisabled) {
+            await hueControl(greenColor.r, greenColor.g, greenColor.b, userBrightness, "on");
         }
         simulatedFlagCounter++
     }
@@ -1014,6 +1036,9 @@ const hue = require("node-hue-api");
 let hueApi;
 let hueClient;
 let hueLights;
+let createdUser;
+let authHueApi;
+let token;
 async function hueInitialize() {
     hueApi = await hue.discovery.mdnsSearch();
     if (hueApi.length === 0) {
@@ -1037,9 +1062,7 @@ async function hueInitialize() {
         const appName = "F1MV-Lights-Integration";
         const deviceName = "DeviceName";
 
-        let createdUser;
-        let authHueApi;
-        let token;
+
 
         try {
             if (userConfig.get('Settings.hueSettings.token') === undefined) {
@@ -1060,7 +1083,10 @@ async function hueInitialize() {
             if (hueLights !== null || hueLights !== undefined) {
                 userConfig.set('Settings.hueSettings.deviceIDs', [])
                 hueLights.forEach((light) => {
-                    userConfig.set('Settings.hueSettings.deviceIDs', [...userConfig.get('Settings.hueSettings.deviceIDs'), light.id])
+                    userConfig.set('Settings.hueSettings.deviceIDs', [...userConfig.get('Settings.hueSettings.deviceIDs'), {
+                        id: light.id,
+                        name: light.name
+                    }])
                     win.webContents.send('log', "Hue light found: " + light.name + " with the ID : " + light.id);
                 });
             } else {
@@ -1085,34 +1111,35 @@ async function hueInitialize() {
 
     }
 }
+
 async function hueControl(r, g, b, brightness, action) {
     const colorConvert = require("color-convert");
+    const hueModule = require("node-hue-api");
+    const LightState = hueModule.v3.lightStates.LightState;
     if (!hueDisabled && hueOnline) {
         // Convert the RGB values to hue-saturation values
         const [h, s, v] = colorConvert.rgb.hsv([r, g, b]);
         const [hue, sat] = colorConvert.hsv.hsl([h, s, v]);
 
-        for (const light of hueLights) {
+        console.log(h, s, v, hue, sat, brightness);
+
+        let hueLightsList = userConfig.get('Settings.hueSettings.deviceIDs');
+
+        console.log(hueLightsList);
+
+        for (const light of hueLightsList) {
+            console.log(light.id);
             if (action === "on") {
                 // Set the brightness and color of the light
-                await hueClient.lights.setLightState(light.id, {
+                await authHueApi.lights.setLightState(light.id, {
                     bri: brightness,
                     hue,
                     sat
                 });
-                if (light.state.on === false) {
-                    await hueClient.lights.setLightState(light.id, {
-                        on: true
-                    });
-                }
             } else if (action === "off") {
-                await hueClient.lights.setLightState(light.id, {
+                await authHueApi.lights.setLightState(light.id, {
                     on: false
                 });
-            } else if (action === "getState") {
-                console.log(`Light ${light.name} is ${light.state.on ? "on" : "off"}`);
-                console.log(`Brightness: ${light.state.bri}`);
-                console.log(`Color: ${light.state.xy}`);
             }
         }
     }
