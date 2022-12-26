@@ -22,9 +22,7 @@ win:
     - target: "nsis"
       arch:
         - x64
-    - target: "zip"
-      arch:
-        - x64
+        - ia32
 
 
 mac:
@@ -34,10 +32,7 @@ mac:
   target:
     - target: "dmg"
       arch:
-        - x64
-    - target: "zip"
-      arch:
-      - x64
+        - universal
 
 linux:
     icon: "build/icon.png"
