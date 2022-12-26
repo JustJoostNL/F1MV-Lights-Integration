@@ -1,21 +1,13 @@
 'use strict';
-const {
-    app,
-    dialog,
-    ipcMain
-} = require('electron')
+const { app, dialog, ipcMain } = require('electron')
 const BrowserWindow = require('electron').BrowserWindow
 const electronLocalShortcut = require('electron-localshortcut');
 
-const {
-    autoUpdater
-} = require("electron-updater")
+const { autoUpdater } = require("electron-updater")
 const process = require('process');
 const configDefault = require("./config");
 const Store = require('electron-store');
-const {
-    Bulb
-} = require("yeelight.io");
+const { Bulb } = require("yeelight.io");
 const userConfig = new Store({
     name: 'settings',
     defaults: configDefault
@@ -128,7 +120,7 @@ app.whenReady().then(() => {
             dialog.showMessageBox(win, {
                 type: "error",
                 title: "Node JS is not installed",
-                message: "Node JS is not installed, please install Node JS to continue, (only proceed if you know what you are doing!!!!!)",
+                message: "Node JS is not installed, please install Node JS to continue, (only proceed if you know what you are doing!!!)",
                 buttons: ["Exit", "Proceed"],
                 defaultId: 0,
                 cancelId: 0
@@ -276,7 +268,7 @@ async function simulateFlag(arg) {
             await ikeaControl(redColor.r, redColor.g, redColor.b, userBrightness, "on");
         }
         if (!hueDisabled) {
-            await hueControl(greenColor.r, greenColor.g, greenColor.b, userBrightness, "on");
+            await hueControl(redColor.r, redColor.g, redColor.b, userBrightness, "on");
         }
         simulatedFlagCounter++
     }
@@ -291,7 +283,7 @@ async function simulateFlag(arg) {
             await ikeaControl(yellowColor.r, yellowColor.g, yellowColor.b, userBrightness, "on");
         }
         if (!hueDisabled) {
-            await hueControl(greenColor.r, greenColor.g, greenColor.b, userBrightness, "on");
+            await hueControl(yellowColor.r, yellowColor.g, yellowColor.b, userBrightness, "on");
         }
         simulatedFlagCounter++
     }
@@ -306,7 +298,7 @@ async function simulateFlag(arg) {
             await ikeaControl(safetyCarColor.r, safetyCarColor.g, safetyCarColor.b, userBrightness, "on");
         }
         if (!hueDisabled) {
-            await hueControl(greenColor.r, greenColor.g, greenColor.b, userBrightness, "on");
+            await hueControl(safetyCarColor.r, safetyCarColor.g, safetyCarColor.b, userBrightness, "on");
         }
         simulatedFlagCounter++
     }
@@ -321,7 +313,7 @@ async function simulateFlag(arg) {
             await ikeaControl(vscColor.r, vscColor.g, vscColor.b, userBrightness, "on");
         }
         if (!hueDisabled) {
-            await hueControl(greenColor.r, greenColor.g, greenColor.b, userBrightness, "on");
+            await hueControl(vscColor.r, vscColor.g, vscColor.b, userBrightness, "on");
         }
         simulatedFlagCounter++
     }
@@ -336,7 +328,7 @@ async function simulateFlag(arg) {
             await ikeaControl(vscEndingColor.r, vscEndingColor.g, vscEndingColor.b, userBrightness, "on");
         }
         if (!hueDisabled) {
-            await hueControl(greenColor.r, greenColor.g, greenColor.b, userBrightness, "on");
+            await hueControl(vscEndingColor.r, vscEndingColor.g, vscEndingColor.b, userBrightness, "on");
         }
         simulatedFlagCounter++
     }
@@ -351,7 +343,7 @@ async function simulateFlag(arg) {
             await ikeaControl(0, 0, 0, 0, "off");
         }
         if (!hueDisabled) {
-            await hueControl(greenColor.r, greenColor.g, greenColor.b, userBrightness, "on");
+            await hueControl(0, 0, 0, 0, "off");
         }
         simulatedFlagCounter++
     }
@@ -498,7 +490,7 @@ ipcMain.on('saveConfigColors', (event, arg) => {
 
 async function migrateConfig() {
     // if the config version is != 1 migrate the config
-    if (userConfig.get('version') !== 3) {
+    if (userConfig.get('version') !== 4) {
         console.log('Migrating config...')
         win.webContents.send('log', 'Migrating config...')
         // migrate the config
@@ -546,8 +538,9 @@ async function migrateConfig() {
                     "liveTimingURL": oldConfig.Settings.MultiViewerForF1Settings.liveTimingURL
                 },
                 "hueSettings": {
-                    "hueDisable": true,
-                    "deviceIDs": ["DEVICE_ID_HERE", "DEVICE_ID_HERE"]
+                    "hueDisable": oldConfig.Settings.hueSettings.hueDisable,
+                    "deviceIDs": oldConfig.Settings.hueSettings.deviceIDs,
+                    "token": undefined
                 },
                 "ikeaSettings": {
                     "ikeaDisable": oldConfig.Settings.ikeaSettings.ikeaDisable,
@@ -567,7 +560,7 @@ async function migrateConfig() {
                     "analytics": oldConfig.Settings.advancedSettings.analytics
                 }
             },
-            "version": 3
+            "version": 4
         }
         userConfig.clear();
         userConfig.set(newConfig);
@@ -706,6 +699,9 @@ async function f1mvLightSync() {
             }
             if (!ikeaDisabled) {
                 await ikeaControl(0, 255, 0, userBrightness, "off")
+            }
+            if (!hueDisabled) {
+                await hueControl(0, 255, 0, userBrightness, "off")
             }
             SStateCheck = SState
         }
@@ -1040,7 +1036,7 @@ let createdUser;
 let authHueApi;
 let token;
 async function hueInitialize() {
-    hueApi = await hue.discovery.mdnsSearch();
+    hueApi = await hue.discovery.nupnpSearch();
     if (hueApi.length === 0) {
         win.webContents.send('toaster', "No Hue bridges found");
         win.webContents.send('log', "No Hue bridges found");
@@ -1056,23 +1052,29 @@ async function hueInitialize() {
         }, 1000);
         hueClient = await hue.v3.api.createLocal(hueApi[0].ipaddress).connect();
         // toast that the bridge is found + IP
-        win.webContents.send('toaster', "Hue bridge found at " + hueApi[0].ipaddress);
-        win.webContents.send('log', "Hue bridge found at " + hueApi[0].ipaddress);
+        if (debugPreference) {
+            console.log("Hue bridge found at: " + hueApi[0].ipaddress);
+            win.webContents.send('log', "Hue bridge found at: " + hueApi[0].ipaddress);
+        }
 
         const appName = "F1MV-Lights-Integration";
         const deviceName = "DeviceName";
 
-
-
         try {
             if (userConfig.get('Settings.hueSettings.token') === undefined) {
-                win.webContents.send('log', "No token found. Creating a token...");
+                if (debugPreference) {
+                    win.webContents.send('log', "No token found, creating one...");
+                }
                 createdUser = await hueClient.users.createUser(appName, deviceName)
                 userConfig.set('Settings.hueSettings.token', createdUser.username)
-                win.webContents.send('log', "Token : " + createdUser.username);
+                if (debugPreference) {
+                    win.webContents.send('log', "Token created: " + createdUser.username);
+                }
                 token = createdUser.username
             } else {
-                win.webContents.send('log', "Token already created. Token : " + userConfig.get('Settings.hueSettings.token'));
+                if (debugPreference) {
+                    win.webContents.send('log', "Token found: " + userConfig.get('Settings.hueSettings.token'));
+                }
                 token = userConfig.get('Settings.hueSettings.token');
             }
 
@@ -1087,7 +1089,10 @@ async function hueInitialize() {
                         id: light.id,
                         name: light.name
                     }])
-                    win.webContents.send('log', "Hue light found: " + light.name + " with the ID : " + light.id);
+                    if (debugPreference) {
+                        console.log("Hue light found: " + light.name + " with ID: " + light.id);
+                        win.webContents.send('log', "Hue light found: " + light.name + " with ID: " + light.id);
+                    }
                 });
             } else {
                 win.webContents.send('log', "No Hue lights found or an error occurred");
@@ -1098,14 +1103,16 @@ async function hueInitialize() {
                     win.webContents.send('toaster', "The Link button on the bridge was not pressed. Please press the Link button and try again.");
                     win.webContents.send('log', "The Link button on the bridge was not pressed. Please press the Link button and try again.");
                 } else {
-                    win.webContents.send('toaster', `Unexpected Error: ${err.message}`);
                     win.webContents.send('log', `Unexpected Error: ${err.message}`);
-                    console.error(err)
+                    if (debugPreference) {
+                        console.log(err);
+                    }
                 }
             } catch (error) {
-                win.webContents.send('toaster', `Unexpected Error: ${err.message}`);
                 win.webContents.send('log', `Unexpected Error: ${err.message}`);
-                console.error(err)
+                if (debugPreference) {
+                    console.log(err);
+                }
             }
         }
 
@@ -1119,11 +1126,7 @@ async function hueControl(r, g, b, brightness, action) {
         const [h, s, v] = colorConvert.rgb.hsv([r, g, b]);
         const [hue, sat] = colorConvert.hsv.hsl([h, s, v]);
 
-        console.log(h, s, v, hue, sat, brightness);
-
         let hueLightsList = userConfig.get('Settings.hueSettings.deviceIDs');
-
-        console.log(hueLightsList);
 
         for (const light of hueLightsList) {
             console.log(light.id);
@@ -1145,7 +1148,6 @@ async function hueControl(r, g, b, brightness, action) {
 
 function checkApis() {
     timesCheckAPIS++
-    const yeelightIPs = userConfig.get('Settings.yeeLightSettings.deviceIPs');
     fetch(updateURL)
         .then(function () {
             win.webContents.send('updateAPI', 'online')
