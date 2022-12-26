@@ -32,7 +32,8 @@ mac:
   target:
     - target: "dmg"
       arch:
-        - universal
+        - x64
+        - arm64
 
 linux:
     icon: "build/icon.png"
