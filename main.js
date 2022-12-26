@@ -409,37 +409,40 @@ ipcMain.on('linkHue', async () => {
 })
 
 ipcMain.on('saveConfig', (event, arg) => {
-    const defaultBrightness = arg.defaultBrightness;
-    const autoTurnOffLights = arg.autoTurnOffLights
-    const liveTimingURL = arg.liveTimingURL
-    const hueDisabled = arg.hueDisable
-    const ikeaDisable = arg.ikeaDisable
-    const secCode = arg.securityCode
-    let deviceIDs = arg.deviceIDs
-    const goveeDisable = arg.goveeDisable
-    const yeelightDisable = arg.yeeLightDisable
-    let yeelightDeviceIPS = arg.deviceIPs
-    const updateChannel = arg.updateChannel
-    const analyticsPref = arg.analytics
-    const debugMode = arg.debugMode
+    let deviceIDs = arg.deviceIDs;
+    let deviceIPs = arg.deviceIPs;
+
+    const {
+        defaultBrightness,
+        autoTurnOffLights,
+        liveTimingURL,
+        hueDisable,
+        ikeaDisable,
+        securityCode,
+        goveeDisable,
+        yeelightDisable,
+        updateChannel,
+        analytics,
+        debugMode,
+    } = arg
 
 
-    yeelightDeviceIPS = yeelightDeviceIPS.split(',');
+    deviceIPs = deviceIPs.split(',');
     deviceIDs = deviceIDs.split(',');
 
 
     userConfig.set('Settings.generalSettings.defaultBrightness', parseInt(defaultBrightness));
     userConfig.set('Settings.generalSettings.autoTurnOffLights', autoTurnOffLights);
     userConfig.set('Settings.MultiViewerForF1Settings.liveTimingURL', liveTimingURL);
-    userConfig.set('Settings.hueSettings.hueDisable', hueDisabled);
-    userConfig.set('Settings.ikeaSettings.securityCode', secCode);
+    userConfig.set('Settings.hueSettings.hueDisable', hueDisable);
+    userConfig.set('Settings.ikeaSettings.securityCode', securityCode);
     userConfig.set('Settings.ikeaSettings.deviceIDs', deviceIDs);
     userConfig.set('Settings.ikeaSettings.ikeaDisable', ikeaDisable);
     userConfig.set('Settings.goveeSettings.goveeDisable', goveeDisable);
     userConfig.set('Settings.yeeLightSettings.yeeLightDisable', yeelightDisable);
-    userConfig.set('Settings.yeeLightSettings.deviceIPs', yeelightDeviceIPS);
+    userConfig.set('Settings.yeeLightSettings.deviceIPs', deviceIPs);
     userConfig.set('Settings.advancedSettings.updateChannel', updateChannel);
-    userConfig.set('Settings.advancedSettings.analytics', analyticsPref);
+    userConfig.set('Settings.advancedSettings.analytics', analytics);
     userConfig.set('Settings.advancedSettings.debugMode', debugMode);
 });
 
@@ -1036,17 +1039,29 @@ async function hueInitialize() {
 
         let createdUser;
         let authHueApi;
+        let token;
 
         try {
-            createdUser = await hueClient.users.createUser(appName, deviceName)
+            if (userConfig.get('Settings.hueSettings.token') === undefined) {
+                win.webContents.send('log', "No token found. Creating a token...");
+                createdUser = await hueClient.users.createUser(appName, deviceName)
+                userConfig.set('Settings.hueSettings.token', createdUser.username)
+                win.webContents.send('log', "Token : " + createdUser.username);
+                token = createdUser.username
+            } else {
+                win.webContents.send('log', "Token already created. Token : " + userConfig.get('Settings.hueSettings.token'));
+                token = userConfig.get('Settings.hueSettings.token');
+            }
 
-            authHueApi = await hue.v3.api.createLocal(hueApi[0].ipaddress).connect(createdUser.username);
+            authHueApi = await hue.v3.api.createLocal(hueApi[0].ipaddress).connect(token);
 
             hueLights = await authHueApi.lights.getAll();
 
             if (hueLights !== null || hueLights !== undefined) {
+                userConfig.set('Settings.hueSettings.deviceIDs', [])
                 hueLights.forEach((light) => {
-                    win.webContents.send('log', "Hue light found: " + light.name);
+                    userConfig.set('Settings.hueSettings.deviceIDs', [...userConfig.get('Settings.hueSettings.deviceIDs'), light.id])
+                    win.webContents.send('log', "Hue light found: " + light.name + " with the ID : " + light.id);
                 });
             } else {
                 win.webContents.send('log', "No Hue lights found or an error occurred");
