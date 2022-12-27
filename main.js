@@ -71,7 +71,10 @@ const safetyCarColor = userConfig.get('Settings.generalSettings.colorSettings.sa
 const vscColor = userConfig.get('Settings.generalSettings.colorSettings.vsc');
 const vscEndingColor = userConfig.get('Settings.generalSettings.colorSettings.vscEnding');
 
-const exec = require('child_process').exec;
+const {
+    exec,
+    spawn
+} = require('child_process');
 
 const Sentry = require("@sentry/electron");
 Sentry.init({
@@ -211,7 +214,7 @@ ipcMain.on('open-config', () => {
     if (process.platform === 'win32') {
         exec('start notepad.exe ' + userConfig.path);
     } else if (process.platform === 'darwin') {
-        exec('open -e ' + userConfig.path);
+        spawn('open', ['-e', userConfig.path]);
     } else if (process.platform === 'linux') {
         exec('open -e ' + userConfig.path);
     }
@@ -1391,7 +1394,7 @@ autoUpdater.on('error', (message) => {
 })
 
 setInterval(() => {
-    if(!updateFound) {
+    if (!updateFound) {
         autoUpdater.checkForUpdates().then(r => {
             if (alwaysFalse) {
                 console.log(r);
