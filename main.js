@@ -241,7 +241,6 @@ ipcMain.on('toggle-debug', () => {
 })
 
 async function simulateFlag(arg) {
-    console.log(userConfig.get('Settings.generalSettings.defaultBrightness'));
     if (arg === 'Green') {
         if (!goveeDisabled) {
             await goveeControl(greenColor.r, greenColor.g, greenColor.b, userBrightness, "on");
@@ -417,14 +416,24 @@ ipcMain.on('restart-app', (event, arg) => {
 })
 
 ipcMain.on('linkHue', async () => {
-    console.log("Linking Hue...")
-    win.webContents.send('log', 'Linking Hue...')
+    if (debugPreference) {
+        console.log("Linking Hue...")
+        win.webContents.send('log', 'Linking Hue...')
+    }
     await hueInitialize();
+})
+ipcMain.on('getHueDevices', async () => {
+    if (debugPreference) {
+        console.log("Getting Hue Devices...")
+        win.webContents.send('log', 'Getting Hue Devices...')
+    }
+    await hueControl(0, 255, 0, userBrightness, "getDevices");
 })
 
 ipcMain.on('saveConfig', (event, arg) => {
     let deviceIDs = arg.deviceIDs;
     let deviceIPs = arg.deviceIPs;
+    let hueDeviceIDs = arg.hueDevices;
 
     const {
         defaultBrightness,
@@ -433,6 +442,7 @@ ipcMain.on('saveConfig', (event, arg) => {
         hueDisable,
         ikeaDisable,
         securityCode,
+        hueToken,
         goveeDisable,
         yeelightDisable,
         updateChannel,
@@ -443,12 +453,15 @@ ipcMain.on('saveConfig', (event, arg) => {
 
     deviceIPs = deviceIPs.split(',');
     deviceIDs = deviceIDs.split(',');
+    hueDeviceIDs = hueDeviceIDs.split(',');
 
 
     userConfig.set('Settings.generalSettings.defaultBrightness', parseInt(defaultBrightness));
     userConfig.set('Settings.generalSettings.autoTurnOffLights', autoTurnOffLights);
     userConfig.set('Settings.MultiViewerForF1Settings.liveTimingURL', liveTimingURL);
     userConfig.set('Settings.hueSettings.hueDisable', hueDisable);
+    userConfig.set('Settings.hueSettings.hueDeviceIDs', hueDeviceIDs);
+    userConfig.set('Settings.hueSettings.token', hueToken);
     userConfig.set('Settings.ikeaSettings.securityCode', securityCode);
     userConfig.set('Settings.ikeaSettings.deviceIDs', deviceIDs);
     userConfig.set('Settings.ikeaSettings.ikeaDisable', ikeaDisable);
@@ -613,6 +626,9 @@ async function f1mvLightSync() {
                 if (!ikeaDisabled) {
                     await ikeaControl(greenColor.r, greenColor.g, greenColor.b, userBrightness, "on")
                 }
+                if (!hueDisabled) {
+                    await hueControl(greenColor.r, greenColor.g, greenColor.b, userBrightness, "on")
+                }
                 TStateCheck = TState
                 break;
             case "2":
@@ -626,6 +642,9 @@ async function f1mvLightSync() {
                 }
                 if (!ikeaDisabled) {
                     await ikeaControl(yellowColor.r, yellowColor.g, yellowColor.b, userBrightness, "on")
+                }
+                if (!hueDisabled) {
+                    await hueControl(yellowColor.r, yellowColor.g, yellowColor.b, userBrightness, "on")
                 }
                 TStateCheck = TState
                 break;
@@ -641,6 +660,9 @@ async function f1mvLightSync() {
                 if (!ikeaDisabled) {
                     await ikeaControl(safetyCarColor.r, safetyCarColor.g, safetyCarColor.b, userBrightness, "on")
                 }
+                if (!hueDisabled) {
+                    await hueControl(safetyCarColor.r, safetyCarColor.g, safetyCarColor.b, userBrightness, "on")
+                }
                 TStateCheck = TState
                 break;
             case "5":
@@ -654,6 +676,9 @@ async function f1mvLightSync() {
                 }
                 if (!ikeaDisabled) {
                     await ikeaControl(redColor.r, redColor.g, redColor.b, userBrightness, "on")
+                }
+                if (!hueDisabled) {
+                    await hueControl(redColor.r, redColor.g, redColor.b, userBrightness, "on")
                 }
                 TStateCheck = TState
                 break;
@@ -669,6 +694,9 @@ async function f1mvLightSync() {
                 if (!ikeaDisabled) {
                     await ikeaControl(vscColor.r, vscColor.g, vscColor.b, userBrightness, "on")
                 }
+                if (!hueDisabled) {
+                    await hueControl(vscColor.r, vscColor.g, vscColor.b, userBrightness, "on")
+                }
                 TStateCheck = TState
                 break;
             case "7":
@@ -682,6 +710,9 @@ async function f1mvLightSync() {
                 }
                 if (!ikeaDisabled) {
                     await ikeaControl(vscEndingColor.r, vscEndingColor.g, vscEndingColor.b, userBrightness, "on")
+                }
+                if (!hueDisabled) {
+                    await hueControl(vscEndingColor.r, vscEndingColor.g, vscEndingColor.b, userBrightness, "on")
                 }
                 TStateCheck = TState
                 break;
@@ -710,23 +741,27 @@ async function f1mvLightSync() {
 
 setTimeout(function () {
     setInterval(function () {
-        if (f1mvCheck) {
-            f1mvAPICall().then(r => {
-                if (alwaysFalse) {
-                    console.log(r)
-                }
-            });
-            f1mvLightSync().then(r => {
-                if (alwaysFalse) {
-                    console.log(r)
-                }
-            });
+        if (BrowserWindow.getAllWindows().length > 0) {
+            if (f1mvCheck) {
+                f1mvAPICall().then(r => {
+                    if (alwaysFalse) {
+                        console.log(r)
+                    }
+                });
+                f1mvLightSync().then(r => {
+                    if (alwaysFalse) {
+                        console.log(r)
+                    }
+                });
+            }
         }
     }, 300);
 }, 1000);
 
 setInterval(function () {
-    checkApis()
+    if (BrowserWindow.getAllWindows().length > 0) {
+        checkApis()
+    }
 }, 3000);
 
 setTimeout(function () {
@@ -755,20 +790,21 @@ setTimeout(function () {
             }
         });
     }
-}, 500);
+}, 700);
 
 setTimeout(function () {
     setInterval(function () {
-        if (ikeaOnline) {
-            win.webContents.send('ikeaAPI', 'online');
+        if (BrowserWindow.getAllWindows().length > 0) {
+            if (ikeaOnline) {
+                win.webContents.send('ikeaAPI', 'online');
+            }
+            if (goveeOnline) {
+                win.webContents.send('goveeAPI', 'online');
+            }
+            if (!yeelightDisabled) {
+                win.webContents.send('yeelightAPI', 'online')
+            }
         }
-        if (goveeOnline) {
-            win.webContents.send('goveeAPI', 'online');
-        }
-        if (!yeelightDisabled) {
-            win.webContents.send('yeelightAPI', 'online')
-        }
-
     }, 1500);
 }, 1000);
 
@@ -942,15 +978,12 @@ async function ikeaControl(r, g, b, brightness, action) {
             console.log("Turning on the light with the given options...");
         }
 
-
-        if (r === 0 && g === 255 && b === 0) {
-            hue = 120;
-        }
-        if (r === 255 && g === 255 && b === 0) {
-            hue = 50;
-        }
-        if (r === 255 && g === 0 && b === 0) {
-            hue = 0;
+        // convert rgb to hsl
+        const colorConvert = require("color-convert");
+        const hsl = colorConvert.rgb.hsl(r, g, b);
+        hue = hsl[0];
+        if (debugPreference) {
+            console.log("Hue: " + hue);
         }
         // for each color device, send a request to localhost:9898/setHue?deviceID=DEVICEID&state=HUEVALUE
         colorDevices.forEach(device => {
@@ -1029,6 +1062,7 @@ async function yeelightControl(r, g, b, brightness, action) {
 }
 
 const hue = require("node-hue-api");
+const fs = require("fs");
 let hueApi;
 let hueClient;
 let hueLights;
@@ -1083,15 +1117,12 @@ async function hueInitialize() {
             hueLights = await authHueApi.lights.getAll();
 
             if (hueLights !== null || hueLights !== undefined) {
-                userConfig.set('Settings.hueSettings.deviceIDs', [])
+                if (debugPreference) {
+                    win.webContents.send('log', "Hue lights found: " + hueLights.length);
+                }
                 hueLights.forEach((light) => {
-                    userConfig.set('Settings.hueSettings.deviceIDs', [...userConfig.get('Settings.hueSettings.deviceIDs'), {
-                        id: light.id,
-                        name: light.name
-                    }])
                     if (debugPreference) {
-                        console.log("Hue light found: " + light.name + " with ID: " + light.id);
-                        win.webContents.send('log', "Hue light found: " + light.name + " with ID: " + light.id);
+                        win.webContents.send('log', "Hue light found: " + light.name);
                     }
                 });
             } else {
@@ -1121,7 +1152,38 @@ async function hueInitialize() {
 
 async function hueControl(r, g, b, brightness, action) {
     const colorConvert = require("color-convert");
+
     if (!hueDisabled && hueOnline) {
+        if (action === "getDevices"){
+            if (hueLights === null || hueLights === undefined) {
+                console.log("No Hue lights found or an error occurred");
+                win.webContents.send('toaster', "No Hue lights found or an error occurred");
+                win.webContents.send('log', "No Hue lights found or an error occurred");
+            } else {
+                console.log(hueLights)
+                let html = "<!DOCTYPE html><html><head><title>Hue Lights</title><link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css'><script src='https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js'></script></head><body><div class='container'><table class='striped'><thead><tr><th>Light Name</th><th>Light ID</th><th>Light State</th></tr></thead><tbody>";
+                hueLights.forEach((light) => {
+                    html += "<tr><td>" + light.name + "</td><td>" + light.id + "</td><td>" + light.state.on + "</td></tr>";
+                });
+                html += "</tbody></table></div></body></html>";
+                const savePath = app.getAppPath() + "\\devicesHue.html";
+                fs.writeFile(savePath, html, function (err) {
+                    if (err) throw err;
+                    console.log('Saved!');
+                });
+
+                const win = new BrowserWindow({
+                    width: 800,
+                    height: 600,
+                    webPreferences: {
+                        nodeIntegration: true
+                    }
+                });
+                win.removeMenu();
+                await win.loadFile(savePath);
+            }
+        }
+
         // Convert the RGB values to hue-saturation values
         const [h, s, v] = colorConvert.rgb.hsv([r, g, b]);
         const [hue, sat] = colorConvert.hsv.hsl([h, s, v]);

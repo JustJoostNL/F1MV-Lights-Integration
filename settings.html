@@ -91,7 +91,25 @@
             <em class="material-icons">restart_alt</em>
             Refresh Hue Bridge
         </a>
+        <a class="waves-effect waves-light btn-large simulation__button tooltipped" onclick="hueGetIDs()" data-position="bottom" data-tooltip="Get a window with all the device's, there name and there ID">
+            <em class="material-icons">pin</em>
+            Get device Id's
+        </a>
     </div>
+    <p>
+        <label>
+            <span>Hue Device's</span>
+            <input style="color:white" type="text" id="hue-devices-input" value="" />
+            <span style="color:grey">Here you put your Hue Device ID's from all device's that you want to use, click the Get ID's button to see all the ID's.</span>
+        </label>
+    </p>
+    <p>
+        <label>
+            <span>Hue Gateway Token</span>
+            <input style="color:white" type="text" id="gatw-token-input" value="" />
+            <span style="color:grey">This token will be filled in automatically after the first connection to the hue bridge.</span>
+        </label>
+    </p>
     <p>
         <label>
             <input type="checkbox" id="disable-hue-setting" class="filled-in" />

@@ -6,7 +6,7 @@
   "main": "main.js",
   "type": "commonjs",
   "scripts": {
-    "start": "electron . --trace-warnings",
+    "start": "electron .",
     "package": "electron-builder --dir",
     "make": "electron-builder",
     "postinstall": "electron-builder install-app-deps"
