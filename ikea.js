@@ -13,6 +13,7 @@ let groups = [];
 const sCode = process.argv[2].replace("--", "");
 // if the second arg equals --debug then set debug to true otherwise set it to false
 let debug;
+// noinspection RedundantIfStatementJS
 if(process.argv[3] === "--debug") {
     debug = true;
 } else {

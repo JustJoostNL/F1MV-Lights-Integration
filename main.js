@@ -122,7 +122,7 @@ app.whenReady().then(() => {
         exec
     } = require('child_process');
     // check if node js is installed using node -v, if not, give the user 2 options, exit or proceed
-    exec('node -v', (err, stdout, stderr) => {
+    exec('node -v', (err) => {
         if (err) {
             // node is not installed
             dialog.showMessageBox(win, {
@@ -257,7 +257,7 @@ async function simulateFlag(arg) {
             await yeelightControl(greenColor.r, greenColor.g, greenColor.b, userBrightness, "on");
         }
         if (!ikeaDisabled) {
-            await ikeaControl(greenColor.r, greenColor.g, greenColor.b, userBrightness, "on");
+            await ikeaControl(greenColor.r, greenColor.g, greenColor.b, userBrightness, "on", "green");
         }
         if (!hueDisabled) {
             await hueControl(greenColor.r, greenColor.g, greenColor.b, userBrightness, "on");
@@ -272,7 +272,7 @@ async function simulateFlag(arg) {
             await yeelightControl(redColor.r, redColor.g, redColor.b, userBrightness, "on");
         }
         if (!ikeaDisabled) {
-            await ikeaControl(redColor.r, redColor.g, redColor.b, userBrightness, "on");
+            await ikeaControl(redColor.r, redColor.g, redColor.b, userBrightness, "on", "red");
         }
         if (!hueDisabled) {
             await hueControl(redColor.r, redColor.g, redColor.b, userBrightness, "on");
@@ -287,7 +287,7 @@ async function simulateFlag(arg) {
             await yeelightControl(yellowColor.r, yellowColor.g, yellowColor.b, userBrightness, "on");
         }
         if (!ikeaDisabled) {
-            await ikeaControl(yellowColor.r, yellowColor.g, yellowColor.b, userBrightness, "on");
+            await ikeaControl(yellowColor.r, yellowColor.g, yellowColor.b, userBrightness, "on", "yellow");
         }
         if (!hueDisabled) {
             await hueControl(yellowColor.r, yellowColor.g, yellowColor.b, userBrightness, "on");
@@ -302,7 +302,7 @@ async function simulateFlag(arg) {
             await yeelightControl(safetyCarColor.r, safetyCarColor.g, safetyCarColor.b, userBrightness, "on");
         }
         if (!ikeaDisabled) {
-            await ikeaControl(safetyCarColor.r, safetyCarColor.g, safetyCarColor.b, userBrightness, "on");
+            await ikeaControl(safetyCarColor.r, safetyCarColor.g, safetyCarColor.b, userBrightness, "on", "safetyCar");
         }
         if (!hueDisabled) {
             await hueControl(safetyCarColor.r, safetyCarColor.g, safetyCarColor.b, userBrightness, "on");
@@ -317,7 +317,7 @@ async function simulateFlag(arg) {
             await yeelightControl(vscColor.r, vscColor.g, vscColor.b, userBrightness, "on");
         }
         if (!ikeaDisabled) {
-            await ikeaControl(vscColor.r, vscColor.g, vscColor.b, userBrightness, "on");
+            await ikeaControl(vscColor.r, vscColor.g, vscColor.b, userBrightness, "on", "vsc");
         }
         if (!hueDisabled) {
             await hueControl(vscColor.r, vscColor.g, vscColor.b, userBrightness, "on");
@@ -332,7 +332,7 @@ async function simulateFlag(arg) {
             await yeelightControl(vscEndingColor.r, vscEndingColor.g, vscEndingColor.b, userBrightness, "on");
         }
         if (!ikeaDisabled) {
-            await ikeaControl(vscEndingColor.r, vscEndingColor.g, vscEndingColor.b, userBrightness, "on");
+            await ikeaControl(vscEndingColor.r, vscEndingColor.g, vscEndingColor.b, userBrightness, "on", "vscEnding");
         }
         if (!hueDisabled) {
             await hueControl(vscEndingColor.r, vscEndingColor.g, vscEndingColor.b, userBrightness, "on");
@@ -347,7 +347,7 @@ async function simulateFlag(arg) {
             await yeelightControl(0, 0, 0, 0, "off");
         }
         if (!ikeaDisabled) {
-            await ikeaControl(0, 0, 0, 0, "off");
+            await ikeaControl(0, 0, 0, 0, "off", "allOff");
         }
         if (!hueDisabled) {
             await hueControl(0, 0, 0, 0, "off");
@@ -415,7 +415,7 @@ ipcMain.on('send-config', () => {
     const config = userConfig.store;
     win.webContents.send('settings', config);
 })
-ipcMain.on('restart-app', (event, arg) => {
+ipcMain.on('restart-app', () => {
     if (!ikeaDisabled) {
         fetch("http://localhost:9898/quit")
     }
@@ -424,6 +424,7 @@ ipcMain.on('restart-app', (event, arg) => {
 })
 
 ipcMain.on('linkHue', async () => {
+    win.webContents.send('toaster', 'Searching for Hue bridge this may take a few seconds...')
     if (debugPreference) {
         console.log("Linking Hue...")
         win.webContents.send('log', 'Linking Hue...')
@@ -632,7 +633,7 @@ async function f1mvLightSync() {
                     await yeelightControl(greenColor.r, greenColor.g, greenColor.b, userBrightness, "on")
                 }
                 if (!ikeaDisabled) {
-                    await ikeaControl(greenColor.r, greenColor.g, greenColor.b, userBrightness, "on")
+                    await ikeaControl(greenColor.r, greenColor.g, greenColor.b, userBrightness, "on", "green")
                 }
                 if (!hueDisabled) {
                     await hueControl(greenColor.r, greenColor.g, greenColor.b, userBrightness, "on")
@@ -649,7 +650,7 @@ async function f1mvLightSync() {
                     await yeelightControl(yellowColor.r, yellowColor.g, yellowColor.b, userBrightness, "on")
                 }
                 if (!ikeaDisabled) {
-                    await ikeaControl(yellowColor.r, yellowColor.g, yellowColor.b, userBrightness, "on")
+                    await ikeaControl(yellowColor.r, yellowColor.g, yellowColor.b, userBrightness, "on", "yellow")
                 }
                 if (!hueDisabled) {
                     await hueControl(yellowColor.r, yellowColor.g, yellowColor.b, userBrightness, "on")
@@ -666,7 +667,7 @@ async function f1mvLightSync() {
                     await yeelightControl(safetyCarColor.r, safetyCarColor.g, safetyCarColor.b, userBrightness, "on")
                 }
                 if (!ikeaDisabled) {
-                    await ikeaControl(safetyCarColor.r, safetyCarColor.g, safetyCarColor.b, userBrightness, "on")
+                    await ikeaControl(safetyCarColor.r, safetyCarColor.g, safetyCarColor.b, userBrightness, "on", "safetyCar")
                 }
                 if (!hueDisabled) {
                     await hueControl(safetyCarColor.r, safetyCarColor.g, safetyCarColor.b, userBrightness, "on")
@@ -683,7 +684,7 @@ async function f1mvLightSync() {
                     await yeelightControl(redColor.r, redColor.g, redColor.b, userBrightness, "on")
                 }
                 if (!ikeaDisabled) {
-                    await ikeaControl(redColor.r, redColor.g, redColor.b, userBrightness, "on")
+                    await ikeaControl(redColor.r, redColor.g, redColor.b, userBrightness, "on", "red")
                 }
                 if (!hueDisabled) {
                     await hueControl(redColor.r, redColor.g, redColor.b, userBrightness, "on")
@@ -700,7 +701,7 @@ async function f1mvLightSync() {
                     await yeelightControl(vscColor.r, vscColor.g, vscColor.b, userBrightness, "on")
                 }
                 if (!ikeaDisabled) {
-                    await ikeaControl(vscColor.r, vscColor.g, vscColor.b, userBrightness, "on")
+                    await ikeaControl(vscColor.r, vscColor.g, vscColor.b, userBrightness, "on", "vsc")
                 }
                 if (!hueDisabled) {
                     await hueControl(vscColor.r, vscColor.g, vscColor.b, userBrightness, "on")
@@ -717,7 +718,7 @@ async function f1mvLightSync() {
                     await yeelightControl(vscEndingColor.r, vscEndingColor.g, vscEndingColor.b, userBrightness, "on")
                 }
                 if (!ikeaDisabled) {
-                    await ikeaControl(vscEndingColor.r, vscEndingColor.g, vscEndingColor.b, userBrightness, "on")
+                    await ikeaControl(vscEndingColor.r, vscEndingColor.g, vscEndingColor.b, userBrightness, "on", "vscEnding")
                 }
                 if (!hueDisabled) {
                     await hueControl(vscEndingColor.r, vscEndingColor.g, vscEndingColor.b, userBrightness, "on")
@@ -737,7 +738,7 @@ async function f1mvLightSync() {
                 await yeelightControl(0, 255, 0, userBrightness, "off")
             }
             if (!ikeaDisabled) {
-                await ikeaControl(0, 255, 0, userBrightness, "off")
+                await ikeaControl(0, 255, 0, userBrightness, "off", "off")
             }
             if (!hueDisabled) {
                 await hueControl(0, 255, 0, userBrightness, "off")
@@ -938,7 +939,7 @@ async function ikeaInitialize() {
 
 }
 
-async function ikeaControl(r, g, b, brightness, action) {
+async function ikeaControl(r, g, b, brightness, action, flag) {
     const devices = userConfig.get('Settings.ikeaSettings.deviceIDs');
     let colorDevices = [];
     let whiteDevices = [];
@@ -954,16 +955,17 @@ async function ikeaControl(r, g, b, brightness, action) {
 
     const fs = require('fs');
     if (action === "getDevices") {
-        // send a request to localhost:9898/getDevices, then create a html file with a table of all the devices with there names, ids, state, and spectrum, make sure the html is beautified and has a nice design, after that all, open the html in a new electron window
+        // send a request to localhost:9898/getDevices, then create a html file with a table of all the devices with their names, ids, state, and spectrum, make sure the html is beautified and has a nice design, after that all, open the html in a new electron window
         const response = await fetch('http://localhost:9898/getDevices');
         const json = await response.json();
         // create the html file, make sure it is dark mode
-        let html = "<!DOCTYPE html><html><head><meta charset='utf-8'><meta name='viewport' content='width=device-width, initial-scale=1'><title>Devices</title><link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css'><script src='https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js'></script><script src='https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js'></script><script src='https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js'></script></head><body><div class='container'><table class='table table-dark table-striped'><thead><tr><th>Device Name</th><th>Device ID</th><th>Device Is On</th><th>Color support</th></tr></thead><tbody>";
+        let html = "<!DOCTYPE html><html lang='en'><head><meta charset='utf-8'><meta name='viewport' content='width=device-width, initial-scale=1'><title>Devices</title><link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css'><script src='https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js'></script><script src='https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js'></script><script src='https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js'></script></head><body><div class='container'><table class='table table-dark table-striped'><thead><tr><th>Device Name</th><th>Device ID</th><th>Device Is On</th><th>Color support</th></tr></thead><tbody>";
         json.forEach(device => {
             html = html + "<tr><td>" + device.name + "</td><td>" + device.id + "</td><td>" + device.state + "</td><td>" + device.spectrum + "</td></tr>";
         });
         html = html + "</tbody></table></div></body></html>";
-        const savePath = app.getAppPath() + `${process.platform === 'darwin' ? '/' : '\\'}devices.html`;
+        const path = require('path');
+        const savePath = path.join(app.getAppPath(), 'devices.html');
         fs.writeFile(savePath, html, function (err) {
             if (err) throw err;
             console.log('Saved!');
@@ -981,6 +983,7 @@ async function ikeaControl(r, g, b, brightness, action) {
 
     }
     if (action === "on") {
+        lightsOnCounter++;
         let hue;
         if (debugPreference) {
             console.log("Turning on the light with the given options...");
@@ -993,29 +996,25 @@ async function ikeaControl(r, g, b, brightness, action) {
         if (debugPreference) {
             console.log("Hue: " + hue);
         }
-        // for each color device, send a request to localhost:9898/setHue?deviceID=DEVICEID&state=HUEVALUE
-        colorDevices.forEach(device => {
-            device = parseInt(device);
-            fetch('http://localhost:9898/setHue?deviceId=' + device + '&state=' + hue);
-        });
         colorDevices.forEach(device => {
             device = parseInt(device);
             fetch('http://localhost:9898/toggleDevice?deviceId=' + device + '&state=on');
+            fetch('http://localhost:9898/setHue?deviceId=' + device + '&state=' + hue);
             fetch('http://localhost:9898/setBrightness?deviceId=' + device + '&state=' + brightness);
         });
         whiteDevices.forEach(device => {
             device = parseInt(device);
-            if (hue === 50) {
+            if (flag !== "green") {
                 fetch('http://localhost:9898/toggleDevice?deviceId=' + device + '&state=on');
-            } else if (hue === 0) {
-                fetch('http://localhost:9898/toggleDevice?deviceId=' + device + '&state=on');
-            } else if (hue === 120) {
+                fetch('http://localhost:9898/setBrightness?deviceId=' + device + '&state=' + brightness);
+            } else if (flag === "green") {
                 fetch('http://localhost:9898/toggleDevice?deviceId=' + device + '&state=off');
             }
         });
 
     }
     if (action === "off") {
+        lightsOffCounter++;
         colorDevices.forEach(device => {
             device = parseInt(device);
             fetch('http://localhost:9898/toggleDevice?deviceId=' + device + '&state=off');
@@ -1124,7 +1123,7 @@ async function hueInitialize() {
 
             hueLights = await authHueApi.lights.getAll();
 
-            if (hueLights !== null || hueLights !== undefined) {
+            if (hueLights !== undefined) {
                 if (debugPreference) {
                     win.webContents.send('log', "Hue lights found: " + hueLights.length);
                 }
@@ -1159,6 +1158,8 @@ async function hueInitialize() {
 }
 
 async function hueControl(r, g, b, brightness, action) {
+    brightness = Math.round((brightness / 100) * 254);
+
     const colorConvert = require("color-convert");
     if (!hueDisabled && hueOnline) {
         if (action === "getDevices") {
@@ -1167,13 +1168,13 @@ async function hueControl(r, g, b, brightness, action) {
                 win.webContents.send('toaster', "No Hue lights found or an error occurred");
                 win.webContents.send('log', "No Hue lights found or an error occurred");
             } else {
-                console.log(hueLights)
-                let html = "<!DOCTYPE html><html><head><title>Hue Lights</title><link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css'><script src='https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js'></script></head><body><div class='container'><table class='striped'><thead><tr><th>Light Name</th><th>Light ID</th><th>Light State</th></tr></thead><tbody>";
+                let html = "<!DOCTYPE html><html lang='en'><head><title>Hue Lights</title><link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css'><style>table { background-color: #333; color: #fff; }</style><script src='https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js'></script></head><body><div class='container'><table class='striped'><thead><tr><th>Light Name</th><th>Light ID</th><th>Device is on</th></tr></thead><tbody>";
                 hueLights.forEach((light) => {
                     html += "<tr><td>" + light.name + "</td><td>" + light.id + "</td><td>" + light.state.on + "</td></tr>";
                 });
                 html += "</tbody></table></div></body></html>";
-                const savePath = app.getAppPath() + `${process.platform === 'darwin' ? '/' : '\\'}devicesHue.html`;
+                const path = require('path');
+                const savePath = path.join(app.getAppPath(), 'devicesHue.html');
                 fs.writeFile(savePath, html, function (err) {
                     if (err) throw err;
                     console.log('Saved!');
@@ -1205,6 +1206,7 @@ async function hueControl(r, g, b, brightness, action) {
         for (const light of hueLightIDsList) {
             if (action === "on") {
                 // Set the brightness and color of the light
+                lightsOnCounter++;
                 await authHueApi.lights.setLightState(light, new LightState()
                     .on(true)
                     .bri(brightness)
@@ -1212,6 +1214,7 @@ async function hueControl(r, g, b, brightness, action) {
                     .hue(hue)
                 );
             } else if (action === "off") {
+                lightsOffCounter++;
                 await authHueApi.lights.setLightState(light, new LightState()
                     .on(false)
                 );
@@ -1239,7 +1242,7 @@ function checkApis() {
         });
 
     const f1tvURL = "https://f1tv.formula1.com/1.0/R/ENG/WEB_DASH/ALL/EVENTS/LIVENOW/F1_TV_Pro_Annual/2";
-    //send a fetch request to the f1tv api and check in the json for resultObj.items and if it is empty then the api is offline
+    //send a fetch request to the F1TV api and check in the json for resultObj.items and if it is empty then the api is offline
     fetch(f1tvURL)
         .then(function (response) {
             return response.json();
@@ -1283,6 +1286,7 @@ async function sendAnalytics() {
 
         //remove personal data from config
         delete config.Settings.ikeaSettings.securityCode;
+        delete config.Settings.hueSettings.token;
 
         const data = {
             "time_of_sending": currentTime,
@@ -1319,11 +1323,11 @@ async function sendAnalytics() {
             },
             body: JSON.stringify(dataV2)
         }
-        let resv1;
-        let resv2;
+        let responseVersion1;
+        let ResponseVersion2;
         const responseV2 = await fetch(analyticsURLV2, optionsV2); {
             if (responseV2.status === 200) {
-                resv2 = true;
+                ResponseVersion2 = true;
             } else {
                 console.log("Analytics failed to send, status code: " + responseV2.status);
             }
@@ -1334,10 +1338,10 @@ async function sendAnalytics() {
                 console.log(responseData);
             }
             if (response.status === 200) {
-                resv1 = true;
+                responseVersion1 = true;
             }
         }
-        if (resv1 && resv2) {
+        if (responseVersion1 && ResponseVersion2) {
             console.log("Analytics sent successfully!");
             analyticsSent = true;
         }
@@ -1388,6 +1392,10 @@ autoUpdater.on('error', (message) => {
 
 setInterval(() => {
     if(!updateFound) {
-        autoUpdater.checkForUpdates()
+        autoUpdater.checkForUpdates().then(r => {
+            if (alwaysFalse) {
+                console.log(r);
+            }
+        });
     }
 }, 30000)
