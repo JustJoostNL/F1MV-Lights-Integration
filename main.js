@@ -110,9 +110,7 @@ function createWindow() {
 
 app.whenReady().then(() => {
     createWindow()
-    const {
-        exec
-    } = require('child_process');
+    const { exec } = require('child_process');
     // check if node js is installed using node -v, if not, give the user 2 options, exit or proceed
     exec('node -v', (err, stdout, stderr) => {
         if (err) {
@@ -460,7 +458,7 @@ ipcMain.on('saveConfig', (event, arg) => {
     userConfig.set('Settings.generalSettings.autoTurnOffLights', autoTurnOffLights);
     userConfig.set('Settings.MultiViewerForF1Settings.liveTimingURL', liveTimingURL);
     userConfig.set('Settings.hueSettings.hueDisable', hueDisable);
-    userConfig.set('Settings.hueSettings.hueDeviceIDs', hueDeviceIDs);
+    userConfig.set('Settings.hueSettings.deviceIDs', hueDeviceIDs);
     userConfig.set('Settings.hueSettings.token', hueToken);
     userConfig.set('Settings.ikeaSettings.securityCode', securityCode);
     userConfig.set('Settings.ikeaSettings.deviceIDs', deviceIDs);
@@ -1152,7 +1150,6 @@ async function hueInitialize() {
 
 async function hueControl(r, g, b, brightness, action) {
     const colorConvert = require("color-convert");
-
     if (!hueDisabled && hueOnline) {
         if (action === "getDevices"){
             if (hueLights === null || hueLights === undefined) {
@@ -1188,19 +1185,18 @@ async function hueControl(r, g, b, brightness, action) {
         const [h, s, v] = colorConvert.rgb.hsv([r, g, b]);
         const [hue, sat] = colorConvert.hsv.hsl([h, s, v]);
 
-        let hueLightsList = userConfig.get('Settings.hueSettings.deviceIDs');
+        let hueLightIDsList = userConfig.get('Settings.hueSettings.deviceIDs');
 
-        for (const light of hueLightsList) {
-            console.log(light.id);
+        for (const light of hueLightIDsList) {
             if (action === "on") {
                 // Set the brightness and color of the light
-                await authHueApi.lights.setLightState(light.id, {
+                await authHueApi.lights.setLightState(light, {
                     bri: brightness,
                     hue,
                     sat
                 });
             } else if (action === "off") {
-                await authHueApi.lights.setLightState(light.id, {
+                await authHueApi.lights.setLightState(light, {
                     on: false
                 });
             }

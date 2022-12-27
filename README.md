@@ -69,6 +69,7 @@ This project is a bridge between F1MV and your smart home lights. It allows you 
 [![Node.js][nodejs]][nodejs-url]
 [![html][html]][html-url]
 [![css][css]][css-url]
+[![Philips Hue][philips-hue]][philips-hue-url]
 [![Tradfri][tradfri]][tradfri-url]
 [![Govee][govee]][govee-url]
 [![Yeelight][yeelight]][yeelight-url]
@@ -89,6 +90,7 @@ Getting started is very easy. Just follow the steps below. If you have any quest
 
 #### Lights
 - You also need one or multiple lights of the following brands:
+  - [Philips Hue](https://www2.meethue.com/en-us)
   - [Govee][govee-url]
   - [Tradfri][tradfri-url]
   - [YeeLight][yeelight-url]
@@ -155,7 +157,7 @@ Distributed under the GNU General Public License v3.0. See `LICENSE.md` for more
 
 <!-- ACKNOWLEDGMENTS -->
 ## Acknowledgments
-
+* [Thanks to @LapsTimeOFF for helping me with the hue integration!](https://github.com/LapsTimeOFF/)
 * [Thanks to MultiViewer For F1 for the amazing software!](https://beta.f1mv.com/)
 
 
@@ -195,6 +197,8 @@ Distributed under the GNU General Public License v3.0. See `LICENSE.md` for more
 [issuesurl]: https://github.com/koningcool/F1MV-Lights-Integration/issues
 [css]: https://img.shields.io/badge/CSS-1572B6?style=for-the-badge&logo=css3&logoColor=white
 [css-url]: https://www.w3.org/Style/CSS/Overview.en.html
+[philips-hue]: https://img.shields.io/badge/Philips%20Hue-0002bb?style=for-the-badge&logo=Philips%20Hue&logoColor=white
+[philips-hue-url]: https://www2.meethue.com/en-us
 [tradfri]: https://img.shields.io/badge/IKEA%20Tradfri-00539f.svg?style=for-the-badge&logo=ikea&logoColor=white
 [tradfri-url]: https://www.ikea.com/us/en/cat/smart-lighting-36812/
 [govee]: https://img.shields.io/badge/Govee-000666.svg?style=for-the-badge&logo=govee&logoColor=white
