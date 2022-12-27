@@ -963,7 +963,7 @@ async function ikeaControl(r, g, b, brightness, action) {
             html = html + "<tr><td>" + device.name + "</td><td>" + device.id + "</td><td>" + device.state + "</td><td>" + device.spectrum + "</td></tr>";
         });
         html = html + "</tbody></table></div></body></html>";
-        const savePath = app.getAppPath() + "\\devices.html";
+        const savePath = app.getAppPath() + `${process.platform === 'darwin' ? '/' : '\\'}devices.html`;
         fs.writeFile(savePath, html, function (err) {
             if (err) throw err;
             console.log('Saved!');
@@ -1078,7 +1078,7 @@ let createdUser;
 let authHueApi;
 let token;
 async function hueInitialize() {
-    hueApi = await hue.discovery.nupnpSearch();
+    hueApi = await hue.discovery.mdnsSearch();
     if (hueApi.length === 0) {
         win.webContents.send('toaster', "No Hue bridges found");
         win.webContents.send('log', "No Hue bridges found");
@@ -1354,7 +1354,7 @@ async function sendAnalytics() {
 }
 
 
-
+let updateFound = false;
 autoUpdater.on('update-downloaded', (event, releaseNotes, releaseName) => {
     if (process.platform !== 'darwin') {
         const dialogOpts = {
@@ -1371,6 +1371,7 @@ autoUpdater.on('update-downloaded', (event, releaseNotes, releaseName) => {
     }
 })
 autoUpdater.on('update-available', () => {
+    updateFound = true;
     if (process.platform !== "darwin") {
         console.log("There is an update available. Downloading now... You will be notified when the update is ready to install.")
         win.webContents.send('log', 'There is an update available. Downloading now... You will be notified when the update is ready to install.')
@@ -1386,5 +1387,7 @@ autoUpdater.on('error', (message) => {
 })
 
 setInterval(() => {
-    autoUpdater.checkForUpdates()
+    if(!updateFound) {
+        autoUpdater.checkForUpdates()
+    }
 }, 30000)
