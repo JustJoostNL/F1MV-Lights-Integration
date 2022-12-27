@@ -1,13 +1,21 @@
 'use strict';
-const { app, dialog, ipcMain } = require('electron')
+const {
+    app,
+    dialog,
+    ipcMain
+} = require('electron')
 const BrowserWindow = require('electron').BrowserWindow
 const electronLocalShortcut = require('electron-localshortcut');
 
-const { autoUpdater } = require("electron-updater")
+const {
+    autoUpdater
+} = require("electron-updater")
 const process = require('process');
 const configDefault = require("./config");
 const Store = require('electron-store');
-const { Bulb } = require("yeelight.io");
+const {
+    Bulb
+} = require("yeelight.io");
 const userConfig = new Store({
     name: 'settings',
     defaults: configDefault
@@ -110,7 +118,9 @@ function createWindow() {
 
 app.whenReady().then(() => {
     createWindow()
-    const { exec } = require('child_process');
+    const {
+        exec
+    } = require('child_process');
     // check if node js is installed using node -v, if not, give the user 2 options, exit or proceed
     exec('node -v', (err, stdout, stderr) => {
         if (err) {
@@ -1151,7 +1161,7 @@ async function hueInitialize() {
 async function hueControl(r, g, b, brightness, action) {
     const colorConvert = require("color-convert");
     if (!hueDisabled && hueOnline) {
-        if (action === "getDevices"){
+        if (action === "getDevices") {
             if (hueLights === null || hueLights === undefined) {
                 console.log("No Hue lights found or an error occurred");
                 win.webContents.send('toaster', "No Hue lights found or an error occurred");
@@ -1163,7 +1173,7 @@ async function hueControl(r, g, b, brightness, action) {
                     html += "<tr><td>" + light.name + "</td><td>" + light.id + "</td><td>" + light.state.on + "</td></tr>";
                 });
                 html += "</tbody></table></div></body></html>";
-                const savePath = app.getAppPath() + "\\devicesHue.html";
+                const savePath = app.getAppPath() + `${process.platform === 'darwin' ? '/' : '\\'}devicesHue.html`;
                 fs.writeFile(savePath, html, function (err) {
                     if (err) throw err;
                     console.log('Saved!');
@@ -1181,6 +1191,11 @@ async function hueControl(r, g, b, brightness, action) {
             }
         }
 
+
+        const {
+            LightState
+        } = require('node-hue-api').v3.lightStates;
+
         // Convert the RGB values to hue-saturation values
         const [h, s, v] = colorConvert.rgb.hsv([r, g, b]);
         const [hue, sat] = colorConvert.hsv.hsl([h, s, v]);
@@ -1190,15 +1205,16 @@ async function hueControl(r, g, b, brightness, action) {
         for (const light of hueLightIDsList) {
             if (action === "on") {
                 // Set the brightness and color of the light
-                await authHueApi.lights.setLightState(light, {
-                    bri: brightness,
-                    hue,
-                    sat
-                });
+                await authHueApi.lights.setLightState(light, new LightState()
+                    .on(true)
+                    .bri(brightness)
+                    .sat(sat)
+                    .hue(hue)
+                );
             } else if (action === "off") {
-                await authHueApi.lights.setLightState(light, {
-                    on: false
-                });
+                await authHueApi.lights.setLightState(light, new LightState()
+                    .on(false)
+                );
             }
         }
     }
