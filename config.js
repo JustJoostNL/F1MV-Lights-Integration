@@ -74,6 +74,13 @@ const config = {
                     goveeDisable: true,
                 },
 
+            nanoLeafSettings:
+                {
+                    // set this to true if you don't want to use Nanoleaf lights
+                    nanoLeafDisable: true,
+                    devices: []
+                },
+
             yeeLightSettings:
                 {
                     // set this to true if you don't want to use Yeelight lights
@@ -100,7 +107,7 @@ const config = {
                 }
         },
         // do not change this version!
-        version: 4,
+        version: 5,
     devConfig:
         {
             autoStartDevTools: false,

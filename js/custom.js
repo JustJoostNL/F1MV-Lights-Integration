@@ -105,6 +105,7 @@ $(function() {
         }
 
         $('#yeelight-device-ip-input').val(arg.Settings.yeeLightSettings.deviceIPs)
+        $('#nanoleaf-device-ip-input').val(arg.Settings.nanoLeafSettings.devices)
 
         // search in the settings for the dropdown menu with this id: 'update-channel-setting' and set the value to the current update channel
         $('#update-channel-setting').val(arg.Settings.advancedSettings.updateChannel)
@@ -125,6 +126,12 @@ $(function() {
             $('#disable-hue-setting').attr('checked', 'checked')
         }else if (!arg.Settings.hueSettings.hueDisable) {
             $('#disable-hue-setting').removeAttr('checked')
+        }
+
+        if (arg.Settings.nanoLeafSettings.nanoLeafDisable) {
+            $('#disable-nanoleaf-setting').attr('checked', 'checked')
+        }else if (!arg.Settings.nanoLeafSettings.nanoLeafDisable) {
+            $('#disable-nanoleaf-setting').removeAttr('checked')
         }
 
 
@@ -184,6 +191,8 @@ function saveConfig() {
         deviceIDs: $('#devices-input').val(),
         goveeDisable: $('#disable-govee-setting').is(':checked'),
         devicesDisabledIPs: $('#govee-dis-devices-input').val(),
+        nanoLeafDisable: $('#disable-nanoleaf-setting').is(':checked'),
+        nanoLeafDevices: $('#nanoleaf-device-ip-input').val(),
         yeeLightDisable: $('#disable-yeelight-setting').is(':checked'),
         deviceIPs: $('#yeelight-device-ip-input').val(),
         updateChannel: $('#update-channel-setting').val(),
@@ -228,6 +237,17 @@ function saveConfigColors() {
 
 function linkHue() {
     ipcRenderer.send('linkHue')
+}
+
+function nanoLeaf(action) {
+    if(action === 'device'){
+        let ip = $('#nanoleaf-device-ip-input-in-connect-screen').val()
+        ipcRenderer.send('nanoLeaf', 'device')
+        ipcRenderer.send('nanoLeafDevice', ip)
+    }
+    else if(action === 'openWindow'){
+        ipcRenderer.send('nanoLeaf', 'openWindow')
+    }
 }
 function hueGetIDs() {
     ipcRenderer.send('getHueDevices')

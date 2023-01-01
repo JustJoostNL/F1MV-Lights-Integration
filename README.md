@@ -92,7 +92,7 @@ Getting started is very easy. Just follow the steps below. If you have any quest
 - You also need one or multiple lights of the following brands:
   - [Philips Hue](https://www2.meethue.com/en-us)
   - [Govee][govee-url]
-  - [Tradfri][tradfri-url]
+  - [Ikea Tradfri][tradfri-url]
   - [YeeLight][yeelight-url]
 
 

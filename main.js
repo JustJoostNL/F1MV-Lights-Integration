@@ -26,6 +26,7 @@ const ikeaDisabled = userConfig.get('Settings.ikeaSettings.ikeaDisable')
 const goveeDisabled = userConfig.get('Settings.goveeSettings.goveeDisable')
 const yeelightDisabled = userConfig.get('Settings.yeeLightSettings.yeeLightDisable')
 const hueDisabled = userConfig.get('Settings.hueSettings.hueDisable')
+const nanoLeafDisabled = userConfig.get('Settings.nanoleafSettings.nanoleafDisable')
 
 
 const analyticsPreference = userConfig.get('Settings.advancedSettings.analytics')
@@ -34,7 +35,7 @@ let analyticsSent = false;
 
 const updateChannel = userConfig.get('Settings.advancedSettings.updateChannel')
 autoUpdater.channel = updateChannel;
-const updateURL = "https://api.github.com/repos/koningcool/f1mv-lights-integration/releases"
+const updateURL = "https://api.joost.systems/github/repos/koningcool/f1mv-lights-integration/releases"
 
 const userBrightness = parseInt(userConfig.get('Settings.generalSettings.defaultBrightness'))
 
@@ -43,6 +44,7 @@ let devMode = false;
 let ikeaOnline = false;
 let goveeOnline = false;
 let hueOnline = false;
+let nanoleafOnline = false;
 
 let TState;
 let SState;
@@ -155,6 +157,12 @@ app.whenReady().then(() => {
         }
     });
 
+    initIntegrations().then(r => {
+        if (alwaysFalse) {
+            console.log(r)
+        }
+    });
+
     electronLocalShortcut.register(win, 'shift+d', () => {
         if (!devMode) {
             devMode = true;
@@ -216,7 +224,7 @@ ipcMain.on('open-config', () => {
     } else if (process.platform === 'darwin') {
         spawn('open', ['-e', userConfig.path]);
     } else if (process.platform === 'linux') {
-        exec('open -e ' + userConfig.path);
+        spawn('open', ['-e', userConfig.path]);
     }
 })
 
@@ -441,11 +449,36 @@ ipcMain.on('getHueDevices', async () => {
     }
     await hueControl(0, 255, 0, userBrightness, "getDevices");
 })
+let canReceive = false;
+ipcMain.on('nanoLeaf', async (event, args) => {
+    win.webContents.send('toaster', 'Opening NanoLeaf Setup Window...')
+    if(args === 'openWindow'){
+        if (debugPreference) {
+            console.log("Opening NanoLeaf Setup Window...")
+            win.webContents.send('log', 'Opening NanoLeaf Setup Window...')
+        }
+        await nanoLeafInitialize('openWindow');
+    }
+    if(args === 'device'){
+        canReceive = true;
+    }
+})
+ipcMain.on('nanoLeafDevice', async (event, args) => {
+    if(canReceive){
+        if (debugPreference) {
+            console.log("Connecting to NanoLeaf Device...")
+            win.webContents.send('log', 'Connecting to NanoLeaf Device...')
+        }
+        await nanoLeafAuth(args);
+        canReceive = false;
+    }
+})
 
 ipcMain.on('saveConfig', (event, arg) => {
     let deviceIDs = arg.deviceIDs;
     let deviceIPs = arg.deviceIPs;
     let hueDeviceIDs = arg.hueDevices;
+    let nanoLeafDevices = arg.nanoLeafDevices;
 
     const {
         defaultBrightness,
@@ -456,6 +489,7 @@ ipcMain.on('saveConfig', (event, arg) => {
         securityCode,
         hueToken,
         goveeDisable,
+        nanoLeafDisable,
         yeelightDisable,
         updateChannel,
         analytics,
@@ -466,6 +500,7 @@ ipcMain.on('saveConfig', (event, arg) => {
     deviceIPs = deviceIPs.split(',');
     deviceIDs = deviceIDs.split(',');
     hueDeviceIDs = hueDeviceIDs.split(',');
+    nanoLeafDevices = nanoLeafDevices.split(',');
 
 
     userConfig.set('Settings.generalSettings.defaultBrightness', parseInt(defaultBrightness));
@@ -478,6 +513,8 @@ ipcMain.on('saveConfig', (event, arg) => {
     userConfig.set('Settings.ikeaSettings.deviceIDs', deviceIDs);
     userConfig.set('Settings.ikeaSettings.ikeaDisable', ikeaDisable);
     userConfig.set('Settings.goveeSettings.goveeDisable', goveeDisable);
+    userConfig.set('Settings.nanoLeafSettings.nanoLeafDisable', nanoLeafDisable);
+    userConfig.set('Settings.nanoLeafSettings.devices', nanoLeafDevices);
     userConfig.set('Settings.yeeLightSettings.yeeLightDisable', yeelightDisable);
     userConfig.set('Settings.yeeLightSettings.deviceIPs', deviceIPs);
     userConfig.set('Settings.advancedSettings.updateChannel', updateChannel);
@@ -515,7 +552,7 @@ ipcMain.on('saveConfigColors', (event, arg) => {
 
 async function migrateConfig() {
     // if the config version is != 1 migrate the config
-    if (userConfig.get('version') !== 4) {
+    if (userConfig.get('version') !== 5) {
         console.log('Migrating config...')
         win.webContents.send('log', 'Migrating config...')
         // migrate the config
@@ -575,6 +612,10 @@ async function migrateConfig() {
                 "goveeSettings": {
                     "goveeDisable": oldConfig.Settings.goveeSettings.goveeDisable
                 },
+                "nanoLeafSettings": {
+                    "nanoLeafDisable": true,
+                    "devices": undefined
+                },
                 "yeeLightSettings": {
                     "yeeLightDisable": oldConfig.Settings.yeeLightSettings.yeeLightDisable,
                     "deviceIPs": oldConfig.Settings.yeeLightSettings.deviceIPs
@@ -585,7 +626,7 @@ async function migrateConfig() {
                     "analytics": oldConfig.Settings.advancedSettings.analytics
                 }
             },
-            "version": 4
+            "version": 5
         }
         userConfig.clear();
         userConfig.set(newConfig);
@@ -780,7 +821,7 @@ setTimeout(function () {
     checkApis()
 }, 1500);
 
-setTimeout(function () {
+async function initIntegrations(){
     if (!ikeaDisabled) {
         ikeaInitialize().then(r => {
             if (debugPreference) {
@@ -802,8 +843,7 @@ setTimeout(function () {
             }
         });
     }
-}, 700);
-
+}
 setTimeout(function () {
     setInterval(function () {
         if (BrowserWindow.getAllWindows().length > 0) {
@@ -1223,6 +1263,61 @@ async function hueControl(r, g, b, brightness, action) {
                 );
             }
         }
+    }
+}
+async function nanoLeafInitialize(action) {
+    if(action === "openWindow"){
+        // create a new browser window and open the nanoleaf-setup.html file
+        const win = new BrowserWindow({
+            width: 800,
+            height: 650,
+            webPreferences: {
+                nodeIntegration: true,
+                contextIsolation: false
+            }
+        });
+        win.removeMenu();
+        electronLocalShortcut.register(win, 'ctrl+shift+f7', () => {
+            win.webContents.openDevTools();
+        })
+        await win.loadFile('nanoleaf-setup.html');
+    }
+}
+async function nanoLeafAuth(ip) {
+    let deviceToken;
+    if (typeof ip !== "string") {
+        ip = JSON.stringify(ip);
+    }
+    try {
+        const AuroraAPI = require('nanoleaves');
+        const auroraTemp = new AuroraAPI({
+            host: ip
+        });
+        auroraTemp.newToken().then(token => {
+            deviceToken = token;
+        });
+        if (deviceToken !== "string") {
+            deviceToken = JSON.stringify(deviceToken);
+        }
+        if(userConfig.get('Settings.nanoLeafSettings.devices') === []){
+            userConfig.set('Settings.nanoLeafSettings.devices', [
+                {
+                    ip: ip,
+                    token: deviceToken
+                }
+            ]);
+        } else if(userConfig.get('Settings.nanoLeafSettings.devices') !== []){
+            // add new device to the array
+            let newDevices = userConfig.get('Settings.nanoLeafSettings.devices');
+            newDevices.push({
+                ip: ip,
+                token: deviceToken
+            });
+            userConfig.set('Settings.nanoLeafSettings.devices', newDevices);
+        }
+    } catch (err) {
+        console.log("Failed to connect to the Nanoleaf device, error:", err);
+        win.webContents.send('toaster', "Failed to connect to the Nanoleaf device, error: " + err);
     }
 }
 
