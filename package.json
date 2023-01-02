@@ -1,6 +1,6 @@
 {
   "name": "F1MV-Lights-Integration",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "Connect your Govee, Tradfri, Hue, Nanoleaf and YeeLight lights to your F1MV",
   "author": "JustJoostNL",
   "main": "main.js",

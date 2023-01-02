@@ -1687,6 +1687,7 @@ async function sendAnalytics() {
 
 
 let updateFound = false;
+let noUpdateFound = false;
 autoUpdater.on('update-downloaded', (event, releaseNotes, releaseName) => {
     if (process.platform !== 'darwin') {
         const dialogOpts = {
@@ -1713,9 +1714,11 @@ autoUpdater.on('update-available', () => {
     }
 })
 autoUpdater.on('update-not-available', () => {
-    console.log("There is no update available.")
-    win.webContents.send('log', 'There is no update available.')
-    win.webContents.send('toaster', 'There is no update available.')
+    if (!noUpdateFound) {
+        console.log("There are no updates available.")
+        win.webContents.send('log', 'There are no updates available.')
+        noUpdateFound = true;
+    }
 })
 
 autoUpdater.on('error', (message) => {
