@@ -1,8 +1,8 @@
 {
   "name": "F1MV-Lights-Integration",
   "version": "1.0.4",
-  "description": "Connect your Govee, Tradfri and YeeLight lights to your F1MV",
-  "author": "koningcool",
+  "description": "Connect your Govee, Tradfri, Hue, Nanoleaf and YeeLight lights to your F1MV",
+  "author": "JustJoostNL",
   "main": "main.js",
   "type": "commonjs",
   "scripts": {
@@ -13,17 +13,17 @@
   },
   "dependencies": {
     "@sentry/electron": "^4.1.2",
-    "@sentry/tracing": "^7.24.2",
+    "@sentry/tracing": "^7.28.1",
     "color-convert": "^2.0.1",
     "cors": "^2.8.5",
     "electron-localshortcut": "^3.2.1",
     "electron-store": "^8.1.0",
     "electron-updater": "^5.3.0",
     "express": "^4.18.2",
-    "govee-lan-control": "^2.0.1",
-    "jquery": "^3.6.1",
-    "nanoleaves": "^1.2.0",
-    "node-fetch": "^2.6.1",
+    "govee-lan-control": "^2.1.0",
+    "jquery": "^3.6.3",
+    "nanoleaves": "github:erictrinh/nanoleaves",
+    "node-fetch": "^2.6.7",
     "node-hue-api": "^5.0.0-beta.15",
     "node-persist": "^3.1.0",
     "node-tradfri-client": "3.1.1",
@@ -32,6 +32,7 @@
   },
   "devDependencies": {
     "electron": "^22.0.0",
-    "electron-builder": "^24.0.0-alpha.8"
+    "electron-builder": "^24.0.0-alpha.8",
+    "prettier": "2.8.1"
   }
 }

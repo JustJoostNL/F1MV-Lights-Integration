@@ -1,6 +1,6 @@
 productName: "F1MV-Lights-Integration"
-appId: "com.koningcool.f1mv.lights.integration"
-copyright: "Copyright © 2022 koningcool"
+appId: "com.justjoostnl.f1mv.lights.integration"
+copyright: "Copyright © 2022 JustJoostNL"
 
 generateUpdatesFilesForAllChannels: true
 asar: false
@@ -17,6 +17,7 @@ directories:
   output: "out"
 
 win:
+  publisherName: "JustJoostNL"
   icon: "build/icon.png"
   target:
     - target: "nsis"
@@ -49,6 +50,9 @@ nsis:
 
 appImage:
   category: "Utility"
+
+releaseInfo:
+  releaseNotesFile: "release-notes.md"
 
 publish:
   provider: "github"

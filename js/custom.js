@@ -68,6 +68,15 @@ $(function() {
             $('#hueAPI').find('.status').removeClass('success').addClass('error')
         }
     })
+    ipcRenderer.on('nanoLeafAPI', (event, arg) => {
+        if (arg === 'online') {
+            $('#nanoLeafAPI').find('.status').removeClass('error').addClass('success')
+        }
+
+        if (arg === 'offline') {
+            $('#nanoLeafAPI').find('.status').removeClass('success').addClass('error')
+        }
+    })
 
     ipcRenderer.on('settings', (event, arg) => {
         $('#brightness-input').val(arg.Settings.generalSettings.defaultBrightness)
@@ -134,6 +143,11 @@ $(function() {
             $('#disable-nanoleaf-setting').removeAttr('checked')
         }
 
+        $('#nanoleaf-lights').show();
+        arg.Settings.nanoLeafSettings.devices.forEach(function(light) {
+            $('#nanoleaf-lights').append(`<div class="check" id="${light.host}"><span class="status success"></span><p>${light.host}</p></div>`)
+        })
+
 
         $('#green-flag-red').val(arg.Settings.generalSettings.colorSettings.green.r)
         $('#green-flag-green').val(arg.Settings.generalSettings.colorSettings.green.g)
@@ -192,7 +206,6 @@ function saveConfig() {
         goveeDisable: $('#disable-govee-setting').is(':checked'),
         devicesDisabledIPs: $('#govee-dis-devices-input').val(),
         nanoLeafDisable: $('#disable-nanoleaf-setting').is(':checked'),
-        nanoLeafDevices: $('#nanoleaf-device-ip-input').val(),
         yeeLightDisable: $('#disable-yeelight-setting').is(':checked'),
         deviceIPs: $('#yeelight-device-ip-input').val(),
         updateChannel: $('#update-channel-setting').val(),

@@ -26,7 +26,7 @@ const ikeaDisabled = userConfig.get('Settings.ikeaSettings.ikeaDisable')
 const goveeDisabled = userConfig.get('Settings.goveeSettings.goveeDisable')
 const yeelightDisabled = userConfig.get('Settings.yeeLightSettings.yeeLightDisable')
 const hueDisabled = userConfig.get('Settings.hueSettings.hueDisable')
-const nanoLeafDisabled = userConfig.get('Settings.nanoleafSettings.nanoleafDisable')
+const nanoLeafDisabled = userConfig.get('Settings.nanoLeafSettings.nanoLeafDisable')
 
 
 const analyticsPreference = userConfig.get('Settings.advancedSettings.analytics')
@@ -35,7 +35,7 @@ let analyticsSent = false;
 
 const updateChannel = userConfig.get('Settings.advancedSettings.updateChannel')
 autoUpdater.channel = updateChannel;
-const updateURL = "https://api.joost.systems/github/repos/koningcool/f1mv-lights-integration/releases"
+const updateURL = "https://api.joost.systems/github/repos/JustJoostNL/f1mv-lights-integration/releases"
 
 const userBrightness = parseInt(userConfig.get('Settings.generalSettings.defaultBrightness'))
 
@@ -44,7 +44,7 @@ let devMode = false;
 let ikeaOnline = false;
 let goveeOnline = false;
 let hueOnline = false;
-let nanoleafOnline = false;
+let nanoLeafOnline = false;
 
 let TState;
 let SState;
@@ -110,7 +110,11 @@ function createWindow() {
             ::-webkit-scrollbar-thumb:hover {
                 background: #555;
             }
-        `).then(r => console.log(r));
+        `).then(r => {
+            if(alwaysFalse) {
+                console.log(r)
+            }
+        });
     });
 
     win.loadFile('index.html').then(r => {
@@ -118,6 +122,21 @@ function createWindow() {
             console.log(r)
         }
     })
+    if (BrowserWindow.getAllWindows().length === 0) {
+        setTimeout(function () {
+            initIntegrations().then(r => {
+                if (alwaysFalse) {
+                    console.log(r)
+                }
+            });
+        }, 1000);
+    } else if(BrowserWindow.getAllWindows().length === 1) {
+        initIntegrations().then(r => {
+            if (alwaysFalse) {
+                console.log(r)
+            }
+        });
+    }
 }
 
 
@@ -126,14 +145,40 @@ app.whenReady().then(() => {
     const {
         exec
     } = require('child_process');
-    // check if node js is installed using node -v, if not, give the user 2 options, exit or proceed
-    exec('node -v', (err) => {
-        if (err) {
+    if(process.platform === win) {
+        exec('node -v', (err) => {
+            if (err) {
+                // node is not installed
+                dialog.showMessageBox(win, {
+                    type: "error",
+                    title: "Node JS is not installed",
+                    message: "Node JS is not installed, please install Node JS to continue, if you are not going to use the Ikea integration, you can continue without installing Node JS",
+                    buttons: ["Exit", "Proceed"],
+                    defaultId: 0,
+                    cancelId: 0
+                }).then(result => {
+                    if (result.response === 0) {
+                        app.quit();
+                    } else {
+
+                    }
+                })
+            } else {
+                // node is installed
+                if (debugPreference) {
+                    console.log("Node JS is installed")
+                }
+            }
+        });
+    }
+    else if (process.platform === "darwin" || process.platform === "linux") {
+        const child = spawn('node', ['-v']);
+        child.on('error', (err) => {
             // node is not installed
             dialog.showMessageBox(win, {
                 type: "error",
                 title: "Node JS is not installed",
-                message: "Node JS is not installed, please install Node JS to continue, (only proceed if you know what you are doing!!!)",
+                message: "Node JS is not installed, please install Node JS to continue, if you are not going to use the Ikea integration, you can continue without installing Node JS",
                 buttons: ["Exit", "Proceed"],
                 defaultId: 0,
                 cancelId: 0
@@ -144,21 +189,15 @@ app.whenReady().then(() => {
 
                 }
             })
-        } else {
-            // node is installed
+        });
+        child.on('exit', (code) => {
             if (debugPreference) {
                 console.log("Node JS is installed")
             }
-        }
-    });
+        });
+    }
     migrateConfig().then(r => {
         if (debugPreference) {
-            console.log(r)
-        }
-    });
-
-    initIntegrations().then(r => {
-        if (alwaysFalse) {
             console.log(r)
         }
     });
@@ -204,7 +243,6 @@ app.whenReady().then(() => {
         if (BrowserWindow.getAllWindows().length === 0) {
             createWindow()
         }
-
     })
 })
 
@@ -273,6 +311,9 @@ async function simulateFlag(arg) {
         if (!hueDisabled) {
             await hueControl(greenColor.r, greenColor.g, greenColor.b, userBrightness, "on");
         }
+        if (!nanoLeafDisabled) {
+            await nanoLeafControl(greenColor.r, greenColor.g, greenColor.b, userBrightness, "on");
+        }
         simulatedFlagCounter++
     }
     if (arg === 'Red') {
@@ -287,6 +328,9 @@ async function simulateFlag(arg) {
         }
         if (!hueDisabled) {
             await hueControl(redColor.r, redColor.g, redColor.b, userBrightness, "on");
+        }
+        if (!nanoLeafDisabled) {
+            await nanoLeafControl(redColor.r, redColor.g, redColor.b, userBrightness, "on");
         }
         simulatedFlagCounter++
     }
@@ -303,6 +347,9 @@ async function simulateFlag(arg) {
         if (!hueDisabled) {
             await hueControl(yellowColor.r, yellowColor.g, yellowColor.b, userBrightness, "on");
         }
+        if (!nanoLeafDisabled) {
+            await nanoLeafControl(yellowColor.r, yellowColor.g, yellowColor.b, userBrightness, "on");
+        }
         simulatedFlagCounter++
     }
     if (arg === 'SC') {
@@ -317,6 +364,9 @@ async function simulateFlag(arg) {
         }
         if (!hueDisabled) {
             await hueControl(safetyCarColor.r, safetyCarColor.g, safetyCarColor.b, userBrightness, "on");
+        }
+        if (!nanoLeafDisabled) {
+            await nanoLeafControl(safetyCarColor.r, safetyCarColor.g, safetyCarColor.b, userBrightness, "on");
         }
         simulatedFlagCounter++
     }
@@ -333,6 +383,9 @@ async function simulateFlag(arg) {
         if (!hueDisabled) {
             await hueControl(vscColor.r, vscColor.g, vscColor.b, userBrightness, "on");
         }
+        if (!nanoLeafDisabled) {
+            await nanoLeafControl(vscColor.r, vscColor.g, vscColor.b, userBrightness, "on");
+        }
         simulatedFlagCounter++
     }
     if (arg === 'vscEnding') {
@@ -348,6 +401,9 @@ async function simulateFlag(arg) {
         if (!hueDisabled) {
             await hueControl(vscEndingColor.r, vscEndingColor.g, vscEndingColor.b, userBrightness, "on");
         }
+        if (!nanoLeafDisabled) {
+            await nanoLeafControl(vscEndingColor.r, vscEndingColor.g, vscEndingColor.b, userBrightness, "on");
+        }
         simulatedFlagCounter++
     }
     if (arg === 'alloff') {
@@ -362,6 +418,9 @@ async function simulateFlag(arg) {
         }
         if (!hueDisabled) {
             await hueControl(0, 0, 0, 0, "off");
+        }
+        if (!nanoLeafDisabled) {
+            await nanoLeafControl(0, 0, 0, 0, "off");
         }
         simulatedFlagCounter++
     }
@@ -427,7 +486,7 @@ ipcMain.on('send-config', () => {
     win.webContents.send('settings', config);
 })
 ipcMain.on('restart-app', () => {
-    if (!ikeaDisabled) {
+    if (!ikeaDisabled && ikeaOnline) {
         fetch("http://localhost:9898/quit")
     }
     app.relaunch();
@@ -451,11 +510,10 @@ ipcMain.on('getHueDevices', async () => {
 })
 let canReceive = false;
 ipcMain.on('nanoLeaf', async (event, args) => {
-    win.webContents.send('toaster', 'Opening NanoLeaf Setup Window...')
     if(args === 'openWindow'){
         if (debugPreference) {
             console.log("Opening NanoLeaf Setup Window...")
-            win.webContents.send('log', 'Opening NanoLeaf Setup Window...')
+            win.webContents.send('toaster', 'Opening Nanoleaf Setup Window...')
         }
         await nanoLeafInitialize('openWindow');
     }
@@ -466,8 +524,8 @@ ipcMain.on('nanoLeaf', async (event, args) => {
 ipcMain.on('nanoLeafDevice', async (event, args) => {
     if(canReceive){
         if (debugPreference) {
-            console.log("Connecting to NanoLeaf Device...")
-            win.webContents.send('log', 'Connecting to NanoLeaf Device...')
+            console.log("Connecting to Nanoleaf Device...")
+            win.webContents.send('log', 'Connecting to Nanoleaf Device...')
         }
         await nanoLeafAuth(args);
         canReceive = false;
@@ -478,7 +536,6 @@ ipcMain.on('saveConfig', (event, arg) => {
     let deviceIDs = arg.deviceIDs;
     let deviceIPs = arg.deviceIPs;
     let hueDeviceIDs = arg.hueDevices;
-    let nanoLeafDevices = arg.nanoLeafDevices;
 
     const {
         defaultBrightness,
@@ -500,7 +557,6 @@ ipcMain.on('saveConfig', (event, arg) => {
     deviceIPs = deviceIPs.split(',');
     deviceIDs = deviceIDs.split(',');
     hueDeviceIDs = hueDeviceIDs.split(',');
-    nanoLeafDevices = nanoLeafDevices.split(',');
 
 
     userConfig.set('Settings.generalSettings.defaultBrightness', parseInt(defaultBrightness));
@@ -514,7 +570,6 @@ ipcMain.on('saveConfig', (event, arg) => {
     userConfig.set('Settings.ikeaSettings.ikeaDisable', ikeaDisable);
     userConfig.set('Settings.goveeSettings.goveeDisable', goveeDisable);
     userConfig.set('Settings.nanoLeafSettings.nanoLeafDisable', nanoLeafDisable);
-    userConfig.set('Settings.nanoLeafSettings.devices', nanoLeafDevices);
     userConfig.set('Settings.yeeLightSettings.yeeLightDisable', yeelightDisable);
     userConfig.set('Settings.yeeLightSettings.deviceIPs', deviceIPs);
     userConfig.set('Settings.advancedSettings.updateChannel', updateChannel);
@@ -614,7 +669,7 @@ async function migrateConfig() {
                 },
                 "nanoLeafSettings": {
                     "nanoLeafDisable": true,
-                    "devices": undefined
+                    "devices": []
                 },
                 "yeeLightSettings": {
                     "yeeLightDisable": oldConfig.Settings.yeeLightSettings.yeeLightDisable,
@@ -813,12 +868,22 @@ setTimeout(function () {
 
 setInterval(function () {
     if (BrowserWindow.getAllWindows().length > 0) {
-        checkApis()
+        checkApis().then(r => {
+            if (alwaysFalse) {
+                console.log(r)
+            }
+        });
     }
 }, 3000);
 
 setTimeout(function () {
-    checkApis()
+    if (BrowserWindow.getAllWindows().length > 0) {
+        checkApis().then(r => {
+            if (alwaysFalse) {
+                console.log(r)
+            }
+        });
+    }
 }, 1500);
 
 async function initIntegrations(){
@@ -843,8 +908,9 @@ async function initIntegrations(){
             }
         });
     }
+    await integrationAPIStatus();
 }
-setTimeout(function () {
+async function integrationAPIStatus(){
     setInterval(function () {
         if (BrowserWindow.getAllWindows().length > 0) {
             if (ikeaOnline) {
@@ -853,13 +919,20 @@ setTimeout(function () {
             if (goveeOnline) {
                 win.webContents.send('goveeAPI', 'online');
             }
+            if (hueOnline) {
+                win.webContents.send('hueAPI', 'online');
+            }
             if (!yeelightDisabled) {
                 win.webContents.send('yeelightAPI', 'online')
             }
+            const nanoLeafDevices = userConfig.get('Settings.nanoLeafSettings.devices')
+            if (nanoLeafDevices.length > 0) {
+                nanoLeafOnline = true
+                win.webContents.send('nanoLeafAPI', 'online')
+            }
         }
-    }, 1500);
-}, 1000);
-
+    }, 500);
+}
 
 async function goveeControl(r, g, b, brightness, action) {
     const Govee = require("govee-lan-control");
@@ -949,22 +1022,32 @@ async function ikeaInitialize() {
     } else {
         debug = "";
     }
-    let startPath = app.getAppPath();
-    startPath = startPath + "\\ikea.js"
+    const path = require('path');
+    let startPath = path.join(app.getAppPath(), 'ikea.js');
     const startCommand = 'node ' + startPath + ' ' + '--' + securityCode + ' ' + debug;
     let child;
+    let errorDetected = false;
     child = exec(startCommand, (err) => {
         if (err) {
-            console.log("Failed to start the IKEA Tradfri plugin: " + err);
-            win.webContents.send('log', "Failed to start the IKEA Tradfri plugin: " + err);
-            return;
-        }
-        if (debugPreference) {
-            console.log("IKEA Tradfri server started");
-            win.webContents.send('log', "IKEA Tradfri server started");
+            errorDetected = true;
+            if(err.message.includes('EADDRINUSE')){
+                ikeaOnline = false;
+                console.log("The IKEA Tradfri Server is already running, stopping the old instance and starting a new one.");
+                win.webContents.send('log', "The IKEA Tradfri Server is already running, stopping the old instance and starting a new one.");
+                fetch('http://localhost:9898/quit');
+                setTimeout(function () {
+                    ikeaInitialize();
+                }, 1000);
+            }
         }
     });
-    ikeaOnline = true;
+    if(!errorDetected){
+        ikeaOnline = true;
+        if(debugPreference){
+            console.log("IKEA Tradfri plugin started successfully");
+            win.webContents.send('log', "IKEA Tradfri plugin started successfully");
+        }
+    }
     child.stdout.on('data', (data) => {
         console.log(data);
         win.webContents.send('log', data);
@@ -974,7 +1057,7 @@ async function ikeaInitialize() {
         win.webContents.send('log', data);
 
     });
-    if (!ikeaDisabled) {
+    if (!ikeaDisabled && ikeaOnline) {
         app.on('window-all-closed', () => {
             fetch('http://localhost:9898/quit');
         });
@@ -1025,7 +1108,7 @@ async function ikeaControl(r, g, b, brightness, action, flag) {
 
 
     }
-    if (action === "on") {
+    if (action === "on" && ikeaOnline === true) {
         lightsOnCounter++;
         let hue;
         if (debugPreference) {
@@ -1056,7 +1139,7 @@ async function ikeaControl(r, g, b, brightness, action, flag) {
         });
 
     }
-    if (action === "off") {
+    if (action === "off" && ikeaOnline === true) {
         lightsOffCounter++;
         colorDevices.forEach(device => {
             device = parseInt(device);
@@ -1113,6 +1196,7 @@ async function yeelightControl(r, g, b, brightness, action) {
 
 const hue = require("node-hue-api");
 const fs = require("fs");
+const colorConvert = require("color-convert");
 let hueApi;
 let hueClient;
 let hueLights;
@@ -1123,17 +1207,10 @@ async function hueInitialize() {
     hueApi = await hue.discovery.mdnsSearch();
     if (hueApi.length === 0) {
         win.webContents.send('toaster', "No Hue bridges found");
-        win.webContents.send('log', "No Hue bridges found");
         console.error("Unable to find a Hue bridge on the network");
-        setInterval(() => {
-            win.webContents.send('hueAPI', 'offline');
-        }, 1000);
         hueOnline = false;
     } else {
         hueOnline = true;
-        setInterval(() => {
-            win.webContents.send('hueAPI', 'online');
-        }, 1000);
         hueClient = await hue.v3.api.createLocal(hueApi[0].ipaddress).connect();
         // toast that the bridge is found + IP
         if (debugPreference) {
@@ -1182,7 +1259,6 @@ async function hueInitialize() {
             try {
                 if (err.getHueErrorType() === 101) {
                     win.webContents.send('toaster', "The Link button on the bridge was not pressed. Please press the Link button and try again.");
-                    win.webContents.send('log', "The Link button on the bridge was not pressed. Please press the Link button and try again.");
                 } else {
                     win.webContents.send('log', `Unexpected Error: ${err.message}`);
                     if (debugPreference) {
@@ -1209,7 +1285,6 @@ async function hueControl(r, g, b, brightness, action) {
             if (hueLights === null || hueLights === undefined) {
                 console.log("No Hue lights found or an error occurred");
                 win.webContents.send('toaster', "No Hue lights found or an error occurred");
-                win.webContents.send('log', "No Hue lights found or an error occurred");
             } else {
                 let html = "<!DOCTYPE html><html lang='en'><head><title>Hue Lights</title><link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css'><style>table { background-color: #333; color: #fff; }</style><script src='https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js'></script></head><body><div class='container'><table class='striped'><thead><tr><th>Light Name</th><th>Light ID</th><th>Device is on</th></tr></thead><tbody>";
                 hueLights.forEach((light) => {
@@ -1265,63 +1340,218 @@ async function hueControl(r, g, b, brightness, action) {
         }
     }
 }
+let nanoLeafWin;
 async function nanoLeafInitialize(action) {
     if(action === "openWindow"){
         // create a new browser window and open the nanoleaf-setup.html file
-        const win = new BrowserWindow({
+        nanoLeafWin = new BrowserWindow({
             width: 800,
-            height: 650,
+            height: 900,
             webPreferences: {
                 nodeIntegration: true,
                 contextIsolation: false
             }
         });
-        win.removeMenu();
-        electronLocalShortcut.register(win, 'ctrl+shift+f7', () => {
-            win.webContents.openDevTools();
+        nanoLeafWin.removeMenu();
+        electronLocalShortcut.register(nanoLeafWin, 'ctrl+shift+f7', () => {
+            nanoLeafWin.webContents.openDevTools();
         })
-        await win.loadFile('nanoleaf-setup.html');
+        nanoLeafWin.webContents.on('did-finish-load', () => {
+            nanoLeafWin.webContents.insertCSS(`
+            ::-webkit-scrollbar {
+                width: 10px;
+            }
+            ::-webkit-scrollbar-track {
+                background: #1e1e1e;
+            }
+            ::-webkit-scrollbar-thumb {
+                background: #888;
+            }
+            ::-webkit-scrollbar-thumb:hover {
+                background: #555;
+            }
+        `);
+        });
+
+        await nanoLeafWin.loadFile('nanoleaf-setup.html');
     }
 }
+let deviceToken;
+let authFailed = false;
+let exist = false;
 async function nanoLeafAuth(ip) {
-    let deviceToken;
-    if (typeof ip !== "string") {
-        ip = JSON.stringify(ip);
-    }
-    try {
-        const AuroraAPI = require('nanoleaves');
-        const auroraTemp = new AuroraAPI({
-            host: ip
-        });
-        auroraTemp.newToken().then(token => {
-            deviceToken = token;
-        });
-        if (deviceToken !== "string") {
-            deviceToken = JSON.stringify(deviceToken);
-        }
-        if(userConfig.get('Settings.nanoLeafSettings.devices') === []){
-            userConfig.set('Settings.nanoLeafSettings.devices', [
-                {
-                    ip: ip,
-                    token: deviceToken
+    nanoLeafWin.webContents.send('log', "Connecting to the Nanoleaf device, this may take a few seconds...");
+    authFailed = false;
+    const AuroraAPI = require('nanoleaves');
+    const auroraTemp = new AuroraAPI({
+        host: ip
+    });
+    auroraTemp.newToken().then(token => {
+        deviceToken = token;
+        // check if the ip/hostname is already in the config, if so, update the token, if not, add it
+        const nanoLeafDevices = userConfig.get('Settings.nanoLeafSettings.devices');
+        if (nanoLeafDevices.length > 0) {
+            for (const device of nanoLeafDevices) {
+                if (device.host === ip) {
+                    exist = true;
+                    nanoLeafWin.webContents.send('log', "Device already found, updating token...");
+                    userConfig.set('Settings.nanoLeafSettings.devices.' + nanoLeafDevices.indexOf(device) + '.token', token);
+                    nanoLeafWin.webContents.send('log', "Token updated!");
+                    nanoLeafWin.webContents.send('log', "This window will close in 7 seconds, and you will be asked if you want to add another device.");
+                    setTimeout(() => {
+                        nanoLeafWin.close();
+                    }, 7000);
+                    setTimeout(() => {
+                        addOtherDeviceDialog();
+                    }, 8000);
+                    break;
                 }
-            ]);
-        } else if(userConfig.get('Settings.nanoLeafSettings.devices') !== []){
-            // add new device to the array
-            let newDevices = userConfig.get('Settings.nanoLeafSettings.devices');
-            newDevices.push({
-                ip: ip,
+            }
+        }
+        if(!exist) {
+            if (userConfig.get('Settings.nanoLeafSettings.devices') === []) {
+                userConfig.set('Settings.nanoLeafSettings.devices', [
+                    {
+                        host: ip,
+                        token: deviceToken
+                    }
+                ]);
+            } else if (userConfig.get('Settings.nanoLeafSettings.devices') !== []) {
+                // add new device to the array
+                let newDevices = userConfig.get('Settings.nanoLeafSettings.devices');
+                newDevices.push({
+                    host: ip,
+                    token: deviceToken
+                });
+                userConfig.set('Settings.nanoLeafSettings.devices', newDevices);
+            }
+        }
+    }).catch(err => {
+        // check if the error includes 401
+        if (err.message.includes("401")) {
+            nanoLeafWin.webContents.send('log', "The authorization failed, did you press and hold the power button? Please read the text above and try again.");
+            authFailed = true;
+        } else {
+            nanoLeafWin.webContents.send('log', "An error occurred while connecting to the Nanoleaf device, please try again.");
+        }
+    });
+    await new Promise(r => setTimeout(r, 2000));
+    if(!authFailed && exist === false) {
+        let found;
+        const nanoLeafDevices = userConfig.get('Settings.nanoLeafSettings.devices');
+        for (const device of nanoLeafDevices) {
+            if (device.host === ip) {
+                found = true;
+                deviceToken = device.token;
+                break;
+            }
+        }
+        if (!found) {
+            nanoLeafWin.webContents.send('log', "Error: Could not connect to the Nanoleaf device, please try again.");
+            return;
+        }
+        if (found) {
+            // create a new aurora object with the token and host
+            const aurora = new AuroraAPI({
+                host: ip,
                 token: deviceToken
             });
-            userConfig.set('Settings.nanoLeafSettings.devices', newDevices);
+            try {
+                aurora.identify().then(() => {
+                    nanoLeafWin.webContents.send('log', "Successfully connected to the Nanoleaf device!");
+                    nanoLeafWin.webContents.send('log', "If you saw the Nanoleaf device blink, the connection is successful, and you can close this window!");
+                    nanoLeafWin.webContents.send('log', "If you didn't see the Nanoleaf device blink, please try again!");
+                });
+                const dialogOptions = {
+                    type: 'info',
+                    buttons: ['The connection was successful!', 'I want to try again!'],
+                    title: 'Connection Review!',
+                    message: 'If you saw the Nanoleaf device blink, the connection is successful, and you can close this window!\nIf you didn\'t saw the Nanoleaf device blink, please try again!',
+                    defaultId: 0
+                };
+                dialog.showMessageBox(nanoLeafWin, dialogOptions).then(result => {
+                    if (result.response === 0) {
+                        nanoLeafWin.close();
+                        const config = userConfig.store;
+                        win.webContents.send('settings', config);
+                        setTimeout(() => {
+                            addOtherDeviceDialog();
+                        }, 500);
+                    } else{
+                        nanoLeafWin.close();
+                        nanoLeafInitialize("openWindow");
+                        // remove the device just added from the config
+                        let newDevices = userConfig.get('Settings.nanoLeafSettings.devices');
+                        newDevices.pop();
+                        userConfig.set('Settings.nanoLeafSettings.devices', newDevices);
+                        setTimeout(() => {
+                            nanoLeafWin.webContents.send('log', "You can now try again!");
+                        }, 1000);
+                    }
+                });
+            } catch (error) {
+                if (error.message.includes("401")) {
+                    nanoLeafWin.webContents.send('log', "Error: The token is invalid, please try again.");
+                } else {
+                    nanoLeafWin.webContents.send('log', "Error: Could not connect to the Nanoleaf device, please try again.");
+                }
+            }
         }
-    } catch (err) {
-        console.log("Failed to connect to the Nanoleaf device, error:", err);
-        win.webContents.send('toaster', "Failed to connect to the Nanoleaf device, error: " + err);
     }
 }
 
-function checkApis() {
+async function nanoLeafControl(r, g, b, brightness, action){
+    if(action === "on" && nanoLeafOnline){
+        let hue;
+        const colorConvert = require("color-convert");
+        const hsl = colorConvert.rgb.hsl(r, g, b);
+        hue = hsl[0];
+        if (debugPreference) {
+            console.log("Hue: " + hue);
+        }
+        const nanoLeafDevices = userConfig.get('Settings.nanoLeafSettings.devices');
+        for (const device of nanoLeafDevices) {
+            const AuroraAPI = require('nanoleaves');
+            const aurora = new AuroraAPI({
+                host: device.host,
+                token: device.token
+            });
+            aurora.on();
+            aurora.setHue(hue);
+            aurora.setBrightness(brightness);
+        }
+    } else if(action === "off" && nanoLeafOnline){
+        const nanoLeafDevices = userConfig.get('Settings.nanoLeafSettings.devices');
+        for (const device of nanoLeafDevices) {
+            const AuroraAPI = require('nanoleaves');
+            const aurora = new AuroraAPI({
+                host: device.host,
+                token: device.token
+            });
+            aurora.off();
+        }
+    }
+}
+function addOtherDeviceDialog(){
+    const dialogOptions = {
+        type: 'info',
+        buttons: ['Yes', 'No'],
+        title: 'Add another device?',
+        message: 'Do you want to add another device?',
+        defaultId: 0
+    };
+    dialog.showMessageBox(nanoLeafWin, dialogOptions).then(result => {
+        if (result.response === 0) {
+            nanoLeafInitialize("openWindow").then(r => {
+                if(alwaysFalse){
+                    console.log(r);
+                }
+            });
+        }
+    });
+}
+
+async function checkApis() {
     timesCheckAPIS++
     fetch(updateURL)
         .then(function () {
@@ -1481,6 +1711,11 @@ autoUpdater.on('update-available', () => {
         console.log("There is an update available. Unfortunately, auto-updating is not supported on macOS. Please download the latest version from GitHub.")
         win.webContents.send('log', 'There is an update available. Unfortunately, auto-updating is not supported on macOS. Please download the latest version from GitHub.')
     }
+})
+autoUpdater.on('update-not-available', () => {
+    console.log("There is no update available.")
+    win.webContents.send('log', 'There is no update available.')
+    win.webContents.send('toaster', 'There is no update available.')
 })
 
 autoUpdater.on('error', (message) => {

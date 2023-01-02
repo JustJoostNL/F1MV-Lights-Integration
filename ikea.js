@@ -162,6 +162,9 @@ app.get("/quit", (req, res) => {
     }
     process.exit();
 });
+app.get("/ping", (req, res) => {
+    res.json({ status: "ok" });
+});
 
 app.get("*", (req, res) => {
     res.json({ status: "not found" });
