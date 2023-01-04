@@ -1,1 +1,0 @@
-- Fixed an issue where a "No update available" message is shown every few seconds.

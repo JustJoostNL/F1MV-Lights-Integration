@@ -73,6 +73,8 @@ const safetyCarColor = userConfig.get('Settings.generalSettings.colorSettings.sa
 const vscColor = userConfig.get('Settings.generalSettings.colorSettings.vsc');
 const vscEndingColor = userConfig.get('Settings.generalSettings.colorSettings.vscEnding');
 
+let noUpdateFound = false;
+
 const {
     exec,
     spawn
@@ -435,6 +437,7 @@ async function simulateFlag(arg) {
 }
 
 ipcMain.on('updatecheck', () => {
+    noUpdateFound = false;
     console.log(autoUpdater.checkForUpdates())
     win.webContents.send('log', 'Checking for updates...')
 })
@@ -1687,7 +1690,6 @@ async function sendAnalytics() {
 
 
 let updateFound = false;
-let noUpdateFound = false;
 autoUpdater.on('update-downloaded', (event, releaseNotes, releaseName) => {
     if (process.platform !== 'darwin') {
         const dialogOpts = {

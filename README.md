@@ -13,12 +13,12 @@
   <p align="center">
     Connect your smart home lights to your F1MV.
     <br />
-    <a href="https://github.com/koningcool/F1MV-Lights-Integration/wiki/"><strong>Wiki »</strong></a>
+    <a href="https://github.com/JustJoostNL/F1MV-Lights-Integration/wiki/"><strong>Wiki »</strong></a>
     <br />
     <br />
-    <a href="https://github.com/koningcool/F1MV-Lights-Integration/issues">Report Bug</a>
+    <a href="https://github.com/JustJoostNL/F1MV-Lights-Integration/issues">Report Bug</a>
     ·
-    <a href="https://github.com/koningcool/F1MV-Lights-Integration/issues">Request Feature</a>
+    <a href="https://github.com/JustJoostNL/F1MV-Lights-Integration/issues">Request Feature</a>
   </p>
 </div>
 
@@ -70,6 +70,7 @@ This project is a bridge between F1MV and your smart home lights. It allows you 
 [![html][html]][html-url]
 [![css][css]][css-url]
 [![Philips Hue][philips-hue]][philips-hue-url]
+[![Nanoleaf][nanoleaf]][nanoleaf-url]
 [![Tradfri][tradfri]][tradfri-url]
 [![Govee][govee]][govee-url]
 [![Yeelight][yeelight]][yeelight-url]
@@ -92,6 +93,7 @@ Getting started is very easy. Just follow the steps below. If you have any quest
 - You also need one or multiple lights of the following brands:
   - [Philips Hue](https://www2.meethue.com/en-us)
   - [Govee][govee-url]
+  - [Nanoleaf][nanoleaf-url]
   - [Ikea Tradfri][tradfri-url]
   - [YeeLight][yeelight-url]
 
@@ -167,16 +169,16 @@ Distributed under the GNU General Public License v3.0. See `LICENSE.md` for more
 
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
-[contributors-shield]: https://img.shields.io/github/contributors/koningcool/F1MV-Lights-Integration.svg?style=for-the-badge
-[contributors-url]: https://github.com/koningcool/F1MV-Lights-Integration/graphs/contributors
-[forks-shield]: https://img.shields.io/github/forks/koningcool/F1MV-Lights-Integration.svg?style=for-the-badge
-[forks-url]: https://github.com/koningcool/F1MV-Lights-Integration/network/members
-[stars-shield]: https://img.shields.io/github/stars/koningcool/F1MV-Lights-Integration.svg?style=for-the-badge
-[stars-url]: https://github.com/koningcool/F1MV-Lights-Integration/stargazers
-[issues-shield]: https://img.shields.io/github/issues/koningcool/F1MV-Lights-Integration.svg?style=for-the-badge
-[issues-url]: https://github.com/koningcool/F1MV-Lights-Integration/issues
-[license-shield]: https://img.shields.io/github/license/koningcool/F1MV-Lights-Integration.svg?style=for-the-badge
-[license-url]: https://github.com/koningcool/F1MV-Lights-Integration/blob/main/LICENSE.MD
+[contributors-shield]: https://img.shields.io/github/contributors/JustJoostNL/F1MV-Lights-Integration.svg?style=for-the-badge
+[contributors-url]: https://github.com/JustJoostNL/F1MV-Lights-Integration/graphs/contributors
+[forks-shield]: https://img.shields.io/github/forks/JustJoostNL/F1MV-Lights-Integration.svg?style=for-the-badge
+[forks-url]: https://github.com/JustJoostNL/F1MV-Lights-Integration/network/members
+[stars-shield]: https://img.shields.io/github/stars/JustJoostNL/F1MV-Lights-Integration.svg?style=for-the-badge
+[stars-url]: https://github.com/JustJoostNL/F1MV-Lights-Integration/stargazers
+[issues-shield]: https://img.shields.io/github/issues/JustJoostNL/F1MV-Lights-Integration.svg?style=for-the-badge
+[issues-url]: https://github.com/JustJoostNL/F1MV-Lights-Integration/issues
+[license-shield]: https://img.shields.io/github/license/JustJoostNL/F1MV-Lights-Integration.svg?style=for-the-badge
+[license-url]: https://github.com/JustJoostNL/F1MV-Lights-Integration/blob/main/LICENSE.MD
 [product-screenshot]: https://i.ibb.co/df5WVkN/icon.png
 [javascript]: https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black
 [javascript-url]: https://www.javascript.com/
@@ -192,13 +194,15 @@ Distributed under the GNU General Public License v3.0. See `LICENSE.md` for more
 [f1mv-url]: https://beta.f1mv.com
 [nodejs]: https://img.shields.io/badge/Node.js-43853D?style=for-the-badge&logo=node.js&logoColor=white
 [nodejs-url]: https://nodejs.org/en/
-[releases-url]: https://github.com/koningcool/F1MV-Lights-Integration/releases
-[wikiurl]: https://github.com/koningcool/F1MV-Lights-Integration/wiki/
-[issuesurl]: https://github.com/koningcool/F1MV-Lights-Integration/issues
+[releases-url]: https://github.com/JustJoostNL/F1MV-Lights-Integration/releases
+[wikiurl]: https://github.com/JustJoostNL/F1MV-Lights-Integration/wiki/
+[issuesurl]: https://github.com/JustJoostNL/F1MV-Lights-Integration/issues
 [css]: https://img.shields.io/badge/CSS-1572B6?style=for-the-badge&logo=css3&logoColor=white
 [css-url]: https://www.w3.org/Style/CSS/Overview.en.html
 [philips-hue]: https://img.shields.io/badge/Philips%20Hue-0002bb?style=for-the-badge&logo=Philips%20Hue&logoColor=white
 [philips-hue-url]: https://www2.meethue.com/en-us
+[nanoleaf]: https://img.shields.io/badge/Nanoleaf-0002gg?style=for-the-badge&logo=Nanoleaf&logoColor=white
+[nanoleaf-url]: https://nanoleaf.me/en-US/
 [tradfri]: https://img.shields.io/badge/IKEA%20Tradfri-00539f.svg?style=for-the-badge&logo=ikea&logoColor=white
 [tradfri-url]: https://www.ikea.com/us/en/cat/smart-lighting-36812/
 [govee]: https://img.shields.io/badge/Govee-000666.svg?style=for-the-badge&logo=govee&logoColor=white
@@ -206,5 +210,5 @@ Distributed under the GNU General Public License v3.0. See `LICENSE.md` for more
 [yeelight]: https://img.shields.io/badge/Yeelight-ff6c00.svg?style=for-the-badge&logo=yeelight&logoColor=white
 [yeelight-url]: https://www.yeelight.com/
 
-[github_username]: koningcool
+[github_username]: JustJoostNL
 [repo_name]: F1MV-Lights-Integration
