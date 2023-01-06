@@ -177,7 +177,6 @@ $(function() {
         $('#log').prepend(`<p style="color: white;">[${new Date().toLocaleTimeString('en-GB', {hour12: false})}] ${arg}</p>`)
     })
     
-    
     ipcRenderer.on('dev', (event, arg) => {
         if (arg === true) {
             $('#dev').show()

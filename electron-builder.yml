@@ -3,7 +3,6 @@ appId: "com.justjoostnl.f1mv.lights.integration"
 copyright: "Copyright © 2022 JustJoostNL"
 
 generateUpdatesFilesForAllChannels: true
-asar: false
 
 files: [
   "!.node-persist/**/*",
@@ -17,7 +16,6 @@ directories:
   output: "out"
 
 win:
-  publisherName: "JustJoostNL"
   icon: "build/icon.png"
   target:
     - target: "nsis"
@@ -30,11 +28,14 @@ mac:
   category: "public.app-category.utilities"
   minimumSystemVersion: "10.12.0"
   icon: "build/icon.png"
+  x64ArchFiles: [
+    "Contents/Resources/app/node_modules/fsevents/fsevents.node"
+  ]
   target:
     - target: "dmg"
       arch:
-        - x64
-        - arm64
+        - universal
+
 
 linux:
     icon: "build/icon.png"
@@ -50,9 +51,6 @@ nsis:
 
 appImage:
   category: "Utility"
-
-releaseInfo:
-  releaseNotesFile: "release-notes.md"
 
 publish:
   provider: "github"
