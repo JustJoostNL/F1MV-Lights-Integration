@@ -30,7 +30,7 @@ const nanoLeafDisabled = userConfig.get('Settings.nanoLeafSettings.nanoLeafDisab
 
 
 const analyticsPreference = userConfig.get('Settings.advancedSettings.analytics')
-const analyticsURL = "https://api.joost.systems/f1mv-lights-integration/analytics"
+const analyticsURL = "https://v2api.joost.systems/f1mv-lights-integration/analytics"
 let analyticsSent = false;
 
 const updateChannel = userConfig.get('Settings.advancedSettings.updateChannel')
@@ -229,13 +229,16 @@ app.whenReady().then(() => {
         }
     })
 
-    const body = `"userActive": "true"`
-    fetch("https://api.joost.systems/f1mv-lights-integration/analytics/useractive", {
+    const body = JSON.stringify({
+        "userActive": "true"
+    });
+    const userActiveURL = analyticsURL + "/useractive"
+    fetch(userActiveURL, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify(body)
+        body: body
     })
 
     autoUpdater.checkForUpdates().then(r => {
@@ -262,14 +265,7 @@ app.on('window-all-closed', async () => {
 
 ipcMain.on('open-config', () => {
     win.webContents.send('log', "Opening config file...");
-    // open the config file (path is the variable userConfig.path), use the text editor that is default for the OS
-    if (process.platform === 'win32') {
-        exec('start notepad.exe ' + userConfig.path);
-    } else if (process.platform === 'darwin') {
-        spawn('open', ['-e', userConfig.path]);
-    } else if (process.platform === 'linux') {
-        spawn('open', ['-e', userConfig.path]);
-    }
+    userConfig.openInEditor()
 })
 
 ipcMain.on('simulate', (event, arg) => {
@@ -543,7 +539,6 @@ ipcMain.on('saveConfig', (event, arg) => {
     let deviceIDs = arg.deviceIDs;
     let deviceIPs = arg.deviceIPs;
     let hueDeviceIDs = arg.hueDevices;
-
     const {
         defaultBrightness,
         autoTurnOffLights,
@@ -554,7 +549,7 @@ ipcMain.on('saveConfig', (event, arg) => {
         hueToken,
         goveeDisable,
         nanoLeafDisable,
-        yeelightDisable,
+        yeeLightDisable,
         updateChannel,
         analytics,
         debugMode,
@@ -577,7 +572,7 @@ ipcMain.on('saveConfig', (event, arg) => {
     userConfig.set('Settings.ikeaSettings.ikeaDisable', ikeaDisable);
     userConfig.set('Settings.goveeSettings.goveeDisable', goveeDisable);
     userConfig.set('Settings.nanoLeafSettings.nanoLeafDisable', nanoLeafDisable);
-    userConfig.set('Settings.yeeLightSettings.yeeLightDisable', yeelightDisable);
+    userConfig.set('Settings.yeeLightSettings.yeeLightDisable', yeeLightDisable);
     userConfig.set('Settings.yeeLightSettings.deviceIPs', deviceIPs);
     userConfig.set('Settings.advancedSettings.updateChannel', updateChannel);
     userConfig.set('Settings.advancedSettings.analytics', analytics);
@@ -1107,7 +1102,6 @@ async function ikeaControl(r, g, b, brightness, action, flag) {
             const response = await fetch('http://localhost:9898/getSpectrum/' + devices[i]);
             const json = await response.json();
             devicesDone.push(devices[i]);
-            console.log(devicesDone)
             if (json.spectrum === "rgb") {
                 colorDevices.push(devices[i]);
             } else {
@@ -1675,6 +1669,22 @@ async function checkApis() {
 }
 
 async function sendAnalytics() {
+    let analyticsSuccess = false;
+    let userActiveSuccess = false;
+    const userActiveBody = JSON.stringify({
+        "userActive": "false"
+    });
+    const userActiveURL = analyticsURL + "/useractive"
+    const userActiveRes = await fetch(userActiveURL, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: userActiveBody
+    });
+    if (userActiveRes.status === 200) {
+        userActiveSuccess = true;
+    }
     if (analyticsPreference && !analyticsSent) {
         if(debugPreference){
             console.log("Sending analytics...");
@@ -1690,27 +1700,19 @@ async function sendAnalytics() {
         const year = currentDate.getFullYear()
         const date = day + "-" + month + "-" + year
 
-        const analyticsURLV2 = "https://api.joost.systems/f1mv-lights-integration/analytics/pretty"
-
         const config = userConfig.store;
 
         //remove personal data from config
         delete config.Settings.ikeaSettings.securityCode;
         delete config.Settings.hueSettings.token;
+        for (const device of config.Settings.nanoLeafSettings.devices) {
+            delete device.token;
+        }
 
         const data = {
             "time_of_sending": currentTime,
             "date_of_sending": date,
             "config": config,
-            "light_on_counter": lightsOnCounter,
-            "light_off_counter": lightsOffCounter,
-            "simulated_flag_counter": simulatedFlagCounter,
-            "flag_switch_counter": flagSwitchCounter,
-            "times_apis_are_checked": timesCheckAPIS,
-            "times_f1mv_api_called": timesF1MVApiCalled,
-            "dev_mode_was_activated": developerModeWasActivated
-        }
-        const dataV2 = {
             "light_on_counter": lightsOnCounter,
             "light_off_counter": lightsOffCounter,
             "simulated_flag_counter": simulatedFlagCounter,
@@ -1726,44 +1728,28 @@ async function sendAnalytics() {
             },
             body: JSON.stringify(data)
         }
-        const optionsV2 = {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(dataV2)
-        }
-        let responseVersion1;
-        let ResponseVersion2;
-        const responseV2 = await fetch(analyticsURLV2, optionsV2); {
-            if (responseV2.status === 200) {
-                ResponseVersion2 = true;
-            } else {
-                console.log("Analytics failed to send, status code: " + responseV2.status);
-            }
-        }
         const response = await fetch(analyticsURL, options); {
             const responseData = await response.json();
             if (debugPreference) {
                 console.log(responseData);
             }
             if (response.status === 200) {
-                responseVersion1 = true;
+                analyticsSuccess = true;
+            } else {
+                analyticsSuccess = false;
+                if (debugPreference) {
+                    console.log("Analytics failed to send with status code: " + response.status + " and error: " + responseData.error);
+                }
             }
         }
-        if (responseVersion1 && ResponseVersion2) {
-            console.log("Analytics sent successfully!");
+        if(userActiveSuccess && analyticsSuccess){
             analyticsSent = true;
+            console.log("All analytics are successfully sent!");
         }
-        const body = `"userActive": "false"`
-        await fetch("https://api.joost.systems/f1mv-lights-integration/analytics/useractive", {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(body)
-        });
-        analyticsSent = true;
+    } else {
+        if(debugPreference){
+            console.log("Analytics are disabled or already sent!");
+        }
     }
 }
 
