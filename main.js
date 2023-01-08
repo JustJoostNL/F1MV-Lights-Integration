@@ -243,31 +243,29 @@ app.whenReady().then(() => {
         })
 
         ipcMain.on('test-button-test-mode', async () => {
-            console.log("Running action mapped on test button...")
-            win.webContents.send('log', 'Running action mapped on test button...')
             razerTest()
         })
 
         function razerTest(){
-            const Chroma = require("razer-chroma-nodejs");
+                win.webContents.send('log', 'Running Razer test...')
+                const Chroma = require("razer-chroma-nodejs");
+                    Chroma.util.init(() => {
+                        win.webContents.send('log', 'Razer Chroma SDK initialized!')
+                        win.webContents.send('log', 'Setting color...')
 
-            Chroma.util.init(() => {
-                win.webContents.send('log', 'Razer Chroma SDK initialized!')
-                win.webContents.send('log', 'Setting color...')
+                        // Set the mouse color to green
+                        Chroma.effects.all.setColor(0, 255, 0);
 
-                // Set the mouse color to green
-                Chroma.effects.all.setColor(0, 255, 0);
+                        win.webContents.send('log', 'Color set!')
+                        win.webContents.send('log', 'Closing Razer Chroma SDK...')
 
-                win.webContents.send('log', 'Color set!')
-                win.webContents.send('log', 'Closing Razer Chroma SDK...')
-
-                // Close Chroma after 5 seconds
-                setTimeout(() => {
-                    Chroma.util.close(() => {
-                        console.log("Chroma SDK Stopped!");
+                        // Close Chroma after 5 seconds
+                        setTimeout(() => {
+                            Chroma.util.close(() => {
+                                console.log("Chroma SDK Stopped!");
+                            });
+                        }, 5000);
                     });
-                }, 5000);
-            });
         }
     }
 
