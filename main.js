@@ -1,4 +1,6 @@
 'use strict';
+let testBuild = true;
+let testMode = false;
 const {
     app,
     dialog,
@@ -229,6 +231,46 @@ app.whenReady().then(() => {
         }
     })
 
+    if (testBuild){
+        electronLocalShortcut.register(win, 'shift+t', () => {
+            if (!testMode){
+                testMode = true;
+                win.webContents.send('test-mode', true);
+            } else if (testMode){
+                testMode = false;
+                win.webContents.send('test-mode', false);
+            }
+        })
+
+        ipcMain.on('test-button-test-mode', async () => {
+            console.log("Running action mapped on test button...")
+            win.webContents.send('log', 'Running action mapped on test button...')
+            razerTest()
+        })
+
+        function razerTest(){
+            const Chroma = require("razer-chroma-nodejs");
+
+            Chroma.util.init(() => {
+                win.webContents.send('log', 'Razer Chroma SDK initialized!')
+                win.webContents.send('log', 'Setting color...')
+
+                // Set the mouse color to green
+                Chroma.effects.all.setColor(0, 255, 0);
+
+                win.webContents.send('log', 'Color set!')
+                win.webContents.send('log', 'Closing Razer Chroma SDK...')
+
+                // Close Chroma after 5 seconds
+                setTimeout(() => {
+                    Chroma.util.close(() => {
+                        console.log("Chroma SDK Stopped!");
+                    });
+                }, 5000);
+            });
+        }
+    }
+
     const body = JSON.stringify({
         "userActive": "true"
     });
@@ -442,7 +484,7 @@ ipcMain.on('updatecheck', () => {
     win.webContents.send('log', 'Checking for updates...')
 })
 
-ipcMain.on('test-button', async () => {
+ipcMain.on('test-button-dev', async () => {
     console.log("Running action mapped on test button...")
     win.webContents.send('log', 'Running action mapped on test button...')
     // action here
@@ -1247,6 +1289,7 @@ async function yeelightControl(r, g, b, brightness, action) {
 
 const hue = require("node-hue-api");
 const fs = require("fs");
+const Chroma = require("razer-chroma-nodejs");
 let hueApi;
 let hueClient;
 let hueLights;

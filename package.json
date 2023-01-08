@@ -28,6 +28,7 @@
     "node-persist": "^3.1.0",
     "node-tradfri-client": "3.1.1",
     "process": "^0.11.10",
+    "razer-chroma-nodejs": "^1.3.2",
     "yeelight.io": "^1.1.7"
   },
   "devDependencies": {

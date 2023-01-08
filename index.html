@@ -136,6 +136,16 @@
     </div>
 </div>
 
+<div style="display:none" class="container simulation" id="test">
+    <h2 class="simulation__title">Test Area</h2>
+    <div class="simulation__buttons">
+        <a class="waves-effect waves-light btn-large simulation__button tooltipped" onclick="testButtonTestMode()" data-position="bottom" data-tooltip="Test button">
+            <em style="color:green" class="material-icons">lightbulb</em>
+            Turn all Razer Devices green
+        </a>
+    </div>
+</div>
+
 <div style="display:none" class="container simulation" id="dev">
     <h2 class="simulation__title">Developer area</h2>
     <div class="simulation__buttons">
@@ -155,7 +165,7 @@
             <em class="material-icons">code_off</em>
             Toggle auto-start devtools
         </a>
-        <a class="waves-effect waves-light btn-large simulation__button tooltipped" onclick="testButton()" data-position="bottom" data-tooltip="Run the action currently mapped on the test button">
+        <a class="waves-effect waves-light btn-large simulation__button tooltipped" onclick="testButtonDev()" data-position="bottom" data-tooltip="Run the action currently mapped on the test button">
             <em class="material-icons">smart_button</em>
             Test Button
         </a>

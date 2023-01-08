@@ -186,6 +186,15 @@ $(function() {
         }
     })
 
+    ipcRenderer.on('test-mode', (event, arg) => {
+        if (arg === true) {
+            $('#test').show()
+
+        } else if(arg === false) {
+            $('#test').hide()
+        }
+    })
+
     ipcRenderer.on('auto-devtools', (event, arg) => {
         // change the icon from code to code_off
         $('#dev').find('i').removeClass('code').addClass('code_off')
@@ -366,8 +375,11 @@ function toggleF1MVApiCheck() {
 function toggleAutoDevToolsCheck() {
     ipcRenderer.send('auto-devtools')
 }
-function testButton() {
-    ipcRenderer.send('test-button')
+function testButtonDev() {
+    ipcRenderer.send('test-button-dev')
+}
+function testButtonTestMode() {
+    ipcRenderer.send('test-button-test-mode')
 }
 function ikeaGetIds() {
     ipcRenderer.send('ikea-get-ids')
