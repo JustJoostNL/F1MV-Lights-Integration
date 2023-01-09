@@ -32,6 +32,7 @@ $(function() {
     })
 
     ipcRenderer.on('f1tvAPI', (event, arg) => {
+        console.log(arg)
         if (arg === 'online') {
             $('#f1tvAPI').find('.status').removeClass('error').addClass('success')
         }
@@ -218,6 +219,47 @@ $(function() {
         // change the icon from code to code_off
         $('#dev').find('i').removeClass('code').addClass('code_off')
     })
+    ipcRenderer.on('hide-disabled-integrations', (event, arg) => {
+        if (arg.Settings.hueSettings.hueDisable) {
+            $('#hueAPI').hide()
+        } else {
+            $('#hueAPI').show()
+        }
+        if(arg.Settings.yeeLightSettings.yeeLightDisable) {
+            $('#yeelightAPI').hide()
+        } else {
+            $('#yeelightAPI').show()
+        }
+        if(arg.Settings.nanoLeafSettings.nanoLeafDisable) {
+            $('#nanoLeafAPI').hide()
+        } else {
+            $('#nanoLeafAPI').show()
+        }
+        if(arg.Settings.openRGBSettings.openRGBDisable) {
+            $('#openRGBAPI').hide()
+        } else {
+            $('#openRGBAPI').show()
+        }
+        if(arg.Settings.goveeSettings.goveeDisable) {
+            $('#goveeAPI').hide()
+        } else {
+            $('#goveeAPI').show()
+        }
+        if(arg.Settings.ikeaSettings.ikeaDisable) {
+            $('#ikeaAPI').hide()
+        } else {
+            $('#ikeaAPI').show()
+        }
+
+    })
+ipcRenderer.on('toggle-logs', (event, arg) => {
+    if (arg === true) {
+        $('#logs').show()
+
+    } else if(arg === false) {
+        $('#logs').hide()
+    }
+})
 
 function saveConfig() {
     ipcRenderer.send('saveConfig', {
@@ -408,6 +450,12 @@ function ikeaGetIds() {
 function sendConfig() {
     ipcRenderer.send('send-config')
 }
+function hideDisabledIntegrations(){
+    ipcRenderer.send('hide-disabled-integrations')
+}
 function restartApp() {
     ipcRenderer.send('restart-app')
+}
+function toggleLogs(){
+    ipcRenderer.send('toggle-logs')
 }

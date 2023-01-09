@@ -33,7 +33,7 @@ const openRGBDisabled = userConfig.get('Settings.openRGBSettings.openRGBDisable'
 
 
 const analyticsPreference = userConfig.get('Settings.advancedSettings.analytics')
-const analyticsURL = "https://v2api.joost.systems/f1mv-lights-integration/analytics"
+const APIURL = "https://api.joost.systems/api/v2"
 let analyticsSent = false;
 
 const updateChannel = userConfig.get('Settings.advancedSettings.updateChannel')
@@ -49,6 +49,10 @@ let goveeOnline = false;
 let hueOnline = false;
 let nanoLeafOnline = false;
 let openRGBOnline = false;
+
+let f1LiveSession = false;
+let f1mvAPIOnline = false;
+let updateAPIOnline = false;
 
 let colorDevices = [];
 let whiteDevices = [];
@@ -97,12 +101,15 @@ Sentry.init({
 
 function createWindow() {
     win = new BrowserWindow({
-        width: 1500,
-        height: 800,
+        width: 820,
+        height: 750,
         webPreferences: {
             nodeIntegration: true,
             contextIsolation: false,
-        }
+            zoomFactor: 1.0
+        },
+        resizable: false,
+        maximizable: false,
     })
     win.removeMenu();
     // use better scrollbar
@@ -252,7 +259,7 @@ app.whenReady().then(() => {
     const body = JSON.stringify({
         "userActive": "true"
     });
-    const userActiveURL = analyticsURL + "/useractive"
+    const userActiveURL = APIURL + "/f1mv-lights-integration/analytics/useractive"
     fetch(userActiveURL, {
         method: 'POST',
         headers: {
@@ -304,6 +311,18 @@ ipcMain.on('toggle-devtools', () => {
         win.webContents.closeDevTools()
     } else {
         win.webContents.openDevTools()
+    }
+})
+let logState = false;
+ipcMain.on('toggle-logs', () => {
+    if (logState) {
+        logState = false;
+        win.webContents.send('toggle-logs', false);
+        win.webContents.send('log', 'Log visibility toggled off.')
+    } else if (!logState) {
+        logState = true;
+        win.webContents.send('toggle-logs', true)
+        win.webContents.send('log', 'Log visibility toggled on.')
     }
 })
 
@@ -527,6 +546,10 @@ ipcMain.on('send-config', () => {
     console.log("Loading config file...")
     const config = userConfig.store;
     win.webContents.send('settings', config);
+})
+ipcMain.on('hide-disabled-integrations', () => {
+    const config = userConfig.store
+    win.webContents.send('hide-disabled-integrations', config)
 })
 ipcMain.on('restart-app', () => {
     if (!ikeaDisabled && ikeaOnline) {
@@ -971,16 +994,6 @@ setInterval(function () {
     }
 }, 3000);
 
-setTimeout(function () {
-    if (BrowserWindow.getAllWindows().length > 0) {
-        checkApis().then(r => {
-            if (alwaysFalse) {
-                console.log(r)
-            }
-        });
-    }
-}, 1500);
-
 async function initIntegrations(){
     if (!ikeaDisabled) {
         ikeaInitialize().then(r => {
@@ -1013,6 +1026,7 @@ async function initIntegrations(){
     await integrationAPIStatus();
 }
 async function integrationAPIStatus(){
+    await otherAPIStatus()
     setInterval(function () {
         if (BrowserWindow.getAllWindows().length > 0) {
             if (ikeaOnline) {
@@ -1034,6 +1048,22 @@ async function integrationAPIStatus(){
             if (nanoLeafDevices.length > 0) {
                 nanoLeafOnline = true
                 win.webContents.send('nanoLeafAPI', 'online')
+            }
+        }
+    }, 500);
+}
+
+async function otherAPIStatus(){
+    setInterval(function () {
+        if (BrowserWindow.getAllWindows().length > 0) {
+            if (f1mvAPIOnline) {
+                win.webContents.send('f1mvAPI', 'online');
+            }
+            if(f1LiveSession){
+                win.webContents.send('f1tvAPI', 'online');
+            }
+            if (updateAPIOnline){
+                win.webContents.send('updateAPI', 'online');
             }
         }
     }, 500);
@@ -1214,9 +1244,32 @@ async function ikeaControl(r, g, b, brightness, action, flag) {
             height: 600,
             webPreferences: {
                 nodeIntegration: true
-            }
+            },
+            resizable: false,
+            maximizable: false,
+            minimizable: true,
         });
         win.removeMenu();
+        win.webContents.on('did-finish-load', () => {
+            win.webContents.insertCSS(`
+            ::-webkit-scrollbar {
+                width: 10px;
+            }
+            ::-webkit-scrollbar-track {
+                background: #1e1e1e;
+            }
+            ::-webkit-scrollbar-thumb {
+                background: #888;
+            }
+            ::-webkit-scrollbar-thumb:hover {
+                background: #555;
+            }
+        `).then(r => {
+                if(alwaysFalse) {
+                    console.log(r)
+                }
+            });
+        });
         await win.loadFile(savePath);
 
 
@@ -1483,7 +1536,9 @@ async function nanoLeafInitialize(action) {
             webPreferences: {
                 nodeIntegration: true,
                 contextIsolation: false
-            }
+            },
+            resizable: false,
+            maximizable: false
         });
         nanoLeafWin.removeMenu();
         electronLocalShortcut.register(nanoLeafWin, 'ctrl+shift+f7', () => {
@@ -1800,43 +1855,24 @@ async function checkApis() {
     timesCheckAPIS++
     fetch(updateURL)
         .then(function () {
-            win.webContents.send('updateAPI', 'online')
+            updateAPIOnline = true;
         })
         .catch(function () {
-            win.webContents.send('updateAPI', 'offline')
+            updateAPIOnline = false;
         });
 
     fetch(f1mvURL)
         .then(function () {
-            win.webContents.send('f1mvAPI', 'online')
+            f1mvAPIOnline = true;
         })
         .catch(function () {
-            win.webContents.send('f1mvAPI', 'offline')
+            f1mvAPIOnline = false;
         });
 
-    const f1tvURL = "https://f1tv.formula1.com/1.0/R/ENG/WEB_DASH/ALL/EVENTS/LIVENOW/F1_TV_Pro_Annual/2";
-    //send a fetch request to the F1TV api and check in the json for resultObj.items and if it is empty then the api is offline
-    fetch(f1tvURL)
-        .then(function (response) {
-            return response.json();
-        })
-        .then(function (data) {
-            if (data.resultObj.items.length === 0) {
-                win.webContents.send('f1tvAPI', 'offline')
-                if (debugPreference) {
-                    console.log("No live session detected!");
-                }
-
-            } else {
-                win.webContents.send('f1tvAPI', 'online')
-                if (debugPreference) {
-                    console.log("Live session detected, API returned: " + data.resultObj.items);
-                }
-            }
-        })
-        .catch(function () {
-            win.webContents.send('f1tvAPI', 'offline')
-        });
+    const liveSessionCheckURL = APIURL + "/f1tv/checklivesession";
+    const liveSessionRes = await fetch(liveSessionCheckURL)
+    const liveSessionData = await liveSessionRes.json()
+    f1LiveSession = liveSessionData.liveSessionFound === true;
 }
 
 async function sendAnalytics() {
@@ -1845,7 +1881,7 @@ async function sendAnalytics() {
     const userActiveBody = JSON.stringify({
         "userActive": "false"
     });
-    const userActiveURL = analyticsURL + "/useractive"
+    const userActiveURL = APIURL + "/f1mv-lights-integration/analytics/useractive"
     const userActiveRes = await fetch(userActiveURL, {
         method: 'POST',
         headers: {
@@ -1899,6 +1935,7 @@ async function sendAnalytics() {
             },
             body: JSON.stringify(data)
         }
+        const analyticsURL = APIURL + "/f1mv-lights-integration/analytics"
         const response = await fetch(analyticsURL, options); {
             const responseData = await response.json();
             if (debugPreference) {
