@@ -74,6 +74,7 @@ This project is a bridge between F1MV and your smart home lights. It allows you 
 [![Tradfri][tradfri]][tradfri-url]
 [![Govee][govee]][govee-url]
 [![Yeelight][yeelight]][yeelight-url]
+[![OpenRGB][openrgb]][openrgb-url]
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -96,9 +97,10 @@ Getting started is very easy. Just follow the steps below. If you have any quest
   - [Nanoleaf][nanoleaf-url]
   - [Ikea Tradfri][tradfri-url]
   - [YeeLight][yeelight-url]
+  - [Any OpenRGB compatible device][openrgb-url]
 
 
-- *With more brands hopefully coming soon!*
+- *More brands may come soon!*
 
 ### Installation
 
@@ -209,6 +211,9 @@ Distributed under the GNU General Public License v3.0. See `LICENSE.md` for more
 [govee-url]: https://us.govee.com/
 [yeelight]: https://img.shields.io/badge/Yeelight-ff6c00.svg?style=for-the-badge&logo=yeelight&logoColor=white
 [yeelight-url]: https://www.yeelight.com/
+[openrgb]: https://img.shields.io/badge/OpenRGB-0002bb.svg?style=for-the-badge&logo=openrgb&logoColor=white
+[openrgb-url]: https://openrgb.org/
+[openrgb-devices-url]: https://openrgb.org/devices.html
 
 [github_username]: JustJoostNL
 [repo_name]: F1MV-Lights-Integration
