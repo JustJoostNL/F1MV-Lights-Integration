@@ -106,7 +106,7 @@ function createWindow() {
         webPreferences: {
             nodeIntegration: true,
             contextIsolation: false,
-            zoomFactor: 1.0
+            zoomFactor: 0.8
         },
         resizable: false,
         maximizable: false,
