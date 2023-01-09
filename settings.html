@@ -163,6 +163,30 @@
     <small style="font-size: 12px; color:gray">Enable this if you don't have Govee device's</small>
 </div>
 <div class="container simulation">
+    <h2 class="simulation__title">OpenRGB Settings</h2>
+    <p>
+        <label>
+            <input type="checkbox" id="disable-openrgb-setting" class="filled-in" />
+            <span>Disable OpenRGB Integration</span>
+        </label>
+    </p>
+    <small style="font-size: 12px; color:gray">Enable this if you don't want to use OpenRGB integration</small>
+    <p>
+        <label>
+            <span>OpenRGB Server IP</span>
+            <input style="color:white" type="text" id="openrgb-ip-input" value="" />
+            <span style="color:grey">This is the hostname or IP of the system OpenRGB is running on. (default: localhost)</span>
+        </label>
+    </p>
+    <p>
+        <label>
+            <span>OpenRGB Server Port</span>
+            <input style="color:white" type="text" id="openrgb-port-input" value="" />
+            <span style="color:grey">This is the port of the OpenRGB server, you can find this port in the "SDK Server" tab in the OpenRGB software. (default: 6742)</span>
+        </label>
+    </p>
+</div>
+<div class="container simulation">
     <h2 class="simulation__title">Nanoleaf Settings</h2>
     <div class="simulation__buttons">
         <a class="waves-effect waves-light btn-large simulation__button tooltipped" onclick="nanoLeaf('openWindow')" data-position="bottom" data-tooltip="Search for Nanoleaf devices">

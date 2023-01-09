@@ -1,5 +1,5 @@
 'use strict';
-let testBuild = true;
+let testBuild = false;
 let testMode = false;
 const {
     app,
@@ -29,6 +29,7 @@ const goveeDisabled = userConfig.get('Settings.goveeSettings.goveeDisable')
 const yeelightDisabled = userConfig.get('Settings.yeeLightSettings.yeeLightDisable')
 const hueDisabled = userConfig.get('Settings.hueSettings.hueDisable')
 const nanoLeafDisabled = userConfig.get('Settings.nanoLeafSettings.nanoLeafDisable')
+const openRGBDisabled = userConfig.get('Settings.openRGBSettings.openRGBDisable')
 
 
 const analyticsPreference = userConfig.get('Settings.advancedSettings.analytics')
@@ -47,6 +48,7 @@ let ikeaOnline = false;
 let goveeOnline = false;
 let hueOnline = false;
 let nanoLeafOnline = false;
+let openRGBOnline = false;
 
 let colorDevices = [];
 let whiteDevices = [];
@@ -243,30 +245,8 @@ app.whenReady().then(() => {
         })
 
         ipcMain.on('test-button-test-mode', async () => {
-            razerTest()
+            win.webContents.send('log', 'There is currently no test action for this button')
         })
-
-        function razerTest(){
-                win.webContents.send('log', 'Running Razer test...')
-                const Chroma = require("razer-chroma-nodejs");
-                    Chroma.util.init(() => {
-                        win.webContents.send('log', 'Razer Chroma SDK initialized!')
-                        win.webContents.send('log', 'Setting color...')
-
-                        // Set the mouse color to green
-                        Chroma.effects.all.setColor(0, 255, 0);
-
-                        win.webContents.send('log', 'Color set!')
-                        win.webContents.send('log', 'Closing Razer Chroma SDK...')
-
-                        // Close Chroma after 5 seconds
-                        setTimeout(() => {
-                            Chroma.util.close(() => {
-                                console.log("Chroma SDK Stopped!");
-                            });
-                        }, 5000);
-                    });
-        }
     }
 
     const body = JSON.stringify({
@@ -356,6 +336,9 @@ async function simulateFlag(arg) {
         if (!nanoLeafDisabled) {
             await nanoLeafControl(greenColor.r, greenColor.g, greenColor.b, userBrightness, "on");
         }
+        if (!openRGBDisabled) {
+            await openRGBControl(greenColor.r, greenColor.g, greenColor.b, userBrightness, "on");
+        }
         simulatedFlagCounter++
     }
     if (arg === 'Red') {
@@ -373,6 +356,9 @@ async function simulateFlag(arg) {
         }
         if (!nanoLeafDisabled) {
             await nanoLeafControl(redColor.r, redColor.g, redColor.b, userBrightness, "on");
+        }
+        if (!openRGBDisabled) {
+            await openRGBControl(redColor.r, redColor.g, redColor.b, userBrightness, "on");
         }
         simulatedFlagCounter++
     }
@@ -392,6 +378,9 @@ async function simulateFlag(arg) {
         if (!nanoLeafDisabled) {
             await nanoLeafControl(yellowColor.r, yellowColor.g, yellowColor.b, userBrightness, "on");
         }
+        if (!openRGBDisabled) {
+            await openRGBControl(yellowColor.r, yellowColor.g, yellowColor.b, userBrightness, "on");
+        }
         simulatedFlagCounter++
     }
     if (arg === 'SC') {
@@ -409,6 +398,9 @@ async function simulateFlag(arg) {
         }
         if (!nanoLeafDisabled) {
             await nanoLeafControl(safetyCarColor.r, safetyCarColor.g, safetyCarColor.b, userBrightness, "on");
+        }
+        if (!openRGBDisabled) {
+            await openRGBControl(safetyCarColor.r, safetyCarColor.g, safetyCarColor.b, userBrightness, "on");
         }
         simulatedFlagCounter++
     }
@@ -428,6 +420,9 @@ async function simulateFlag(arg) {
         if (!nanoLeafDisabled) {
             await nanoLeafControl(vscColor.r, vscColor.g, vscColor.b, userBrightness, "on");
         }
+        if (!openRGBDisabled) {
+            await openRGBControl(vscColor.r, vscColor.g, vscColor.b, userBrightness, "on");
+        }
         simulatedFlagCounter++
     }
     if (arg === 'vscEnding') {
@@ -446,6 +441,9 @@ async function simulateFlag(arg) {
         if (!nanoLeafDisabled) {
             await nanoLeafControl(vscEndingColor.r, vscEndingColor.g, vscEndingColor.b, userBrightness, "on");
         }
+        if (!openRGBDisabled) {
+            await openRGBControl(vscEndingColor.r, vscEndingColor.g, vscEndingColor.b, userBrightness, "on");
+        }
         simulatedFlagCounter++
     }
     if (arg === 'alloff') {
@@ -463,6 +461,9 @@ async function simulateFlag(arg) {
         }
         if (!nanoLeafDisabled) {
             await nanoLeafControl(0, 0, 0, 0, "off");
+        }
+        if (!openRGBDisabled) {
+            await openRGBControl(0, 0, 0, 0, "off");
         }
         simulatedFlagCounter++
     }
@@ -485,7 +486,6 @@ ipcMain.on('updatecheck', () => {
 ipcMain.on('test-button-dev', async () => {
     console.log("Running action mapped on test button...")
     win.webContents.send('log', 'Running action mapped on test button...')
-    // action here
 })
 ipcMain.on('ikea-get-ids', async () => {
     console.log("Getting Ikea Device IDs...")
@@ -588,6 +588,9 @@ ipcMain.on('saveConfig', (event, arg) => {
         securityCode,
         hueToken,
         goveeDisable,
+        openRGBDisable,
+        openRGBServerIP,
+        openRGBServerPort,
         nanoLeafDisable,
         yeeLightDisable,
         updateChannel,
@@ -611,6 +614,9 @@ ipcMain.on('saveConfig', (event, arg) => {
     userConfig.set('Settings.ikeaSettings.deviceIDs', deviceIDs);
     userConfig.set('Settings.ikeaSettings.ikeaDisable', ikeaDisable);
     userConfig.set('Settings.goveeSettings.goveeDisable', goveeDisable);
+    userConfig.set('Settings.openRGBSettings.openRGBDisable', openRGBDisable);
+    userConfig.set('Settings.openRGBSettings.openRGBServerIP', openRGBServerIP);
+    userConfig.set('Settings.openRGBSettings.openRGBServerPort', parseInt(openRGBServerPort));
     userConfig.set('Settings.nanoLeafSettings.nanoLeafDisable', nanoLeafDisable);
     userConfig.set('Settings.yeeLightSettings.yeeLightDisable', yeeLightDisable);
     userConfig.set('Settings.yeeLightSettings.deviceIPs', deviceIPs);
@@ -649,7 +655,7 @@ ipcMain.on('saveConfigColors', (event, arg) => {
 
 async function migrateConfig() {
     // if the config version is != 1 migrate the config
-    if (userConfig.get('version') !== 5) {
+    if (userConfig.get('version') !== 6) {
         console.log('Migrating config...')
         win.webContents.send('log', 'Migrating config...')
         // migrate the config
@@ -699,7 +705,7 @@ async function migrateConfig() {
                 "hueSettings": {
                     "hueDisable": oldConfig.Settings.hueSettings.hueDisable,
                     "deviceIDs": oldConfig.Settings.hueSettings.deviceIDs,
-                    "token": undefined
+                    "token": oldConfig.Settings.hueSettings.token
                 },
                 "ikeaSettings": {
                     "ikeaDisable": oldConfig.Settings.ikeaSettings.ikeaDisable,
@@ -709,9 +715,14 @@ async function migrateConfig() {
                 "goveeSettings": {
                     "goveeDisable": oldConfig.Settings.goveeSettings.goveeDisable
                 },
+                "openRGBSettings": {
+                    "openRGBDisable": true,
+                    "openRGBServerIP": "localhost",
+                    "openRGBServerPort": 6742,
+                },
                 "nanoLeafSettings": {
-                    "nanoLeafDisable": true,
-                    "devices": []
+                    "nanoLeafDisable": oldConfig.Settings.nanoLeafSettings.nanoLeafDisable,
+                    "devices": oldConfig.Settings.nanoLeafSettings.devices
                 },
                 "yeeLightSettings": {
                     "yeeLightDisable": oldConfig.Settings.yeeLightSettings.yeeLightDisable,
@@ -723,7 +734,7 @@ async function migrateConfig() {
                     "analytics": oldConfig.Settings.advancedSettings.analytics
                 }
             },
-            "version": 5
+            "version": 6
         }
         userConfig.clear();
         userConfig.set(newConfig);
@@ -782,6 +793,9 @@ async function f1mvLightSync() {
                 if (!nanoLeafDisabled) {
                     await nanoLeafControl(greenColor.r, greenColor.g, greenColor.b, userBrightness, "on")
                 }
+                if (!openRGBDisabled) {
+                    await openRGBControl(greenColor.r, greenColor.g, greenColor.b, userBrightness, "on")
+                }
                 TStateCheck = TState
                 break;
             case "2":
@@ -801,6 +815,9 @@ async function f1mvLightSync() {
                 }
                 if (!nanoLeafDisabled) {
                     await nanoLeafControl(yellowColor.r, yellowColor.g, yellowColor.b, userBrightness, "on")
+                }
+                if (!openRGBDisabled) {
+                    await openRGBControl(yellowColor.r, yellowColor.g, yellowColor.b, userBrightness, "on")
                 }
                 TStateCheck = TState
                 break;
@@ -822,6 +839,9 @@ async function f1mvLightSync() {
                 if (!nanoLeafDisabled) {
                     await nanoLeafControl(safetyCarColor.r, safetyCarColor.g, safetyCarColor.b, userBrightness, "on")
                 }
+                if (!openRGBDisabled) {
+                    await openRGBControl(safetyCarColor.r, safetyCarColor.g, safetyCarColor.b, userBrightness, "on")
+                }
                 TStateCheck = TState
                 break;
             case "5":
@@ -841,6 +861,9 @@ async function f1mvLightSync() {
                 }
                 if (!nanoLeafDisabled) {
                     await nanoLeafControl(redColor.r, redColor.g, redColor.b, userBrightness, "on")
+                }
+                if (!openRGBDisabled) {
+                    await openRGBControl(redColor.r, redColor.g, redColor.b, userBrightness, "on")
                 }
                 TStateCheck = TState
                 break;
@@ -862,6 +885,9 @@ async function f1mvLightSync() {
                 if (!nanoLeafDisabled) {
                     await nanoLeafControl(vscColor.r, vscColor.g, vscColor.b, userBrightness, "on")
                 }
+                if (!openRGBDisabled) {
+                    await openRGBControl(vscColor.r, vscColor.g, vscColor.b, userBrightness, "on")
+                }
                 TStateCheck = TState
                 break;
             case "7":
@@ -881,6 +907,9 @@ async function f1mvLightSync() {
                 }
                 if (!nanoLeafDisabled) {
                     await nanoLeafControl(vscEndingColor.r, vscEndingColor.g, vscEndingColor.b, userBrightness, "on")
+                }
+                if (!openRGBDisabled) {
+                    await openRGBControl(vscEndingColor.r, vscEndingColor.g, vscEndingColor.b, userBrightness, "on")
                 }
                 TStateCheck = TState
                 break;
@@ -904,6 +933,9 @@ async function f1mvLightSync() {
             }
             if (!nanoLeafDisabled) {
                 await nanoLeafControl(0, 255, 0, userBrightness, "off")
+            }
+            if (!openRGBDisabled) {
+                await openRGBControl(0, 255, 0, userBrightness, "off")
             }
             SStateCheck = SState
         }
@@ -971,6 +1003,13 @@ async function initIntegrations(){
             }
         });
     }
+    if (!openRGBDisabled) {
+        openRGBInitialize().then(r => {
+            if (alwaysFalse) {
+                console.log(r)
+            }
+        });
+    }
     await integrationAPIStatus();
 }
 async function integrationAPIStatus(){
@@ -984,6 +1023,9 @@ async function integrationAPIStatus(){
             }
             if (hueOnline) {
                 win.webContents.send('hueAPI', 'online');
+            }
+            if(openRGBOnline){
+                win.webContents.send('openRGBAPI', 'online');
             }
             if (!yeelightDisabled) {
                 win.webContents.send('yeelightAPI', 'online')
@@ -1661,6 +1703,94 @@ function addOtherDeviceDialog(){
         }
     });
 }
+
+const { Client } = require("openrgb-sdk")
+let client;
+const openRGBPort = userConfig.get('Settings.openRGBSettings.openRGBServerPort');
+const openRGBIP = userConfig.get('Settings.openRGBSettings.openRGBServerIP');
+async function openRGBInitialize(){
+    try {
+        client = new Client("F1MV-Lights-Integration", openRGBPort, openRGBIP);
+        await client.connect()
+        if(debugPreference){
+            console.log("Connected to OpenRGB!");
+            win.webContents.send('log', "Connected to OpenRGB!");
+        }
+        openRGBOnline = true;
+    } catch (error) {
+        openRGBOnline = false;
+        setTimeout(() => {
+            console.log("Error: Could not connect to OpenRGB, please make sure that OpenRGB is running and that the IP + Port are correct!");
+            win.webContents.send('log', "Error: Could not connect to OpenRGB, please make sure that OpenRGB is running and that the IP + Port are correct!");
+        }, 1000);
+    }
+}
+async function openRGBControl(r, g, b, brightness, action){
+    if(debugPreference){
+        console.log("Getting all the available OpenRGB devices...");
+        win.webContents.send('log', "Getting all the available OpenRGB devices...");
+    }
+    let deviceCount = await client.getControllerCount()
+    if(debugPreference){
+        console.log("Found " + deviceCount + " OpenRGB devices!");
+        win.webContents.send('log', "Found " + deviceCount + " OpenRGB devices!");
+    }
+    if(action === 'on') {
+        if(debugPreference){
+            console.log("Turning all the available OpenRGB devices on...");
+            win.webContents.send('log', "Turning all the available OpenRGB devices on...");
+        }
+        for (let i = 0; i < deviceCount; i++) {
+            let device = await client.getControllerData(i)
+            await client.updateMode(i, 0)
+
+            if(debugPreference){
+                console.log("Turning on OpenRGB device with name: " + device.name + " and values: " + r + ", " + g + ", " + b + ", " + brightness);
+                win.webContents.send('log', "Turning on OpenRGB device with name: " + device.name + " and values: " + r + ", " + g + ", " + b + ", " + brightness);
+            }
+
+            const colors = Array(device.colors.length).fill({
+                red: r,
+                green: g,
+                blue: b
+            })
+            await client.updateLeds(i, colors)
+            if(debugPreference){
+                console.log('Successfully updated the colors of the OpenRGB device with name: ' + device.name);
+                win.webContents.send('log', 'Successfully updated the colors of the OpenRGB device with name: ' + device.name);
+            }
+        }
+    }
+    if(action === 'off') {
+        if(debugPreference){
+            console.log("Turning all the available OpenRGB devices off...");
+            win.webContents.send('log', "Turning all the available OpenRGB devices off...");
+        }
+        for (let i = 0; i < deviceCount; i++) {
+            let device = await client.getControllerData(i)
+            await client.updateMode(i, 0)
+
+            if(debugPreference){
+                console.log("Turning off OpenRGB device with name: " + device.name);
+                win.webContents.send('log', "Turning off OpenRGB device with name: " + device.name);
+            }
+
+            const colors = Array(device.colors.length).fill({
+                red: 0,
+                green: 0,
+                blue: 0
+            })
+            await client.updateLeds(i, colors)
+            if(debugPreference){
+                console.log('Successfully updated the colors of the OpenRGB device with name: ' + device.name);
+                win.webContents.send('log', 'Successfully updated the colors of the OpenRGB device with name: ' + device.name);
+            }
+        }
+    }
+}
+app.on('window-all-closed', () => {
+    client.disconnect()
+})
 
 async function checkApis() {
     if(debugPreference){

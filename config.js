@@ -74,6 +74,16 @@ const config = {
                     goveeDisable: true,
                 },
 
+            openRGBSettings:
+                {
+                    // set this to true if you don't want to use OpenRGB
+                    openRGBDisable: true,
+                    // the IP address of your OpenRGB server
+                    openRGBServerIP: "localhost",
+                    // the port of your OpenRGB server
+                    openRGBServerPort: 6742,
+                },
+
             nanoLeafSettings:
                 {
                     // set this to true if you don't want to use Nanoleaf lights
@@ -107,7 +117,7 @@ const config = {
                 }
         },
         // do not change this version!
-        version: 5,
+        version: 6,
     devConfig:
         {
             autoStartDevTools: false,

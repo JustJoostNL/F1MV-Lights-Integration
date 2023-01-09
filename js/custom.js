@@ -78,6 +78,16 @@ $(function() {
         }
     })
 
+    ipcRenderer.on('openRGBAPI', (event, arg) => {
+        if (arg === 'online') {
+            $('#openRGBAPI').find('.status').removeClass('error').addClass('success')
+        }
+
+        if (arg === 'offline') {
+            $('#openRGBAPI').find('.status').removeClass('success').addClass('error')
+        }
+    })
+
     ipcRenderer.on('settings', (event, arg) => {
         $('#brightness-input').val(arg.Settings.generalSettings.defaultBrightness)
         
@@ -142,6 +152,15 @@ $(function() {
         }else if (!arg.Settings.nanoLeafSettings.nanoLeafDisable) {
             $('#disable-nanoleaf-setting').removeAttr('checked')
         }
+        
+        if (arg.Settings.openRGBSettings.openRGBDisable) {
+            $('#disable-openrgb-setting').attr('checked', 'checked')
+        }else if (!arg.Settings.openRGBSettings.openRGBDisable) {
+            $('#disable-openrgb-setting').removeAttr('checked')
+        }
+        
+        $('#openrgb-ip-input').val(arg.Settings.openRGBSettings.openRGBServerIP)
+        $('#openrgb-port-input').val(arg.Settings.openRGBSettings.openRGBServerPort)
 
         $('#nanoleaf-lights').show();
         arg.Settings.nanoLeafSettings.devices.forEach(function(light) {
@@ -212,7 +231,9 @@ function saveConfig() {
         securityCode: $('#sec-code-input').val(),
         deviceIDs: $('#devices-input').val(),
         goveeDisable: $('#disable-govee-setting').is(':checked'),
-        devicesDisabledIPs: $('#govee-dis-devices-input').val(),
+        openRGBDisable: $('#disable-openrgb-setting').is(':checked'),
+        openRGBServerIP: $('#openrgb-ip-input').val(),
+        openRGBServerPort: $('#openrgb-port-input').val(),
         nanoLeafDisable: $('#disable-nanoleaf-setting').is(':checked'),
         yeeLightDisable: $('#disable-yeelight-setting').is(':checked'),
         deviceIPs: $('#yeelight-device-ip-input').val(),
