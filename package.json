@@ -1,6 +1,6 @@
 {
   "name": "F1MV-Lights-Integration",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "description": "The best way to connect your smart home lights to your F1MV.",
   "author": "JustJoostNL",
   "main": "main.js",

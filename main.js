@@ -42,7 +42,7 @@ let analyticsPreference = userConfig.get('Settings.advancedSettings.analytics')
 const APIURL = "https://api.joost.systems/api/v2"
 let analyticsSent = false;
 
-const updateChannel = userConfig.get('Settings.advancedSettings.updateChannel')
+let updateChannel = userConfig.get('Settings.advancedSettings.updateChannel')
 autoUpdater.channel = updateChannel;
 const updateURL = "https://api.joost.systems/github/repos/JustJoostNL/f1mv-lights-integration/releases"
 
@@ -2065,6 +2065,9 @@ function reloadFromConfig(){
     hueLightIDsList = userConfig.get('Settings.hueSettings.deviceIDs');
     openRGBPort = userConfig.get('Settings.openRGBSettings.openRGBServerPort');
     openRGBIP = userConfig.get('Settings.openRGBSettings.openRGBServerIP');
+
+    updateChannel = userConfig.get('Settings.advancedSettings.updateChannel')
+    autoUpdater.channel = updateChannel;
 
     win.webContents.send('log', "Reloaded from config!");
     configHasBeenReloadedIkeaCheck = true;
