@@ -8,6 +8,8 @@ const config = {
                     // the default brightness of the lights
                     defaultBrightness: 100,
 
+                    hideLogs: true,
+
                     // here you can define other colors then the default ones
                     colorSettings:
                         {
@@ -47,7 +49,8 @@ const config = {
 
             MultiViewerForF1Settings:
                 {
-                  liveTimingURL: "http://localhost:10101/api/graphql",
+                  liveTimingURL: "http://localhost:10101",
+                  f1mvCheck: true,
                 },
 
             hueSettings:
@@ -117,11 +120,10 @@ const config = {
                 }
         },
         // do not change this version!
-        version: 6,
+        version: 8,
     devConfig:
         {
-            autoStartDevTools: false,
-            f1mvCheck: true
+            autoStartDevTools: false
         }
 }
 module.exports = config;

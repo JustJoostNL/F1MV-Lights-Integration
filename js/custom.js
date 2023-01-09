@@ -252,12 +252,12 @@ $(function() {
         }
 
     })
-ipcRenderer.on('toggle-logs', (event, arg) => {
+ipcRenderer.on('hide-logs', (event, arg) => {
     if (arg === true) {
-        $('#logs').show()
+        $('#logs').hide()
 
     } else if(arg === false) {
-        $('#logs').hide()
+        $('#logs').show()
     }
 })
 
@@ -458,4 +458,7 @@ function restartApp() {
 }
 function toggleLogs(){
     ipcRenderer.send('toggle-logs')
+}
+function checkAPIS(){
+    ipcRenderer.send('check-apis')
 }

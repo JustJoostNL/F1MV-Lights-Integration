@@ -23,7 +23,8 @@ const userConfig = new Store({
     defaults: configDefault
 });
 let debugPreference = userConfig.get('Settings.advancedSettings.debugMode');
-const f1mvURL = userConfig.get('Settings.MultiViewerForF1Settings.liveTimingURL')
+const f1mvURL = userConfig.get('Settings.MultiViewerForF1Settings.liveTimingURL') + '/api/graphql'
+const f1mvCheckURL = userConfig.get('Settings.MultiViewerForF1Settings.liveTimingURL') + '/api/v1/live-timing/Heartbeat'
 const ikeaDisabled = userConfig.get('Settings.ikeaSettings.ikeaDisable')
 const goveeDisabled = userConfig.get('Settings.goveeSettings.goveeDisable')
 const yeelightDisabled = userConfig.get('Settings.yeeLightSettings.yeeLightDisable')
@@ -63,9 +64,10 @@ let SState;
 let TStateCheck;
 let SStateCheck;
 let win;
-let f1mvCheck = true;
-f1mvCheck = userConfig.get('devConfig.f1mvCheck')
+let f1mvCheck = userConfig.get('Settings.MultiViewerForF1Settings.f1mvCheck')
 const alwaysFalse = false;
+
+let hideLogs = userConfig.get('Settings.generalSettings.hideLogs');
 
 let errorCheck;
 
@@ -313,18 +315,27 @@ ipcMain.on('toggle-devtools', () => {
         win.webContents.openDevTools()
     }
 })
-let logState = false;
 ipcMain.on('toggle-logs', () => {
-    if (logState) {
-        logState = false;
-        win.webContents.send('toggle-logs', false);
-        win.webContents.send('log', 'Log visibility toggled off.')
-    } else if (!logState) {
-        logState = true;
-        win.webContents.send('toggle-logs', true)
+    if (hideLogs) {
+        hideLogs = false;
+        userConfig.set('Settings.generalSettings.hideLogs', false);
+        win.webContents.send('hide-logs', false);
         win.webContents.send('log', 'Log visibility toggled on.')
+    } else if (!hideLogs) {
+        hideLogs = true;
+        userConfig.set('Settings.generalSettings.hideLogs', true);
+        win.webContents.send('hide-logs', true);
+        win.webContents.send('log', 'Log visibility toggled off.')
     }
 })
+
+function toggleInit(){
+    if(hideLogs){
+        win.webContents.send('hide-logs', true);
+    } else if (!hideLogs){
+        win.webContents.send('hide-logs', false);
+    }
+}
 
 ipcMain.on('toggle-debug', () => {
     if (debugPreference) {
@@ -506,6 +517,10 @@ ipcMain.on('test-button-dev', async () => {
     console.log("Running action mapped on test button...")
     win.webContents.send('log', 'Running action mapped on test button...')
 })
+ipcMain.on('check-apis', async () => {
+    await checkApis();
+    await integrationAPIStatus()
+})
 ipcMain.on('ikea-get-ids', async () => {
     console.log("Getting Ikea Device IDs...")
     win.webContents.send('log', 'Getting Ikea Device IDs...')
@@ -520,12 +535,12 @@ ipcMain.on('send-analytics-button', async () => {
 ipcMain.on('f1mv-check', () => {
     if (f1mvCheck) {
         f1mvCheck = false;
-        userConfig.set('devConfig.f1mvCheck', false);
-        win.webContents.send('log', 'Disabled F1MV Api check')
-        console.log('Disabled F1MV api check!')
+        userConfig.set('Settings.MultiViewerForF1Settings.f1mvCheck', false)
+        win.webContents.send('log', 'Disabled F1MV Sync!')
+        console.log('Disabled F1MV Sync!')
     } else if (!f1mvCheck) {
         f1mvCheck = true;
-        userConfig.set('devConfig.f1mvCheck', true);
+        userConfig.set('Settings.MultiViewerForF1Settings.f1mvCheck', true)
         win.webContents.send('log', 'Enabled F1MV Api check')
         console.log('Enabled F1MV api check!')
     }
@@ -543,7 +558,6 @@ ipcMain.on('auto-devtools', () => {
     }
 })
 ipcMain.on('send-config', () => {
-    console.log("Loading config file...")
     const config = userConfig.store;
     win.webContents.send('settings', config);
 })
@@ -678,7 +692,7 @@ ipcMain.on('saveConfigColors', (event, arg) => {
 
 async function migrateConfig() {
     // if the config version is != 1 migrate the config
-    if (userConfig.get('version') !== 6) {
+    if (userConfig.get('version') !== 8) {
         console.log('Migrating config...')
         win.webContents.send('log', 'Migrating config...')
         // migrate the config
@@ -688,6 +702,7 @@ async function migrateConfig() {
                 "generalSettings": {
                     "autoTurnOffLights": oldConfig.Settings.generalSettings.autoTurnOffLights,
                     "defaultBrightness": oldConfig.Settings.generalSettings.defaultBrightness,
+                    "hideLogs": true,
                     "colorSettings": {
                         green: {
                             r: oldConfig.Settings.generalSettings.colorSettings.green.r,
@@ -723,7 +738,8 @@ async function migrateConfig() {
                     }
                 },
                 "MultiViewerForF1Settings": {
-                    "liveTimingURL": oldConfig.Settings.MultiViewerForF1Settings.liveTimingURL
+                    "liveTimingURL": "http://localhost:10101",
+                    "f1mvCheck": true
                 },
                 "hueSettings": {
                     "hueDisable": oldConfig.Settings.hueSettings.hueDisable,
@@ -757,7 +773,7 @@ async function migrateConfig() {
                     "analytics": oldConfig.Settings.advancedSettings.analytics
                 }
             },
-            "version": 6
+            "version": 8
         }
         userConfig.clear();
         userConfig.set(newConfig);
@@ -937,30 +953,32 @@ async function f1mvLightSync() {
                 TStateCheck = TState
                 break;
         }
-    } else if (SState === "Ends" || SState === "Finalised" && SStateCheck !== SState) {
-        const autoOff = userConfig.get('Settings.generalSettings.autoTurnOffLights')
-        if (autoOff) {
-            console.log("Session ended, turning off lights...")
-            win.webContents.send('log', "Session ended, turning off lights...")
-            if (!goveeDisabled) {
-                await goveeControl(0, 255, 0, userBrightness, "off")
+    } else if (SState === "Ends" || SState === "Finalised") {
+        if (SStateCheck !== SState) {
+            const autoOff = userConfig.get('Settings.generalSettings.autoTurnOffLights')
+            if (autoOff) {
+                console.log("Session ended, turning off lights...")
+                win.webContents.send('log', "Session ended, turning off lights...")
+                if (!goveeDisabled) {
+                    await goveeControl(0, 255, 0, userBrightness, "off")
+                }
+                if (!yeelightDisabled) {
+                    await yeelightControl(0, 255, 0, userBrightness, "off")
+                }
+                if (!ikeaDisabled) {
+                    await ikeaControl(0, 255, 0, userBrightness, "off", "off")
+                }
+                if (!hueDisabled) {
+                    await hueControl(0, 255, 0, userBrightness, "off")
+                }
+                if (!nanoLeafDisabled) {
+                    await nanoLeafControl(0, 255, 0, userBrightness, "off")
+                }
+                if (!openRGBDisabled) {
+                    await openRGBControl(0, 255, 0, userBrightness, "off")
+                }
+                SStateCheck = SState
             }
-            if (!yeelightDisabled) {
-                await yeelightControl(0, 255, 0, userBrightness, "off")
-            }
-            if (!ikeaDisabled) {
-                await ikeaControl(0, 255, 0, userBrightness, "off", "off")
-            }
-            if (!hueDisabled) {
-                await hueControl(0, 255, 0, userBrightness, "off")
-            }
-            if (!nanoLeafDisabled) {
-                await nanoLeafControl(0, 255, 0, userBrightness, "off")
-            }
-            if (!openRGBDisabled) {
-                await openRGBControl(0, 255, 0, userBrightness, "off")
-            }
-            SStateCheck = SState
         }
     }
 }
@@ -981,20 +999,30 @@ setTimeout(function () {
                 });
             }
         }
-    }, 300);
+    }, 400);
 }, 1000);
 
-setInterval(function () {
-    if (BrowserWindow.getAllWindows().length > 0) {
-        checkApis().then(r => {
-            if (alwaysFalse) {
-                console.log(r)
-            }
-        });
-    }
-}, 3000);
+setTimeout(function () {
+    checkApis().then(r => {
+        if (alwaysFalse) {
+            console.log(r)
+        }
+    });
+    setInterval(function () {
+        if (BrowserWindow.getAllWindows().length > 0) {
+            checkApis().then(r => {
+                if (alwaysFalse) {
+                    console.log(r)
+                }
+            });
+        }
+    }, 15000);
+}, 1000);
 
 async function initIntegrations(){
+    setTimeout(function () {
+        toggleInit()
+    }, 1000);
     if (!ikeaDisabled) {
         ikeaInitialize().then(r => {
             if (alwaysFalse) {
@@ -1050,7 +1078,7 @@ async function integrationAPIStatus(){
                 win.webContents.send('nanoLeafAPI', 'online')
             }
         }
-    }, 500);
+    }, 5000);
 }
 
 async function otherAPIStatus(){
@@ -1066,7 +1094,7 @@ async function otherAPIStatus(){
                 win.webContents.send('updateAPI', 'online');
             }
         }
-    }, 500);
+    }, 5000);
 }
 
 async function goveeControl(r, g, b, brightness, action) {
@@ -1856,7 +1884,6 @@ async function openRGBControl(r, g, b, brightness, action){
 app.on('window-all-closed', () => {
     client.disconnect()
 })
-
 async function checkApis() {
     if(debugPreference){
         console.log("Checking the Update and F1 Live Session API..");
@@ -1871,13 +1898,24 @@ async function checkApis() {
             updateAPIOnline = false;
         });
 
-    fetch(f1mvURL)
-        .then(function () {
-            f1mvAPIOnline = true;
-        })
-        .catch(function () {
+    try {
+
+        const response = await fetch(f1mvCheckURL);
+        const data = await response.json();
+        if (data.error === 'No data found, do you have live timing running?') {
             f1mvAPIOnline = false;
-        });
+        } else {
+            f1mvAPIOnline = true;
+        }
+    } catch (error) {
+        if(errorCheck === false){
+            console.log('Error: Could not connect to the F1MV API, please make sure that you have F1MV open, and the Live Timing is running!');
+            win.webContents.send('log', 'Error: Could not connect to the F1MV API, please make sure that you have F1MV open, and the Live Timing is running!');
+        }
+        f1mvAPIOnline = false;
+        errorCheck = true;
+    }
+
 
     const liveSessionCheckURL = APIURL + "/f1tv/checklivesession";
     const liveSessionRes = await fetch(liveSessionCheckURL)
