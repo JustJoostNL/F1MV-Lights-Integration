@@ -23,17 +23,19 @@ const userConfig = new Store({
     defaults: configDefault
 });
 let debugPreference = userConfig.get('Settings.advancedSettings.debugMode');
-const f1mvURL = userConfig.get('Settings.MultiViewerForF1Settings.liveTimingURL') + '/api/graphql'
-const f1mvCheckURL = userConfig.get('Settings.MultiViewerForF1Settings.liveTimingURL') + '/api/v1/live-timing/Heartbeat'
-const ikeaDisabled = userConfig.get('Settings.ikeaSettings.ikeaDisable')
-const goveeDisabled = userConfig.get('Settings.goveeSettings.goveeDisable')
-const yeelightDisabled = userConfig.get('Settings.yeeLightSettings.yeeLightDisable')
-const hueDisabled = userConfig.get('Settings.hueSettings.hueDisable')
-const nanoLeafDisabled = userConfig.get('Settings.nanoLeafSettings.nanoLeafDisable')
-const openRGBDisabled = userConfig.get('Settings.openRGBSettings.openRGBDisable')
+let f1mvURL = userConfig.get('Settings.MultiViewerForF1Settings.liveTimingURL') + '/api/graphql'
+let f1mvCheckURL = userConfig.get('Settings.MultiViewerForF1Settings.liveTimingURL') + '/api/v1/live-timing/Heartbeat'
+let ikeaDisabled = userConfig.get('Settings.ikeaSettings.ikeaDisable')
+let goveeDisabled = userConfig.get('Settings.goveeSettings.goveeDisable')
+let yeelightDisabled = userConfig.get('Settings.yeeLightSettings.yeeLightDisable')
+let hueDisabled = userConfig.get('Settings.hueSettings.hueDisable')
+let nanoLeafDisabled = userConfig.get('Settings.nanoLeafSettings.nanoLeafDisable')
+let openRGBDisabled = userConfig.get('Settings.openRGBSettings.openRGBDisable')
+
+let ikeaSecurityCode = userConfig.get('Settings.ikeaSettings.securityCode');
 
 
-const analyticsPreference = userConfig.get('Settings.advancedSettings.analytics')
+let analyticsPreference = userConfig.get('Settings.advancedSettings.analytics')
 const APIURL = "https://api.joost.systems/api/v2"
 let analyticsSent = false;
 
@@ -41,7 +43,7 @@ const updateChannel = userConfig.get('Settings.advancedSettings.updateChannel')
 autoUpdater.channel = updateChannel;
 const updateURL = "https://api.joost.systems/github/repos/JustJoostNL/f1mv-lights-integration/releases"
 
-const userBrightness = parseInt(userConfig.get('Settings.generalSettings.defaultBrightness'))
+let userBrightness = parseInt(userConfig.get('Settings.generalSettings.defaultBrightness'))
 
 let devMode = false;
 
@@ -80,12 +82,22 @@ let timesCheckAPIS = 0;
 let developerModeWasActivated = false;
 const fetch = require('node-fetch').default;
 
-const greenColor = userConfig.get('Settings.generalSettings.colorSettings.green');
-const yellowColor = userConfig.get('Settings.generalSettings.colorSettings.yellow');
-const redColor = userConfig.get('Settings.generalSettings.colorSettings.red');
-const safetyCarColor = userConfig.get('Settings.generalSettings.colorSettings.safetyCar');
-const vscColor = userConfig.get('Settings.generalSettings.colorSettings.vsc');
-const vscEndingColor = userConfig.get('Settings.generalSettings.colorSettings.vscEnding');
+let greenColor = userConfig.get('Settings.generalSettings.colorSettings.green');
+let yellowColor = userConfig.get('Settings.generalSettings.colorSettings.yellow');
+let redColor = userConfig.get('Settings.generalSettings.colorSettings.red');
+let safetyCarColor = userConfig.get('Settings.generalSettings.colorSettings.safetyCar');
+let vscColor = userConfig.get('Settings.generalSettings.colorSettings.vsc');
+let vscEndingColor = userConfig.get('Settings.generalSettings.colorSettings.vscEnding');
+
+let autoOff = userConfig.get('Settings.generalSettings.autoTurnOffLights')
+
+let nanoLeafDevices = userConfig.get('Settings.nanoLeafSettings.devices')
+let ikeaDevices = userConfig.get('Settings.ikeaSettings.deviceIDs');
+let yeelightIPs = userConfig.get('Settings.yeeLightSettings.deviceIPs');
+let hueLightIDsList = userConfig.get('Settings.hueSettings.deviceIDs');
+
+let openRGBPort = userConfig.get('Settings.openRGBSettings.openRGBServerPort');
+let openRGBIP = userConfig.get('Settings.openRGBSettings.openRGBServerIP');
 
 let noUpdateFound = false;
 
@@ -954,7 +966,6 @@ async function f1mvLightSync() {
         }
     } else if (SState === "Ends" || SState === "Finalised") {
         if (SStateCheck !== SState) {
-            const autoOff = userConfig.get('Settings.generalSettings.autoTurnOffLights')
             if (autoOff) {
                 console.log("Session ended, turning off lights...")
                 win.webContents.send('log', "Session ended, turning off lights...")
@@ -1078,7 +1089,6 @@ async function integrationAPIStatusSend(){
     if (!yeelightDisabled) {
         win.webContents.send('yeelightAPI', 'online')
     }
-    const nanoLeafDevices = userConfig.get('Settings.nanoLeafSettings.devices')
     if (nanoLeafDevices.length > 0) {
         nanoLeafOnline = true
         win.webContents.send('nanoLeafAPI', 'online')
@@ -1177,7 +1187,6 @@ async function ikeaInitialize() {
         console.log("Initializing IKEA Tradfri...");
         win.webContents.send('log', "Initializing IKEA Tradfri...");
     }
-    const securityCode = userConfig.get('Settings.ikeaSettings.securityCode');
     let debug;
     if (debugPreference) {
         debug = "--debug";
@@ -1186,7 +1195,7 @@ async function ikeaInitialize() {
     }
     const path = require('path');
     let startPath = path.join(app.getAppPath(), 'ikea.js');
-    const startCommand = 'node ' + startPath + ' ' + '--' + securityCode + ' ' + debug;
+    const startCommand = 'node ' + startPath + ' ' + '--' + ikeaSecurityCode + ' ' + debug;
     let child;
     let errorDetected = false;
     child = exec(startCommand, (err) => {
@@ -1232,27 +1241,26 @@ app.on('window-all-closed',  () => {
 
 async function ikeaControl(r, g, b, brightness, action, flag) {
     if(ikeaOnline) {
-        const devices = userConfig.get('Settings.ikeaSettings.deviceIDs');
-        for (let i = 0; i < devices.length; i++) {
+        for (let i = 0; i < ikeaDevices.length; i++) {
             if (debugPreference) {
                 console.log("Checking if Ikea device is RGB or White")
                 win.webContents.send('log', "Checking if Ikea device is RGB or White")
-                console.log("Device to check: " + devices[i])
-                win.webContents.send('log', "Device to check: " + devices[i])
+                console.log("Device to check: " + ikeaDevices[i])
+                win.webContents.send('log', "Device to check: " + ikeaDevices[i])
             }
-            if (devicesDone.includes(devices[i])) {
+            if (devicesDone.includes(ikeaDevices[i])) {
                 if (debugPreference) {
                     win.webContents.send('log', "Device already done, skipping...");
                     console.log("Device already done, skipping...");
                 }
             } else {
-                const response = await fetch('http://localhost:9898/getSpectrum/' + devices[i]);
+                const response = await fetch('http://localhost:9898/getSpectrum/' + ikeaDevices[i]);
                 const json = await response.json();
-                devicesDone.push(devices[i]);
+                devicesDone.push(ikeaDevices[i]);
                 if (json.spectrum === "rgb") {
-                    colorDevices.push(devices[i]);
+                    colorDevices.push(ikeaDevices[i]);
                 } else {
-                    whiteDevices.push(devices[i]);
+                    whiteDevices.push(ikeaDevices[i]);
                 }
             }
         }
@@ -1372,7 +1380,6 @@ async function ikeaControl(r, g, b, brightness, action, flag) {
 
 async function yeelightControl(r, g, b, brightness, action) {
     if (!yeelightDisabled) {
-        const yeelightIPs = userConfig.get('Settings.yeeLightSettings.deviceIPs');
 
         yeelightIPs.forEach((light) => {
             const bulb = new Bulb(light);
@@ -1546,8 +1553,6 @@ async function hueControl(r, g, b, brightness, action) {
         const [h, s, v] = colorConvert.rgb.hsv([r, g, b]);
         const [hue, sat] = colorConvert.hsv.hsl([h, s, v]);
 
-        let hueLightIDsList = userConfig.get('Settings.hueSettings.deviceIDs');
-
         for (const light of hueLightIDsList) {
             if (action === "on") {
                 // Set the brightness and color of the light
@@ -1618,7 +1623,6 @@ async function nanoLeafAuth(ip) {
     auroraTemp.newToken().then(token => {
         deviceToken = token;
         // check if the ip/hostname is already in the config, if so, update the token, if not, add it
-        const nanoLeafDevices = userConfig.get('Settings.nanoLeafSettings.devices');
         if (nanoLeafDevices.length > 0) {
             for (const device of nanoLeafDevices) {
                 if (device.host === ip) {
@@ -1742,7 +1746,6 @@ async function nanoLeafControl(r, g, b, brightness, action){
         if (debugPreference) {
             console.log("Converted the given RGB for Nanoleaf to a hue value, new value is: " + hue);
         }
-        const nanoLeafDevices = userConfig.get('Settings.nanoLeafSettings.devices');
         for (const device of nanoLeafDevices) {
             if(debugPreference){
                 console.log("Turning on Nanoleaf device with host: " + device.host + " and token: " + device.token);
@@ -1762,7 +1765,6 @@ async function nanoLeafControl(r, g, b, brightness, action){
             console.log("Turning all the available Nanoleaf devices off...");
             win.webContents.send('log', "Turning all the available Nanoleaf devices off...");
         }
-        const nanoLeafDevices = userConfig.get('Settings.nanoLeafSettings.devices');
         for (const device of nanoLeafDevices) {
             if(debugPreference){
                 console.log("Turning off Nanoleaf device with host: " + device.host + " and token: " + device.token);
@@ -1802,8 +1804,6 @@ function addOtherDeviceDialog(){
 
 const { Client } = require("openrgb-sdk")
 let client;
-const openRGBPort = userConfig.get('Settings.openRGBSettings.openRGBServerPort');
-const openRGBIP = userConfig.get('Settings.openRGBSettings.openRGBServerIP');
 async function openRGBInitialize(){
     try {
         client = new Client("F1MV-Lights-Integration", openRGBPort, openRGBIP);
@@ -2015,6 +2015,10 @@ async function sendAnalytics() {
             console.log("Analytics are disabled or already sent!");
         }
     }
+}
+
+function reloadFromConfig(){
+
 }
 
 
