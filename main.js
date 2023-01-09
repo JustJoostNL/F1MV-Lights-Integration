@@ -34,6 +34,9 @@ let openRGBDisabled = userConfig.get('Settings.openRGBSettings.openRGBDisable')
 
 let ikeaSecurityCode = userConfig.get('Settings.ikeaSettings.securityCode');
 
+const Govee = require("govee-lan-control");
+const govee = new Govee.default();
+
 
 let analyticsPreference = userConfig.get('Settings.advancedSettings.analytics')
 const APIURL = "https://api.joost.systems/api/v2"
@@ -46,6 +49,8 @@ const updateURL = "https://api.joost.systems/github/repos/JustJoostNL/f1mv-light
 let userBrightness = parseInt(userConfig.get('Settings.generalSettings.defaultBrightness'))
 
 let devMode = false;
+
+let configHasBeenReloadedIkeaCheck = false;
 
 let ikeaOnline = false;
 let goveeOnline = false;
@@ -572,6 +577,9 @@ ipcMain.on('send-config', () => {
     const config = userConfig.store;
     win.webContents.send('settings', config);
 })
+ipcMain.on('reload-from-config', () => {
+    reloadFromConfig();
+})
 ipcMain.on('hide-disabled-integrations', () => {
     const config = userConfig.store
     win.webContents.send('hide-disabled-integrations', config)
@@ -634,7 +642,6 @@ ipcMain.on('saveConfig', (event, arg) => {
         hueDisable,
         ikeaDisable,
         securityCode,
-        hueToken,
         goveeDisable,
         openRGBDisable,
         openRGBServerIP,
@@ -657,7 +664,6 @@ ipcMain.on('saveConfig', (event, arg) => {
     userConfig.set('Settings.MultiViewerForF1Settings.liveTimingURL', liveTimingURL);
     userConfig.set('Settings.hueSettings.hueDisable', hueDisable);
     userConfig.set('Settings.hueSettings.deviceIDs', hueDeviceIDs);
-    userConfig.set('Settings.hueSettings.token', hueToken);
     userConfig.set('Settings.ikeaSettings.securityCode', securityCode);
     userConfig.set('Settings.ikeaSettings.deviceIDs', deviceIDs);
     userConfig.set('Settings.ikeaSettings.ikeaDisable', ikeaDisable);
@@ -1112,9 +1118,6 @@ async function otherAPIStatus(){
 }
 
 async function goveeControl(r, g, b, brightness, action) {
-    const Govee = require("govee-lan-control");
-    const govee = new Govee.default();
-
     govee.devicesArray.forEach(device => {
         if (debugPreference) {
             console.log("Device selected: " + device.model);
@@ -1166,8 +1169,6 @@ async function goveeControl(r, g, b, brightness, action) {
 }
 
 async function goveeInitialize() {
-    const Govee = require("govee-lan-control");
-    const govee = new Govee.default();
 
     goveeOnline = true;
 
@@ -1216,21 +1217,19 @@ async function ikeaInitialize() {
         }
     });
     child.stdout.on('data', (data) => {
-        // check if the data includes the string "listening at"
-        if (data.includes("listening at")) {
+        console.log(data);
+        win.webContents.send('log', data);
+        if (data.includes("The Ikea Tradfri integration started successfully!")) {
             ikeaOnline = true;
             if (debugPreference) {
                 console.log("IKEA Tradfri plugin started successfully");
                 win.webContents.send('log', "IKEA Tradfri plugin started successfully");
             }
         }
-        console.log(data);
-        win.webContents.send('log', data);
     });
     child.stderr.on('data', (data) => {
         console.log(data);
         win.webContents.send('log',data);
-
     });
 }
 app.on('window-all-closed',  () => {
@@ -1248,12 +1247,19 @@ async function ikeaControl(r, g, b, brightness, action, flag) {
                 console.log("Device to check: " + ikeaDevices[i])
                 win.webContents.send('log', "Device to check: " + ikeaDevices[i])
             }
-            if (devicesDone.includes(ikeaDevices[i])) {
+            if (devicesDone.includes(ikeaDevices[i]) && !configHasBeenReloadedIkeaCheck ) {
                 if (debugPreference) {
                     win.webContents.send('log', "Device already done, skipping...");
                     console.log("Device already done, skipping...");
                 }
-            } else {
+            }
+            else {
+                if(configHasBeenReloadedIkeaCheck){
+                    devicesDone = [];
+                    whiteDevices = [];
+                    colorDevices = [];
+                    configHasBeenReloadedIkeaCheck = false;
+                }
                 const response = await fetch('http://localhost:9898/getSpectrum/' + ikeaDevices[i]);
                 const json = await response.json();
                 devicesDone.push(ikeaDevices[i]);
@@ -1380,7 +1386,6 @@ async function ikeaControl(r, g, b, brightness, action, flag) {
 
 async function yeelightControl(r, g, b, brightness, action) {
     if (!yeelightDisabled) {
-
         yeelightIPs.forEach((light) => {
             const bulb = new Bulb(light);
             bulb.on('connected', (lamp) => {
@@ -1802,15 +1807,26 @@ function addOtherDeviceDialog(){
     });
 }
 
+ipcMain.on('link-openrgb', (event, arg) => {
+    openRGBInitialize(true).then(r => {
+        if(alwaysFalse){
+            console.log(r);
+        }
+    });
+});
+
 const { Client } = require("openrgb-sdk")
 let client;
-async function openRGBInitialize(){
+async function openRGBInitialize(toast){
     try {
         client = new Client("F1MV-Lights-Integration", openRGBPort, openRGBIP);
         await client.connect()
         if(debugPreference){
             console.log("Connected to OpenRGB!");
             win.webContents.send('log', "Connected to OpenRGB!");
+            if(toast){
+                win.webContents.send('toaster', "Connected to OpenRGB!");
+            }
         }
         openRGBOnline = true;
     } catch (error) {
@@ -1818,6 +1834,9 @@ async function openRGBInitialize(){
         setTimeout(() => {
             console.log("Error: Could not connect to OpenRGB, please make sure that OpenRGB is running and that the IP + Port are correct!");
             win.webContents.send('log', "Error: Could not connect to OpenRGB, please make sure that OpenRGB is running and that the IP + Port are correct!");
+            if(toast){
+                win.webContents.send('toaster', "Could not connect to OpenRGB!");
+            }
         }, 1000);
     }
 }
@@ -2018,7 +2037,37 @@ async function sendAnalytics() {
 }
 
 function reloadFromConfig(){
+    win.webContents.send('log', "Reloading from config..");
+    debugPreference = userConfig.get('Settings.advancedSettings.debugMode');
+    f1mvURL = userConfig.get('Settings.MultiViewerForF1Settings.liveTimingURL') + '/api/graphql'
+    f1mvCheckURL = userConfig.get('Settings.MultiViewerForF1Settings.liveTimingURL') + '/api/v1/live-timing/Heartbeat'
+    ikeaDisabled = userConfig.get('Settings.ikeaSettings.ikeaDisable')
+    goveeDisabled = userConfig.get('Settings.goveeSettings.goveeDisable')
+    yeelightDisabled = userConfig.get('Settings.yeeLightSettings.yeeLightDisable')
+    hueDisabled = userConfig.get('Settings.hueSettings.hueDisable')
+    nanoLeafDisabled = userConfig.get('Settings.nanoLeafSettings.nanoLeafDisable')
+    openRGBDisabled = userConfig.get('Settings.openRGBSettings.openRGBDisable')
+    ikeaSecurityCode = userConfig.get('Settings.ikeaSettings.securityCode');
+    analyticsPreference = userConfig.get('Settings.advancedSettings.analytics')
+    userBrightness = parseInt(userConfig.get('Settings.generalSettings.defaultBrightness'))
+    f1mvCheck = userConfig.get('Settings.MultiViewerForF1Settings.f1mvCheck')
+    hideLogs = userConfig.get('Settings.generalSettings.hideLogs');
+    greenColor = userConfig.get('Settings.generalSettings.colorSettings.green');
+    yellowColor = userConfig.get('Settings.generalSettings.colorSettings.yellow');
+    redColor = userConfig.get('Settings.generalSettings.colorSettings.red');
+    safetyCarColor = userConfig.get('Settings.generalSettings.colorSettings.safetyCar');
+    vscColor = userConfig.get('Settings.generalSettings.colorSettings.vsc');
+    vscEndingColor = userConfig.get('Settings.generalSettings.colorSettings.vscEnding');
+    autoOff = userConfig.get('Settings.generalSettings.autoTurnOffLights')
+    nanoLeafDevices = userConfig.get('Settings.nanoLeafSettings.devices')
+    ikeaDevices = userConfig.get('Settings.ikeaSettings.deviceIDs');
+    yeelightIPs = userConfig.get('Settings.yeeLightSettings.deviceIPs');
+    hueLightIDsList = userConfig.get('Settings.hueSettings.deviceIDs');
+    openRGBPort = userConfig.get('Settings.openRGBSettings.openRGBServerPort');
+    openRGBIP = userConfig.get('Settings.openRGBSettings.openRGBServerIP');
 
+    win.webContents.send('log', "Reloaded from config!");
+    configHasBeenReloadedIkeaCheck = true;
 }
 
 

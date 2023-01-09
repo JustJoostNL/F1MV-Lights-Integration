@@ -49,6 +49,11 @@
     $(document).ready(function() {
         sendConfig();
     });
+    // when the html unloads, save the config file
+    $(window).on('beforeunload', function() {
+        saveConfig();
+        reloadFromConfig();
+    });
 </script>
 <div class="container simulation">
     <h2 class="simulation__title">General Settings</h2>
@@ -108,13 +113,6 @@
     </p>
     <p>
         <label>
-            <span>Hue Gateway Token</span>
-            <input style="color:white" type="text" id="gatw-token-input" value="" />
-            <span style="color:grey">This token will be filled in automatically after the first connection to the hue bridge.</span>
-        </label>
-    </p>
-    <p>
-        <label>
             <input type="checkbox" id="disable-hue-setting" class="filled-in" />
             <span>Disable Hue Integration</span>
         </label>
@@ -164,6 +162,12 @@
 </div>
 <div class="container simulation">
     <h2 class="simulation__title">OpenRGB Settings</h2>
+    <div class="simulation__buttons">
+        <a class="waves-effect waves-light btn-large simulation__button tooltipped" onclick="linkOpenRGB()" data-position="bottom" data-tooltip="Link the Hue bridge">
+            <em class="material-icons">link</em>
+            (Re)Connect with OpenRGB
+        </a>
+    </div>
     <p>
         <label>
             <input type="checkbox" id="disable-openrgb-setting" class="filled-in" />
@@ -251,21 +255,17 @@
     </p>
     <small style="font-size: 12px; color:gray">Disable this if you don't want to send analytics (personal things such as the security code are never send!)</small>
 </div>
-<div class="container simulation">
-    <h2 class="simulation__title">Save Settings</h2>
-</div>
-<div class="container easy-access">
-    <div class="easy-access__buttons">
-        <a class="waves-effect waves-light btn-large simulation__button tooltipped" onclick="saveConfig()" data-position="bottom" data-tooltip="Save the values in this page to your config file">
-            <em class="material-icons">save</em>
-            Save Values To Config
-        </a>
-        <a class="waves-effect waves-light btn-large simulation__button tooltipped" onclick="restartApp()" data-position="bottom" data-tooltip="Restart the application">
-            <em class="material-icons">restart_alt</em>
-            Restart App
-        </a>
-    </div>
-</div>
+<!--<div class="container simulation">-->
+<!--    <h2 class="simulation__title">Save Settings</h2>-->
+<!--</div>-->
+<!--<div class="container easy-access">-->
+<!--    <div class="easy-access__buttons">-->
+<!--        <a class="waves-effect waves-light btn-large simulation__button tooltipped" onclick="reloadFromConfig()" data-position="bottom" data-tooltip="Restart the application">-->
+<!--            <em class="material-icons">restart_alt</em>-->
+<!--            Reload from config-->
+<!--        </a>-->
+<!--    </div>-->
+<!--</div>-->
 
 <div style="visibility: hidden" class="container simulation" id="nothing">
     <h2 class="simulation__title">Nothing here</h2>

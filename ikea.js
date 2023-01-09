@@ -123,9 +123,9 @@ app.get("/toggleDevice", (req, res) => {
     const device = devices[deviceId].lightList[0];
 
     let parsedState = state === "on";
-    if(debug){
-        console.log(`[TRADFRI] Toggling device ${deviceId} to ${parsedState}`);
-    }
+    // if(debug){
+    //     console.log(`[TRADFRI] Toggling device ${deviceId} to ${parsedState}`);
+    // }
     device.toggle(parsedState).then((lightResult) => {
         res.json({ status: "ok", info: lightResult });
     });
@@ -136,9 +136,9 @@ app.get("/setBrightness", (req, res) => {
     const state = req.query.state;
     const device = devices[deviceId].lightList[0];
 
-    if(debug){
-        console.log(`[TRADFRI] Setting brightness of device ${deviceId} to ${state}`);
-    }
+    // if(debug){
+    //     console.log(`[TRADFRI] Setting brightness of device ${deviceId} to ${state}`);
+    // }
     device.setBrightness(state).then((lightResult) => {
         res.json({ status: "ok", info: lightResult });
     });
@@ -148,9 +148,9 @@ app.get("/setHue", (req, res) => {
     const deviceId = req.query.deviceId;
     const state = req.query.state;
     const device = devices[deviceId].lightList[0];
-    if(debug){
-        console.log(`[TRADFRI] Setting hue of device ${deviceId} to ${state}`);
-    }
+    // if(debug){
+    //     console.log(`[TRADFRI] Setting hue of device ${deviceId} to ${state}`);
+    // }
     device.setHue(state).then((lightResult) => {
         res.json({ status: "ok", info: lightResult });
     });
@@ -175,6 +175,7 @@ connectToGateway().then(() => {
         if(debug){
             console.log(`[TRADFRI] Server listening at http://localhost:${port}`);
         }
+        console.log('The Ikea Tradfri integration started successfully!');
     });
 });
 

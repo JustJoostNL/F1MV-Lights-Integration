@@ -113,10 +113,7 @@ $(function() {
         }else if (!arg.Settings.goveeSettings.goveeDisable) {
             $('#disable-govee-setting').removeAttr('checked')
         }
-        $('#gatw-token-input').val(arg.Settings.hueSettings.token)
         $('#hue-devices-input').val(arg.Settings.hueSettings.deviceIDs)
-
-        $('#govee-dis-devices-input').val(arg.Settings.goveeSettings.devicesDisabledIPs)
 
         if (arg.Settings.yeeLightSettings.yeeLightDisable) {
             $('#disable-yeelight-setting').attr('checked', 'checked')
@@ -267,7 +264,6 @@ function saveConfig() {
         autoTurnOffLights: $('#auto-turn-off-setting').is(':checked'),
         liveTimingURL: $('#live-timing-url-input').val(),
         hueDisable: $('#disable-hue-setting').is(':checked'),
-        hueToken: $('#gatw-token-input').val(),
         hueDevices: $('#hue-devices-input').val(),
         ikeaDisable: $('#disable-ikea-setting').is(':checked'),
         securityCode: $('#sec-code-input').val(),
@@ -461,4 +457,12 @@ function toggleLogs(){
 }
 function checkAPIS(){
     ipcRenderer.send('check-apis')
+}
+function reloadFromConfig(){
+    ipcRenderer.send('reload-from-config')
+}
+function linkOpenRGB(){
+    saveConfig()
+    reloadFromConfig()
+    ipcRenderer.send('link-openrgb')
 }
