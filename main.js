@@ -65,7 +65,7 @@ let SStateCheck;
 let win;
 let f1mvCheck = true;
 f1mvCheck = userConfig.get('devConfig.f1mvCheck')
-let alwaysFalse = false;
+const alwaysFalse = false;
 
 let errorCheck;
 
@@ -1382,7 +1382,6 @@ async function yeelightControl(r, g, b, brightness, action) {
 
 const hue = require("node-hue-api");
 const fs = require("fs");
-const Chroma = require("razer-chroma-nodejs");
 let hueApi;
 let hueClient;
 let hueLights;
@@ -1399,6 +1398,7 @@ async function hueInitialize() {
         hueOnline = true;
         hueClient = await hue.v3.api.createLocal(hueApi[0].ipaddress).connect();
         // toast that the bridge is found + IP
+        win.webContents.send('toaster', "Hue bridge found at: " + hueApi[0].ipaddress);
         if (debugPreference) {
             console.log("Hue bridge found at: " + hueApi[0].ipaddress);
             win.webContents.send('log', "Hue bridge found at: " + hueApi[0].ipaddress);
@@ -1411,16 +1411,19 @@ async function hueInitialize() {
             if (userConfig.get('Settings.hueSettings.token') === undefined) {
                 if (debugPreference) {
                     win.webContents.send('log', "No token found, creating one...");
+                    win.webContents.send('toaster', "No token found, creating one...");
                 }
                 createdUser = await hueClient.users.createUser(appName, deviceName)
                 userConfig.set('Settings.hueSettings.token', createdUser.username)
                 if (debugPreference) {
                     win.webContents.send('log', "Token created: " + createdUser.username);
+                    win.webContents.send('toaster', "Token created: " + createdUser.username);
                 }
                 token = createdUser.username
             } else {
                 if (debugPreference) {
                     win.webContents.send('log', "Token found: " + userConfig.get('Settings.hueSettings.token'));
+                    win.webContents.send('toaster', "Token found: " + userConfig.get('Settings.hueSettings.token'));
                 }
                 token = userConfig.get('Settings.hueSettings.token');
             }
@@ -1431,7 +1434,8 @@ async function hueInitialize() {
 
             if (hueLights !== undefined) {
                 if (debugPreference) {
-                    win.webContents.send('log', "Hue lights found: " + hueLights.length);
+                    win.webContents.send('log', "Amount of Hue lights found: " + hueLights.length);
+                    win.webContents.send('toaster', "Amount of Hue lights found: " + hueLights.length);
                 }
                 hueLights.forEach((light) => {
                     if (debugPreference) {
@@ -1440,6 +1444,7 @@ async function hueInitialize() {
                 });
             } else {
                 win.webContents.send('log', "No Hue lights found or an error occurred");
+                win.webContents.send('toaster', "No Hue lights found or an error occurred");
             }
         } catch (err) {
             try {
@@ -1781,66 +1786,71 @@ async function openRGBInitialize(){
     }
 }
 async function openRGBControl(r, g, b, brightness, action){
-    if(debugPreference){
-        console.log("Getting all the available OpenRGB devices...");
-        win.webContents.send('log', "Getting all the available OpenRGB devices...");
-    }
-    let deviceCount = await client.getControllerCount()
-    if(debugPreference){
-        console.log("Found " + deviceCount + " OpenRGB devices!");
-        win.webContents.send('log', "Found " + deviceCount + " OpenRGB devices!");
-    }
-    if(action === 'on') {
-        if(debugPreference){
-            console.log("Turning all the available OpenRGB devices on...");
-            win.webContents.send('log', "Turning all the available OpenRGB devices on...");
+    if(openRGBOnline) {
+        if (debugPreference) {
+            console.log("Getting all the available OpenRGB devices...");
+            win.webContents.send('log', "Getting all the available OpenRGB devices...");
         }
-        for (let i = 0; i < deviceCount; i++) {
-            let device = await client.getControllerData(i)
-            await client.updateMode(i, 0)
-
-            if(debugPreference){
-                console.log("Turning on OpenRGB device with name: " + device.name + " and values: " + r + ", " + g + ", " + b + ", " + brightness);
-                win.webContents.send('log', "Turning on OpenRGB device with name: " + device.name + " and values: " + r + ", " + g + ", " + b + ", " + brightness);
-            }
-
-            const colors = Array(device.colors.length).fill({
-                red: r,
-                green: g,
-                blue: b
-            })
-            await client.updateLeds(i, colors)
-            if(debugPreference){
-                console.log('Successfully updated the colors of the OpenRGB device with name: ' + device.name);
-                win.webContents.send('log', 'Successfully updated the colors of the OpenRGB device with name: ' + device.name);
-            }
+        let deviceCount = await client.getControllerCount()
+        if (debugPreference) {
+            console.log("Found " + deviceCount + " OpenRGB devices!");
+            win.webContents.send('log', "Found " + deviceCount + " OpenRGB devices!");
         }
-    }
-    if(action === 'off') {
-        if(debugPreference){
-            console.log("Turning all the available OpenRGB devices off...");
-            win.webContents.send('log', "Turning all the available OpenRGB devices off...");
-        }
-        for (let i = 0; i < deviceCount; i++) {
-            let device = await client.getControllerData(i)
-            await client.updateMode(i, 0)
-
-            if(debugPreference){
-                console.log("Turning off OpenRGB device with name: " + device.name);
-                win.webContents.send('log', "Turning off OpenRGB device with name: " + device.name);
+        if (action === 'on') {
+            if (debugPreference) {
+                console.log("Turning all the available OpenRGB devices on...");
+                win.webContents.send('log', "Turning all the available OpenRGB devices on...");
             }
+            for (let i = 0; i < deviceCount; i++) {
+                let device = await client.getControllerData(i)
+                await client.updateMode(i, 0)
 
-            const colors = Array(device.colors.length).fill({
-                red: 0,
-                green: 0,
-                blue: 0
-            })
-            await client.updateLeds(i, colors)
-            if(debugPreference){
-                console.log('Successfully updated the colors of the OpenRGB device with name: ' + device.name);
-                win.webContents.send('log', 'Successfully updated the colors of the OpenRGB device with name: ' + device.name);
+                if (debugPreference) {
+                    console.log("Turning on OpenRGB device with name: " + device.name + " and values: " + r + ", " + g + ", " + b + ", " + brightness);
+                    win.webContents.send('log', "Turning on OpenRGB device with name: " + device.name + " and values: " + r + ", " + g + ", " + b + ", " + brightness);
+                }
+
+                const colors = Array(device.colors.length).fill({
+                    red: r,
+                    green: g,
+                    blue: b
+                })
+                await client.updateLeds(i, colors)
+                if (debugPreference) {
+                    console.log('Successfully updated the colors of the OpenRGB device with name: ' + device.name);
+                    win.webContents.send('log', 'Successfully updated the colors of the OpenRGB device with name: ' + device.name);
+                }
             }
         }
+        if (action === 'off') {
+            if (debugPreference) {
+                console.log("Turning all the available OpenRGB devices off...");
+                win.webContents.send('log', "Turning all the available OpenRGB devices off...");
+            }
+            for (let i = 0; i < deviceCount; i++) {
+                let device = await client.getControllerData(i)
+                await client.updateMode(i, 0)
+
+                if (debugPreference) {
+                    console.log("Turning off OpenRGB device with name: " + device.name);
+                    win.webContents.send('log', "Turning off OpenRGB device with name: " + device.name);
+                }
+
+                const colors = Array(device.colors.length).fill({
+                    red: 0,
+                    green: 0,
+                    blue: 0
+                })
+                await client.updateLeds(i, colors)
+                if (debugPreference) {
+                    console.log('Successfully updated the colors of the OpenRGB device with name: ' + device.name);
+                    win.webContents.send('log', 'Successfully updated the colors of the OpenRGB device with name: ' + device.name);
+                }
+            }
+        }
+    } else if(debugPreference){
+        console.log("There is no active connection to OpenRGB, please make sure that OpenRGB is running and that the IP + Port are correct! Restart the application to try connecting to OpenRGB again.");
+        win.webContents.send('log', "There is no active connection to OpenRGB, please make sure that OpenRGB is running and that the IP + Port are correct! Restart the application to try connecting to OpenRGB again.");
     }
 }
 app.on('window-all-closed', () => {
