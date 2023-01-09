@@ -30,7 +30,7 @@ const config = {
                             },
                             safetyCar: {
                                 r: 255,
-                                g: 255,
+                                g: 145,
                                 b: 0
                             },
                             vsc: {

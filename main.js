@@ -90,7 +90,6 @@ const vscEndingColor = userConfig.get('Settings.generalSettings.colorSettings.vs
 let noUpdateFound = false;
 
 const {
-    exec,
     spawn
 } = require('child_process');
 
@@ -192,7 +191,7 @@ app.whenReady().then(() => {
     }
     else if (process.platform === "darwin" || process.platform === "linux") {
         const child = spawn('node', ['-v']);
-        child.on('error', (err) => {
+        child.on('error', () => {
             // node is not installed
             dialog.showMessageBox(win, {
                 type: "error",
@@ -209,7 +208,7 @@ app.whenReady().then(() => {
                 }
             })
         });
-        child.on('exit', (code) => {
+        child.on('exit', () => {
             if (debugPreference) {
                 console.log("Node JS is installed")
             }
@@ -721,7 +720,7 @@ async function migrateConfig() {
                         },
                         safetyCar: {
                             r: oldConfig.Settings.generalSettings.colorSettings.safetyCar.r,
-                            g: oldConfig.Settings.generalSettings.colorSettings.safetyCar.g,
+                            g: 145,
                             b: oldConfig.Settings.generalSettings.colorSettings.safetyCar.b
                         },
                         vsc: {
@@ -1055,30 +1054,35 @@ async function initIntegrations(){
 }
 async function integrationAPIStatus(){
     await otherAPIStatus()
-    setInterval(function () {
+    await integrationAPIStatusSend()
+    setInterval(async function () {
         if (BrowserWindow.getAllWindows().length > 0) {
-            if (ikeaOnline) {
-                win.webContents.send('ikeaAPI', 'online');
-            }
-            if (goveeOnline) {
-                win.webContents.send('goveeAPI', 'online');
-            }
-            if (hueOnline) {
-                win.webContents.send('hueAPI', 'online');
-            }
-            if(openRGBOnline){
-                win.webContents.send('openRGBAPI', 'online');
-            }
-            if (!yeelightDisabled) {
-                win.webContents.send('yeelightAPI', 'online')
-            }
-            const nanoLeafDevices = userConfig.get('Settings.nanoLeafSettings.devices')
-            if (nanoLeafDevices.length > 0) {
-                nanoLeafOnline = true
-                win.webContents.send('nanoLeafAPI', 'online')
-            }
+            await integrationAPIStatusSend()
         }
     }, 5000);
+}
+
+async function integrationAPIStatusSend(){
+    if (ikeaOnline) {
+        win.webContents.send('ikeaAPI', 'online');
+    }
+    if (goveeOnline) {
+        win.webContents.send('goveeAPI', 'online');
+    }
+    if (hueOnline) {
+        win.webContents.send('hueAPI', 'online');
+    }
+    if(openRGBOnline){
+        win.webContents.send('openRGBAPI', 'online');
+    }
+    if (!yeelightDisabled) {
+        win.webContents.send('yeelightAPI', 'online')
+    }
+    const nanoLeafDevices = userConfig.get('Settings.nanoLeafSettings.devices')
+    if (nanoLeafDevices.length > 0) {
+        nanoLeafOnline = true
+        win.webContents.send('nanoLeafAPI', 'online')
+    }
 }
 
 async function otherAPIStatus(){
@@ -1185,15 +1189,15 @@ async function ikeaInitialize() {
     const startCommand = 'node ' + startPath + ' ' + '--' + securityCode + ' ' + debug;
     let child;
     let errorDetected = false;
-    child = exec(startCommand, (err) => {
+    child = exec(startCommand, async (err) => {
         if (err) {
             errorDetected = true;
             ikeaOnline = false;
-            if(err.message.includes('EADDRINUSE')){
+            if (err.message.includes('EADDRINUSE')) {
                 ikeaOnline = false;
                 console.log("The IKEA Tradfri Server is already running, stopping the old instance and starting a new one.");
                 win.webContents.send('log', "The IKEA Tradfri Server is already running, stopping the old instance and starting a new one.");
-                fetch('http://localhost:9898/quit');
+                await fetch('http://localhost:9898/quit');
                 setTimeout(function () {
                     ikeaInitialize();
                 }, 1000);
@@ -1819,7 +1823,7 @@ async function openRGBControl(r, g, b, brightness, action){
             console.log("Getting all the available OpenRGB devices...");
             win.webContents.send('log', "Getting all the available OpenRGB devices...");
         }
-        let deviceCount = await client.getControllerCount()
+        const deviceCount = await client.getControllerCount()
         if (debugPreference) {
             console.log("Found " + deviceCount + " OpenRGB devices!");
             win.webContents.send('log', "Found " + deviceCount + " OpenRGB devices!");

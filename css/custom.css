@@ -120,12 +120,10 @@ nav {
 }
 
 .status.success {
-    animation: pulse-success 2s infinite;
     background-color: #78fc65;
 }
 
 .status.error {
-    animation: pulse-error 2s infinite;
     background-color: var(--red);
 }
 
