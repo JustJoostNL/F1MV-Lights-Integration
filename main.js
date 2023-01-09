@@ -1189,67 +1189,71 @@ async function ikeaInitialize() {
     const startCommand = 'node ' + startPath + ' ' + '--' + securityCode + ' ' + debug;
     let child;
     let errorDetected = false;
-    child = exec(startCommand, async (err) => {
+    child = exec(startCommand, (err) => {
         if (err) {
             errorDetected = true;
             ikeaOnline = false;
             if (err.message.includes('EADDRINUSE')) {
-                ikeaOnline = false;
                 console.log("The IKEA Tradfri Server is already running, stopping the old instance and starting a new one.");
                 win.webContents.send('log', "The IKEA Tradfri Server is already running, stopping the old instance and starting a new one.");
-                await fetch('http://localhost:9898/quit');
+                fetch('http://localhost:9898/quit');
                 setTimeout(function () {
                     ikeaInitialize();
                 }, 1000);
+            } else {
+                console.log("An error occured while starting the IKEA Tradfri Server: " + err.message);
+                win.webContents.send('log', "An error occured while starting the IKEA Tradfri Server: " + err.message);
             }
         }
     });
-    if(!errorDetected){
-        ikeaOnline = true;
-        if(debugPreference){
-            console.log("IKEA Tradfri plugin started successfully");
-            win.webContents.send('log', "IKEA Tradfri plugin started successfully");
-        }
-    }
     child.stdout.on('data', (data) => {
+        // check if the data includes the string "listening at"
+        if (data.includes("listening at")) {
+            ikeaOnline = true;
+            if (debugPreference) {
+                console.log("IKEA Tradfri plugin started successfully");
+                win.webContents.send('log', "IKEA Tradfri plugin started successfully");
+            }
+        }
         console.log(data);
         win.webContents.send('log', data);
     });
     child.stderr.on('data', (data) => {
         console.log(data);
-        win.webContents.send('log', data);
+        win.webContents.send('log',data);
 
     });
-    if (!ikeaDisabled && ikeaOnline) {
-        app.on('window-all-closed', () => {
-            fetch('http://localhost:9898/quit');
-        });
-    }
-
 }
+app.on('window-all-closed',  () => {
+    if(!ikeaDisabled && ikeaOnline){
+        fetch('http://localhost:9898/quit');
+    }
+});
 
 async function ikeaControl(r, g, b, brightness, action, flag) {
-    const devices = userConfig.get('Settings.ikeaSettings.deviceIDs');
-    for (let i = 0; i < devices.length; i++) {
-        if (debugPreference){
-            console.log("Checking if Ikea device is RGB or White")
-            win.webContents.send('log', "Checking if Ikea device is RGB or White")
-            console.log("Device to check: " + devices[i])
-            win.webContents.send('log', "Device to check: " + devices[i])
-        }
-        if (devicesDone.includes(devices[i])) {
-            if (debugPreference){
-                win.webContents.send('log', "Device already done, skipping...");
-                console.log("Device already done, skipping...");
+    if(ikeaOnline) {
+        const devices = userConfig.get('Settings.ikeaSettings.deviceIDs');
+        for (let i = 0; i < devices.length; i++) {
+            if (debugPreference) {
+                console.log("Checking if Ikea device is RGB or White")
+                win.webContents.send('log', "Checking if Ikea device is RGB or White")
+                console.log("Device to check: " + devices[i])
+                win.webContents.send('log', "Device to check: " + devices[i])
             }
-        } else {
-            const response = await fetch('http://localhost:9898/getSpectrum/' + devices[i]);
-            const json = await response.json();
-            devicesDone.push(devices[i]);
-            if (json.spectrum === "rgb") {
-                colorDevices.push(devices[i]);
+            if (devicesDone.includes(devices[i])) {
+                if (debugPreference) {
+                    win.webContents.send('log', "Device already done, skipping...");
+                    console.log("Device already done, skipping...");
+                }
             } else {
-                whiteDevices.push(devices[i]);
+                const response = await fetch('http://localhost:9898/getSpectrum/' + devices[i]);
+                const json = await response.json();
+                devicesDone.push(devices[i]);
+                if (json.spectrum === "rgb") {
+                    colorDevices.push(devices[i]);
+                } else {
+                    whiteDevices.push(devices[i]);
+                }
             }
         }
     }

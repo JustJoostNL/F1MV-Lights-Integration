@@ -54,7 +54,7 @@ const connectToGateway = async () => {
         await tradfriClient
             .on("device updated", (d) => {
                 if (debug){
-                    console.log("[TRADFRI] Device updated");
+                    //console.log("[TRADFRI] Device updated");
                 }
                 devices[d.instanceId] = d;
             })
@@ -62,7 +62,7 @@ const connectToGateway = async () => {
         await tradfriClient
             .on("group updated", (g) => {
                 if (debug){
-                    console.log("[TRADFRI] Group updated");
+                   //console.log("[TRADFRI] Group updated");
                 }
                 groups[g.instanceId] = g;
             })
