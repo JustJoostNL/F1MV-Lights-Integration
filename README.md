@@ -97,7 +97,7 @@ Getting started is very easy. Just follow the steps below. If you have any quest
   - [Nanoleaf][nanoleaf-url]
   - [Ikea Tradfri][tradfri-url]
   - [YeeLight][yeelight-url]
-  - [Any OpenRGB compatible device][openrgb-url]
+  - [Any OpenRGB compatible device][openrgb-devices-url]
 
 
 - *More brands may come soon!*

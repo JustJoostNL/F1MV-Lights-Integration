@@ -1198,7 +1198,6 @@ async function ikeaInitialize() {
     }
     const path = require('path');
     let startPath = path.join(app.getAppPath(), 'ikea.js');
-    // make a variable startcommand2 and make sure its quoted
     startPath = '"' + startPath + '"';
     const startCommand = 'node ' + startPath  + ' ' + '--' + ikeaSecurityCode + ' ' + debug;
     //console.log(startCommand)
@@ -1821,13 +1820,10 @@ ipcMain.on('link-openrgb', (event, arg) => {
 });
 
 const { Client } = require("openrgb-sdk")
-let client = undefined;
+let client;
 async function openRGBInitialize(toast){
     try {
-        if(toast){
-            win.webContents.send('toaster', "Connecting to OpenRGB...");
-        }
-        if(!client === undefined || client){
+        if(openRGBOnline){
             if(debugPreference){
                 console.log("There is already a OpenRGB client, closing it...");
                 win.webContents.send('log', "There is already a OpenRGB client, closing it...");
@@ -1836,6 +1832,10 @@ async function openRGBInitialize(toast){
                 win.webContents.send('toaster', "Reconnecting to OpenRGB...");
             }
             client.disconnect();
+        } else {
+            if(toast){
+                win.webContents.send('toaster', "Connecting to OpenRGB...");
+            }
         }
         client = new Client("F1MV-Lights-Integration", openRGBPort, openRGBIP);
         await client.connect()
