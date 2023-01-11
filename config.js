@@ -20,7 +20,7 @@ const config = {
                             },
                             yellow: {
                                 r: 255,
-                                g: 255,
+                                g: 150,
                                 b: 0
                             },
                             red: {
@@ -30,17 +30,17 @@ const config = {
                             },
                             safetyCar: {
                                 r: 255,
-                                g: 145,
+                                g: 150,
                                 b: 0
                             },
                             vsc: {
                                 r: 255,
-                                g: 255,
+                                g: 150,
                                 b: 0
                             },
                             vscEnding: {
                                 r: 255,
-                                g: 255,
+                                g: 150,
                                 b: 0
 
                             }
@@ -120,7 +120,7 @@ const config = {
                 }
         },
         // do not change this version!
-        version: 8,
+        version: 9,
     devConfig:
         {
             autoStartDevTools: false

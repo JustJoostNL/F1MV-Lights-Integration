@@ -345,7 +345,11 @@ ipcMain.on('toggle-logs', () => {
     }
 })
 
-function toggleInit(){
+ipcMain.on('load-log-pref', () => {
+    loadLogPref();
+})
+
+function loadLogPref(){
     if(hideLogs){
         win.webContents.send('hide-logs', true);
     } else if (!hideLogs){
@@ -557,8 +561,8 @@ ipcMain.on('f1mv-check', () => {
     } else if (!f1mvCheck) {
         f1mvCheck = true;
         userConfig.set('Settings.MultiViewerForF1Settings.f1mvCheck', true)
-        win.webContents.send('log', 'Enabled F1MV Api check')
-        console.log('Enabled F1MV api check!')
+        win.webContents.send('log', 'Enabled F1MV sync!')
+        console.log('Enabled F1MV sync!')
     }
 })
 ipcMain.on('auto-devtools', () => {
@@ -709,7 +713,7 @@ ipcMain.on('saveConfigColors', (event, arg) => {
 
 async function migrateConfig() {
     // if the config version is != 1 migrate the config
-    if (userConfig.get('version') !== 8) {
+    if (userConfig.get('version') !== 9) {
         console.log('Migrating config...')
         win.webContents.send('log', 'Migrating config...')
         // migrate the config
@@ -719,7 +723,7 @@ async function migrateConfig() {
                 "generalSettings": {
                     "autoTurnOffLights": oldConfig.Settings.generalSettings.autoTurnOffLights,
                     "defaultBrightness": oldConfig.Settings.generalSettings.defaultBrightness,
-                    "hideLogs": true,
+                    "hideLogs": oldConfig.Settings.generalSettings.hideLogs,
                     "colorSettings": {
                         green: {
                             r: oldConfig.Settings.generalSettings.colorSettings.green.r,
@@ -727,9 +731,9 @@ async function migrateConfig() {
                             b: oldConfig.Settings.generalSettings.colorSettings.green.b
                         },
                         yellow: {
-                            r: oldConfig.Settings.generalSettings.colorSettings.yellow.r,
-                            g: oldConfig.Settings.generalSettings.colorSettings.yellow.g,
-                            b: oldConfig.Settings.generalSettings.colorSettings.yellow.b
+                            r: 255,
+                            g: 150,
+                            b: 0
                         },
                         red: {
                             r: oldConfig.Settings.generalSettings.colorSettings.red.r,
@@ -737,26 +741,27 @@ async function migrateConfig() {
                             b: oldConfig.Settings.generalSettings.colorSettings.red.b
                         },
                         safetyCar: {
-                            r: oldConfig.Settings.generalSettings.colorSettings.safetyCar.r,
-                            g: 145,
-                            b: oldConfig.Settings.generalSettings.colorSettings.safetyCar.b
+                            r: 255,
+                            g: 150,
+                            b: 0
+
                         },
                         vsc: {
-                            r: oldConfig.Settings.generalSettings.colorSettings.vsc.r,
-                            g: oldConfig.Settings.generalSettings.colorSettings.vsc.g,
-                            b: oldConfig.Settings.generalSettings.colorSettings.vsc.b
+                            r: 255,
+                            g: 150,
+                            b: 0
                         },
                         vscEnding: {
-                            r: oldConfig.Settings.generalSettings.colorSettings.vscEnding.r,
-                            g: oldConfig.Settings.generalSettings.colorSettings.vscEnding.g,
-                            b: oldConfig.Settings.generalSettings.colorSettings.vscEnding.b
+                            r: 255,
+                            g: 150,
+                            b: 0
 
                         }
                     }
                 },
                 "MultiViewerForF1Settings": {
                     "liveTimingURL": "http://localhost:10101",
-                    "f1mvCheck": true
+                    "f1mvCheck": oldConfig.Settings.MultiViewerForF1Settings.f1mvCheck,
                 },
                 "hueSettings": {
                     "hueDisable": oldConfig.Settings.hueSettings.hueDisable,
@@ -772,9 +777,9 @@ async function migrateConfig() {
                     "goveeDisable": oldConfig.Settings.goveeSettings.goveeDisable
                 },
                 "openRGBSettings": {
-                    "openRGBDisable": true,
-                    "openRGBServerIP": "localhost",
-                    "openRGBServerPort": 6742,
+                    "openRGBDisable": oldConfig.Settings.openRGBSettings.openRGBDisable,
+                    "openRGBServerIP": oldConfig.Settings.openRGBSettings.openRGBServerIP,
+                    "openRGBServerPort": oldConfig.Settings.openRGBSettings.openRGBServerPort,
                 },
                 "nanoLeafSettings": {
                     "nanoLeafDisable": oldConfig.Settings.nanoLeafSettings.nanoLeafDisable,
@@ -790,7 +795,7 @@ async function migrateConfig() {
                     "analytics": oldConfig.Settings.advancedSettings.analytics
                 }
             },
-            "version": 8
+            "version": 9
         }
         userConfig.clear();
         userConfig.set(newConfig);
@@ -1036,9 +1041,6 @@ setTimeout(function () {
 }, 1000);
 
 async function initIntegrations(){
-    setTimeout(function () {
-        toggleInit()
-    }, 1000);
     if (!ikeaDisabled) {
         ikeaInitialize().then(r => {
             if (alwaysFalse) {
@@ -1196,7 +1198,10 @@ async function ikeaInitialize() {
     }
     const path = require('path');
     let startPath = path.join(app.getAppPath(), 'ikea.js');
-    const startCommand = 'node ' + startPath + ' ' + '--' + ikeaSecurityCode + ' ' + debug;
+    // make a variable startcommand2 and make sure its quoted
+    startPath = '"' + startPath + '"';
+    const startCommand = 'node ' + startPath  + ' ' + '--' + ikeaSecurityCode + ' ' + debug;
+    //console.log(startCommand)
     let child;
     let errorDetected = false;
     child = exec(startCommand, (err) => {
@@ -1816,28 +1821,40 @@ ipcMain.on('link-openrgb', (event, arg) => {
 });
 
 const { Client } = require("openrgb-sdk")
-let client;
+let client = undefined;
 async function openRGBInitialize(toast){
     try {
+        if(toast){
+            win.webContents.send('toaster', "Connecting to OpenRGB...");
+        }
+        if(!client === undefined || client){
+            if(debugPreference){
+                console.log("There is already a OpenRGB client, closing it...");
+                win.webContents.send('log', "There is already a OpenRGB client, closing it...");
+            }
+            if(toast){
+                win.webContents.send('toaster', "Reconnecting to OpenRGB...");
+            }
+            client.disconnect();
+        }
         client = new Client("F1MV-Lights-Integration", openRGBPort, openRGBIP);
         await client.connect()
         if(debugPreference){
             console.log("Connected to OpenRGB!");
             win.webContents.send('log', "Connected to OpenRGB!");
-            if(toast){
-                win.webContents.send('toaster', "Connected to OpenRGB!");
-            }
+        }
+        if(toast){
+            win.webContents.send('toaster', "Connected to OpenRGB!");
         }
         openRGBOnline = true;
     } catch (error) {
         openRGBOnline = false;
         setTimeout(() => {
-            console.log("Error: Could not connect to OpenRGB, please make sure that OpenRGB is running and that the IP + Port are correct!");
             win.webContents.send('log', "Error: Could not connect to OpenRGB, please make sure that OpenRGB is running and that the IP + Port are correct!");
             if(toast){
                 win.webContents.send('toaster', "Could not connect to OpenRGB!");
             }
-        }, 1000);
+        }, 1500);
     }
 }
 async function openRGBControl(r, g, b, brightness, action){
@@ -1904,8 +1921,8 @@ async function openRGBControl(r, g, b, brightness, action){
             }
         }
     } else if(debugPreference){
-        console.log("There is no active connection to OpenRGB, please make sure that OpenRGB is running and that the IP + Port are correct! Restart the application to try connecting to OpenRGB again.");
-        win.webContents.send('log', "There is no active connection to OpenRGB, please make sure that OpenRGB is running and that the IP + Port are correct! Restart the application to try connecting to OpenRGB again.");
+        console.log("There is no active connection to OpenRGB, please make sure that OpenRGB is running and that the IP + Port are correct!");
+        win.webContents.send('log', "There is no active connection to OpenRGB, please make sure that OpenRGB is running and that the IP + Port are correct!");
     }
 }
 app.on('window-all-closed', () => {

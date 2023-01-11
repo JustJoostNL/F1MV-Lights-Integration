@@ -466,3 +466,6 @@ function linkOpenRGB(){
     reloadFromConfig()
     ipcRenderer.send('link-openrgb')
 }
+function loadLogPref(){
+    ipcRenderer.send('load-log-pref')
+}
