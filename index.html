@@ -16,7 +16,7 @@
         $(document).ready(function() {
             hideDisabledIntegrations();
             checkAPIS();
-            loadLogPref();
+            loadPrefs();
         });
     </script>
     <title>F1MV-Lights-Integration</title>
@@ -54,7 +54,7 @@
             <em class="material-icons">description</em>
             Toggle logs
         </a>
-        <a class="waves-effect waves-light btn-large simulation__button tooltipped" onclick="toggleF1MVApiCheck()" data-position="bottom" data-tooltip="Toggle on or off the F1MV Api check">
+        <a class="waves-effect waves-light btn-large simulation__button tooltipped" id="f1mvSyncToggle" onclick="toggleF1MVApiCheck()" data-position="bottom" data-tooltip="Toggle on or off the F1MV Api check">
             <em style="color:white" class="material-icons">toggle_on</em>
             Toggle F1MV Sync
         </a>

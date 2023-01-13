@@ -211,6 +211,14 @@ $(function() {
             $('#test').hide()
         }
     })
+    ipcRenderer.on('f1mv-check-html', (event, arg) => {
+        console.log(arg)
+        if (arg === true) {
+            $('#f1mvSyncToggle').html('<em style="color:white" class="material-icons">toggle_on</em> Toggle F1MV Sync')
+        } else if(arg === false) {
+            $('#f1mvSyncToggle').html('<em style="color:white" class="material-icons">toggle_off</em> Toggle F1MV Sync')
+        }
+    })
 
     ipcRenderer.on('auto-devtools', (event, arg) => {
         // change the icon from code to code_off
@@ -466,6 +474,6 @@ function linkOpenRGB(){
     reloadFromConfig()
     ipcRenderer.send('link-openrgb')
 }
-function loadLogPref(){
-    ipcRenderer.send('load-log-pref')
+function loadPrefs(){
+    ipcRenderer.send('load-prefs')
 }

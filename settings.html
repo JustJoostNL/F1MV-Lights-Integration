@@ -38,7 +38,7 @@
 </div>
 <div class="container easy-access">
     <div class="easy-access__buttons">
-        <a style="color:deepskyblue" class="waves-effect waves-light btn-large simulation__button tooltipped" onclick="openConfig()" data-position="bottom" data-tooltip="Check for newer version">
+        <a style="color:deepskyblue" class="waves-effect waves-light btn-large simulation__button tooltipped" onclick="openConfig()" data-position="bottom">
             <em class="material-icons">open_in_new</em>
             Open Config
         </a>
@@ -82,7 +82,7 @@
         </label>
     </p>
     <div class="simulation__buttons">
-        <a class="waves-effect waves-light btn-large simulation__button tooltipped" href="colorSettings.html" data-position="bottom" data-tooltip="Get a window with all the device's, there name and there ID">
+        <a class="waves-effect waves-light btn-large simulation__button tooltipped" href="colorSettings.html" data-position="bottom">
             <em class="material-icons">palette</em>
             Color Settings
         </a>
@@ -91,15 +91,15 @@
 <div class="container simulation">
     <h2 class="simulation__title">Hue Settings</h2>
     <div class="simulation__buttons">
-        <a class="waves-effect waves-light btn-large simulation__button tooltipped" onclick="linkHue()" data-position="bottom" data-tooltip="Link the Hue bridge">
+        <a class="waves-effect waves-light btn-large simulation__button tooltipped" onclick="linkHue()" data-position="bottom">
             <em class="material-icons">link</em>
             Link Hue Bridge (first time)
         </a>
-        <a class="waves-effect waves-light btn-large simulation__button tooltipped" onclick="linkHue()" data-position="bottom" data-tooltip="Link the Hue bridge">
+        <a class="waves-effect waves-light btn-large simulation__button tooltipped" onclick="linkHue()" data-position="bottom">
             <em class="material-icons">restart_alt</em>
             Refresh Hue Bridge
         </a>
-        <a class="waves-effect waves-light btn-large simulation__button tooltipped" onclick="hueGetIDs()" data-position="bottom" data-tooltip="Get a window with all the device's, there name and there ID">
+        <a class="waves-effect waves-light btn-large simulation__button tooltipped" onclick="hueGetIDs()" data-position="bottom">
             <em class="material-icons">pin</em>
             Get device Id's
         </a>
@@ -122,7 +122,7 @@
 <div class="container simulation">
     <h2 class="simulation__title">Ikea Settings</h2>
     <div class="simulation__buttons">
-        <a class="waves-effect waves-light btn-large simulation__button tooltipped" onclick="ikeaGetIds()" data-position="bottom" data-tooltip="Get a window with all the device's, there name and there ID">
+        <a class="waves-effect waves-light btn-large simulation__button tooltipped" onclick="ikeaGetIds()" data-position="bottom">
             <em class="material-icons">pin</em>
             Get device Id's
         </a>
@@ -163,7 +163,7 @@
 <div class="container simulation">
     <h2 class="simulation__title">OpenRGB Settings</h2>
     <div class="simulation__buttons">
-        <a class="waves-effect waves-light btn-large simulation__button tooltipped" onclick="linkOpenRGB()" data-position="bottom" data-tooltip="Link the Hue bridge">
+        <a class="waves-effect waves-light btn-large simulation__button tooltipped" onclick="linkOpenRGB()" data-position="bottom">
             <em class="material-icons">link</em>
             (Re)Connect with OpenRGB
         </a>
@@ -193,7 +193,7 @@
 <div class="container simulation">
     <h2 class="simulation__title">Nanoleaf Settings</h2>
     <div class="simulation__buttons">
-        <a class="waves-effect waves-light btn-large simulation__button tooltipped" onclick="nanoLeaf('openWindow')" data-position="bottom" data-tooltip="Search for Nanoleaf devices">
+        <a class="waves-effect waves-light btn-large simulation__button tooltipped" onclick="nanoLeaf('openWindow')" data-position="bottom">
             <em class="material-icons">add</em>
             Add a Nanoleaf device
         </a>
@@ -255,24 +255,11 @@
     </p>
     <small style="font-size: 12px; color:gray">Disable this if you don't want to send analytics (personal things such as the security code are never send!)</small>
 </div>
-<!--<div class="container simulation">-->
-<!--    <h2 class="simulation__title">Save Settings</h2>-->
-<!--</div>-->
-<!--<div class="container easy-access">-->
-<!--    <div class="easy-access__buttons">-->
-<!--        <a class="waves-effect waves-light btn-large simulation__button tooltipped" onclick="reloadFromConfig()" data-position="bottom" data-tooltip="Restart the application">-->
-<!--            <em class="material-icons">restart_alt</em>-->
-<!--            Reload from config-->
-<!--        </a>-->
-<!--    </div>-->
-<!--</div>-->
-
 <div style="visibility: hidden" class="container simulation" id="nothing">
     <h2 class="simulation__title">Nothing here</h2>
     <div class="simulation__buttons">
     </div>
 </div>
-
 
 <script src="js/materialize.min.js"></script>
 <script src="js/custom.js"></script>

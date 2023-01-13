@@ -241,7 +241,7 @@ app.whenReady().then(() => {
         if (!devMode) {
             devMode = true;
             developerModeWasActivated = true;
-            userConfig.set('Settings.advancedSettings.debugMode', true);
+            //userConfig.set('Settings.advancedSettings.debugMode', true);
             //debugPreference = true;
             win.webContents.send('dev', true);
             if (userConfig.get('devConfig.autoStartDevTools')) {
@@ -250,7 +250,7 @@ app.whenReady().then(() => {
             win.webContents.send('log', 'Developer Mode Activated!')
         } else if (devMode) {
             devMode = false;
-            userConfig.set('Settings.advancedSettings.debugMode', false);
+            //userConfig.set('Settings.advancedSettings.debugMode', false);
             //debugPreference = false;
             win.webContents.send('dev', false);
             win.webContents.closeDevTools()
@@ -345,17 +345,19 @@ ipcMain.on('toggle-logs', () => {
     }
 })
 
-ipcMain.on('load-log-pref', () => {
-    loadLogPref();
-})
-
-function loadLogPref(){
+ipcMain.on('load-prefs', () => {
+    // log pref:
     if(hideLogs){
         win.webContents.send('hide-logs', true);
     } else if (!hideLogs){
         win.webContents.send('hide-logs', false);
     }
-}
+    if (f1mvCheck){
+        win.webContents.send('f1mv-check-html', true);
+    } else if (!f1mvCheck){
+        win.webContents.send('f1mv-check-html', false);
+    }
+})
 
 ipcMain.on('toggle-debug', () => {
     if (debugPreference) {
@@ -536,6 +538,7 @@ ipcMain.on('updatecheck', () => {
 ipcMain.on('test-button-dev', async () => {
     console.log("Running action mapped on test button...")
     win.webContents.send('log', 'Running action mapped on test button...')
+    openRGBOnline = true;
 })
 ipcMain.on('check-apis', async () => {
     await checkApis();
@@ -557,12 +560,12 @@ ipcMain.on('f1mv-check', () => {
         f1mvCheck = false;
         userConfig.set('Settings.MultiViewerForF1Settings.f1mvCheck', false)
         win.webContents.send('log', 'Disabled F1MV Sync!')
-        console.log('Disabled F1MV Sync!')
+        win.webContents.send('f1mv-check-html', false)
     } else if (!f1mvCheck) {
         f1mvCheck = true;
         userConfig.set('Settings.MultiViewerForF1Settings.f1mvCheck', true)
         win.webContents.send('log', 'Enabled F1MV sync!')
-        console.log('Enabled F1MV sync!')
+        win.webContents.send('f1mv-check-html', true)
     }
 })
 ipcMain.on('auto-devtools', () => {
@@ -1038,7 +1041,7 @@ setTimeout(function () {
             });
         }
     }, 15000);
-}, 1000);
+}, 1500);
 
 async function initIntegrations(){
     if (!ikeaDisabled) {
@@ -1586,11 +1589,12 @@ async function nanoLeafInitialize(action) {
     if(action === "openWindow"){
         // create a new browser window and open the nanoleaf-setup.html file
         nanoLeafWin = new BrowserWindow({
-            width: 800,
-            height: 900,
+            width: 650,
+            height: 800,
             webPreferences: {
                 nodeIntegration: true,
-                contextIsolation: false
+                contextIsolation: false,
+                zoomFactor: 0.8
             },
             resizable: false,
             maximizable: false
@@ -1825,8 +1829,8 @@ async function openRGBInitialize(toast){
     try {
         if(openRGBOnline){
             if(debugPreference){
-                console.log("There is already a OpenRGB client, closing it...");
-                win.webContents.send('log', "There is already a OpenRGB client, closing it...");
+                console.log("Already connected to OpenRGB, closing current connection...");
+                win.webContents.send('log', "Already connected to OpenRGB, closing current connection...");
             }
             if(toast){
                 win.webContents.send('toaster', "Reconnecting to OpenRGB...");
