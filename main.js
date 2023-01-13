@@ -587,6 +587,12 @@ ipcMain.on('send-config', () => {
 ipcMain.on('reload-from-config', () => {
     reloadFromConfig();
 })
+ipcMain.on('reset-colors-to-defaults', () => {
+    userConfig.set('Settings.generalSettings.colorSettings', configDefault.Settings.generalSettings.colorSettings)
+    reloadFromConfig();
+    win.webContents.send('toaster', 'Reset colors to the defaults!')
+
+})
 ipcMain.on('hide-disabled-integrations', () => {
     const config = userConfig.store
     win.webContents.send('hide-disabled-integrations', config)

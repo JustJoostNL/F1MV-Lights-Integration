@@ -477,3 +477,7 @@ function linkOpenRGB(){
 function loadPrefs(){
     ipcRenderer.send('load-prefs')
 }
+function resetColorsToDefaults(){
+    ipcRenderer.send('reset-colors-to-defaults')
+    sendConfig()
+}
