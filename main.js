@@ -44,7 +44,7 @@ let analyticsSent = false;
 
 let updateChannel = userConfig.get('Settings.advancedSettings.updateChannel')
 autoUpdater.channel = updateChannel;
-const updateURL = "https://api.joost.systems/github/repos/JustJoostNL/f1mv-lights-integration/releases"
+const updateURL = APIURL + "/github/repos/JustJoostNL/f1mv-lights-integration/releases"
 
 let userBrightness = parseInt(userConfig.get('Settings.generalSettings.defaultBrightness'))
 
@@ -541,8 +541,7 @@ ipcMain.on('test-button-dev', async () => {
     openRGBOnline = true;
 })
 ipcMain.on('check-apis', async () => {
-    await checkApis();
-    await integrationAPIStatus()
+    await updateAllAPIs();
 })
 ipcMain.on('ikea-get-ids', async () => {
     console.log("Getting Ikea Device IDs...")
@@ -1029,104 +1028,58 @@ setTimeout(function () {
                 });
             }
         }
-    }, 400);
+    }, 300);
 }, 1000);
 
-setTimeout(function () {
-    checkApis().then(r => {
-        if (alwaysFalse) {
-            console.log(r)
-        }
-    });
-    setInterval(function () {
-        if (BrowserWindow.getAllWindows().length > 0) {
-            checkApis().then(r => {
-                if (alwaysFalse) {
-                    console.log(r)
-                }
-            });
-        }
-    }, 15000);
-}, 1500);
+async function initIntegrations() {
+    const integrations = [
+        { name: 'ikea', func: ikeaInitialize, disabled: ikeaDisabled },
+        { name: 'govee', func: goveeInitialize, disabled: goveeDisabled },
+        { name: 'hue', func: hueInitialize, disabled: hueDisabled },
+        { name: 'openRGB', func: openRGBInitialize, disabled: openRGBDisabled }
+    ];
 
-async function initIntegrations(){
-    if (!ikeaDisabled) {
-        ikeaInitialize().then(r => {
-            if (alwaysFalse) {
-                console.log(r)
-            }
-        });
-    }
-    if (!goveeDisabled) {
-        goveeInitialize().then(r => {
-            if (alwaysFalse) {
-                console.log(r)
-            }
-        });
-    }
-    if (!hueDisabled) {
-        hueInitialize().then(r => {
-            if (alwaysFalse) {
-                console.log(r)
-            }
-        });
-    }
-    if (!openRGBDisabled) {
-        openRGBInitialize().then(r => {
-            if (alwaysFalse) {
-                console.log(r)
-            }
-        });
-    }
-    await integrationAPIStatus();
-}
-async function integrationAPIStatus(){
-    await otherAPIStatus()
-    await integrationAPIStatusSend()
-    setInterval(async function () {
-        if (BrowserWindow.getAllWindows().length > 0) {
-            await integrationAPIStatusSend()
+    for (const integration of integrations) {
+        if (!integration.disabled) {
+            await integration.func();
         }
-    }, 5000);
+    }
+
+    setInterval(checkMiscAPIS, 15000);
+    await sendAllAPIStatus()
 }
 
-async function integrationAPIStatusSend(){
-    if (ikeaOnline) {
-        win.webContents.send('ikeaAPI', 'online');
+async function updateAllAPIs(){
+    await checkMiscAPIS()
+    await sendAllAPIStatus()
+}
+
+setInterval(async () => {
+    if (BrowserWindow.getAllWindows().length > 0) {
+        await sendAllAPIStatus();
     }
-    if (goveeOnline) {
-        win.webContents.send('goveeAPI', 'online');
-    }
-    if (hueOnline) {
-        win.webContents.send('hueAPI', 'online');
-    }
-    if(openRGBOnline){
-        win.webContents.send('openRGBAPI', 'online');
-    }
-    if (!yeelightDisabled) {
-        win.webContents.send('yeelightAPI', 'online')
-    }
-    if (nanoLeafDevices.length > 0) {
-        nanoLeafOnline = true
-        win.webContents.send('nanoLeafAPI', 'online')
+}, 5000);
+
+async function sendAllAPIStatus() {
+    const statuses = [
+        { name: 'ikea', online: ikeaOnline },
+        { name: 'govee', online: goveeOnline },
+        { name: 'hue', online: hueOnline },
+        { name: 'openRGB', online: openRGBOnline },
+        { name: 'yeelight', online: !yeelightDisabled },
+        { name: 'nanoLeaf', online: nanoLeafDevices.length > 0 },
+        { name: 'f1mv', online: f1mvAPIOnline },
+        { name: 'f1tv', online: f1LiveSession },
+        { name: 'update', online: updateAPIOnline }
+    ];
+
+    for (const status of statuses) {
+        if (status.online) {
+            win.webContents.send(`${status.name}API`, 'online');
+        }
     }
 }
 
-async function otherAPIStatus(){
-    setInterval(function () {
-        if (BrowserWindow.getAllWindows().length > 0) {
-            if (f1mvAPIOnline) {
-                win.webContents.send('f1mvAPI', 'online');
-            }
-            if(f1LiveSession){
-                win.webContents.send('f1tvAPI', 'online');
-            }
-            if (updateAPIOnline){
-                win.webContents.send('updateAPI', 'online');
-            }
-        }
-    }, 5000);
-}
 
 async function goveeControl(r, g, b, brightness, action) {
     govee.devicesArray.forEach(device => {
@@ -1821,7 +1774,7 @@ function addOtherDeviceDialog(){
     });
 }
 
-ipcMain.on('link-openrgb', (event, arg) => {
+ipcMain.on('link-openrgb', () => {
     openRGBInitialize(true).then(r => {
         if(alwaysFalse){
             console.log(r);
@@ -1938,7 +1891,7 @@ async function openRGBControl(r, g, b, brightness, action){
 app.on('window-all-closed', () => {
     client.disconnect()
 })
-async function checkApis() {
+async function checkMiscAPIS() {
     if(debugPreference){
         console.log("Checking the Update and F1 Live Session API..");
         win.webContents.send('log', "Checking the Update and F1 Live Session API..");

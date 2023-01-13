@@ -32,7 +32,6 @@ $(function() {
     })
 
     ipcRenderer.on('f1tvAPI', (event, arg) => {
-        console.log(arg)
         if (arg === 'online') {
             $('#f1tvAPI').find('.status').removeClass('error').addClass('success')
         }
@@ -212,7 +211,6 @@ $(function() {
         }
     })
     ipcRenderer.on('f1mv-check-html', (event, arg) => {
-        console.log(arg)
         if (arg === true) {
             $('#f1mvSyncToggle').html('<em style="color:white" class="material-icons">toggle_on</em> Toggle F1MV Sync')
         } else if(arg === false) {
