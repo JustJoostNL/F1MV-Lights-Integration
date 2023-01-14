@@ -72,6 +72,7 @@ let devicesDone = [];
 
 let TState;
 let SState;
+let SInfo;
 let TStateCheck;
 let SStateCheck;
 let win;
@@ -708,14 +709,14 @@ async function f1mvAPICall() {
                     'content-type': 'application/json'
                 },
                 body: JSON.stringify({
-                    'query': 'query {\n  liveTimingState {\n    SessionStatus\n TrackStatus\n  }\n}'
+                    'query': 'query {\n  liveTimingState {\n    SessionStatus\n SessionInfo\n TrackStatus\n  }\n}'
                 })
             });
             if (response.status === 200) {
                 const responseData = await response.json();
-                const sessionStatusData = responseData.data.liveTimingState.SessionStatus.Status;
-                TState = responseData.data.liveTimingState.TrackStatus.Status
-                SState = sessionStatusData
+                SState = responseData.data.liveTimingState.SessionStatus.Status;
+                SInfo = responseData.data.liveTimingState.SessionInfo;
+                TState = responseData.data.liveTimingState.TrackStatus.Status;
             }
         } catch (e) {
             if (errorCheck !== true) {
@@ -727,6 +728,7 @@ async function f1mvAPICall() {
 }
 
 async function f1mvLightSync() {
+    await f1mvAPICall();
     if (TStateCheck !== TState && SState !== "Ends" && SState !== "Finalised") {
         flagSwitchCounter++
         switch (TState) {
@@ -800,11 +802,6 @@ setTimeout(function () {
     setInterval(function () {
         if (BrowserWindow.getAllWindows().length > 0) {
             if (f1mvCheck) {
-                f1mvAPICall().then(r => {
-                    if (alwaysFalse) {
-                        console.log(r)
-                    }
-                });
                 f1mvLightSync().then(r => {
                     if (alwaysFalse) {
                         console.log(r)
@@ -822,7 +819,7 @@ async function initIntegrations() {
         { name: 'hue', func: hueInitialize, disabled: hueDisabled },
         { name: 'openRGB', func: openRGBInitialize, disabled: openRGBDisabled },
         { name: 'streamDeck', func: streamDeckInitialize, disabled: streamDeckDisabled },
-        { name: 'discordRPC', func: discordRPC, disabled: discordRPCDisabled }
+        { name: 'discordRPC', func: discordRPC, disabled: false }
     ];
 
     for (const integration of integrations) {
@@ -875,14 +872,19 @@ async function discordRPC(){
     DiscordRPC.register(clientId);
 
     let nowDate = Date.now();
-    const url = userConfig.get('Settings.MultiViewerForF1Settings.liveTimingURL') + '/api/v2/live-timing/state'
 
     async function setActivity() {
-        const { SessionInfo } = await ( await fetch(url)).json();
+
+        if(!SInfo) {
+            SInfo = {
+                Name: "LOADING..."
+            }
+        }
 
         if (!RPC) return;
         await RPC.setActivity({
-            details: `Watching ${SessionInfo.Name} with MultiViewer`,
+            details: `Watching ${SInfo.Name} with MultiViewer`,
+            state: `F1MV-Lights-Integration is running`,
             startTimestamp: nowDate,
             largeImageKey: 'f1mv_logo',
             largeImageText: 'Logo of F1MV',
@@ -892,14 +894,25 @@ async function discordRPC(){
                     label: `Download MultiViewer for F1!`,
                     url: 'https://multiviewer.app/download',
                 },
+                {
+                    label: `Download F1MV-Lights-Integrat..`,
+                    url: 'https://github.com/JustJoostNL/F1MV-Lights-Integration/releases/latest',
+                }
             ],
         });
     }
 
     RPC.on('ready', async () => {
-        await setActivity();
-
-        setInterval(setActivity, 15000);
+        if(!discordRPCDisabled) {
+            await setActivity();
+        }
+        setInterval(async () => {
+            if(!discordRPCDisabled) {
+                await setActivity();
+            } else{
+                await RPC.clearActivity();
+            }
+        }, 15000);
     });
 
     await RPC.login({clientId});
@@ -956,7 +969,6 @@ async function goveeControl(r, g, b, brightness, action) {
 
 async function goveeInitialize() {
     goveeOnline = true;
-
     govee.on("deviceAdded", (device) => {
         if (debugPreference) {
             win.webContents.send('log', "Govee device found: " + device.model);
@@ -1701,7 +1713,7 @@ async function streamDeckInitialize(){
 
 app.on('window-all-closed', () => {
     if(streamDeckOnline){
-        streamDecks.forEach(function(streamDeck, index) {
+        streamDecks.forEach(function(streamDeck) {
             streamDeck.resetToLogo().then(() => {
                 streamDeck.close();
             });
