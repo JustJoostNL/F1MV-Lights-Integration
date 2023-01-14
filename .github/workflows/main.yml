@@ -1,47 +1,62 @@
-name: Build/release
+name: Build Electron App
 
 on:
   push:
     branches:
-      - master
+      - main
 
 jobs:
-  release:
-    runs-on: ${{ matrix.os }}
-
-    strategy:
-      matrix:
-        os: [macos-12, ubuntu-latest, windows-latest]
+  build:
+    runs-on: ubuntu-latest
 
     steps:
-      - name: Check out Git repository
-        uses: actions/checkout@v1
+      - name: Checkout code
+        uses: actions/checkout@v2
 
-      - name: Install Node.js, NPM and Yarn
-        uses: actions/setup-node@v1
+      - name: Cache node_modules
+        id: cache-dependencies
+        uses: actions/cache@v2
         with:
-          node-version: 18
+          path: ~/.npm
+          key: ${{ runner.os }}-dependencies-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-dependencies-
 
-      - name: Build/release Electron app
-        uses: Yan-Jobs/action-electron-builder@v1.7.0
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
         with:
-          # GitHub token, automatically provided to the action
-          # (No need to define this secret in the repo settings)
-          github_token: ${{ secrets.github_token }}
+          node-version: 14
 
-          # If the commit is tagged with a version (e.g. "v1.0.0"),
-          # release the app after building
-          release: ${{ startsWith(github.ref, 'refs/tags/v') }}
+      - name: Install dependencies
+        if: steps.cache-dependencies.outputs.cache-hit != 'true'
+        run: npm ci
 
-      - name: Upload a Build Artifact
-        uses: actions/upload-artifact@v3.1.1
+      - name: Build Electron app
+        run: npm run build
+
+      - name: Package Electron app for Windows
+        if: runner.os == 'Windows'
+        run: npx electron-builder --windows
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+          ARTIFACT_NAME: windows-build
+      - name: Package Electron app for macOS
+        if: runner.os == 'macOS'
+        run: npx electron-builder --mac
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+          ARTIFACT_NAME: mac-build
+      - name: Package Electron app for Linux
+        if: runner.os == 'Linux'
+        run: npx electron-builder --linux
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+          ARTIFACT_NAME: linux-build
+      - name: Upload artifacts
+        if: runner.os == 'Windows' || runner.os == 'macOS' || runner.os == 'Linux'
+        uses: actions/upload-artifact@v2
         with:
-          name: build
-          path: |
-            out/win-unpacked
-             out/linux-unpacked
-             out/*.dmg
-             out/*.AppImage
-             out/*.snap
-             out/*.exe
-             out/mac/*
+          name: ${{ env.ARTIFACT_NAME }}
+          path: dist/*
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
