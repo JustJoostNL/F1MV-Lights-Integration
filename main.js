@@ -877,7 +877,7 @@ async function discordRPC(){
 
         if(!SInfo) {
             SInfo = {
-                Name: "LOADING..."
+                Name: "nothing"
             }
         }
 
@@ -903,11 +903,11 @@ async function discordRPC(){
     }
 
     RPC.on('ready', async () => {
-        if(!discordRPCDisabled) {
+        if(!discordRPCDisabled && f1mvAPIOnline) {
             await setActivity();
         }
         setInterval(async () => {
-            if(!discordRPCDisabled) {
+            if(!discordRPCDisabled && f1mvAPIOnline) {
                 await setActivity();
             } else{
                 await RPC.clearActivity();
