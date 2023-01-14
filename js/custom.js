@@ -171,6 +171,12 @@ $(function() {
         }else if (!arg.Settings.streamDeckSettings.streamDeckDisable) {
             $('#disable-stream-deck-setting').removeAttr('checked')
         }
+
+        if (arg.Settings.discordSettings.discordRPCDisable) {
+            $('#disable-discord-rpc-setting').attr('checked', 'checked')
+        }else if (!arg.Settings.discordSettings.discordRPCDisable) {
+            $('#disable-discord-rpc-setting').removeAttr('checked')
+        }
         
         $('#openrgb-ip-input').val(arg.Settings.openRGBSettings.openRGBServerIP)
         $('#openrgb-port-input').val(arg.Settings.openRGBSettings.openRGBServerPort)
@@ -303,6 +309,7 @@ function saveConfig() {
         yeeLightDisable: $('#disable-yeelight-setting').is(':checked'),
         streamDeckDisable: $('#disable-stream-deck-setting').is(':checked'),
         deviceIPs: $('#yeelight-device-ip-input').val(),
+        discordRPCSetting: $('#disable-discord-rpc-setting').is(':checked'),
         updateChannel: $('#update-channel-setting').val(),
         analytics: $('#analytics-setting').is(':checked'),
         debugMode: $('#debug-mode-setting').is(':checked')

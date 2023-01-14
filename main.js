@@ -33,6 +33,8 @@ let nanoLeafDisabled = userConfig.get('Settings.nanoLeafSettings.nanoLeafDisable
 let openRGBDisabled = userConfig.get('Settings.openRGBSettings.openRGBDisable')
 let streamDeckDisabled = userConfig.get('Settings.streamDeckSettings.streamDeckDisable')
 
+let discordRPCDisabled = userConfig.get('Settings.discordSettings.discordRPCDisable')
+
 let ikeaSecurityCode = userConfig.get('Settings.ikeaSettings.securityCode');
 
 const Govee = require("govee-lan-control");
@@ -202,9 +204,6 @@ app.whenReady().then(() => {
                 })
             } else {
                 // node is installed
-                if (debugPreference) {
-                    console.log("Node JS is installed")
-                }
             }
         });
     }
@@ -228,9 +227,7 @@ app.whenReady().then(() => {
             })
         });
         child.on('exit', () => {
-            if (debugPreference) {
-                console.log("Node JS is installed")
-            }
+            // node is installed
         });
     }
     migrateConfig().then(r => {
@@ -289,7 +286,7 @@ app.whenReady().then(() => {
     })
 
     autoUpdater.checkForUpdates().then(r => {
-        if (debugPreference) {
+        if (alwaysFalse) {
             console.log(r)
         }
     })
@@ -414,7 +411,11 @@ async function simulateFlag(arg) {
 
 ipcMain.on('updatecheck', () => {
     noUpdateFound = false;
-    console.log(autoUpdater.checkForUpdates())
+    autoUpdater.checkForUpdates().then(r => {
+        if (alwaysFalse) {
+            console.log(r)
+        }
+    })
     win.webContents.send('log', 'Checking for updates...')
 })
 
@@ -427,12 +428,11 @@ ipcMain.on('check-apis', async () => {
     await updateAllAPIs();
 })
 ipcMain.on('ikea-get-ids', async () => {
-    console.log("Getting Ikea Device IDs...")
+    win.webContents.send('toaster', 'Getting IKEA IDs...')
     win.webContents.send('log', 'Getting Ikea Device IDs...')
     await ikeaControl(0, 255, 0, userBrightness, "getDevices");
 })
 ipcMain.on('send-analytics-button', async () => {
-    console.log("Running send analytics code...")
     win.webContents.send('log', 'Running send analytics code...')
     await sendAnalytics();
 })
@@ -455,11 +455,9 @@ ipcMain.on('auto-devtools', () => {
     if (autoDevTools) {
         userConfig.set('devConfig.autoStartDevTools', false);
         win.webContents.send('log', 'Disabled auto start dev tools')
-        console.log('Disabled auto dev tools')
     } else if (!autoDevTools) {
         userConfig.set('devConfig.autoStartDevTools', true);
         win.webContents.send('log', 'Enabled auto start dev tools')
-        console.log('Enabled auto dev tools')
     }
 })
 ipcMain.on('send-config', () => {
@@ -490,14 +488,12 @@ ipcMain.on('restart-app', () => {
 ipcMain.on('linkHue', async () => {
     win.webContents.send('toaster', 'Searching for Hue bridge this may take a few seconds...')
     if (debugPreference) {
-        console.log("Linking Hue...")
         win.webContents.send('log', 'Linking Hue...')
     }
     await hueInitialize();
 })
 ipcMain.on('getHueDevices', async () => {
     if (debugPreference) {
-        console.log("Getting Hue Devices...")
         win.webContents.send('log', 'Getting Hue Devices...')
     }
     await hueControl(0, 255, 0, userBrightness, "getDevices");
@@ -506,7 +502,6 @@ let canReceive = false;
 ipcMain.on('nanoLeaf', async (event, args) => {
     if(args === 'openWindow'){
         if (debugPreference) {
-            console.log("Opening NanoLeaf Setup Window...")
             win.webContents.send('toaster', 'Opening Nanoleaf Setup Window...')
         }
         await nanoLeafInitialize('openWindow');
@@ -518,7 +513,6 @@ ipcMain.on('nanoLeaf', async (event, args) => {
 ipcMain.on('nanoLeafDevice', async (event, args) => {
     if(canReceive){
         if (debugPreference) {
-            console.log("Connecting to Nanoleaf Device...")
             win.webContents.send('log', 'Connecting to Nanoleaf Device...')
         }
         await nanoLeafAuth(args);
@@ -544,6 +538,7 @@ ipcMain.on('saveConfig', (event, arg) => {
         nanoLeafDisable,
         yeeLightDisable,
         streamDeckDisable,
+        discordRPCSetting,
         updateChannel,
         analytics,
         debugMode,
@@ -571,6 +566,7 @@ ipcMain.on('saveConfig', (event, arg) => {
     userConfig.set('Settings.yeeLightSettings.yeeLightDisable', yeeLightDisable);
     userConfig.set('Settings.yeeLightSettings.deviceIPs', deviceIPs);
     userConfig.set('Settings.streamDeckSettings.streamDeckDisable', streamDeckDisable);
+    userConfig.set('Settings.discordSettings.discordRPCDisable', discordRPCSetting);
     userConfig.set('Settings.advancedSettings.updateChannel', updateChannel);
     userConfig.set('Settings.advancedSettings.analytics', analytics);
     userConfig.set('Settings.advancedSettings.debugMode', debugMode);
@@ -606,7 +602,7 @@ ipcMain.on('saveConfigColors', (event, arg) => {
 
 async function migrateConfig() {
     // if the config version is != 1 migrate the config
-    if (userConfig.get('version') !== 10) {
+    if (userConfig.get('version') !== 11) {
         console.log('Migrating config...')
         win.webContents.send('log', 'Migrating config...')
         // migrate the config
@@ -685,13 +681,16 @@ async function migrateConfig() {
                 "streamDeckSettings": {
                     "streamDeckDisable": true,
                 },
+                "discordSettings": {
+                    "discordRPCDisable": false,
+                },
                 "advancedSettings": {
                     "debugMode": oldConfig.Settings.advancedSettings.debugMode,
                     "updateChannel": oldConfig.Settings.advancedSettings.updateChannel,
                     "analytics": oldConfig.Settings.advancedSettings.analytics
                 }
             },
-            "version": 10
+            "version": 11
         }
         userConfig.clear();
         userConfig.set(newConfig);
@@ -721,7 +720,6 @@ async function f1mvAPICall() {
         } catch (e) {
             if (errorCheck !== true) {
                 errorCheck = true;
-                console.log("Failed to get the data from the F1MV API: " + e);
                 win.webContents.send('log', "Failed to get the data from the F1MV API: " + e);
             }
         }
@@ -733,37 +731,31 @@ async function f1mvLightSync() {
         flagSwitchCounter++
         switch (TState) {
             case "1":
-                console.log("Green flag!")
                 win.webContents.send('log', "Green flag!")
                 await controlAllLights(greenColor.r, greenColor.g, greenColor.b, userBrightness, "on", "green");
                 TStateCheck = TState
                 break;
             case "2":
-                console.log("Yellow flag!")
                 win.webContents.send('log', "Yellow flag!")
                 await controlAllLights(yellowColor.r, yellowColor.g, yellowColor.b, userBrightness, "on", "yellow");
                 TStateCheck = TState
                 break;
             case "4":
-                console.log("Safety car!")
                 win.webContents.send('log', "Safety car!")
                 await controlAllLights(safetyCarColor.r, safetyCarColor.g, safetyCarColor.b, userBrightness, "on", "safetyCar");
                 TStateCheck = TState
                 break;
             case "5":
-                console.log("Red flag!")
                 win.webContents.send('log', "Red flag!")
                 await controlAllLights(redColor.r, redColor.g, redColor.b, userBrightness, "on", "red");
                 TStateCheck = TState
                 break;
             case "6":
-                console.log("Virtual safety car!")
                 win.webContents.send('log', "Virtual safety car!")
                 await controlAllLights(vscColor.r, vscColor.g, vscColor.b, userBrightness, "on", "vsc");
                 TStateCheck = TState
                 break;
             case "7":
-                console.log("VSC Ending")
                 win.webContents.send('log', "VSC Ending")
                 await controlAllLights(vscEndingColor.r, vscEndingColor.g, vscEndingColor.b, userBrightness, "on", "vscEnding");
                 TStateCheck = TState
@@ -772,7 +764,6 @@ async function f1mvLightSync() {
     } else if (SState === "Ends" || SState === "Finalised") {
         if (SStateCheck !== SState) {
             if (autoOff) {
-                console.log("Session ended, turning off lights...")
                 win.webContents.send('log', "Session ended, turning off lights...")
                 await controlAllLights(0, 0, 0, 0, "off", "sessionEnded");
                 SStateCheck = SState
@@ -830,7 +821,8 @@ async function initIntegrations() {
         { name: 'govee', func: goveeInitialize, disabled: goveeDisabled },
         { name: 'hue', func: hueInitialize, disabled: hueDisabled },
         { name: 'openRGB', func: openRGBInitialize, disabled: openRGBDisabled },
-        { name: 'streamDeck', func: streamDeckInitialize, disabled: streamDeckDisabled }
+        { name: 'streamDeck', func: streamDeckInitialize, disabled: streamDeckDisabled },
+        { name: 'discordRPC', func: discordRPC, disabled: discordRPCDisabled }
     ];
 
     for (const integration of integrations) {
@@ -875,17 +867,53 @@ async function sendAllAPIStatus() {
     }
 }
 
+async function discordRPC(){
+    const clientId = '1027664070993772594';
+    const DiscordRPC = require('discord-rpc');
+    const RPC = new DiscordRPC.Client({ transport: 'ipc' });
+
+    DiscordRPC.register(clientId);
+
+    let nowDate = Date.now();
+    const url = userConfig.get('Settings.MultiViewerForF1Settings.liveTimingURL') + '/api/v2/live-timing/state'
+
+    async function setActivity() {
+        const { SessionInfo } = await ( await fetch(url)).json();
+
+        if (!RPC) return;
+        await RPC.setActivity({
+            details: `Watching ${SessionInfo.Name} with MultiViewer`,
+            startTimestamp: nowDate,
+            largeImageKey: 'f1mv_logo',
+            largeImageText: 'Logo of F1MV',
+            instance: false,
+            buttons: [
+                {
+                    label: `Download MultiViewer for F1!`,
+                    url: 'https://multiviewer.app/download',
+                },
+            ],
+        });
+    }
+
+    RPC.on('ready', async () => {
+        await setActivity();
+
+        setInterval(setActivity, 15000);
+    });
+
+    await RPC.login({clientId});
+}
+
 
 async function goveeControl(r, g, b, brightness, action) {
     govee.devicesArray.forEach(device => {
         if (debugPreference) {
-            console.log("Govee device selected: " + device.model);
             win.webContents.send('log', "Govee device selected: " + device.model);
         }
         if (action === "on") {
             lightsOnCounter++
             if (debugPreference) {
-                console.log("Turning on the Govee light with the following settings: " + "R: " + r + " G: " + g + " B: " + b + " Brightness: " + brightness);
                 win.webContents.send('log', "Turning on the Govee light with the following values: " + "R: " + r + " G: " + g + " B: " + b + " Brightness: " + brightness);
             }
             brightness = parseInt(brightness);
@@ -907,22 +935,21 @@ async function goveeControl(r, g, b, brightness, action) {
         if (action === "off") {
             lightsOffCounter++
             if (debugPreference) {
-                console.log("Turning off Govee light " + device.model);
                 win.webContents.send('log', "Turning off Govee light " + device.model);
             }
             device.actions.setOff();
         }
         if (action === "getState") {
             if (debugPreference) {
-                console.log("Getting the state of Govee light " + device.model);
+                win.webContents.send('log', "Getting the state of Govee light " + device.model);
             }
             if (device.state.isOn === 1) {
-                console.log("The light is on");
+                win.webContents.send('log', "The light is on");
             } else {
-                console.log("The light is off");
+                win.webContents.send('log', "The light is off");
             }
-            console.log("The brightness is: " + device.state.brightness);
-            console.log("The color is: " + device.state.color);
+            win.webContents.send('log', "The brightness is: " + device.state.brightness);
+            win.webContents.send('log', "The color is: " + device.state.color);
         }
     });
 }
@@ -932,7 +959,6 @@ async function goveeInitialize() {
 
     govee.on("deviceAdded", (device) => {
         if (debugPreference) {
-            console.log("Govee device found: " + device.model);
             win.webContents.send('log', "Govee device found: " + device.model);
         }
 
@@ -943,7 +969,6 @@ async function ikeaInitialize() {
         exec
     } = require('child_process');
     if (debugPreference) {
-        console.log("Initializing IKEA Tradfri...");
         win.webContents.send('log', "Initializing IKEA Tradfri...");
     }
     let debug;
@@ -956,7 +981,6 @@ async function ikeaInitialize() {
     let startPath = path.join(app.getAppPath(), 'ikea.js');
     startPath = '"' + startPath + '"';
     const startCommand = 'node ' + startPath  + ' ' + '--' + ikeaSecurityCode + ' ' + debug;
-    //console.log(startCommand)
     let child;
     let errorDetected = false;
     child = exec(startCommand, (err) => {
@@ -964,20 +988,17 @@ async function ikeaInitialize() {
             errorDetected = true;
             ikeaOnline = false;
             if (err.message.includes('EADDRINUSE')) {
-                console.log("The IKEA Tradfri Server is already running, stopping the old instance and starting a new one.");
                 win.webContents.send('log', "The IKEA Tradfri Server is already running, stopping the old instance and starting a new one.");
                 fetch('http://localhost:9898/quit');
                 setTimeout(function () {
                     ikeaInitialize();
                 }, 1000);
             } else {
-                console.log("An error occurred while starting the IKEA Tradfri Server: " + err.message);
                 win.webContents.send('log', "An error occurred while starting the IKEA Tradfri Server: " + err.message);
             }
         }
     });
     child.stdout.on('data', (data) => {
-        console.log(data);
         win.webContents.send('log', data);
         if (data.includes("The Ikea Tradfri integration started successfully!")) {
             ikeaOnline = true;
@@ -988,7 +1009,6 @@ async function ikeaInitialize() {
         }
     });
     child.stderr.on('data', (data) => {
-        console.log(data);
         win.webContents.send('log',data);
     });
 }
@@ -1002,15 +1022,12 @@ async function ikeaControl(r, g, b, brightness, action, flag) {
     if(ikeaOnline) {
         for (let i = 0; i < ikeaDevices.length; i++) {
             if (debugPreference) {
-                console.log("Checking if Ikea device is RGB or White")
                 win.webContents.send('log', "Checking if Ikea device is RGB or White")
-                console.log("Device to check: " + ikeaDevices[i])
                 win.webContents.send('log', "Device to check: " + ikeaDevices[i])
             }
             if (devicesDone.includes(ikeaDevices[i]) && !configHasBeenReloadedIkeaCheck ) {
                 if (debugPreference) {
                     win.webContents.send('log', "Device already done, skipping...");
-                    console.log("Device already done, skipping...");
                 }
             }
             else {
@@ -1047,7 +1064,6 @@ async function ikeaControl(r, g, b, brightness, action, flag) {
         const savePath = path.join(app.getAppPath(), 'devices.html');
         fs.writeFile(savePath, html, function (err) {
             if (err) throw err;
-            console.log('Saved!');
         });
         const win = new BrowserWindow({
             width: 800,
@@ -1088,7 +1104,7 @@ async function ikeaControl(r, g, b, brightness, action, flag) {
         lightsOnCounter++;
         let hue;
         if (debugPreference) {
-            console.log("Turning on the Ikea lights...");
+            win.webContents.send('log', "Turning on the Ikea lights...");
         }
 
         // convert rgb to hsl
@@ -1096,11 +1112,10 @@ async function ikeaControl(r, g, b, brightness, action, flag) {
         const hsl = colorConvert.rgb.hsl(r, g, b);
         hue = hsl[0];
         if (debugPreference) {
-            console.log("The converted hue value from the given RGB value for Ikea is: " + hue);
+            win.webContents.send('log', "The converted hue value from the given RGB value for Ikea is: " + hue);
         }
         colorDevices.forEach(device => {
             if(debugPreference){
-                console.log("Turning on the Ikea RGB light with the ID: " + device);
                 win.webContents.send('log', "Turning on the Ikea RGB light with the ID: " + device);
             }
             device = parseInt(device);
@@ -1110,7 +1125,6 @@ async function ikeaControl(r, g, b, brightness, action, flag) {
         });
         whiteDevices.forEach(device => {
             if(debugPreference){
-                console.log("Turning on the Ikea White light with the ID: " + device);
                 win.webContents.send('log', "Turning on the Ikea White light with the ID: " + device);
             }
             device = parseInt(device);
@@ -1127,7 +1141,6 @@ async function ikeaControl(r, g, b, brightness, action, flag) {
         lightsOffCounter++;
         colorDevices.forEach(device => {
             if(debugPreference){
-                console.log("Turning off the Ikea RGB light with the ID: " + device);
                 win.webContents.send('log', "Turning off the Ikea RGB light with the ID: " + device);
             }
             device = parseInt(device);
@@ -1135,7 +1148,6 @@ async function ikeaControl(r, g, b, brightness, action, flag) {
         });
         whiteDevices.forEach(device => {
             if(debugPreference){
-                console.log("Turning off the Ikea White light with the ID: " + device);
                 win.webContents.send('log', "Turning off the Ikea White light with the ID: " + device);
             }
             device = parseInt(device);
@@ -1152,7 +1164,6 @@ async function yeelightControl(r, g, b, brightness, action) {
                 try {
                     if (action === "on") {
                         if(debugPreference){
-                            console.log("Turning on the Yeelight light with the IP: " + light);
                             win.webContents.send('log', "Turning on the Yeelight light with the IP: " + light);
                         }
                         lightsOnCounter++
@@ -1163,7 +1174,6 @@ async function yeelightControl(r, g, b, brightness, action) {
                     }
                     if (action === "off") {
                         if(debugPreference){
-                            console.log("Turning off the Yeelight light with the IP: " + light);
                             win.webContents.send('log', "Turning off the Yeelight light with the IP: " + light);
                         }
                         lightsOffCounter++
@@ -1173,14 +1183,12 @@ async function yeelightControl(r, g, b, brightness, action) {
                 } catch (err) {
                     if (debugPreference) {
                         win.webContents.send('log', "Error while performing an action on a YeeLight light: " + err);
-                        console.log("Error while performing an action on a YeeLight light: " + err);
                     }
                 }
             });
             bulb.on('error', (err) => {
                 if (debugPreference) {
                     win.webContents.send('log', "Error while connecting to a YeeLight light: " + err);
-                    console.log("Error while connecting to a YeeLight light: " + err);
                 }
             });
             bulb.connect();
@@ -1208,7 +1216,6 @@ async function hueInitialize() {
         // toast that the bridge is found + IP
         win.webContents.send('toaster', "Hue bridge found at: " + hueApi[0].ipaddress);
         if (debugPreference) {
-            console.log("Hue bridge found at: " + hueApi[0].ipaddress);
             win.webContents.send('log', "Hue bridge found at: " + hueApi[0].ipaddress);
         }
 
@@ -1260,15 +1267,9 @@ async function hueInitialize() {
                     win.webContents.send('toaster', "The Link button on the bridge was not pressed. Please press the Link button and try again.");
                 } else {
                     win.webContents.send('log', `Unexpected Error: ${err.message}`);
-                    if (debugPreference) {
-                        console.log(err);
-                    }
                 }
             } catch (error) {
                 win.webContents.send('log', `Unexpected Error: ${err.message}`);
-                if (debugPreference) {
-                    console.log(err);
-                }
             }
         }
 
@@ -1282,7 +1283,6 @@ async function hueControl(r, g, b, brightness, action) {
     if (!hueDisabled && hueOnline) {
         if (action === "getDevices") {
             if (hueLights === null || hueLights === undefined) {
-                console.log("No Hue lights found or an error occurred");
                 win.webContents.send('toaster', "No Hue lights found or an error occurred");
             } else {
                 let html = "<!DOCTYPE html><html lang='en'><head><title>Hue Lights</title><link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css'><style>table { background-color: #333; color: #fff; }</style><script src='https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js'></script></head><body><div class='container'><table class='striped'><thead><tr><th>Light Name</th><th>Light ID</th><th>Device is on</th></tr></thead><tbody>";
@@ -1294,7 +1294,6 @@ async function hueControl(r, g, b, brightness, action) {
                 const savePath = path.join(app.getAppPath(), 'devicesHue.html');
                 fs.writeFile(savePath, html, function (err) {
                     if (err) throw err;
-                    console.log('Saved!');
                 });
 
                 const win = new BrowserWindow({
@@ -1502,7 +1501,6 @@ async function nanoLeafAuth(ip) {
 async function nanoLeafControl(r, g, b, brightness, action){
     if(action === "on" && nanoLeafOnline){
         if(debugPreference){
-            console.log("Turning all the available Nanoleaf devices on...");
             win.webContents.send('log', "Turning all the available Nanoleaf devices on...");
         }
         let hue;
@@ -1510,11 +1508,10 @@ async function nanoLeafControl(r, g, b, brightness, action){
         const hsl = colorConvert.rgb.hsl(r, g, b);
         hue = hsl[0];
         if (debugPreference) {
-            console.log("Converted the given RGB for Nanoleaf to a hue value, new value is: " + hue);
+            win.webContents.send('log', "Converted the given RGB for Nanoleaf to a hue value, new value is: " + hue);
         }
         for (const device of nanoLeafDevices) {
             if(debugPreference){
-                console.log("Turning on Nanoleaf device with host: " + device.host + " and token: " + device.token);
                 win.webContents.send('log', "Turning on Nanoleaf device with host: " + device.host + " and token: " + device.token);
             }
             const AuroraAPI = require('nanoleaves');
@@ -1528,12 +1525,10 @@ async function nanoLeafControl(r, g, b, brightness, action){
         }
     } else if(action === "off" && nanoLeafOnline){
         if(debugPreference){
-            console.log("Turning all the available Nanoleaf devices off...");
             win.webContents.send('log', "Turning all the available Nanoleaf devices off...");
         }
         for (const device of nanoLeafDevices) {
             if(debugPreference){
-                console.log("Turning off Nanoleaf device with host: " + device.host + " and token: " + device.token);
                 win.webContents.send('log', "Turning off Nanoleaf device with host: " + device.host + " and token: " + device.token);
             }
             const AuroraAPI = require('nanoleaves');
@@ -1547,7 +1542,6 @@ async function nanoLeafControl(r, g, b, brightness, action){
 }
 function addOtherDeviceDialog(){
     if(debugPreference){
-        console.log("Opening the add other device dialog for Nanoleaf...");
         win.webContents.send('log', "Opening the add other device dialog...");
     }
     const dialogOptions = {
@@ -1582,7 +1576,6 @@ async function openRGBInitialize(toast){
     try {
         if(openRGBOnline){
             if(debugPreference){
-                console.log("Already connected to OpenRGB, closing current connection...");
                 win.webContents.send('log', "Already connected to OpenRGB, closing current connection...");
             }
             if(toast){
@@ -1597,7 +1590,6 @@ async function openRGBInitialize(toast){
         client = new Client("F1MV-Lights-Integration", openRGBPort, openRGBIP);
         await client.connect()
         if(debugPreference){
-            console.log("Connected to OpenRGB!");
             win.webContents.send('log', "Connected to OpenRGB!");
         }
         if(toast){
@@ -1617,17 +1609,14 @@ async function openRGBInitialize(toast){
 async function openRGBControl(r, g, b, brightness, action){
     if(openRGBOnline) {
         if (debugPreference) {
-            console.log("Getting all the available OpenRGB devices...");
             win.webContents.send('log', "Getting all the available OpenRGB devices...");
         }
         const deviceCount = await client.getControllerCount()
         if (debugPreference) {
-            console.log("Found " + deviceCount + " OpenRGB devices!");
             win.webContents.send('log', "Found " + deviceCount + " OpenRGB devices!");
         }
         if (action === 'on') {
             if (debugPreference) {
-                console.log("Turning all the available OpenRGB devices on...");
                 win.webContents.send('log', "Turning all the available OpenRGB devices on...");
             }
             for (let i = 0; i < deviceCount; i++) {
@@ -1635,7 +1624,6 @@ async function openRGBControl(r, g, b, brightness, action){
                 await client.updateMode(i, 0)
 
                 if (debugPreference) {
-                    console.log("Turning on OpenRGB device with name: " + device.name + " and values: " + r + ", " + g + ", " + b + ", " + brightness);
                     win.webContents.send('log', "Turning on OpenRGB device with name: " + device.name + " and values: " + r + ", " + g + ", " + b + ", " + brightness);
                 }
 
@@ -1646,14 +1634,12 @@ async function openRGBControl(r, g, b, brightness, action){
                 })
                 await client.updateLeds(i, colors)
                 if (debugPreference) {
-                    console.log('Successfully updated the colors of the OpenRGB device with name: ' + device.name);
                     win.webContents.send('log', 'Successfully updated the colors of the OpenRGB device with name: ' + device.name);
                 }
             }
         }
         if (action === 'off') {
             if (debugPreference) {
-                console.log("Turning all the available OpenRGB devices off...");
                 win.webContents.send('log', "Turning all the available OpenRGB devices off...");
             }
             for (let i = 0; i < deviceCount; i++) {
@@ -1661,7 +1647,6 @@ async function openRGBControl(r, g, b, brightness, action){
                 await client.updateMode(i, 0)
 
                 if (debugPreference) {
-                    console.log("Turning off OpenRGB device with name: " + device.name);
                     win.webContents.send('log', "Turning off OpenRGB device with name: " + device.name);
                 }
 
@@ -1672,13 +1657,11 @@ async function openRGBControl(r, g, b, brightness, action){
                 })
                 await client.updateLeds(i, colors)
                 if (debugPreference) {
-                    console.log('Successfully updated the colors of the OpenRGB device with name: ' + device.name);
                     win.webContents.send('log', 'Successfully updated the colors of the OpenRGB device with name: ' + device.name);
                 }
             }
         }
     } else if(debugPreference){
-        console.log("There is no active connection to OpenRGB, please make sure that OpenRGB is running and that the IP + Port are correct!");
         win.webContents.send('log', "There is no active connection to OpenRGB, please make sure that OpenRGB is running and that the IP + Port are correct!");
     }
 }
@@ -1698,7 +1681,6 @@ async function streamDeckInitialize(){
         streamDeckOnline = true;
     } catch (error) {
         setTimeout(() => {
-            console.log("Error: Could not connect to Stream Deck, please make sure that the Stream Deck is connected and that the software is installed!");
             win.webContents.send('log', "Error: Could not connect to Stream Deck, please make sure that the Stream Deck is connected and that the software is installed!");
         }, 1500);
         streamDeckOnline = false;
@@ -1706,13 +1688,11 @@ async function streamDeckInitialize(){
     if(streamDeckOnline){
         if(debugPreference){
             setTimeout(() => {
-                console.log("Connected to Stream Deck!");
                 win.webContents.send('log', "Connected to Stream Deck!");
             }, 1500);
         }
         if(debugPreference){
             setTimeout(() => {
-                console.log("Found " + streamDeckKeyCounts[streamDecks.length-1] + " keys on the Stream Deck!");
                 win.webContents.send('log', "Found " + streamDeckKeyCounts[streamDecks.length-1] + " keys on the Stream Deck!");
             }, 1500);
         }
@@ -1733,7 +1713,6 @@ async function streamDeckControl(r, g, b, brightness, action){
     if(streamDeckOnline){
         if(action === 'on'){
             if(debugPreference){
-                console.log("Turning all the available Stream Deck keys on with values: " + r + ", " + g + ", " + b + ", " + brightness);
                 win.webContents.send('log', "Turning all the available Stream Deck keys on with values: " + r + ", " + g + ", " + b + ", " + brightness);
             }
             streamDecks.forEach(function(streamDeck, index) {
@@ -1741,7 +1720,6 @@ async function streamDeckControl(r, g, b, brightness, action){
                     streamDeck.setBrightness(brightness)
                     streamDeck.fillKeyColor(i, r, g, b)
                     // if(debugPreference){
-                    //     console.log("Turning on Stream Deck key with index: " + i + " and values: " + r + ", " + g + ", " + b + ", " + brightness);
                     //     win.webContents.send('log', "Turning on Stream Deck key with index: " + i + " and values: " + r + ", " + g + ", " + b + ", " + brightness);
                     // }
                 }
@@ -1749,21 +1727,18 @@ async function streamDeckControl(r, g, b, brightness, action){
         }
         if(action === 'off'){
             if(debugPreference){
-                console.log("Turning all the available Stream Deck keys off...");
                 win.webContents.send('log', "Turning all the available Stream Deck keys off...");
             }
             streamDecks.forEach(function(streamDeck, index) {
                 for (let i = 0; i < streamDeckKeyCounts[index]; i++) {
                     streamDeck.resetToLogo();
                     // if(debugPreference){
-                    //     console.log("Turning off Stream Deck key with index: " + i);
                     //     win.webContents.send('log', "Turning off Stream Deck key with index: " + i);
                     // }
                 }
             });
         }
     } else if(debugPreference){
-        console.log("There is no active connection to the Stream Deck, please make sure that the Stream Deck is connected and that the software is installed!");
         win.webContents.send('log', "There is no active connection to the Stream Deck, please make sure that the Stream Deck is connected and that the software is installed!");
     }
 }
@@ -1771,7 +1746,6 @@ async function streamDeckControl(r, g, b, brightness, action){
 
 async function checkMiscAPIS() {
     if(debugPreference){
-        console.log("Checking the Update and F1 Live Session API..");
         win.webContents.send('log', "Checking the Update and F1 Live Session API..");
     }
     timesCheckAPIS++
@@ -1794,7 +1768,6 @@ async function checkMiscAPIS() {
         }
     } catch (error) {
         if(errorCheck === false){
-            console.log('Error: Could not connect to the F1MV API, please make sure that you have F1MV open, and the Live Timing is running!');
             win.webContents.send('log', 'Error: Could not connect to the F1MV API, please make sure that you have F1MV open, and the Live Timing is running!');
         }
         f1mvAPIOnline = false;
@@ -1924,6 +1897,7 @@ function reloadFromConfig(){
     openRGBPort = userConfig.get('Settings.openRGBSettings.openRGBServerPort');
     openRGBIP = userConfig.get('Settings.openRGBSettings.openRGBServerIP');
     streamDeckDisabled = userConfig.get('Settings.streamDeckSettings.streamDeckDisable');
+    discordRPCDisabled = userConfig.get('Settings.discordSettings.discordRPCDisable');
 
     updateChannel = userConfig.get('Settings.advancedSettings.updateChannel')
     autoUpdater.channel = updateChannel;
@@ -1952,16 +1926,13 @@ autoUpdater.on('update-downloaded', (event, releaseNotes, releaseName) => {
 autoUpdater.on('update-available', () => {
     updateFound = true;
     if (process.platform !== "darwin") {
-        console.log("There is an update available. Downloading now... You will be notified when the update is ready to install.")
         win.webContents.send('log', 'There is an update available. Downloading now... You will be notified when the update is ready to install.')
     } else if (process.platform === "darwin") {
-        console.log("There is an update available. Unfortunately, auto-updating is not supported on macOS. Please download the latest version from GitHub.")
         win.webContents.send('log', 'There is an update available. Unfortunately, auto-updating is not supported on macOS. Please download the latest version from GitHub.')
     }
 })
 autoUpdater.on('update-not-available', () => {
     if (!noUpdateFound) {
-        console.log("There are no updates available.")
         win.webContents.send('log', 'There are no updates available.')
         noUpdateFound = true;
     }

@@ -109,6 +109,12 @@ const config = {
                     streamDeckDisable: true,
                 },
 
+            discordSettings:
+                {
+                    // set this to true if you don't want to use Discord RPC
+                    discordRPCDisable: true,
+                },
+
             advancedSettings:
                 {
                     // Only set this to true if you want to see the debug messages in the console.
@@ -126,7 +132,7 @@ const config = {
                 }
         },
         // do not change this version!
-        version: 10,
+        version: 11,
     devConfig:
         {
             autoStartDevTools: false
