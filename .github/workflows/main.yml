@@ -1,4 +1,4 @@
-name: Build Electron App
+name: Build/release
 
 on:
   push:
@@ -6,51 +6,34 @@ on:
       - master
 
 jobs:
-  build:
+  release:
     runs-on: ${{ matrix.os }}
+
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-12, windows-latest]
+        os: [macos-12, ubuntu-latest, windows-latest]
+
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+      - name: Check out Git repository
+        uses: actions/checkout@v1
 
-      - name: Cache node_modules
-        id: cache-dependencies
-        uses: actions/cache@v2
-        with:
-          path: ~/.npm
-          key: ${{ matrix.os }}-dependencies-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ matrix.os }}-dependencies-
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v2
+      - name: Install Node.js, NPM and Yarn
+        uses: actions/setup-node@v1
         with:
           node-version: 18
 
-      - name: Install dependencies
-        if: steps.cache-dependencies.outputs.cache-hit != 'true'
-        run: npm ci
-
-      - name: Package Electron app
-        run: |
-          if [ "${{ matrix.os }}" == "ubuntu-latest" ]; then
-            npx electron-builder --linux --publish never
-          elif [ "${{ matrix.os }}" == "macos-12" ]; then
-            npx electron-builder --mac --publish never
-          elif [ "${{ matrix.os }}" == "windows-latest" ]; then
-            npx electron-builder --windows --publish never
-          fi
-        env:
-          ARTIFACT_NAME: ${matrix.os}-build
-
-
-
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v2
+      - name: Build/release Electron app
+        uses: Yan-Jobs/action-electron-builder@v1.7.0
         with:
-          name: ${{ env.ARTIFACT_NAME }}
-          path: dist/*
-        env:
-          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+          # GitHub token, automatically provided to the action
+          # (No need to define this secret in the repo settings)
+          github_token: ${{ secrets.github_token }}
+
+          # If the commit is tagged with a version (e.g. "v1.0.0"),
+          # release the app after building
+          release: ${{ startsWith(github.ref, 'refs/tags/v') }}
+
+      - name: Upload a Build Artifact
+        uses: actions/upload-artifact@v3.1.1
+        with:
+          name: build
