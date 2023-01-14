@@ -3,12 +3,14 @@ name: Build Electron App
 on:
   push:
     branches:
-      - main
+      - master
 
 jobs:
   build:
-    runs-on: ubuntu-latest
-
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-12, windows-latest]
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -18,14 +20,14 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ~/.npm
-          key: ${{ runner.os }}-dependencies-${{ hashFiles('**/package-lock.json') }}
+          key: ${{ matrix.os }}-dependencies-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
-            ${{ runner.os }}-dependencies-
+            ${{ matrix.os }}-dependencies-
 
       - name: Setup Node.js
         uses: actions/setup-node@v2
         with:
-          node-version: 14
+          node-version: 18
 
       - name: Install dependencies
         if: steps.cache-dependencies.outputs.cache-hit != 'true'
@@ -34,26 +36,20 @@ jobs:
       - name: Build Electron app
         run: npm run build
 
-      - name: Package Electron app for Windows
-        if: runner.os == 'Windows'
-        run: npx electron-builder --windows
+      - name: Package Electron app
+        run: |
+          if [[ ${matrix.os} == 'ubuntu-latest' ]]; then
+            npx electron-builder --linux
+          elif [[ ${matrix.os} == 'macos-12' ]]; then
+            npx electron-builder --mac
+          elif [[ ${matrix.os} == 'windows-latest' ]]; then
+            npx electron-builder --windows
+          fi
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
-          ARTIFACT_NAME: windows-build
-      - name: Package Electron app for macOS
-        if: runner.os == 'macOS'
-        run: npx electron-builder --mac
-        env:
-          GH_TOKEN: ${{ secrets.GH_TOKEN }}
-          ARTIFACT_NAME: mac-build
-      - name: Package Electron app for Linux
-        if: runner.os == 'Linux'
-        run: npx electron-builder --linux
-        env:
-          GH_TOKEN: ${{ secrets.GH_TOKEN }}
-          ARTIFACT_NAME: linux-build
+          ARTIFACT_NAME: ${matrix.os}-build
+
       - name: Upload artifacts
-        if: runner.os == 'Windows' || runner.os == 'macOS' || runner.os == 'Linux'
         uses: actions/upload-artifact@v2
         with:
           name: ${{ env.ARTIFACT_NAME }}
