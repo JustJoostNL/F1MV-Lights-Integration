@@ -22,35 +22,9 @@ jobs:
         with:
           node-version: 18
 
-      # Make sure the build is using the latest version of node-gyp (which also
-      # matches our package.json) to ensure maximum build compatibility and
-      # avoid random build errors.
-      #
-      # See
-      # - https://github.com/nodejs/node-gyp/blob/245cd5bbe4441d4f05e88f2fa20a86425419b6af/docs/Updating-npm-bundled-node-gyp.md
-      # - https://github.com/nodejs/node-gyp/blob/245cd5bbe4441d4f05e88f2fa20a86425419b6af/docs/Force-npm-to-use-global-node-gyp.md
-      #
-      # For macOS/Linux and npm <= 6
-      - name: 'Install the latest version of node-gyp@^8'
-        if: ${{ matrix.os != 'Windows' && (matrix.node == '12' || matrix.node == '14') }}
-        run: npm explore npm/node_modules/npm-lifecycle -g -- npm install node-gyp@^8
-      # For macOS/Linux and npm >= 7
-      - name: 'Install the latest version of node-gyp@^8'
-        if: ${{ matrix.os != 'Windows' && (matrix.node == '16') }}
-        run: npm explore npm/node_modules/@npmcli/run-script -g -- npm_config_global=false npm install node-gyp@^8
-      # For Windows and npm <= 6
-      - name: 'Install the latest version of node-gyp@^8'
-        if: ${{ matrix.os == 'Windows' && (matrix.node == '12' || matrix.node == '14') }}
-        run: |
-          "@FOR /f \"tokens=*\" %i IN ('where node') DO cd/d \"%~dpi\""
-          cd node_modules\\npm\\node_modules\\npm-lifecycle
-          npm install node-gyp@^8
-          npm install --global node-gyp@^8
-          for /f "delims=" %P in ('npm prefix -g') do npm config set node_gyp "%P\node_modules\node-gyp\bin\node-gyp.js"
-        shell: cmd
       # For Windows and npm >= 7
       - name: 'Install the latest version of node-gyp@^8'
-        if: ${{ matrix.os == 'Windows' && (matrix.node == '16') }}
+        if: ${{ matrix.os == 'Windows' && (matrix.node == '18') }}
         run: |
           "@FOR /f \"tokens=*\" %i IN ('where node') DO cd/d \"%~dpi\""
           cd node_modules\\npm\\node_modules\\@npmcli\\run-script
