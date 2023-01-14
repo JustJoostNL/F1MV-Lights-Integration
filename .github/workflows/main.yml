@@ -43,8 +43,8 @@ jobs:
             npx electron-builder --windows
           fi
         env:
-          GH_TOKEN: ${{ secrets.GH_TOKEN }}
           ARTIFACT_NAME: ${matrix.os}-build
+
 
 
       - name: Upload artifacts
