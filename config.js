@@ -103,6 +103,12 @@ const config = {
                     deviceIPs: ["IP_ADDRESS_HERE"],
                 },
 
+            streamDeckSettings:
+                {
+                    // set this to true if you don't want to use Stream Deck
+                    streamDeckDisable: true,
+                },
+
             advancedSettings:
                 {
                     // Only set this to true if you want to see the debug messages in the console.
@@ -120,7 +126,7 @@ const config = {
                 }
         },
         // do not change this version!
-        version: 9,
+        version: 10,
     devConfig:
         {
             autoStartDevTools: false

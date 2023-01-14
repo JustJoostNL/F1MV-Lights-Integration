@@ -12,6 +12,7 @@
     "postinstall": "electron-builder install-app-deps"
   },
   "dependencies": {
+    "@elgato-stream-deck/node": "^5.7.0",
     "@sentry/electron": "^4.1.2",
     "@sentry/tracing": "^7.28.1",
     "color-convert": "^2.0.1",

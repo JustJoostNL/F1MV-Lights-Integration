@@ -21,6 +21,16 @@ $(function() {
         }
     })
 
+    ipcRenderer.on('streamDeckAPI', (event, arg) => {
+        if (arg === 'online') {
+            $('#streamDeckAPI').find('.status').removeClass('error').addClass('success')
+        }
+
+        if (arg === 'offline') {
+            $('#streamDeckAPI').find('.status').removeClass('success').addClass('error')
+        }
+    })
+
     ipcRenderer.on('updateAPI', (event, arg) => {
         if (arg === 'online') {
             $('#updateAPI').find('.status').removeClass('error').addClass('success')
@@ -155,6 +165,12 @@ $(function() {
         }else if (!arg.Settings.openRGBSettings.openRGBDisable) {
             $('#disable-openrgb-setting').removeAttr('checked')
         }
+
+        if (arg.Settings.streamDeckSettings.streamDeckDisable) {
+            $('#disable-stream-deck-setting').attr('checked', 'checked')
+        }else if (!arg.Settings.streamDeckSettings.streamDeckDisable) {
+            $('#disable-stream-deck-setting').removeAttr('checked')
+        }
         
         $('#openrgb-ip-input').val(arg.Settings.openRGBSettings.openRGBServerIP)
         $('#openrgb-port-input').val(arg.Settings.openRGBSettings.openRGBServerPort)
@@ -253,6 +269,11 @@ $(function() {
         } else {
             $('#ikeaAPI').show()
         }
+        if(arg.Settings.streamDeckSettings.streamDeckDisable) {
+            $('#streamDeckAPI').hide()
+        } else {
+            $('#streamDeckAPI').show()
+        }
 
     })
 ipcRenderer.on('hide-logs', (event, arg) => {
@@ -280,6 +301,7 @@ function saveConfig() {
         openRGBServerPort: $('#openrgb-port-input').val(),
         nanoLeafDisable: $('#disable-nanoleaf-setting').is(':checked'),
         yeeLightDisable: $('#disable-yeelight-setting').is(':checked'),
+        streamDeckDisable: $('#disable-stream-deck-setting').is(':checked'),
         deviceIPs: $('#yeelight-device-ip-input').val(),
         updateChannel: $('#update-channel-setting').val(),
         analytics: $('#analytics-setting').is(':checked'),

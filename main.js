@@ -31,6 +31,7 @@ let yeelightDisabled = userConfig.get('Settings.yeeLightSettings.yeeLightDisable
 let hueDisabled = userConfig.get('Settings.hueSettings.hueDisable')
 let nanoLeafDisabled = userConfig.get('Settings.nanoLeafSettings.nanoLeafDisable')
 let openRGBDisabled = userConfig.get('Settings.openRGBSettings.openRGBDisable')
+let streamDeckDisabled = userConfig.get('Settings.streamDeckSettings.streamDeckDisable')
 
 let ikeaSecurityCode = userConfig.get('Settings.ikeaSettings.securityCode');
 
@@ -57,6 +58,7 @@ let goveeOnline = false;
 let hueOnline = false;
 let nanoLeafOnline = false;
 let openRGBOnline = false;
+let streamDeckOnline = false;
 
 let f1LiveSession = false;
 let f1mvAPIOnline = false;
@@ -373,150 +375,31 @@ ipcMain.on('toggle-debug', () => {
 
 async function simulateFlag(arg) {
     if (arg === 'Green') {
-        if (!goveeDisabled) {
-            await goveeControl(greenColor.r, greenColor.g, greenColor.b, userBrightness, "on");
-        }
-        if (!yeelightDisabled) {
-            await yeelightControl(greenColor.r, greenColor.g, greenColor.b, userBrightness, "on");
-        }
-        if (!ikeaDisabled) {
-            await ikeaControl(greenColor.r, greenColor.g, greenColor.b, userBrightness, "on", "green");
-        }
-        if (!hueDisabled) {
-            await hueControl(greenColor.r, greenColor.g, greenColor.b, userBrightness, "on");
-        }
-        if (!nanoLeafDisabled) {
-            await nanoLeafControl(greenColor.r, greenColor.g, greenColor.b, userBrightness, "on");
-        }
-        if (!openRGBDisabled) {
-            await openRGBControl(greenColor.r, greenColor.g, greenColor.b, userBrightness, "on");
-        }
+        await controlAllLights(greenColor.r, greenColor.g, greenColor.b, userBrightness, "on", "green");
         simulatedFlagCounter++
     }
     if (arg === 'Red') {
-        if (!goveeDisabled) {
-            await goveeControl(redColor.r, redColor.g, redColor.b, userBrightness, "on");
-        }
-        if (!yeelightDisabled) {
-            await yeelightControl(redColor.r, redColor.g, redColor.b, userBrightness, "on");
-        }
-        if (!ikeaDisabled) {
-            await ikeaControl(redColor.r, redColor.g, redColor.b, userBrightness, "on", "red");
-        }
-        if (!hueDisabled) {
-            await hueControl(redColor.r, redColor.g, redColor.b, userBrightness, "on");
-        }
-        if (!nanoLeafDisabled) {
-            await nanoLeafControl(redColor.r, redColor.g, redColor.b, userBrightness, "on");
-        }
-        if (!openRGBDisabled) {
-            await openRGBControl(redColor.r, redColor.g, redColor.b, userBrightness, "on");
-        }
+        await controlAllLights(redColor.r, redColor.g, redColor.b, userBrightness, "on", "red");
         simulatedFlagCounter++
     }
     if (arg === 'Yellow') {
-        if (!goveeDisabled) {
-            await goveeControl(yellowColor.r, yellowColor.g, yellowColor.b, userBrightness, "on");
-        }
-        if (!yeelightDisabled) {
-            await yeelightControl(yellowColor.r, yellowColor.g, yellowColor.b, userBrightness, "on");
-        }
-        if (!ikeaDisabled) {
-            await ikeaControl(yellowColor.r, yellowColor.g, yellowColor.b, userBrightness, "on", "yellow");
-        }
-        if (!hueDisabled) {
-            await hueControl(yellowColor.r, yellowColor.g, yellowColor.b, userBrightness, "on");
-        }
-        if (!nanoLeafDisabled) {
-            await nanoLeafControl(yellowColor.r, yellowColor.g, yellowColor.b, userBrightness, "on");
-        }
-        if (!openRGBDisabled) {
-            await openRGBControl(yellowColor.r, yellowColor.g, yellowColor.b, userBrightness, "on");
-        }
+        await controlAllLights(yellowColor.r, yellowColor.g, yellowColor.b, userBrightness, "on", "yellow");
         simulatedFlagCounter++
     }
     if (arg === 'SC') {
-        if (!goveeDisabled) {
-            await goveeControl(safetyCarColor.r, safetyCarColor.g, safetyCarColor.b, userBrightness, "on");
-        }
-        if (!yeelightDisabled) {
-            await yeelightControl(safetyCarColor.r, safetyCarColor.g, safetyCarColor.b, userBrightness, "on");
-        }
-        if (!ikeaDisabled) {
-            await ikeaControl(safetyCarColor.r, safetyCarColor.g, safetyCarColor.b, userBrightness, "on", "safetyCar");
-        }
-        if (!hueDisabled) {
-            await hueControl(safetyCarColor.r, safetyCarColor.g, safetyCarColor.b, userBrightness, "on");
-        }
-        if (!nanoLeafDisabled) {
-            await nanoLeafControl(safetyCarColor.r, safetyCarColor.g, safetyCarColor.b, userBrightness, "on");
-        }
-        if (!openRGBDisabled) {
-            await openRGBControl(safetyCarColor.r, safetyCarColor.g, safetyCarColor.b, userBrightness, "on");
-        }
+        await controlAllLights(safetyCarColor.r, safetyCarColor.g, safetyCarColor.b, userBrightness, "on", "sc");
         simulatedFlagCounter++
     }
     if (arg === 'VSC') {
-        if (!goveeDisabled) {
-            await goveeControl(vscColor.r, vscColor.g, vscColor.b, userBrightness, "on");
-        }
-        if (!yeelightDisabled) {
-            await yeelightControl(vscColor.r, vscColor.g, vscColor.b, userBrightness, "on");
-        }
-        if (!ikeaDisabled) {
-            await ikeaControl(vscColor.r, vscColor.g, vscColor.b, userBrightness, "on", "vsc");
-        }
-        if (!hueDisabled) {
-            await hueControl(vscColor.r, vscColor.g, vscColor.b, userBrightness, "on");
-        }
-        if (!nanoLeafDisabled) {
-            await nanoLeafControl(vscColor.r, vscColor.g, vscColor.b, userBrightness, "on");
-        }
-        if (!openRGBDisabled) {
-            await openRGBControl(vscColor.r, vscColor.g, vscColor.b, userBrightness, "on");
-        }
+        await controlAllLights(vscColor.r, vscColor.g, vscColor.b, userBrightness, "on", "vsc");
         simulatedFlagCounter++
     }
     if (arg === 'vscEnding') {
-        if (!goveeDisabled) {
-            await goveeControl(vscEndingColor.r, vscEndingColor.g, vscEndingColor.b, userBrightness, "on");
-        }
-        if (!yeelightDisabled) {
-            await yeelightControl(vscEndingColor.r, vscEndingColor.g, vscEndingColor.b, userBrightness, "on");
-        }
-        if (!ikeaDisabled) {
-            await ikeaControl(vscEndingColor.r, vscEndingColor.g, vscEndingColor.b, userBrightness, "on", "vscEnding");
-        }
-        if (!hueDisabled) {
-            await hueControl(vscEndingColor.r, vscEndingColor.g, vscEndingColor.b, userBrightness, "on");
-        }
-        if (!nanoLeafDisabled) {
-            await nanoLeafControl(vscEndingColor.r, vscEndingColor.g, vscEndingColor.b, userBrightness, "on");
-        }
-        if (!openRGBDisabled) {
-            await openRGBControl(vscEndingColor.r, vscEndingColor.g, vscEndingColor.b, userBrightness, "on");
-        }
+        await controlAllLights(vscEndingColor.r, vscEndingColor.g, vscEndingColor.b, userBrightness, "on", "vscEnding");
         simulatedFlagCounter++
     }
     if (arg === 'alloff') {
-        if (!goveeDisabled) {
-            await goveeControl(0, 0, 0, 0, "off");
-        }
-        if (!yeelightDisabled) {
-            await yeelightControl(0, 0, 0, 0, "off");
-        }
-        if (!ikeaDisabled) {
-            await ikeaControl(0, 0, 0, 0, "off", "allOff");
-        }
-        if (!hueDisabled) {
-            await hueControl(0, 0, 0, 0, "off");
-        }
-        if (!nanoLeafDisabled) {
-            await nanoLeafControl(0, 0, 0, 0, "off");
-        }
-        if (!openRGBDisabled) {
-            await openRGBControl(0, 0, 0, 0, "off");
-        }
+        await controlAllLights(0, 0, 0, 0, "off", "alloff");
         simulatedFlagCounter++
     }
     if (arg === 'alloff') {
@@ -538,7 +421,7 @@ ipcMain.on('updatecheck', () => {
 ipcMain.on('test-button-dev', async () => {
     console.log("Running action mapped on test button...")
     win.webContents.send('log', 'Running action mapped on test button...')
-    openRGBOnline = true;
+    //action here
 })
 ipcMain.on('check-apis', async () => {
     await updateAllAPIs();
@@ -660,6 +543,7 @@ ipcMain.on('saveConfig', (event, arg) => {
         openRGBServerPort,
         nanoLeafDisable,
         yeeLightDisable,
+        streamDeckDisable,
         updateChannel,
         analytics,
         debugMode,
@@ -686,6 +570,7 @@ ipcMain.on('saveConfig', (event, arg) => {
     userConfig.set('Settings.nanoLeafSettings.nanoLeafDisable', nanoLeafDisable);
     userConfig.set('Settings.yeeLightSettings.yeeLightDisable', yeeLightDisable);
     userConfig.set('Settings.yeeLightSettings.deviceIPs', deviceIPs);
+    userConfig.set('Settings.streamDeckSettings.streamDeckDisable', streamDeckDisable);
     userConfig.set('Settings.advancedSettings.updateChannel', updateChannel);
     userConfig.set('Settings.advancedSettings.analytics', analytics);
     userConfig.set('Settings.advancedSettings.debugMode', debugMode);
@@ -721,7 +606,7 @@ ipcMain.on('saveConfigColors', (event, arg) => {
 
 async function migrateConfig() {
     // if the config version is != 1 migrate the config
-    if (userConfig.get('version') !== 9) {
+    if (userConfig.get('version') !== 10) {
         console.log('Migrating config...')
         win.webContents.send('log', 'Migrating config...')
         // migrate the config
@@ -797,13 +682,16 @@ async function migrateConfig() {
                     "yeeLightDisable": oldConfig.Settings.yeeLightSettings.yeeLightDisable,
                     "deviceIPs": oldConfig.Settings.yeeLightSettings.deviceIPs
                 },
+                "streamDeckSettings": {
+                    "streamDeckDisable": true,
+                },
                 "advancedSettings": {
                     "debugMode": oldConfig.Settings.advancedSettings.debugMode,
                     "updateChannel": oldConfig.Settings.advancedSettings.updateChannel,
                     "analytics": oldConfig.Settings.advancedSettings.analytics
                 }
             },
-            "version": 9
+            "version": 10
         }
         userConfig.clear();
         userConfig.set(newConfig);
@@ -847,139 +735,37 @@ async function f1mvLightSync() {
             case "1":
                 console.log("Green flag!")
                 win.webContents.send('log', "Green flag!")
-                if (!goveeDisabled) {
-                    await goveeControl(greenColor.r, greenColor.g, greenColor.b, userBrightness, "on")
-                }
-                if (!yeelightDisabled) {
-                    await yeelightControl(greenColor.r, greenColor.g, greenColor.b, userBrightness, "on")
-                }
-                if (!ikeaDisabled) {
-                    await ikeaControl(greenColor.r, greenColor.g, greenColor.b, userBrightness, "on", "green")
-                }
-                if (!hueDisabled) {
-                    await hueControl(greenColor.r, greenColor.g, greenColor.b, userBrightness, "on")
-                }
-                if (!nanoLeafDisabled) {
-                    await nanoLeafControl(greenColor.r, greenColor.g, greenColor.b, userBrightness, "on")
-                }
-                if (!openRGBDisabled) {
-                    await openRGBControl(greenColor.r, greenColor.g, greenColor.b, userBrightness, "on")
-                }
+                await controlAllLights(greenColor.r, greenColor.g, greenColor.b, userBrightness, "on", "green");
                 TStateCheck = TState
                 break;
             case "2":
                 console.log("Yellow flag!")
                 win.webContents.send('log', "Yellow flag!")
-                if (!goveeDisabled) {
-                    await goveeControl(yellowColor.r, yellowColor.g, yellowColor.b, userBrightness, "on")
-                }
-                if (!yeelightDisabled) {
-                    await yeelightControl(yellowColor.r, yellowColor.g, yellowColor.b, userBrightness, "on")
-                }
-                if (!ikeaDisabled) {
-                    await ikeaControl(yellowColor.r, yellowColor.g, yellowColor.b, userBrightness, "on", "yellow")
-                }
-                if (!hueDisabled) {
-                    await hueControl(yellowColor.r, yellowColor.g, yellowColor.b, userBrightness, "on")
-                }
-                if (!nanoLeafDisabled) {
-                    await nanoLeafControl(yellowColor.r, yellowColor.g, yellowColor.b, userBrightness, "on")
-                }
-                if (!openRGBDisabled) {
-                    await openRGBControl(yellowColor.r, yellowColor.g, yellowColor.b, userBrightness, "on")
-                }
+                await controlAllLights(yellowColor.r, yellowColor.g, yellowColor.b, userBrightness, "on", "yellow");
                 TStateCheck = TState
                 break;
             case "4":
                 console.log("Safety car!")
                 win.webContents.send('log', "Safety car!")
-                if (!goveeDisabled) {
-                    await goveeControl(safetyCarColor.r, safetyCarColor.g, safetyCarColor.b, userBrightness, "on")
-                }
-                if (!yeelightDisabled) {
-                    await yeelightControl(safetyCarColor.r, safetyCarColor.g, safetyCarColor.b, userBrightness, "on")
-                }
-                if (!ikeaDisabled) {
-                    await ikeaControl(safetyCarColor.r, safetyCarColor.g, safetyCarColor.b, userBrightness, "on", "safetyCar")
-                }
-                if (!hueDisabled) {
-                    await hueControl(safetyCarColor.r, safetyCarColor.g, safetyCarColor.b, userBrightness, "on")
-                }
-                if (!nanoLeafDisabled) {
-                    await nanoLeafControl(safetyCarColor.r, safetyCarColor.g, safetyCarColor.b, userBrightness, "on")
-                }
-                if (!openRGBDisabled) {
-                    await openRGBControl(safetyCarColor.r, safetyCarColor.g, safetyCarColor.b, userBrightness, "on")
-                }
+                await controlAllLights(safetyCarColor.r, safetyCarColor.g, safetyCarColor.b, userBrightness, "on", "safetyCar");
                 TStateCheck = TState
                 break;
             case "5":
                 console.log("Red flag!")
                 win.webContents.send('log', "Red flag!")
-                if (!goveeDisabled) {
-                    await goveeControl(redColor.r, redColor.g, redColor.b, userBrightness, "on")
-                }
-                if (!yeelightDisabled) {
-                    await yeelightControl(redColor.r, redColor.g, redColor.b, userBrightness, "on")
-                }
-                if (!ikeaDisabled) {
-                    await ikeaControl(redColor.r, redColor.g, redColor.b, userBrightness, "on", "red")
-                }
-                if (!hueDisabled) {
-                    await hueControl(redColor.r, redColor.g, redColor.b, userBrightness, "on")
-                }
-                if (!nanoLeafDisabled) {
-                    await nanoLeafControl(redColor.r, redColor.g, redColor.b, userBrightness, "on")
-                }
-                if (!openRGBDisabled) {
-                    await openRGBControl(redColor.r, redColor.g, redColor.b, userBrightness, "on")
-                }
+                await controlAllLights(redColor.r, redColor.g, redColor.b, userBrightness, "on", "red");
                 TStateCheck = TState
                 break;
             case "6":
                 console.log("Virtual safety car!")
                 win.webContents.send('log', "Virtual safety car!")
-                if (!goveeDisabled) {
-                    await goveeControl(vscColor.r, vscColor.g, vscColor.b, userBrightness, "on")
-                }
-                if (!yeelightDisabled) {
-                    await yeelightControl(vscColor.r, vscColor.g, vscColor.b, userBrightness, "on")
-                }
-                if (!ikeaDisabled) {
-                    await ikeaControl(vscColor.r, vscColor.g, vscColor.b, userBrightness, "on", "vsc")
-                }
-                if (!hueDisabled) {
-                    await hueControl(vscColor.r, vscColor.g, vscColor.b, userBrightness, "on")
-                }
-                if (!nanoLeafDisabled) {
-                    await nanoLeafControl(vscColor.r, vscColor.g, vscColor.b, userBrightness, "on")
-                }
-                if (!openRGBDisabled) {
-                    await openRGBControl(vscColor.r, vscColor.g, vscColor.b, userBrightness, "on")
-                }
+                await controlAllLights(vscColor.r, vscColor.g, vscColor.b, userBrightness, "on", "vsc");
                 TStateCheck = TState
                 break;
             case "7":
                 console.log("VSC Ending")
                 win.webContents.send('log', "VSC Ending")
-                if (!goveeDisabled) {
-                    await goveeControl(vscEndingColor.r, vscEndingColor.g, vscEndingColor.b, userBrightness, "on")
-                }
-                if (!yeelightDisabled) {
-                    await yeelightControl(vscEndingColor.r, vscEndingColor.g, vscEndingColor.b, userBrightness, "on")
-                }
-                if (!ikeaDisabled) {
-                    await ikeaControl(vscEndingColor.r, vscEndingColor.g, vscEndingColor.b, userBrightness, "on", "vscEnding")
-                }
-                if (!hueDisabled) {
-                    await hueControl(vscEndingColor.r, vscEndingColor.g, vscEndingColor.b, userBrightness, "on")
-                }
-                if (!nanoLeafDisabled) {
-                    await nanoLeafControl(vscEndingColor.r, vscEndingColor.g, vscEndingColor.b, userBrightness, "on")
-                }
-                if (!openRGBDisabled) {
-                    await openRGBControl(vscEndingColor.r, vscEndingColor.g, vscEndingColor.b, userBrightness, "on")
-                }
+                await controlAllLights(vscEndingColor.r, vscEndingColor.g, vscEndingColor.b, userBrightness, "on", "vscEnding");
                 TStateCheck = TState
                 break;
         }
@@ -988,27 +774,34 @@ async function f1mvLightSync() {
             if (autoOff) {
                 console.log("Session ended, turning off lights...")
                 win.webContents.send('log', "Session ended, turning off lights...")
-                if (!goveeDisabled) {
-                    await goveeControl(0, 255, 0, userBrightness, "off")
-                }
-                if (!yeelightDisabled) {
-                    await yeelightControl(0, 255, 0, userBrightness, "off")
-                }
-                if (!ikeaDisabled) {
-                    await ikeaControl(0, 255, 0, userBrightness, "off", "off")
-                }
-                if (!hueDisabled) {
-                    await hueControl(0, 255, 0, userBrightness, "off")
-                }
-                if (!nanoLeafDisabled) {
-                    await nanoLeafControl(0, 255, 0, userBrightness, "off")
-                }
-                if (!openRGBDisabled) {
-                    await openRGBControl(0, 255, 0, userBrightness, "off")
-                }
+                await controlAllLights(0, 0, 0, 0, "off", "sessionEnded");
                 SStateCheck = SState
             }
         }
+    }
+}
+
+async function controlAllLights(r, g, b, brightness, action, flag) {
+    if (!goveeDisabled) {
+        await goveeControl(r, g, b, brightness, action)
+    }
+    if (!yeelightDisabled) {
+        await yeelightControl(r, g, b, brightness, action)
+    }
+    if (!ikeaDisabled) {
+        await ikeaControl(r, g, b, brightness, action, flag)
+    }
+    if (!hueDisabled) {
+        await hueControl(r, g, b, brightness, action)
+    }
+    if (!nanoLeafDisabled) {
+        await nanoLeafControl(r, g, b, brightness, action)
+    }
+    if (!openRGBDisabled) {
+        await openRGBControl(r, g, b, brightness, action)
+    }
+    if (!streamDeckDisabled) {
+        await streamDeckControl(r, g, b, brightness, action)
     }
 }
 
@@ -1036,7 +829,8 @@ async function initIntegrations() {
         { name: 'ikea', func: ikeaInitialize, disabled: ikeaDisabled },
         { name: 'govee', func: goveeInitialize, disabled: goveeDisabled },
         { name: 'hue', func: hueInitialize, disabled: hueDisabled },
-        { name: 'openRGB', func: openRGBInitialize, disabled: openRGBDisabled }
+        { name: 'openRGB', func: openRGBInitialize, disabled: openRGBDisabled },
+        { name: 'streamDeck', func: streamDeckInitialize, disabled: streamDeckDisabled }
     ];
 
     for (const integration of integrations) {
@@ -1067,6 +861,7 @@ async function sendAllAPIStatus() {
         { name: 'hue', online: hueOnline },
         { name: 'openRGB', online: openRGBOnline },
         { name: 'yeelight', online: !yeelightDisabled },
+        { name: 'streamDeck', online: streamDeckOnline },
         { name: 'nanoLeaf', online: nanoLeafDevices.length > 0 },
         { name: 'f1mv', online: f1mvAPIOnline },
         { name: 'f1tv', online: f1LiveSession },
@@ -1084,8 +879,8 @@ async function sendAllAPIStatus() {
 async function goveeControl(r, g, b, brightness, action) {
     govee.devicesArray.forEach(device => {
         if (debugPreference) {
-            console.log("Device selected: " + device.model);
-            win.webContents.send('log', "Device selected: " + device.model);
+            console.log("Govee device selected: " + device.model);
+            win.webContents.send('log', "Govee device selected: " + device.model);
         }
         if (action === "on") {
             lightsOnCounter++
@@ -1133,7 +928,6 @@ async function goveeControl(r, g, b, brightness, action) {
 }
 
 async function goveeInitialize() {
-
     goveeOnline = true;
 
     govee.on("deviceAdded", (device) => {
@@ -1177,8 +971,8 @@ async function ikeaInitialize() {
                     ikeaInitialize();
                 }, 1000);
             } else {
-                console.log("An error occured while starting the IKEA Tradfri Server: " + err.message);
-                win.webContents.send('log', "An error occured while starting the IKEA Tradfri Server: " + err.message);
+                console.log("An error occurred while starting the IKEA Tradfri Server: " + err.message);
+                win.webContents.send('log', "An error occurred while starting the IKEA Tradfri Server: " + err.message);
             }
         }
     });
@@ -1891,6 +1685,90 @@ async function openRGBControl(r, g, b, brightness, action){
 app.on('window-all-closed', () => {
     client.disconnect()
 })
+
+let streamDecks = [];
+let streamDeckKeyCounts = [];
+async function streamDeckInitialize(){
+    try {
+        const { openStreamDeck }  = require('@elgato-stream-deck/node')
+        let newStreamDeck = await openStreamDeck()
+        await newStreamDeck.clearPanel();
+        streamDecks.push(newStreamDeck);
+        streamDeckKeyCounts.push(newStreamDeck.NUM_KEYS);
+        streamDeckOnline = true;
+    } catch (error) {
+        setTimeout(() => {
+            console.log("Error: Could not connect to Stream Deck, please make sure that the Stream Deck is connected and that the software is installed!");
+            win.webContents.send('log', "Error: Could not connect to Stream Deck, please make sure that the Stream Deck is connected and that the software is installed!");
+        }, 1500);
+        streamDeckOnline = false;
+    }
+    if(streamDeckOnline){
+        if(debugPreference){
+            setTimeout(() => {
+                console.log("Connected to Stream Deck!");
+                win.webContents.send('log', "Connected to Stream Deck!");
+            }, 1500);
+        }
+        if(debugPreference){
+            setTimeout(() => {
+                console.log("Found " + streamDeckKeyCounts[streamDecks.length-1] + " keys on the Stream Deck!");
+                win.webContents.send('log', "Found " + streamDeckKeyCounts[streamDecks.length-1] + " keys on the Stream Deck!");
+            }, 1500);
+        }
+    }
+}
+
+app.on('window-all-closed', () => {
+    if(streamDeckOnline){
+        streamDecks.forEach(function(streamDeck, index) {
+            streamDeck.resetToLogo().then(() => {
+                streamDeck.close();
+            });
+        });
+    }
+});
+
+async function streamDeckControl(r, g, b, brightness, action){
+    if(streamDeckOnline){
+        if(action === 'on'){
+            if(debugPreference){
+                console.log("Turning all the available Stream Deck keys on with values: " + r + ", " + g + ", " + b + ", " + brightness);
+                win.webContents.send('log', "Turning all the available Stream Deck keys on with values: " + r + ", " + g + ", " + b + ", " + brightness);
+            }
+            streamDecks.forEach(function(streamDeck, index) {
+                for (let i = 0; i < streamDeckKeyCounts[index]; i++) {
+                    streamDeck.setBrightness(brightness)
+                    streamDeck.fillKeyColor(i, r, g, b)
+                    // if(debugPreference){
+                    //     console.log("Turning on Stream Deck key with index: " + i + " and values: " + r + ", " + g + ", " + b + ", " + brightness);
+                    //     win.webContents.send('log', "Turning on Stream Deck key with index: " + i + " and values: " + r + ", " + g + ", " + b + ", " + brightness);
+                    // }
+                }
+            });
+        }
+        if(action === 'off'){
+            if(debugPreference){
+                console.log("Turning all the available Stream Deck keys off...");
+                win.webContents.send('log', "Turning all the available Stream Deck keys off...");
+            }
+            streamDecks.forEach(function(streamDeck, index) {
+                for (let i = 0; i < streamDeckKeyCounts[index]; i++) {
+                    streamDeck.resetToLogo();
+                    // if(debugPreference){
+                    //     console.log("Turning off Stream Deck key with index: " + i);
+                    //     win.webContents.send('log', "Turning off Stream Deck key with index: " + i);
+                    // }
+                }
+            });
+        }
+    } else if(debugPreference){
+        console.log("There is no active connection to the Stream Deck, please make sure that the Stream Deck is connected and that the software is installed!");
+        win.webContents.send('log', "There is no active connection to the Stream Deck, please make sure that the Stream Deck is connected and that the software is installed!");
+    }
+}
+
+
 async function checkMiscAPIS() {
     if(debugPreference){
         console.log("Checking the Update and F1 Live Session API..");
@@ -2045,6 +1923,7 @@ function reloadFromConfig(){
     hueLightIDsList = userConfig.get('Settings.hueSettings.deviceIDs');
     openRGBPort = userConfig.get('Settings.openRGBSettings.openRGBServerPort');
     openRGBIP = userConfig.get('Settings.openRGBSettings.openRGBServerIP');
+    streamDeckDisabled = userConfig.get('Settings.streamDeckSettings.streamDeckDisable');
 
     updateChannel = userConfig.get('Settings.advancedSettings.updateChannel')
     autoUpdater.channel = updateChannel;
