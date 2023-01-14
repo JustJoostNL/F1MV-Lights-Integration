@@ -33,9 +33,6 @@ jobs:
         if: steps.cache-dependencies.outputs.cache-hit != 'true'
         run: npm ci
 
-      - name: Build Electron app
-        run: npm run build
-
       - name: Package Electron app
         run: |
           if [[ ${matrix.os} == 'ubuntu-latest' ]]; then
