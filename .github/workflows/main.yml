@@ -17,13 +17,13 @@ jobs:
       - name: Check out Git repository
         uses: actions/checkout@v1
 
-      - name: Install Node.js without optional dependencies
-        # run npm install --no-optional
-        run: npm install --no-optional
-
+      - name: Install Node.js, NPM and Yarn
+        uses: actions/setup-node@v1
+        with:
+          node-version: 18
 
       - name: Build/release Electron app
-        uses: Yan-Jobs/action-electron-builder@v1.7.0
+        uses: JustJoostNL/action-electron-builder@v1.0.0
         with:
           # GitHub token, automatically provided to the action
           # (No need to define this secret in the repo settings)
