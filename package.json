@@ -12,11 +12,11 @@
     "postinstall": "electron-builder install-app-deps"
   },
   "dependencies": {
+    "@elgato-stream-deck/node": "^5.7.0",
     "@sentry/electron": "^4.1.2",
     "@sentry/tracing": "^7.28.1",
     "color-convert": "^2.0.1",
     "cors": "^2.8.5",
-    "discord-rpc": "^4.0.1",
     "electron-localshortcut": "^3.2.1",
     "electron-store": "^8.1.0",
     "electron-updater": "^5.3.0",
