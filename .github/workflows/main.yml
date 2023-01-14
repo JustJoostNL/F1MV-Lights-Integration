@@ -36,11 +36,11 @@ jobs:
       - name: Package Electron app
         run: |
           if [ "${{ matrix.os }}" == "ubuntu-latest" ]; then
-            npx electron-builder --linux
+            npx electron-builder --linux --publish never
           elif [ "${{ matrix.os }}" == "macos-12" ]; then
-            npx electron-builder --mac
+            npx electron-builder --mac --publish never
           elif [ "${{ matrix.os }}" == "windows-latest" ]; then
-            npx electron-builder --windows
+            npx electron-builder --windows --publish never
           fi
         env:
           ARTIFACT_NAME: ${matrix.os}-build
