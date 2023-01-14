@@ -22,20 +22,6 @@ jobs:
         with:
           node-version: 18
 
-      # For Windows and npm >= 7
-      - name: 'Install the latest version of node-gyp@^8'
-        if: ${{ matrix.os == 'Windows' && (matrix.node == '18') }}
-        run: |
-          "@FOR /f \"tokens=*\" %i IN ('where node') DO cd/d \"%~dpi\""
-          cd node_modules\\npm\\node_modules\\@npmcli\\run-script
-          npm install node-gyp@^8
-        shell: cmd
-
-      # See https://github.com/nodejs/node-gyp/tree/245cd5bbe4441d4f05e88f2fa20a86425419b6af/docs#issues-finding-the-installed-visual-studio
-      - name: 'Set msvs_version so node-gyp can find the Visual Studio install'
-        if: ${{ matrix.os == 'Windows' }}
-        run: npm config set msvs_version 2022
-
       - name: Build/release Electron app
         uses: Yan-Jobs/action-electron-builder@v1.7.0
         with:
