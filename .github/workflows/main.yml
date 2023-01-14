@@ -22,12 +22,45 @@ jobs:
         with:
           node-version: 18
 
-      - name: Install NodeGYP if windows
-        if: matrix.os == 'windows-latest'
-        shell: powershell
+      # Make sure the build is using the latest version of node-gyp (which also
+      # matches our package.json) to ensure maximum build compatibility and
+      # avoid random build errors.
+      #
+      # See
+      # - https://github.com/nodejs/node-gyp/blob/245cd5bbe4441d4f05e88f2fa20a86425419b6af/docs/Updating-npm-bundled-node-gyp.md
+      # - https://github.com/nodejs/node-gyp/blob/245cd5bbe4441d4f05e88f2fa20a86425419b6af/docs/Force-npm-to-use-global-node-gyp.md
+      #
+      # For macOS/Linux and npm <= 6
+      - name: 'Install the latest version of node-gyp@^8'
+        if: ${{ matrix.os != 'Windows' && (matrix.node == '12' || matrix.node == '14') }}
+        run: npm explore npm/node_modules/npm-lifecycle -g -- npm install node-gyp@^8
+      # For macOS/Linux and npm >= 7
+      - name: 'Install the latest version of node-gyp@^8'
+        if: ${{ matrix.os != 'Windows' && (matrix.node == '16') }}
+        run: npm explore npm/node_modules/@npmcli/run-script -g -- npm_config_global=false npm install node-gyp@^8
+      # For Windows and npm <= 6
+      - name: 'Install the latest version of node-gyp@^8'
+        if: ${{ matrix.os == 'Windows' && (matrix.node == '12' || matrix.node == '14') }}
         run: |
-          npm install --global node-gyp@latest
-          npm prefix -g | % {npm config set node_gyp "$_\node_modules\node-gyp\bin\node-gyp.js"}
+          "@FOR /f \"tokens=*\" %i IN ('where node') DO cd/d \"%~dpi\""
+          cd node_modules\\npm\\node_modules\\npm-lifecycle
+          npm install node-gyp@^8
+          npm install --global node-gyp@^8
+          for /f "delims=" %P in ('npm prefix -g') do npm config set node_gyp "%P\node_modules\node-gyp\bin\node-gyp.js"
+        shell: cmd
+      # For Windows and npm >= 7
+      - name: 'Install the latest version of node-gyp@^8'
+        if: ${{ matrix.os == 'Windows' && (matrix.node == '16') }}
+        run: |
+          "@FOR /f \"tokens=*\" %i IN ('where node') DO cd/d \"%~dpi\""
+          cd node_modules\\npm\\node_modules\\@npmcli\\run-script
+          npm install node-gyp@^8
+        shell: cmd
+
+      # See https://github.com/nodejs/node-gyp/tree/245cd5bbe4441d4f05e88f2fa20a86425419b6af/docs#issues-finding-the-installed-visual-studio
+      - name: 'Set msvs_version so node-gyp can find the Visual Studio install'
+        if: ${{ matrix.os == 'Windows' }}
+        run: npm config set msvs_version 2022
 
       - name: Build/release Electron app
         uses: Yan-Jobs/action-electron-builder@v1.7.0
