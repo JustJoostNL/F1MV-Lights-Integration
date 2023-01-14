@@ -35,16 +35,17 @@ jobs:
 
       - name: Package Electron app
         run: |
-          if [[ ${matrix.os} == 'ubuntu-latest' ]]; then
+          if [ "${{ matrix.os }}" == "ubuntu-latest" ]; then
             npx electron-builder --linux
-          elif [[ ${matrix.os} == 'macos-12' ]]; then
+          elif [ "${{ matrix.os }}" == "macos-12" ]; then
             npx electron-builder --mac
-          elif [[ ${matrix.os} == 'windows-latest' ]]; then
+          elif [ "${{ matrix.os }}" == "windows-latest" ]; then
             npx electron-builder --windows
           fi
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
           ARTIFACT_NAME: ${matrix.os}-build
+
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
