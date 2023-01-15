@@ -301,7 +301,16 @@ app.whenReady().then(() => {
 })
 
 app.on('window-all-closed', async () => {
-    await sendAnalytics();
+    await sendAnalytics()
+    if(streamDeckOnline){
+        theStreamDeck.close();
+    }
+    if(!ikeaDisabled && ikeaOnline){
+        await fetch('http://localhost:9898/quit');
+    }
+    if (openRGBOnline){
+        client.disconnect();
+    }
     if (process.platform !== 'darwin') {
         app.quit()
     }
@@ -1024,11 +1033,6 @@ async function ikeaInitialize() {
         win.webContents.send('log',data);
     });
 }
-app.on('window-all-closed',  () => {
-    if(!ikeaDisabled && ikeaOnline){
-        fetch('http://localhost:9898/quit');
-    }
-});
 
 async function ikeaControl(r, g, b, brightness, action, flag) {
     if(ikeaOnline) {
@@ -1677,19 +1681,14 @@ async function openRGBControl(r, g, b, brightness, action){
         win.webContents.send('log', "There is no active connection to OpenRGB, please make sure that OpenRGB is running and that the IP + Port are correct!");
     }
 }
-app.on('window-all-closed', () => {
-    client.disconnect()
-})
 
-let streamDecks = [];
-let streamDeckKeyCounts = [];
+let theStreamDeck;
+let streamDeckKeyCount;
 async function streamDeckInitialize(){
     try {
         const { openStreamDeck }  = require('@elgato-stream-deck/node')
-        let newStreamDeck = await openStreamDeck()
-        await newStreamDeck.clearPanel();
-        streamDecks.push(newStreamDeck);
-        streamDeckKeyCounts.push(newStreamDeck.NUM_KEYS);
+        theStreamDeck = await openStreamDeck()
+        theStreamDeck.clearPanel();
         streamDeckOnline = true;
     } catch (error) {
         setTimeout(() => {
@@ -1703,58 +1702,44 @@ async function streamDeckInitialize(){
                 win.webContents.send('log', "Connected to Stream Deck!");
             }, 1500);
         }
+        streamDeckKeyCount = theStreamDeck.NUM_KEYS
         if(debugPreference){
             setTimeout(() => {
-                win.webContents.send('log', "Found " + streamDeckKeyCounts[streamDecks.length-1] + " keys on the Stream Deck!");
+                win.webContents.send('log', "Found " + streamDeckKeyCount + " keys on the Stream Deck!");
             }, 1500);
         }
     }
 }
 
-app.on('window-all-closed', () => {
-    if(streamDeckOnline){
-        streamDecks.forEach(function(streamDeck) {
-            streamDeck.resetToLogo().then(() => {
-                streamDeck.close();
-            });
-        });
-    }
-});
-
 async function streamDeckControl(r, g, b, brightness, action){
     if(streamDeckOnline){
         if(action === 'on'){
             if(debugPreference){
-                win.webContents.send('log', "Turning all the available Stream Deck keys on with values: " + r + ", " + g + ", " + b + ", " + brightness);
+                win.webContents.send('log', "Turning all the available Stream Deck keys on...");
             }
-            streamDecks.forEach(function(streamDeck, index) {
-                for (let i = 0; i < streamDeckKeyCounts[index]; i++) {
-                    streamDeck.setBrightness(brightness)
-                    streamDeck.fillKeyColor(i, r, g, b)
-                    // if(debugPreference){
-                    //     win.webContents.send('log', "Turning on Stream Deck key with index: " + i + " and values: " + r + ", " + g + ", " + b + ", " + brightness);
-                    // }
-                }
-            });
+            for (let i = 0; i < streamDeckKeyCount; i++) {
+                theStreamDeck.setBrightness(brightness)
+                theStreamDeck.fillKeyColor(i, r, g, b)
+                // if(debugPreference){
+                //     win.webContents.send('log', "Turning on Stream Deck key with index: " + i + " and values: " + r + ", " + g + ", " + b + ", " + brightness);
+                // }
+            }
         }
         if(action === 'off'){
             if(debugPreference){
                 win.webContents.send('log', "Turning all the available Stream Deck keys off...");
             }
-            streamDecks.forEach(function(streamDeck, index) {
-                for (let i = 0; i < streamDeckKeyCounts[index]; i++) {
-                    streamDeck.resetToLogo();
-                    // if(debugPreference){
-                    //     win.webContents.send('log', "Turning off Stream Deck key with index: " + i);
-                    // }
-                }
-            });
+            for (let i = 0; i < streamDeckKeyCount; i++) {
+                theStreamDeck.fillKeyColor(i, 0, 0, 0)
+                // if(debugPreference){
+                //     win.webContents.send('log', "Turning off Stream Deck key with index: " + i);
+                // }
+            }
         }
     } else if(debugPreference){
-        win.webContents.send('log', "There is no active connection to the Stream Deck, please make sure that the Stream Deck is connected and that the software is installed!");
+        win.webContents.send('log', "There is no active connection to Stream Deck, please make sure that the Stream Deck is connected and that the software is installed!");
     }
 }
-
 
 async function checkMiscAPIS() {
     if(debugPreference){

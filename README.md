@@ -13,7 +13,7 @@
   <p align="center">
     Connect your smart home lights to your F1MV.
     <br />
-    <a href="https://github.com/JustJoostNL/F1MV-Lights-Integration/wiki/"><strong>Wiki »</strong></a>
+    <a href="https://lightsintegration.joost.systems/docs"><strong>Explore the docs »</strong></a>
     <br />
     <br />
     <a href="https://github.com/JustJoostNL/F1MV-Lights-Integration/issues">Report Bug</a>
@@ -38,10 +38,9 @@
       <a href="#getting-started">Getting Started</a>
       <ul>
         <li><a href="#prerequisites">Prerequisites</a></li>
-        <li><a href="#installation">Installation</a></li>
       </ul>
     </li>
-    <li><a href="#usage">Usage</a></li>
+    <li><a href="#installation-and-usage">Installation and usage</a></li>
     <li><a href="#roadmap">Roadmap</a></li>
     <li><a href="#contributing">Contributing</a></li>
     <li><a href="#license">License</a></li>
@@ -102,30 +101,17 @@ Getting started is very easy. Just follow the steps below. If you have any quest
 
 - *More brands may come soon!*
 
-### Installation
+## Installation and usage
 
-Go to the [releases page][releases-url] and download the latest release.
-And follow the [wiki page][wikiurl] for the installation instructions.
-
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
-
-
-
-<!-- USAGE Instructions -->
-## Usage
-
-Please go to the [Wiki][wikiurl] for usage instructions.
+Please go to the [official website](https://lightsintegration.joost.systems) and follow the instructions there.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
-
 
 
 <!-- ROADMAP -->
 ## Roadmap
 
-- [x] Custom brightness support
-- [x] Custom color suppprt
-- [ ] Support more light brands
+- [ ] Support even more light brands!
 
 See the [open issues][issuesurl] for a list of known issues.
 
@@ -197,7 +183,7 @@ Distributed under the GNU General Public License v3.0. See `LICENSE.md` for more
 [nodejs]: https://img.shields.io/badge/Node.js-43853D?style=for-the-badge&logo=node.js&logoColor=white
 [nodejs-url]: https://nodejs.org/en/
 [releases-url]: https://github.com/JustJoostNL/F1MV-Lights-Integration/releases
-[wikiurl]: https://github.com/JustJoostNL/F1MV-Lights-Integration/wiki/
+[wikiurl]: https://lightsintegration.joost.systems/docs
 [issuesurl]: https://github.com/JustJoostNL/F1MV-Lights-Integration/issues
 [css]: https://img.shields.io/badge/CSS-1572B6?style=for-the-badge&logo=css3&logoColor=white
 [css-url]: https://www.w3.org/Style/CSS/Overview.en.html
