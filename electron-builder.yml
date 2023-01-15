@@ -37,11 +37,11 @@ mac:
 
 
 linux:
-    icon: "build/icon.png"
-    target:
-      - target: "AppImage"
-        arch:
-          - x64
+  icon: "build/icon.png"
+  target:
+    - target: "AppImage"
+      arch:
+        - x64
 
 nsis:
   oneClick: true
