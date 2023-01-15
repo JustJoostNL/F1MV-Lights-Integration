@@ -13,8 +13,8 @@
   },
   "dependencies": {
     "@elgato-stream-deck/node": "^5.7.0",
-    "@sentry/electron": "^4.1.2",
-    "@sentry/tracing": "^7.28.1",
+    "@sentry/electron": "^4.2.0",
+    "@sentry/tracing": "^7.29.0",
     "color-convert": "^2.0.1",
     "cors": "^2.8.5",
     "discord-rpc": "github:JustJoostNL/DiscordRPC",
@@ -25,7 +25,7 @@
     "govee-lan-control": "^2.1.0",
     "jquery": "^3.6.3",
     "nanoleaves": "github:erictrinh/nanoleaves",
-    "node-fetch": "^2.6.7",
+    "node-fetch": "^2.6.8",
     "node-hue-api": "^5.0.0-beta.15",
     "node-persist": "^3.1.0",
     "node-tradfri-client": "3.1.1",
@@ -35,6 +35,6 @@
   },
   "devDependencies": {
     "electron": "^22.0.0",
-    "electron-builder": "^24.0.0-alpha.8"
+    "electron-builder": "^24.0.0-alpha.9"
   }
 }
