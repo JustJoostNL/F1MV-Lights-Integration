@@ -37,8 +37,10 @@ let discordRPCDisabled = userConfig.get('Settings.discordSettings.discordRPCDisa
 
 let ikeaSecurityCode = userConfig.get('Settings.ikeaSettings.securityCode');
 
-const Govee = require("govee-lan-control");
-const govee = new Govee.default();
+let goveeInitialised = false;
+
+let Govee;
+let govee;
 
 
 let analyticsPreference = userConfig.get('Settings.advancedSettings.analytics')
@@ -927,6 +929,22 @@ async function discordRPC(){
     await RPC.login({clientId});
 }
 
+if(!goveeInitialised && !goveeDisabled){
+    Govee = require("govee-lan-control");
+    govee = new Govee.default();
+}
+
+setInterval(function () {
+    if(!goveeInitialised && !goveeDisabled){
+        Govee = require("govee-lan-control");
+        govee = new Govee.default();
+        goveeInitialised = true;
+        goveeOnline = true;
+    } else if (goveeDisabled){
+        goveeOnline = false;
+    }
+}, 2000);
+
 
 async function goveeControl(r, g, b, brightness, action) {
     govee.devicesArray.forEach(device => {
@@ -1516,6 +1534,7 @@ async function nanoLeafAuth(ip) {
 
 async function nanoLeafControl(r, g, b, brightness, action){
     if(action === "on" && nanoLeafOnline){
+        lightsOnCounter++
         if(debugPreference){
             win.webContents.send('log', "Turning all the available Nanoleaf devices on...");
         }
@@ -1540,6 +1559,7 @@ async function nanoLeafControl(r, g, b, brightness, action){
             aurora.setBrightness(brightness);
         }
     } else if(action === "off" && nanoLeafOnline){
+        lightsOffCounter++
         if(debugPreference){
             win.webContents.send('log', "Turning all the available Nanoleaf devices off...");
         }
@@ -1632,6 +1652,7 @@ async function openRGBControl(r, g, b, brightness, action){
             win.webContents.send('log', "Found " + deviceCount + " OpenRGB devices!");
         }
         if (action === 'on') {
+            lightsOnCounter++
             if (debugPreference) {
                 win.webContents.send('log', "Turning all the available OpenRGB devices on...");
             }
@@ -1655,6 +1676,7 @@ async function openRGBControl(r, g, b, brightness, action){
             }
         }
         if (action === 'off') {
+            lightsOffCounter++
             if (debugPreference) {
                 win.webContents.send('log', "Turning all the available OpenRGB devices off...");
             }
@@ -1714,6 +1736,7 @@ async function streamDeckInitialize(){
 async function streamDeckControl(r, g, b, brightness, action){
     if(streamDeckOnline){
         if(action === 'on'){
+            lightsOnCounter++
             if(debugPreference){
                 win.webContents.send('log', "Turning all the available Stream Deck keys on...");
             }
@@ -1726,6 +1749,7 @@ async function streamDeckControl(r, g, b, brightness, action){
             }
         }
         if(action === 'off'){
+            lightsOffCounter++
             if(debugPreference){
                 win.webContents.send('log', "Turning all the available Stream Deck keys off...");
             }
@@ -1779,6 +1803,7 @@ async function checkMiscAPIS() {
 }
 
 async function sendAnalytics() {
+    let analyticsIDReturned;
     let analyticsSuccess = false;
     let userActiveSuccess = false;
     const userActiveBody = JSON.stringify({
@@ -1846,6 +1871,8 @@ async function sendAnalytics() {
             }
             if (response.status === 200) {
                 analyticsSuccess = true;
+                analyticsIDReturned = responseData.uniqueId;
+                userConfig.set('latestAnalyticsID', analyticsIDReturned);
             } else {
                 analyticsSuccess = false;
                 if (debugPreference) {
