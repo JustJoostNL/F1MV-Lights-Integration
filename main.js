@@ -1299,7 +1299,7 @@ async function hueControl(r, g, b, brightness, action) {
     if (!hueDisabled && hueOnline) {
         if (action === "getDevices") {
             if (hueLights === null || hueLights === undefined) {
-                win.webContents.send('toaster', "No Hue lights found or an error occurred");
+                win.webContents.send('toaster', "No Hue lights found or an error occurred.");
             } else {
                 let html = "<!DOCTYPE html><html lang='en'><head><title>Hue Lights</title><link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css'><style>table { background-color: #333; color: #fff; }</style><script src='https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js'></script></head><body><div class='container'><table class='striped'><thead><tr><th>Light Name</th><th>Light ID</th><th>Device is on</th></tr></thead><tbody>";
                 hueLights.forEach((light) => {
