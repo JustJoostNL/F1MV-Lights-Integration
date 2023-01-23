@@ -434,7 +434,7 @@ ipcMain.on('updatecheck', () => {
 ipcMain.on('test-button-dev', async () => {
     console.log("Running action mapped on test button...")
     win.webContents.send('log', 'Running action mapped on test button...')
-    //action here
+    await ikeaTest()
 })
 ipcMain.on('check-apis', async () => {
     await updateAllAPIs();
@@ -926,7 +926,13 @@ async function discordRPC(){
         }, 15000);
     });
 
-    await RPC.login({clientId});
+    try {
+        await RPC.login({clientId});
+    } catch (e) {
+        setTimeout(async () => {
+            win.webContents.send('log', "Failed to start Discord RPC, is Discord running?");
+        }, 1000);
+    }
 }
 
 if(!goveeInitialised && !goveeDisabled){
@@ -1002,6 +1008,44 @@ async function goveeInitialize() {
         }
 
     });
+}
+
+async function ikeaTest() {
+    let creds;
+    let gateway;
+    let devices = [];
+    let groups = [];
+    const IkeaTest = require('node-tradfri-client');
+    const result = await IkeaTest.discoverGateway();
+    if (!result) {
+        console.log("No gateways found!");
+        return;
+    } else {
+        gateway = result.addresses[0];
+    }
+    const tradfriClient = new Tradfri.TradfriClient(gateway, {
+        watchConnection: true,
+    });
+    const {identity, psk} = await tradfriClient.authenticate(ikeaSecurityCode);
+    creds = {identity, psk};
+    try {
+        await tradfriClient.connect(creds.identity, creds.psk);
+        console.log("Connected to IKEA Tradfri Gateway (using test)");
+    } catch {
+        console.log("Failed to connect to IKEA Tradfri Gateway (using test)");
+    }
+    try {
+        await tradfriClient.on("device updated", (d) => {
+            console.log("[TRADFRI] Device updated");
+            devices[d.instanceId] = d;
+        }).observeDevices();
+        await tradfriClient.on("group updated", (g) => {
+            groups[g.instanceId] = g;
+        }).observeGroupsAndScenes();
+        console.log("Observe devices and groups (using test)");
+    } catch {
+        console.log("Failed to observe devices and groups (using test)");
+    }
 }
 async function ikeaInitialize() {
     const {
@@ -1607,6 +1651,7 @@ ipcMain.on('link-openrgb', () => {
 });
 
 const { Client } = require("openrgb-sdk")
+const Tradfri = require("node-tradfri-client");
 let client;
 async function openRGBInitialize(toast){
     try {

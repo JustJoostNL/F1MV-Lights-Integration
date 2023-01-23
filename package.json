@@ -33,6 +33,9 @@
     "process": "^0.11.10",
     "yeelight.io": "^1.1.7"
   },
+  "overrides": {
+    "node-aead-crypto": "3.0.0-alpha.0"
+  },
   "devDependencies": {
     "electron": "^22.0.0",
     "electron-builder": "^24.0.0-alpha.9"
