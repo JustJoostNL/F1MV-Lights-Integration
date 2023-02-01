@@ -3,7 +3,7 @@ appId: "com.justjoostnl.f1mv.lights.integration"
 copyright: "Copyright © 2023 JustJoostNL"
 
 generateUpdatesFilesForAllChannels: true
-asar: false
+asar: true
 
 files: [
   "!.node-persist/**/*",

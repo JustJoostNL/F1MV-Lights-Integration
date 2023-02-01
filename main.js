@@ -8,7 +8,7 @@ const {
 } = require('electron')
 const BrowserWindow = require('electron').BrowserWindow
 const electronLocalShortcut = require('electron-localshortcut');
-
+const fs = require('fs');
 const {
     autoUpdater
 } = require("electron-updater")
@@ -22,6 +22,8 @@ const userConfig = new Store({
     name: 'settings',
     defaults: configDefault
 });
+const Tradfri = require("node-tradfri-client");
+
 let debugPreference = userConfig.get('Settings.advancedSettings.debugMode');
 let f1mvURL = userConfig.get('Settings.MultiViewerForF1Settings.liveTimingURL') + '/api/graphql'
 let f1mvCheckURL = userConfig.get('Settings.MultiViewerForF1Settings.liveTimingURL') + '/api/v1/live-timing/Heartbeat'
@@ -54,9 +56,6 @@ const updateURL = APIURL + "/github/repos/JustJoostNL/f1mv-lights-integration/re
 let userBrightness = parseInt(userConfig.get('Settings.generalSettings.defaultBrightness'))
 
 let devMode = false;
-
-let configHasBeenReloadedIkeaCheck = false;
-
 let ikeaOnline = false;
 let goveeOnline = false;
 let hueOnline = false;
@@ -70,8 +69,6 @@ let updateAPIOnline = false;
 
 let colorDevices = [];
 let whiteDevices = [];
-let devicesDone = [];
-
 let TState;
 let SState;
 let SInfo;
@@ -111,11 +108,12 @@ let hueLightIDsList = userConfig.get('Settings.hueSettings.deviceIDs');
 let openRGBPort = userConfig.get('Settings.openRGBSettings.openRGBServerPort');
 let openRGBIP = userConfig.get('Settings.openRGBSettings.openRGBServerIP');
 
-let noUpdateFound = false;
+const Ikea = require('node-tradfri-client');
+let ikeaCreds;
+let ikeaGateway;
+let allIkeaDevices = [];
 
-const {
-    spawn
-} = require('child_process');
+let noUpdateFound = false;
 
 const Sentry = require("@sentry/electron");
 Sentry.init({
@@ -184,55 +182,6 @@ function createWindow() {
 
 app.whenReady().then(() => {
     createWindow()
-    const {
-        exec
-    } = require('child_process');
-    if(process.platform === win) {
-        exec('node -v', (err) => {
-            if (err) {
-                // node is not installed
-                dialog.showMessageBox(win, {
-                    type: "error",
-                    title: "Node JS is not installed",
-                    message: "Node JS is not installed, please install Node JS to continue, if you are not going to use the Ikea integration, you can continue without installing Node JS",
-                    buttons: ["Exit", "Proceed"],
-                    defaultId: 0,
-                    cancelId: 0
-                }).then(result => {
-                    if (result.response === 0) {
-                        app.quit();
-                    } else {
-
-                    }
-                })
-            } else {
-                // node is installed
-            }
-        });
-    }
-    else if (process.platform === "darwin" || process.platform === "linux") {
-        const child = spawn('node', ['-v']);
-        child.on('error', () => {
-            // node is not installed
-            dialog.showMessageBox(win, {
-                type: "error",
-                title: "Node JS is not installed",
-                message: "Node JS is not installed, please install Node JS to continue, if you are not going to use the Ikea integration, you can continue without installing Node JS",
-                buttons: ["Exit", "Proceed"],
-                defaultId: 0,
-                cancelId: 0
-            }).then(result => {
-                if (result.response === 0) {
-                    app.quit();
-                } else {
-
-                }
-            })
-        });
-        child.on('exit', () => {
-            // node is installed
-        });
-    }
     migrateConfig().then(r => {
         if (debugPreference) {
             console.log(r)
@@ -306,9 +255,6 @@ app.on('window-all-closed', async () => {
     await sendAnalytics()
     if(streamDeckOnline){
         theStreamDeck.close();
-    }
-    if(!ikeaDisabled && ikeaOnline){
-        await fetch('http://localhost:9898/quit');
     }
     if (openRGBOnline){
         client.disconnect();
@@ -490,9 +436,6 @@ ipcMain.on('hide-disabled-integrations', () => {
     win.webContents.send('hide-disabled-integrations', config)
 })
 ipcMain.on('restart-app', () => {
-    if (!ikeaDisabled && ikeaOnline) {
-        fetch("http://localhost:9898/quit")
-    }
     app.relaunch();
     app.exit(0);
 })
@@ -1009,132 +952,85 @@ async function goveeInitialize() {
 
     });
 }
-
-async function ikeaTest() {
-    let creds;
-    let gateway;
-    let devices = [];
-    let groups = [];
-    const IkeaTest = require('node-tradfri-client');
-    const result = await IkeaTest.discoverGateway();
+async function ikeaInitialize() {
+    const result = await Ikea.discoverGateway();
     if (!result) {
         console.log("No gateways found!");
         return;
     } else {
-        gateway = result.addresses[0];
+        ikeaGateway = result.addresses[0];
     }
-    const tradfriClient = new Tradfri.TradfriClient(gateway, {
+    const tradfriClient = new Tradfri.TradfriClient(ikeaGateway, {
         watchConnection: true,
     });
     const {identity, psk} = await tradfriClient.authenticate(ikeaSecurityCode);
-    creds = {identity, psk};
+    ikeaCreds = {identity, psk};
     try {
-        await tradfriClient.connect(creds.identity, creds.psk);
-        console.log("Connected to IKEA Tradfri Gateway (using test)");
+        await tradfriClient.connect(ikeaCreds.identity, ikeaCreds.psk);
+        if(debugPreference){
+            win.webContents.send('log', "Connected to IKEA Tradfri Gateway");
+        }
+        ikeaOnline = true;
     } catch {
-        console.log("Failed to connect to IKEA Tradfri Gateway (using test)");
+        win.webContents.send('log', "Failed to connect to IKEA Tradfri Gateway");
+        ikeaOnline = false;
     }
-    try {
-        await tradfriClient.on("device updated", (d) => {
-            console.log("[TRADFRI] Device updated");
-            devices[d.instanceId] = d;
-        }).observeDevices();
-        await tradfriClient.on("group updated", (g) => {
-            groups[g.instanceId] = g;
-        }).observeGroupsAndScenes();
-        console.log("Observe devices and groups (using test)");
-    } catch {
-        console.log("Failed to observe devices and groups (using test)");
+    if(ikeaOnline) {
+        try {
+            await tradfriClient.on("device updated", (d) => {
+                allIkeaDevices[d.instanceId] = d;
+            }).observeDevices();
+        } catch {
+            win.webContents.send('log', "Failed to observe IKEA Tradfri devices");
+        }
+
+        await ikeaCheckSpectrum();
     }
+
 }
-async function ikeaInitialize() {
-    const {
-        exec
-    } = require('child_process');
-    if (debugPreference) {
-        win.webContents.send('log', "Initializing IKEA Tradfri...");
-    }
-    let debug;
-    if (debugPreference) {
-        debug = "--debug";
-    } else {
-        debug = "";
-    }
-    const path = require('path');
-    let startPath = path.join(app.getAppPath(), 'ikea.js');
-    startPath = '"' + startPath + '"';
-    const startCommand = 'node ' + startPath  + ' ' + '--' + ikeaSecurityCode + ' ' + debug;
-    let child;
-    let errorDetected = false;
-    child = exec(startCommand, (err) => {
-        if (err) {
-            errorDetected = true;
-            ikeaOnline = false;
-            if (err.message.includes('EADDRINUSE')) {
-                win.webContents.send('log', "The IKEA Tradfri Server is already running, stopping the old instance and starting a new one.");
-                fetch('http://localhost:9898/quit');
-                setTimeout(function () {
-                    ikeaInitialize();
-                }, 1000);
-            } else {
-                win.webContents.send('log', "An error occurred while starting the IKEA Tradfri Server: " + err.message);
-            }
+
+async function ikeaCheckSpectrum(){
+    colorDevices = [];
+    whiteDevices = [];
+    for (let i = 0; i < ikeaDevices.length; i++) {
+        if (debugPreference) {
+            win.webContents.send('log', "Checking if Ikea device is RGB or White")
+            win.webContents.send('log', "Device to check: " + ikeaDevices[i])
         }
-    });
-    child.stdout.on('data', (data) => {
-        win.webContents.send('log', data);
-        if (data.includes("The Ikea Tradfri integration started successfully!")) {
-            ikeaOnline = true;
+        const deviceToCheck = allIkeaDevices[ikeaDevices[i]];
+        if (deviceToCheck.lightList[0].spectrum === "rgb"){
             if (debugPreference) {
-                console.log("IKEA Tradfri plugin started successfully");
-                win.webContents.send('log', "IKEA Tradfri plugin started successfully");
+                win.webContents.send('log', "Device" + ikeaDevices[i] + " is RGB")
             }
+            colorDevices.push(ikeaDevices[i]);
+        } else {
+            if (debugPreference) {
+                win.webContents.send('log', "Device" + ikeaDevices[i] + " is White")
+            }
+            whiteDevices.push(ikeaDevices[i]);
         }
-    });
-    child.stderr.on('data', (data) => {
-        win.webContents.send('log',data);
-    });
+
+    }
 }
 
 async function ikeaControl(r, g, b, brightness, action, flag) {
-    if(ikeaOnline) {
-        for (let i = 0; i < ikeaDevices.length; i++) {
-            if (debugPreference) {
-                win.webContents.send('log', "Checking if Ikea device is RGB or White")
-                win.webContents.send('log', "Device to check: " + ikeaDevices[i])
-            }
-            if (devicesDone.includes(ikeaDevices[i]) && !configHasBeenReloadedIkeaCheck ) {
-                if (debugPreference) {
-                    win.webContents.send('log', "Device already done, skipping...");
-                }
-            }
-            else {
-                if(configHasBeenReloadedIkeaCheck){
-                    devicesDone = [];
-                    whiteDevices = [];
-                    colorDevices = [];
-                    configHasBeenReloadedIkeaCheck = false;
-                }
-                const response = await fetch('http://localhost:9898/getSpectrum/' + ikeaDevices[i]);
-                const json = await response.json();
-                devicesDone.push(ikeaDevices[i]);
-                if (json.spectrum === "rgb") {
-                    colorDevices.push(ikeaDevices[i]);
-                } else {
-                    whiteDevices.push(ikeaDevices[i]);
-                }
-            }
-        }
-    }
-
-    const fs = require('fs');
     if (action === "getDevices") {
-        // send a request to localhost:9898/getDevices, then create a html file with a table of all the devices with their names, ids, state, and spectrum, make sure the html is beautified and has a nice design, after that all, open the html in a new electron window
-        const response = await fetch('http://localhost:9898/getDevices');
-        const json = await response.json();
-        // create the html file, make sure it is dark mode
+        let result = [];
+        for (const deviceId in allIkeaDevices){
+            const device = allIkeaDevices[deviceId];
+            if (device.type !== 2) {
+                continue;
+            }
+            result.push({
+                id: device.instanceId,
+                name: device.name,
+                state: device.lightList[0].onOff,
+                spectrum: device.lightList[0].spectrum,
+            });
+
+        }
         let html = "<!DOCTYPE html><html lang='en'><head><meta charset='utf-8'><meta name='viewport' content='width=device-width, initial-scale=1'><title>Devices</title><link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css'><script src='https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js'></script><script src='https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js'></script><script src='https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js'></script></head><body><div class='container'><table class='table table-dark table-striped'><thead><tr><th>Device Name</th><th>Device ID</th><th>Device Is On</th><th>Color support</th></tr></thead><tbody>";
-        json.forEach(device => {
+        result.forEach(device => {
             html = html + "<tr><td>" + device.name + "</td><td>" + device.id + "</td><td>" + device.state + "</td><td>" + device.spectrum + "</td></tr>";
         });
         html = html + "</tbody></table></div></body></html>";
@@ -1175,9 +1071,8 @@ async function ikeaControl(r, g, b, brightness, action, flag) {
             });
         });
         await win.loadFile(savePath);
-
-
     }
+
     if (action === "on" && ikeaOnline === true) {
         lightsOnCounter++;
         let hue;
@@ -1196,21 +1091,22 @@ async function ikeaControl(r, g, b, brightness, action, flag) {
             if(debugPreference){
                 win.webContents.send('log', "Turning on the Ikea RGB light with the ID: " + device);
             }
-            device = parseInt(device);
-            fetch('http://localhost:9898/toggleDevice?deviceId=' + device + '&state=on');
-            fetch('http://localhost:9898/setHue?deviceId=' + device + '&state=' + hue);
-            fetch('http://localhost:9898/setBrightness?deviceId=' + device + '&state=' + brightness);
+            device = allIkeaDevices[device].lightList[0];
+            device.toggle(true, 0);
+            device.setHue(hue, 0);
+            device.setBrightness(brightness, 0);
         });
         whiteDevices.forEach(device => {
             if(debugPreference){
                 win.webContents.send('log', "Turning on the Ikea White light with the ID: " + device);
             }
             device = parseInt(device);
+            device = allIkeaDevices[device].lightList[0];
             if (flag !== "green") {
-                fetch('http://localhost:9898/toggleDevice?deviceId=' + device + '&state=on');
-                fetch('http://localhost:9898/setBrightness?deviceId=' + device + '&state=' + brightness);
+                device.toggle(true, 0);
+                device.setBrightness(brightness, 0);
             } else if (flag === "green") {
-                fetch('http://localhost:9898/toggleDevice?deviceId=' + device + '&state=off');
+                device.toggle(false, 0);
             }
         });
 
@@ -1222,14 +1118,16 @@ async function ikeaControl(r, g, b, brightness, action, flag) {
                 win.webContents.send('log', "Turning off the Ikea RGB light with the ID: " + device);
             }
             device = parseInt(device);
-            fetch('http://localhost:9898/toggleDevice?deviceId=' + device + '&state=off');
+            device = allIkeaDevices[device].lightList[0];
+            device.toggle(false, 0);
         });
         whiteDevices.forEach(device => {
             if(debugPreference){
                 win.webContents.send('log', "Turning off the Ikea White light with the ID: " + device);
             }
             device = parseInt(device);
-            fetch('http://localhost:9898/toggleDevice?deviceId=' + device + '&state=off');
+            device = allIkeaDevices[device].lightList[0];
+            device.toggle(false, 0);
         });
     }
 }
@@ -1275,7 +1173,6 @@ async function yeelightControl(r, g, b, brightness, action) {
 }
 
 const hue = require("node-hue-api");
-const fs = require("fs");
 let hueApi;
 let hueClient;
 let hueLights;
@@ -1651,7 +1548,6 @@ ipcMain.on('link-openrgb', () => {
 });
 
 const { Client } = require("openrgb-sdk")
-const Tradfri = require("node-tradfri-client");
 let client;
 async function openRGBInitialize(toast){
     try {
@@ -1827,11 +1723,7 @@ async function checkMiscAPIS() {
 
         const response = await fetch(f1mvCheckURL);
         const data = await response.json();
-        if (data.error === 'No data found, do you have live timing running?') {
-            f1mvAPIOnline = false;
-        } else {
-            f1mvAPIOnline = true;
-        }
+        f1mvAPIOnline = data.error !== 'No data found, do you have live timing running?';
     } catch (error) {
         if(errorCheck === false){
             win.webContents.send('log', 'Error: Could not connect to the F1MV API, please make sure that you have F1MV open, and the Live Timing is running!');
@@ -1972,7 +1864,11 @@ function reloadFromConfig(){
     autoUpdater.channel = updateChannel;
 
     win.webContents.send('log', "Reloaded from config!");
-    configHasBeenReloadedIkeaCheck = true;
+    ikeaCheckSpectrum().then(r => {
+        if (alwaysFalse) {
+            console.log(r)
+        }
+    });
 }
 
 

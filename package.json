@@ -28,16 +28,13 @@
     "node-fetch": "^2.6.8",
     "node-hue-api": "^5.0.0-beta.15",
     "node-persist": "^3.1.0",
-    "node-tradfri-client": "3.1.1",
+    "node-tradfri-client": "3.2.0",
     "openrgb-sdk": "^0.5.2",
     "process": "^0.11.10",
     "yeelight.io": "^1.1.7"
   },
-  "overrides": {
-    "node-aead-crypto": "3.0.0-alpha.0"
-  },
   "devDependencies": {
-    "electron": "^22.0.0",
+    "electron": "^22.1.0",
     "electron-builder": "^24.0.0-alpha.9"
   }
 }
