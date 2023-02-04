@@ -1000,12 +1000,12 @@ async function ikeaCheckSpectrum(){
         const deviceToCheck = allIkeaDevices[ikeaDevices[i]];
         if (deviceToCheck.lightList[0].spectrum === "rgb"){
             if (debugPreference) {
-                win.webContents.send('log', "Device" + ikeaDevices[i] + " is RGB")
+                win.webContents.send('log', "Device: " + ikeaDevices[i] + " is RGB")
             }
             colorDevices.push(ikeaDevices[i]);
         } else {
             if (debugPreference) {
-                win.webContents.send('log', "Device" + ikeaDevices[i] + " is White")
+                win.webContents.send('log', "Device: " + ikeaDevices[i] + " is White")
             }
             whiteDevices.push(ikeaDevices[i]);
         }
@@ -1085,14 +1085,15 @@ async function ikeaControl(r, g, b, brightness, action, flag) {
         const hsl = colorConvert.rgb.hsl(r, g, b);
         hue = hsl[0];
         if (debugPreference) {
-            win.webContents.send('log', "The converted hue value from the given RGB value for Ikea is: " + hue);
+            win.webContents.send('log', "The converted hue value from the given RGB value for Ikea RGB lights is: " + hue);
         }
+
         colorDevices.forEach(device => {
             if(debugPreference){
                 win.webContents.send('log', "Turning on the Ikea RGB light with the ID: " + device);
             }
             device = allIkeaDevices[device].lightList[0];
-            device.toggle(true, 0);
+            device.toggle(true);
             device.setHue(hue, 0);
             device.setBrightness(brightness, 0);
         });
@@ -1102,14 +1103,27 @@ async function ikeaControl(r, g, b, brightness, action, flag) {
             }
             device = parseInt(device);
             device = allIkeaDevices[device].lightList[0];
-            if (flag !== "green") {
-                device.toggle(true, 0);
-                device.setBrightness(brightness, 0);
-            } else if (flag === "green") {
-                device.toggle(false, 0);
+            switch (flag) {
+                case "green":
+                    device.toggle(true);
+                    device.setBrightness(brightness, 0);
+                    device.setColorTemperature(0, 0);
+                    break;
+                case "red":
+                    device.toggle(true);
+                    device.setBrightness(brightness, 0);
+                    device.setColorTemperature(454, 0);
+                    break;
+                case "yellow":
+                case "safetyCar":
+                case "vsc":
+                case "vscEnding":
+                    device.toggle(true);
+                    device.setBrightness(brightness, 0);
+                    device.setColorTemperature(60, 0);
+                    break;
             }
         });
-
     }
     if (action === "off" && ikeaOnline === true) {
         lightsOffCounter++;
@@ -1119,7 +1133,7 @@ async function ikeaControl(r, g, b, brightness, action, flag) {
             }
             device = parseInt(device);
             device = allIkeaDevices[device].lightList[0];
-            device.toggle(false, 0);
+            device.toggle(false);
         });
         whiteDevices.forEach(device => {
             if(debugPreference){
@@ -1127,7 +1141,7 @@ async function ikeaControl(r, g, b, brightness, action, flag) {
             }
             device = parseInt(device);
             device = allIkeaDevices[device].lightList[0];
-            device.toggle(false, 0);
+            device.toggle(false);
         });
     }
 }
