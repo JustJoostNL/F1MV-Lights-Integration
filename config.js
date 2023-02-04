@@ -64,9 +64,12 @@ const config = {
                 {
                     // set this to true if you don't want to use IKEA lights
                     ikeaDisable: true,
-
                     // Here you need to fill in the security code from your IKEA Tradfri gateway, you can find it on the bottom of the gateway.
                     securityCode: "SECURITY_CODE_HERE",
+                    // you don't need to change this
+                    identity: undefined,
+                    // you don't need to change this
+                    psk: undefined,
                     // You can get these values by clicking "Settings" in the app and then click "Get Device IDs"
                     deviceIDs: ["DEVICE_ID_HERE", "DEVICE_ID_HERE"],
                 },
@@ -132,7 +135,7 @@ const config = {
                 }
         },
         // do not change this version!
-        version: 11,
+        version: 12,
     devConfig:
         {
             autoStartDevTools: false

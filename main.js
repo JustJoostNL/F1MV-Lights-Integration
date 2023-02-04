@@ -38,6 +38,8 @@ let streamDeckDisabled = userConfig.get('Settings.streamDeckSettings.streamDeckD
 let discordRPCDisabled = userConfig.get('Settings.discordSettings.discordRPCDisable')
 
 let ikeaSecurityCode = userConfig.get('Settings.ikeaSettings.securityCode');
+let ikeaIdentity = userConfig.get('Settings.ikeaSettings.identity');
+let ikeaPSK = userConfig.get('Settings.ikeaSettings.psk');
 
 let goveeInitialised = false;
 
@@ -342,7 +344,7 @@ async function simulateFlag(arg) {
         simulatedFlagCounter++
     }
     if (arg === 'SC') {
-        await controlAllLights(safetyCarColor.r, safetyCarColor.g, safetyCarColor.b, userBrightness, "on", "sc");
+        await controlAllLights(safetyCarColor.r, safetyCarColor.g, safetyCarColor.b, userBrightness, "on", "safetyCar");
         simulatedFlagCounter++
     }
     if (arg === 'VSC') {
@@ -380,7 +382,7 @@ ipcMain.on('updatecheck', () => {
 ipcMain.on('test-button-dev', async () => {
     console.log("Running action mapped on test button...")
     win.webContents.send('log', 'Running action mapped on test button...')
-    await ikeaTest()
+    // action here
 })
 ipcMain.on('check-apis', async () => {
     await updateAllAPIs();
@@ -557,7 +559,7 @@ ipcMain.on('saveConfigColors', (event, arg) => {
 
 async function migrateConfig() {
     // if the config version is != 1 migrate the config
-    if (userConfig.get('version') !== 11) {
+    if (userConfig.get('version') !== 12) {
         console.log('Migrating config...')
         win.webContents.send('log', 'Migrating config...')
         // migrate the config
@@ -575,9 +577,9 @@ async function migrateConfig() {
                             b: oldConfig.Settings.generalSettings.colorSettings.green.b
                         },
                         yellow: {
-                            r: 255,
-                            g: 150,
-                            b: 0
+                            r: oldConfig.Settings.generalSettings.colorSettings.yellow.r,
+                            g: oldConfig.Settings.generalSettings.colorSettings.yellow.g,
+                            b: oldConfig.Settings.generalSettings.colorSettings.yellow.b
                         },
                         red: {
                             r: oldConfig.Settings.generalSettings.colorSettings.red.r,
@@ -585,26 +587,26 @@ async function migrateConfig() {
                             b: oldConfig.Settings.generalSettings.colorSettings.red.b
                         },
                         safetyCar: {
-                            r: 255,
-                            g: 150,
-                            b: 0
+                            r: oldConfig.Settings.generalSettings.colorSettings.safetyCar.r,
+                            g: oldConfig.Settings.generalSettings.colorSettings.safetyCar.g,
+                            b: oldConfig.Settings.generalSettings.colorSettings.safetyCar.b
 
                         },
                         vsc: {
-                            r: 255,
-                            g: 150,
-                            b: 0
+                            r: oldConfig.Settings.generalSettings.colorSettings.vsc.r,
+                            g: oldConfig.Settings.generalSettings.colorSettings.vsc.g,
+                            b: oldConfig.Settings.generalSettings.colorSettings.vsc.b
                         },
                         vscEnding: {
-                            r: 255,
-                            g: 150,
-                            b: 0
+                            r: oldConfig.Settings.generalSettings.colorSettings.vscEnding.r,
+                            g: oldConfig.Settings.generalSettings.colorSettings.vscEnding.g,
+                            b: oldConfig.Settings.generalSettings.colorSettings.vscEnding.b
 
                         }
                     }
                 },
                 "MultiViewerForF1Settings": {
-                    "liveTimingURL": "http://localhost:10101",
+                    "liveTimingURL": oldConfig.Settings.MultiViewerForF1Settings.liveTimingURL,
                     "f1mvCheck": oldConfig.Settings.MultiViewerForF1Settings.f1mvCheck,
                 },
                 "hueSettings": {
@@ -615,6 +617,8 @@ async function migrateConfig() {
                 "ikeaSettings": {
                     "ikeaDisable": oldConfig.Settings.ikeaSettings.ikeaDisable,
                     "securityCode": oldConfig.Settings.ikeaSettings.securityCode,
+                    "identity": undefined,
+                    "psk": undefined,
                     "deviceIDs": oldConfig.Settings.ikeaSettings.deviceIDs
                 },
                 "goveeSettings": {
@@ -634,10 +638,10 @@ async function migrateConfig() {
                     "deviceIPs": oldConfig.Settings.yeeLightSettings.deviceIPs
                 },
                 "streamDeckSettings": {
-                    "streamDeckDisable": true,
+                    "streamDeckDisable": oldConfig.Settings.streamDeckSettings.streamDeckDisable,
                 },
                 "discordSettings": {
-                    "discordRPCDisable": false,
+                    "discordRPCDisable": oldConfig.Settings.discordSettings.discordRPCDisable,
                 },
                 "advancedSettings": {
                     "debugMode": oldConfig.Settings.advancedSettings.debugMode,
@@ -645,7 +649,7 @@ async function migrateConfig() {
                     "analytics": oldConfig.Settings.advancedSettings.analytics
                 }
             },
-            "version": 11
+            "version": 12
         }
         userConfig.clear();
         userConfig.set(newConfig);
@@ -963,30 +967,66 @@ async function ikeaInitialize() {
     const tradfriClient = new Tradfri.TradfriClient(ikeaGateway, {
         watchConnection: true,
     });
-    const {identity, psk} = await tradfriClient.authenticate(ikeaSecurityCode);
-    ikeaCreds = {identity, psk};
+
+    if (ikeaIdentity === undefined || ikeaPSK === undefined) {
+        let authCheck = false;
+        if (debugPreference){
+            setTimeout(async () => {
+                win.webContents.send('log', "No IKEA Tradfri credentials found, authenticating using security code...");
+            }, 1500);
+        }
+        try {
+            const {identity, psk} = await tradfriClient.authenticate(ikeaSecurityCode);
+            ikeaCreds = {identity, psk};
+            authCheck = true;
+        } catch (e) {
+            setTimeout(async () => {
+                win.webContents.send('log', "Authentication using security code failed! Error: " + e.message);
+            }, 1500);
+            return;
+        }
+        if (debugPreference && authCheck) {
+            setTimeout(async () => {
+                win.webContents.send('log', "Authentication successful!");
+            }, 1500);
+        }
+        userConfig.set('Settings.ikeaSettings.identity', ikeaCreds.identity);
+        userConfig.set('Settings.ikeaSettings.psk', ikeaCreds.psk);
+    } else {
+        if (debugPreference){
+            setTimeout(async () => {
+                win.webContents.send('log', "IKEA Tradfri credentials found, connecting using credentials...");
+            }, 1500);
+        }
+        ikeaCreds = {identity: ikeaIdentity, psk: ikeaPSK};
+    }
+
     try {
         await tradfriClient.connect(ikeaCreds.identity, ikeaCreds.psk);
-        if(debugPreference){
-            win.webContents.send('log', "Connected to IKEA Tradfri Gateway");
-        }
         ikeaOnline = true;
     } catch {
-        win.webContents.send('log', "Failed to connect to IKEA Tradfri Gateway");
+        setTimeout(async () => {
+            win.webContents.send('log', "Failed to connect to IKEA Tradfri Gateway!");
+        }, 1500);
         ikeaOnline = false;
     }
     if(ikeaOnline) {
+        if(debugPreference){
+            setTimeout(async () => {
+                win.webContents.send('log', "Connected to IKEA Tradfri Gateway!");
+            }, 1500);
+        }
         try {
             await tradfriClient.on("device updated", (d) => {
                 allIkeaDevices[d.instanceId] = d;
             }).observeDevices();
         } catch {
-            win.webContents.send('log', "Failed to observe IKEA Tradfri devices");
+            setTimeout(async () => {
+                win.webContents.send('log', "Failed to observe IKEA Tradfri devices");
+            }, 1500);
         }
-
         await ikeaCheckSpectrum();
     }
-
 }
 
 async function ikeaCheckSpectrum(){
@@ -1103,6 +1143,7 @@ async function ikeaControl(r, g, b, brightness, action, flag) {
             }
             device = parseInt(device);
             device = allIkeaDevices[device].lightList[0];
+            console.log(flag)
             switch (flag) {
                 case "green":
                     device.toggle(true);

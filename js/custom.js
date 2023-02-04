@@ -1,5 +1,5 @@
 const { ipcRenderer } = require('electron');
-
+const startTime = new Date().getTime();
 $(function() {
     ipcRenderer.on('f1mvAPI', (event, arg) => {
         if (arg === 'online') {
@@ -212,7 +212,13 @@ $(function() {
 })
 
     ipcRenderer.on('log', (event, arg) => {
-        $('#log').prepend(`<p style="color: white;">[${new Date().toLocaleTimeString('en-GB', {hour12: false})}] ${arg}</p>`)
+        if (new Date().getTime() - startTime < 2000) {
+            setTimeout(() => {
+                $('#log').prepend(`<p style="color: white;">[${new Date().toLocaleTimeString('en-GB', {hour12: false})}] ${arg}</p>`)
+            }, 2000 - (new Date().getTime() - startTime))
+        } else {
+            $('#log').prepend(`<p style="color: white;">[${new Date().toLocaleTimeString('en-GB', {hour12: false})}] ${arg}</p>`)
+        }
     })
     
     ipcRenderer.on('dev', (event, arg) => {
