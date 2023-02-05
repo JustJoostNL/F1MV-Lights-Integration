@@ -380,7 +380,6 @@ ipcMain.on('updatecheck', () => {
 })
 
 ipcMain.on('test-button-dev', async () => {
-    console.log("Running action mapped on test button...")
     win.webContents.send('log', 'Running action mapped on test button...')
     // action here
 })
@@ -560,8 +559,9 @@ ipcMain.on('saveConfigColors', (event, arg) => {
 async function migrateConfig() {
     // if the config version is != 1 migrate the config
     if (userConfig.get('version') !== 12) {
-        console.log('Migrating config...')
-        win.webContents.send('log', 'Migrating config...')
+        setTimeout(() => {
+            win.webContents.send('log', 'Migrating config...')
+        }, 1500);
         // migrate the config
         const oldConfig = userConfig.store;
         const newConfig = {
@@ -653,8 +653,9 @@ async function migrateConfig() {
         }
         userConfig.clear();
         userConfig.set(newConfig);
-        console.log('Config migrated!')
-        win.webContents.send('log', 'Config migrated!')
+        setTimeout(() => {
+            win.webContents.send('log', 'Config migrated!')
+        }, 1500);
     }
 }
 async function f1mvAPICall() {
@@ -959,7 +960,9 @@ async function goveeInitialize() {
 async function ikeaInitialize() {
     const result = await Ikea.discoverGateway();
     if (!result) {
-        console.log("No gateways found!");
+        setTimeout(async () => {
+            win.webContents.send('log', "No Ikea Tradfri gateways found!");
+        }, 1500);
         return;
     } else {
         ikeaGateway = result.addresses[0];
@@ -1143,7 +1146,6 @@ async function ikeaControl(r, g, b, brightness, action, flag) {
             }
             device = parseInt(device);
             device = allIkeaDevices[device].lightList[0];
-            console.log(flag)
             switch (flag) {
                 case "green":
                     device.toggle(true);
