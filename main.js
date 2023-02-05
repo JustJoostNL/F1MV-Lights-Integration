@@ -1947,6 +1947,8 @@ async function sendAnalytics() {
 }
 
 function reloadFromConfig(){
+    const webServerDisableOld = webServerDisabled;
+
     win.webContents.send('log', "Reloading from config..");
     debugPreference = userConfig.get('Settings.advancedSettings.debugMode');
     f1mvURL = userConfig.get('Settings.MultiViewerForF1Settings.liveTimingURL') + '/api/graphql'
@@ -1977,6 +1979,8 @@ function reloadFromConfig(){
     openRGBIP = userConfig.get('Settings.openRGBSettings.openRGBServerIP');
     streamDeckDisabled = userConfig.get('Settings.streamDeckSettings.streamDeckDisable');
     discordRPCDisabled = userConfig.get('Settings.discordSettings.discordRPCDisable');
+    webServerPort = userConfig.get('Settings.webServerSettings.webServerPort');
+    webServerDisabled = userConfig.get('Settings.webServerSettings.webServerDisable');
 
     updateChannel = userConfig.get('Settings.advancedSettings.updateChannel')
     autoUpdater.channel = updateChannel;
@@ -1987,6 +1991,22 @@ function reloadFromConfig(){
             console.log(r)
         }
     });
+
+
+    if (webServerDisableOld !== webServerDisabled) {
+        if (webServerDisabled) {
+            win.webContents.send('log', "Web server is disabled, closing..");
+            http.close();
+        } if (!webServerDisabled) {
+            win.webContents.send('log', "Web server is enabled, starting..");
+            webServerInitialize().then(r => {
+                if (alwaysFalse) {
+                    console.log(r)
+                }
+            });
+        }
+    }
+
 }
 
 
