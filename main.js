@@ -136,8 +136,9 @@ function createWindow() {
             contextIsolation: false,
             zoomFactor: 0.8
         },
-        resizable: false,
-        maximizable: false,
+        resizable: true,
+        maximizable: true,
+        minimizable: false,
     })
     win.removeMenu();
     // use better scrollbar
