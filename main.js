@@ -34,6 +34,9 @@ let hueDisabled = userConfig.get('Settings.hueSettings.hueDisable')
 let nanoLeafDisabled = userConfig.get('Settings.nanoLeafSettings.nanoLeafDisable')
 let openRGBDisabled = userConfig.get('Settings.openRGBSettings.openRGBDisable')
 let streamDeckDisabled = userConfig.get('Settings.streamDeckSettings.streamDeckDisable')
+let webServerDisabled = userConfig.get('Settings.webServerSettings.webServerDisable')
+let webServerPort = userConfig.get('Settings.webServerSettings.webServerPort')
+let webServerOnline = false;
 
 let discordRPCDisabled = userConfig.get('Settings.discordSettings.discordRPCDisable')
 
@@ -260,6 +263,9 @@ app.on('window-all-closed', async () => {
     }
     if (openRGBOnline){
         client.disconnect();
+    }
+    if (webServerOnline){
+        http.close();
     }
     if (process.platform !== 'darwin') {
         app.quit()
@@ -495,6 +501,8 @@ ipcMain.on('saveConfig', (event, arg) => {
         yeeLightDisable,
         streamDeckDisable,
         discordRPCSetting,
+        webServerPort,
+        webServerDisable,
         updateChannel,
         analytics,
         debugMode,
@@ -523,6 +531,8 @@ ipcMain.on('saveConfig', (event, arg) => {
     userConfig.set('Settings.yeeLightSettings.deviceIPs', deviceIPs);
     userConfig.set('Settings.streamDeckSettings.streamDeckDisable', streamDeckDisable);
     userConfig.set('Settings.discordSettings.discordRPCDisable', discordRPCSetting);
+    userConfig.set('Settings.webServerSettings.webServerDisable', webServerDisable);
+    userConfig.set('Settings.webServerSettings.webServerPort', parseInt(webServerPort));
     userConfig.set('Settings.advancedSettings.updateChannel', updateChannel);
     userConfig.set('Settings.advancedSettings.analytics', analytics);
     userConfig.set('Settings.advancedSettings.debugMode', debugMode);
@@ -558,7 +568,7 @@ ipcMain.on('saveConfigColors', (event, arg) => {
 
 async function migrateConfig() {
     // if the config version is != 1 migrate the config
-    if (userConfig.get('version') !== 12) {
+    if (userConfig.get('version') !== 13) {
         setTimeout(() => {
             win.webContents.send('log', 'Migrating config...')
         }, 1500);
@@ -643,13 +653,17 @@ async function migrateConfig() {
                 "discordSettings": {
                     "discordRPCDisable": oldConfig.Settings.discordSettings.discordRPCDisable,
                 },
+                "webServerSettings": {
+                    "webServerDisable": true,
+                    "webServerPort": 20202
+                },
                 "advancedSettings": {
                     "debugMode": oldConfig.Settings.advancedSettings.debugMode,
                     "updateChannel": oldConfig.Settings.advancedSettings.updateChannel,
                     "analytics": oldConfig.Settings.advancedSettings.analytics
                 }
             },
-            "version": 12
+            "version": 13
         }
         userConfig.clear();
         userConfig.set(newConfig);
@@ -755,6 +769,9 @@ async function controlAllLights(r, g, b, brightness, action, flag) {
     if (!streamDeckDisabled) {
         await streamDeckControl(r, g, b, brightness, action)
     }
+    if (!webServerDisabled) {
+        await webServerControl(r, g, b, brightness, action)
+    }
 }
 
 setTimeout(function () {
@@ -778,7 +795,8 @@ async function initIntegrations() {
         { name: 'hue', func: hueInitialize, disabled: hueDisabled },
         { name: 'openRGB', func: openRGBInitialize, disabled: openRGBDisabled },
         { name: 'streamDeck', func: streamDeckInitialize, disabled: streamDeckDisabled },
-        { name: 'discordRPC', func: discordRPC, disabled: false }
+        { name: 'discordRPC', func: discordRPC, disabled: false },
+        { name: 'webServer', func: webServerInitialize, disabled: webServerDisabled }
     ];
 
     for (const integration of integrations) {
@@ -813,7 +831,8 @@ async function sendAllAPIStatus() {
         { name: 'nanoLeaf', online: nanoLeafDevices.length > 0 },
         { name: 'f1mv', online: f1mvAPIOnline },
         { name: 'f1tv', online: f1LiveSession },
-        { name: 'update', online: updateAPIOnline }
+        { name: 'update', online: updateAPIOnline },
+        { name: 'webServer', online: webServerOnline}
     ];
 
     for (const status of statuses) {
@@ -1761,6 +1780,47 @@ async function streamDeckControl(r, g, b, brightness, action){
     } else if(debugPreference){
         win.webContents.send('log', "There is no active connection to Stream Deck, please make sure that the Stream Deck is connected and that the software is installed!");
     }
+}
+
+const express = require('express');
+const webApp = express();
+const http = require('http').createServer(webApp);
+const io = require('socket.io')(http);
+async function webServerInitialize() {
+    webApp.get('/', (req, res) => {
+        res.send(`
+      <html lang="en">
+        <body style="background-color: black;">
+          <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.5.4/socket.io.js"></script>
+          <script>
+            const socket = io();
+            socket.on('color-change', data => {
+              document.body.style.backgroundColor = \`rgb(\${data.r}, \${data.g}, \${data.b})\`;
+            });
+          </script>
+        </body>
+      </html>
+    `);
+    });
+    try {
+        http.listen(webServerPort, () => {
+            win.webContents.send('log', "Web server listening on http://localhost:" + webServerPort + "/");
+            webServerOnline = true;
+        });
+    } catch (error) {
+        webServerOnline = false;
+        win.webContents.send('log', "Could not start the web server, please make sure that the port is not in use! Error: " + error.message);
+    }
+}
+
+async function webServerControl(r, g, b, brightness, action) {
+    io.emit('color-change', {
+        r,
+        g,
+        b,
+        brightness,
+        action
+    });
 }
 
 async function checkMiscAPIS() {

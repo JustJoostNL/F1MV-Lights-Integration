@@ -118,6 +118,14 @@ const config = {
                     discordRPCDisable: true,
                 },
 
+            webServerSettings:
+                {
+                    // set this to true if you don't want to use the web server
+                    webServerDisable: true,
+                    // the port of the web server
+                    webServerPort: 20202,
+                },
+
             advancedSettings:
                 {
                     // Only set this to true if you want to see the debug messages in the console.
@@ -135,7 +143,7 @@ const config = {
                 }
         },
         // do not change this version!
-        version: 12,
+        version: 13,
     devConfig:
         {
             autoStartDevTools: false

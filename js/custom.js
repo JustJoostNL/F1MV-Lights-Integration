@@ -98,6 +98,16 @@ $(function() {
         }
     })
 
+    ipcRenderer.on('webServerAPI', (event, arg) => {
+        if (arg === 'online') {
+            $('#webServerAPI').find('.status').removeClass('error').addClass('success')
+        }
+
+        if (arg === 'offline') {
+            $('#webServerAPI').find('.status').removeClass('success').addClass('error')
+        }
+    })
+
     ipcRenderer.on('settings', (event, arg) => {
         $('#brightness-input').val(arg.Settings.generalSettings.defaultBrightness)
         
@@ -180,6 +190,14 @@ $(function() {
         
         $('#openrgb-ip-input').val(arg.Settings.openRGBSettings.openRGBServerIP)
         $('#openrgb-port-input').val(arg.Settings.openRGBSettings.openRGBServerPort)
+
+        $('#webserver-port-input').val(arg.Settings.webServerSettings.webServerPort)
+
+        if (arg.Settings.webServerSettings.webServerDisable) {
+            $('#disable-webserver-setting').attr('checked', 'checked')
+        }else if (!arg.Settings.webServerSettings.webServerDisable) {
+            $('#disable-webserver-setting').removeAttr('checked')
+        }
 
         $('#nanoleaf-lights').show();
         arg.Settings.nanoLeafSettings.devices.forEach(function(light) {
@@ -286,7 +304,11 @@ $(function() {
         } else {
             $('#streamDeckAPI').show()
         }
-
+        if(arg.Settings.webServerSettings.webServerDisable) {
+            $('#webServerAPI').hide()
+        } else {
+            $('#webServerAPI').show()
+        }
     })
 ipcRenderer.on('hide-logs', (event, arg) => {
     if (arg === true) {
@@ -316,6 +338,8 @@ function saveConfig() {
         streamDeckDisable: $('#disable-stream-deck-setting').is(':checked'),
         deviceIPs: $('#yeelight-device-ip-input').val(),
         discordRPCSetting: $('#disable-discord-rpc-setting').is(':checked'),
+        webServerPort: $('#webserver-port-input').val(),
+        webServerDisable: $('#disable-webserver-setting').is(':checked'),
         updateChannel: $('#update-channel-setting').val(),
         analytics: $('#analytics-setting').is(':checked'),
         debugMode: $('#debug-mode-setting').is(':checked')
