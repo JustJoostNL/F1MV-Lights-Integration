@@ -1676,7 +1676,7 @@ async function openRGBControl(r, g, b, brightness, action){
             }
             for (let i = 0; i < deviceCount; i++) {
                 let device = await client.getControllerData(i)
-                await client.updateMode(i, 0)
+                //await client.updateMode(i, 0)
 
                 if (debugPreference) {
                     win.webContents.send('log', "Turning on OpenRGB device with name: " + device.name + " and values: " + r + ", " + g + ", " + b + ", " + brightness);
