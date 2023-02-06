@@ -388,7 +388,7 @@ ipcMain.on('updatecheck', () => {
 
 ipcMain.on('test-button-dev', async () => {
     win.webContents.send('log', 'Running action mapped on test button...')
-    // action here
+    await ikeaSelectDevices();
 })
 ipcMain.on('check-apis', async () => {
     await updateAllAPIs();
@@ -806,7 +806,11 @@ async function initIntegrations() {
         }
     }
 
-    setInterval(checkMiscAPIS, 15000);
+    setInterval(async () => {
+        if (BrowserWindow.getAllWindows().length > 0) {
+            await checkMiscAPIS()
+        }
+    }, 15000);
     await sendAllAPIStatus()
 }
 
