@@ -166,3 +166,13 @@ nav {
       box-shadow: 0 0 0 10px rgba(204, 46, 56, 0);
     }
 }
+
+.sensitive {
+    filter: blur(8px);
+    transition: ease 0.25s;
+}
+
+.sensitive:hover {
+    filter: blur(0px);
+    transition: ease 0.25s;
+}
