@@ -1,8 +1,9 @@
-import {ipcRenderer} from "electron";
+const ipcRenderer = require('electron').ipcRenderer
 
 $(function() {
     ipcRenderer.on('settings', (event, arg) => {
 
+        console.log("Loading settings...")
 
         $('#green-flag-red').val(arg.Settings.generalSettings.colorSettings.green.r)
         $('#green-flag-green').val(arg.Settings.generalSettings.colorSettings.green.g)

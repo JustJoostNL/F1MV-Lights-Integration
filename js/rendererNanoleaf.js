@@ -1,4 +1,4 @@
-import {ipcRenderer} from "electron";
+const ipcRenderer = require('electron').ipcRenderer
 
 function nanoLeaf(action) {
     if(action === 'device'){
