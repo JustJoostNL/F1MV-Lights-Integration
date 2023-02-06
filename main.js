@@ -163,7 +163,7 @@ function createWindow() {
         });
     });
 
-    win.loadFile('index.html').then(r => {
+    win.loadFile('static/index.html').then(r => {
         if (debugPreference) {
             console.log(r)
         }
@@ -1428,7 +1428,7 @@ async function nanoLeafInitialize(action) {
         `);
         });
 
-        await nanoLeafWin.loadFile('nanoleaf-setup.html');
+        await nanoLeafWin.loadFile('static/nanoleaf-setup.html');
     }
 }
 let deviceToken;
