@@ -1990,11 +1990,13 @@ function reloadFromConfig(){
     autoUpdater.channel = updateChannel;
 
     win.webContents.send('log', "Reloaded from config!");
-    ikeaCheckSpectrum().then(r => {
-        if (alwaysFalse) {
-            console.log(r)
-        }
-    });
+    if (!ikeaDisabled) {
+        ikeaCheckSpectrum().then(r => {
+            if (alwaysFalse) {
+                console.log(r)
+            }
+        });
+    }
 
 
     if (webServerDisableOld !== webServerDisabled) {
