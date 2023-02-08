@@ -163,7 +163,7 @@ function createWindow() {
         });
     });
 
-    win.loadFile('static/index.html').then(r => {
+    win.loadFile('src/static/index.html').then(r => {
         if (debugPreference) {
             console.log(r)
         }
@@ -1428,7 +1428,7 @@ async function nanoLeafInitialize(action) {
         `);
         });
 
-        await nanoLeafWin.loadFile('static/nanoleaf-setup.html');
+        await nanoLeafWin.loadFile('src/static/nanoleaf-setup.html');
     }
 }
 let deviceToken;
@@ -1990,7 +1990,7 @@ function reloadFromConfig(){
     autoUpdater.channel = updateChannel;
 
     win.webContents.send('log', "Reloaded from config!");
-    if (!ikeaDisabled) {
+    if (!ikeaDisabled  && ikeaOnline) {
         ikeaCheckSpectrum().then(r => {
             if (alwaysFalse) {
                 console.log(r)
