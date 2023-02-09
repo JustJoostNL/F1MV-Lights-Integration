@@ -13,7 +13,7 @@ const {
     autoUpdater
 } = require("electron-updater")
 const process = require('process');
-const configDefault = require("./config");
+const configDefault = require("../config/config");
 const Store = require('electron-store');
 const {
     Bulb
