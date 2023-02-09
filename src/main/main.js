@@ -163,7 +163,7 @@ function createWindow() {
         });
     });
 
-    win.loadFile('src/static/index.html').then(r => {
+    win.loadFile('src/static/home/index.html').then(r => {
         if (debugPreference) {
             console.log(r)
         }
@@ -1400,8 +1400,8 @@ async function nanoLeafInitialize(action) {
             width: 650,
             height: 800,
             webPreferences: {
-                nodeIntegration: true,
                 contextIsolation: false,
+                nodeIntegration: true,
                 zoomFactor: 0.8
             },
             resizable: false,
@@ -1428,7 +1428,7 @@ async function nanoLeafInitialize(action) {
         `);
         });
 
-        await nanoLeafWin.loadFile('src/static/nanoleaf-setup.html');
+        await nanoLeafWin.loadFile('src/static/nanoleaf/nanoleaf-setup.html');
     }
 }
 let deviceToken;
