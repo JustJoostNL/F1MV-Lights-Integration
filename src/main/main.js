@@ -44,11 +44,8 @@ let ikeaSecurityCode = userConfig.get('Settings.ikeaSettings.securityCode');
 let ikeaIdentity = userConfig.get('Settings.ikeaSettings.identity');
 let ikeaPSK = userConfig.get('Settings.ikeaSettings.psk');
 
-let goveeInitialised = false;
-
 let Govee;
 let govee;
-
 
 let analyticsPreference = userConfig.get('Settings.advancedSettings.analytics')
 const APIURL = "https://api.joost.systems/api/v2"
@@ -290,12 +287,7 @@ ipcMain.on('simulate', (event, arg) => {
 })
 
 ipcMain.on('toggle-devtools', () => {
-    // check if dev tools are open
-    if (win.webContents.isDevToolsOpened()) {
-        win.webContents.closeDevTools()
-    } else {
-        win.webContents.openDevTools()
-    }
+    win.webContents.toggleDevTools()
 })
 ipcMain.on('toggle-logs', () => {
     if (hideLogs) {
@@ -388,7 +380,7 @@ ipcMain.on('updatecheck', () => {
 
 ipcMain.on('test-button-dev', async () => {
     win.webContents.send('log', 'Running action mapped on test button...')
-    await ikeaSelectDevices();
+    // action here
 })
 ipcMain.on('check-apis', async () => {
     await updateAllAPIs();
@@ -1050,7 +1042,7 @@ async function ikeaCheckSpectrum(){
     whiteDevices = [];
     for (let i = 0; i < ikeaDevices.length; i++) {
         if (debugPreference) {
-            win.webContents.send('log', "Checking if Ikea device is RGB or White")
+            win.webContents.send('log', "Checking if Ikea device is RGB or WHITE")
             win.webContents.send('log', "Device to check: " + ikeaDevices[i])
         }
         const deviceToCheck = allIkeaDevices[ikeaDevices[i]];
@@ -1061,7 +1053,7 @@ async function ikeaCheckSpectrum(){
             colorDevices.push(ikeaDevices[i]);
         } else {
             if (debugPreference) {
-                win.webContents.send('log', "Device: " + ikeaDevices[i] + " is White")
+                win.webContents.send('log', "Device: " + ikeaDevices[i] + " is WHITE")
             }
             whiteDevices.push(ikeaDevices[i]);
         }
@@ -1090,11 +1082,6 @@ async function ikeaControl(r, g, b, brightness, action, flag) {
             html = html + "<tr><td>" + device.name + "</td><td>" + device.id + "</td><td>" + device.state + "</td><td>" + device.spectrum + "</td></tr>";
         });
         html = html + "</tbody></table></div></body></html>";
-        const path = require('path');
-        const savePath = path.join(app.getAppPath(), 'devices.html');
-        fs.writeFile(savePath, html, function (err) {
-            if (err) throw err;
-        });
         const win = new BrowserWindow({
             width: 800,
             height: 600,
@@ -1126,7 +1113,7 @@ async function ikeaControl(r, g, b, brightness, action, flag) {
                 }
             });
         });
-        await win.loadFile(savePath);
+        await win.loadURL('data:text/html;charset=UTF-8,' + encodeURIComponent(html));
     }
 
     if (action === "on" && ikeaOnline === true) {
@@ -1335,12 +1322,6 @@ async function hueControl(r, g, b, brightness, action) {
                     html += "<tr><td>" + light.name + "</td><td>" + light.id + "</td><td>" + light.state.on + "</td></tr>";
                 });
                 html += "</tbody></table></div></body></html>";
-                const path = require('path');
-                const savePath = path.join(app.getAppPath(), 'devicesHue.html');
-                fs.writeFile(savePath, html, function (err) {
-                    if (err) throw err;
-                });
-
                 const win = new BrowserWindow({
                     width: 800,
                     height: 600,
@@ -1349,10 +1330,9 @@ async function hueControl(r, g, b, brightness, action) {
                     }
                 });
                 win.removeMenu();
-                await win.loadFile(savePath);
+                await win.loadURL('data:text/html;charset=utf-8,' + encodeURI(html));
             }
         }
-
 
         const {
             LightState
@@ -1384,7 +1364,6 @@ async function hueControl(r, g, b, brightness, action) {
 let nanoLeafWin;
 async function nanoLeafInitialize(action) {
     if(action === "openWindow"){
-        // create a new browser window and open the nanoleaf-setup.html file
         nanoLeafWin = new BrowserWindow({
             width: 650,
             height: 800,
@@ -1511,7 +1490,7 @@ async function nanoLeafAuth(ip) {
                 });
                 const dialogOptions = {
                     type: 'info',
-                    buttons: ['The connection was successful!', 'I want to try again!'],
+                    buttons: ['The Connection Was Successful!', 'I Want To Try Again!'],
                     title: 'Connection Review!',
                     message: 'If you saw the Nanoleaf device blink, the connection is successful, and you can close this window!\nIf you didn\'t saw the Nanoleaf device blink, please try again!',
                     defaultId: 0
