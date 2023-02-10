@@ -176,7 +176,7 @@ function createWindow() {
                 }
             });
         }, 1000);
-    } else if(BrowserWindow.getAllWindows().length === 1) {
+    } else if(BrowserWindow.getAllWindows().length > 0) {
         initIntegrations().then(r => {
             if (alwaysFalse) {
                 console.log(r)
@@ -1393,7 +1393,7 @@ async function nanoLeafInitialize(action) {
                 nodeIntegration: true,
                 zoomFactor: 0.8
             },
-            resizable: false,
+            resizable: true,
             maximizable: false
         });
         nanoLeafWin.removeMenu();
@@ -1424,6 +1424,10 @@ let deviceToken;
 let authFailed = false;
 let exist = false;
 async function nanoLeafAuth(ip) {
+    if (ip === ""){
+        nanoLeafWin.webContents.send('log', "Please enter an IP address or hostname!");
+        return;
+    }
     nanoLeafWin.webContents.send('log', "Connecting to the Nanoleaf device, this may take a few seconds...");
     authFailed = false;
     const AuroraAPI = require('nanoleaves');
