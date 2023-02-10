@@ -5,9 +5,6 @@
 out/
 output/*
 dist/*
-.node-persist/*
-devices.html
-devicesHue.html
 release.txt
 
 .prettierrc
