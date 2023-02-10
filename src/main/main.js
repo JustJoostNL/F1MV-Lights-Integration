@@ -826,6 +826,11 @@ setInterval(async () => {
 }, 5000);
 
 async function sendAllAPIStatus() {
+    if(!goveeDisabled){
+        goveeOnline = govee.devicesArray.length > 0;
+    } else {
+        goveeOnline = false;
+    }
     const statuses = [
         { name: 'ikea', online: ikeaOnline },
         { name: 'govee', online: goveeOnline },
@@ -907,22 +912,15 @@ async function discordRPC(){
     }
 }
 
-if(!goveeInitialised && !goveeDisabled){
+async function goveeInitialize() {
     Govee = require("govee-lan-control");
     govee = new Govee.default();
+    govee.on("deviceAdded", (device) => {
+        if (debugPreference) {
+            win.webContents.send('log', "Govee device found: " + device.model);
+        }
+    });
 }
-
-setInterval(function () {
-    if(!goveeInitialised && !goveeDisabled){
-        Govee = require("govee-lan-control");
-        govee = new Govee.default();
-        goveeInitialised = true;
-        goveeOnline = true;
-    } else if (goveeDisabled){
-        goveeOnline = false;
-    }
-}, 2000);
-
 
 async function goveeControl(r, g, b, brightness, action) {
     govee.devicesArray.forEach(device => {
@@ -972,15 +970,6 @@ async function goveeControl(r, g, b, brightness, action) {
     });
 }
 
-async function goveeInitialize() {
-    goveeOnline = true;
-    govee.on("deviceAdded", (device) => {
-        if (debugPreference) {
-            win.webContents.send('log', "Govee device found: " + device.model);
-        }
-
-    });
-}
 async function ikeaInitialize() {
     const result = await Ikea.discoverGateway();
     if (!result) {
@@ -1952,6 +1941,7 @@ async function sendAnalytics() {
 
 function reloadFromConfig(){
     const webServerDisableOld = webServerDisabled;
+    const goveeDisableOld = goveeDisabled;
 
     win.webContents.send('log', "Reloading from config..");
     debugPreference = userConfig.get('Settings.advancedSettings.debugMode');
@@ -1998,21 +1988,27 @@ function reloadFromConfig(){
         });
     }
 
-
-    if (webServerDisableOld !== webServerDisabled) {
-        if (webServerDisabled) {
-            win.webContents.send('log', "Web server is disabled, closing..");
-            http.close();
-        } if (!webServerDisabled) {
-            win.webContents.send('log', "Web server is enabled, starting..");
-            webServerInitialize().then(r => {
-                if (alwaysFalse) {
-                    console.log(r)
-                }
-            });
-        }
+    if (webServerDisableOld && !webServerDisabled){
+        win.webContents.send('log', "Web server is enabled, starting..");
+        webServerInitialize().then(r => {
+            if (alwaysFalse) {
+                console.log(r)
+            }
+        });
+    } else if(!webServerDisableOld && webServerDisabled){
+        win.webContents.send('log', "Web server is disabled, closing..");
+        http.close();
     }
 
+    if (goveeDisableOld && !goveeDisabled){
+        govee = undefined
+        Govee = undefined
+        goveeInitialize().then(r => {
+            if (alwaysFalse) {
+                console.log(r)
+            }
+        });
+    }
 }
 
 
