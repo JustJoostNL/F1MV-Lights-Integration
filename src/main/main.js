@@ -914,7 +914,9 @@ async function discordRPC(){
         await RPC.login({clientId});
     } catch (e) {
         setTimeout(async () => {
-            win.webContents.send('log', "Failed to start Discord RPC, is Discord running?");
+            if (!discordRPCDisabled) {
+                win.webContents.send('log', "Failed to start Discord RPC, is Discord running?");
+            }
         }, 1000);
     }
 }
@@ -1254,7 +1256,7 @@ let createdUser;
 let authHueApi;
 let token;
 async function hueInitialize() {
-    hueApi = await hue.discovery.nupnpSearch();
+    hueApi = await hue.discovery.mdnsSearch();
     if (hueApi.length === 0) {
         win.webContents.send('toaster', "No Hue bridges found");
         hueOnline = false;
