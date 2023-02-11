@@ -5,6 +5,9 @@ $(function() {
         const hueSelectedDevices = arg.hueSelectedDevices;
         const hueDeviceInformation = arg.deviceInformation;
 
+        console.log(hueDeviceInformation);
+        console.log(hueSelectedDevices);
+
         hueDeviceInformation.forEach((device) => {
             const deviceName = device.name;
             const deviceID = device.id;

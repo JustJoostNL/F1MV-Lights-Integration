@@ -1309,17 +1309,16 @@ async function hueControl(r, g, b, brightness, action) {
             } else {
                 let deviceInformation = [];
                 let allInformation = [];
-                for (const deviceId in hueLights){
-                    const device = hueLights[deviceId];
-                    const name = device.name;
-                    const id = device.id;
-                    const state = device.state.on
+                hueLights.forEach((light) => {
+                    const name = light.name;
+                    const id = light.id;
+                    const state = light.state.on
                     deviceInformation.push({
                         name: name,
                         id: id,
                         state: state
                     });
-                }
+                });
                 const hueSelectedDevices = userConfig.get('Settings.hueSettings.deviceIDs');
                 allInformation.push({
                     deviceInformation: deviceInformation,
