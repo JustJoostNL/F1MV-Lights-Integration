@@ -93,24 +93,17 @@
     <div class="simulation__buttons">
         <a class="waves-effect waves-light btn-large simulation__button tooltipped" onclick="linkHue()" data-position="bottom">
             <em class="material-icons">link</em>
-            Link Hue Bridge (first time)
+            Link Hue Bridge
         </a>
-        <a class="waves-effect waves-light btn-large simulation__button tooltipped" onclick="linkHue()" data-position="bottom">
+        <a class="waves-effect waves-light btn-large simulation__button tooltipped" onclick="refreshHueDevices()" data-position="bottom">
             <em class="material-icons">restart_alt</em>
-            Refresh Hue Bridge
+            Refresh Device's From Bridge
         </a>
-        <a class="waves-effect waves-light btn-large simulation__button tooltipped" onclick="hueGetIDs()" data-position="bottom">
-            <em class="material-icons">pin</em>
-            Get device Id's
+        <a class="waves-effect waves-light btn-large simulation__button tooltipped" onclick="hueSelectDevices()" data-position="bottom">
+            <em class="material-icons">rule</em>
+            Select Hue Device's
         </a>
     </div>
-    <p>
-        <label>
-            <span>Hue Device's</span>
-            <input style="color:white" type="text" id="hue-devices-input" value="" />
-            <span style="color:grey">Here you put your Hue Device ID's from all device's that you want to use, click the Get ID's button to see all the ID's.</span>
-        </label>
-    </p>
     <p>
         <label>
             <input type="checkbox" id="disable-hue-setting" class="filled-in" />

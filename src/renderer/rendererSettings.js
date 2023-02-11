@@ -36,7 +36,6 @@ $(function() {
         }else if (!arg.Settings.goveeSettings.goveeDisable) {
             $('#disable-govee-setting').removeAttr('checked')
         }
-        $('#hue-devices-input').val(arg.Settings.hueSettings.deviceIDs)
 
         if (arg.Settings.yeeLightSettings.yeeLightDisable) {
             $('#disable-yeelight-setting').attr('checked', 'checked')
@@ -113,7 +112,6 @@ function saveConfig() {
         autoTurnOffLights: $('#auto-turn-off-setting').is(':checked'),
         liveTimingURL: $('#live-timing-url-input').val(),
         hueDisable: $('#disable-hue-setting').is(':checked'),
-        hueDevices: $('#hue-devices-input').val(),
         ikeaDisable: $('#disable-ikea-setting').is(':checked'),
         securityCode: $('#sec-code-input').val(),
         goveeDisable: $('#disable-govee-setting').is(':checked'),
@@ -131,10 +129,22 @@ function saveConfig() {
         analytics: $('#analytics-setting').is(':checked'),
         debugMode: $('#debug-mode-setting').is(':checked')
     })
+
 }
+
+ipcRenderer.on('toaster', (event, arg) => {
+    M.toast({
+        html: arg,
+        displayLength: 2000
+    })
+})
 
 function linkHue() {
     ipcRenderer.send('linkHue')
+}
+
+function refreshHueDevices(){
+    ipcRenderer.send('refreshHueDevices')
 }
 
 function nanoLeaf(action) {
@@ -147,8 +157,8 @@ function nanoLeaf(action) {
         ipcRenderer.send('nanoLeaf', 'openWindow')
     }
 }
-function hueGetIDs() {
-    ipcRenderer.send('getHueDevices')
+function hueSelectDevices() {
+    ipcRenderer.send('select-hue-devices')
 }
 
 function ikeaSelectDevices() {

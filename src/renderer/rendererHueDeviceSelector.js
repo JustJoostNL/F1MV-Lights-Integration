@@ -1,44 +1,36 @@
 const { ipcRenderer } = require('electron');
 
 $(function() {
-    ipcRenderer.on('ikeaAllInformation', (event, arg) => {
-        const ikeaSelectedDevices = arg.ikeaSelectedDevices;
-        const ikeaDeviceInformation = arg.deviceInformation;
-        
-        // we need to add a row for each device
-        ikeaDeviceInformation.forEach((device) => {
+    ipcRenderer.on('hueAllInformation', (event, arg) => {
+        const hueSelectedDevices = arg.hueSelectedDevices;
+        const hueDeviceInformation = arg.deviceInformation;
+
+        hueDeviceInformation.forEach((device) => {
             const deviceName = device.name;
             const deviceID = device.id;
             const deviceState = device.state;
-            const deviceSpectrum = device.spectrum;
-            
+
             // create a new row
             const newRow = document.createElement('tr');
-            
+
             // create a new cell for the device name
             const deviceNameCell = document.createElement('td');
             deviceNameCell.innerHTML = deviceName;
             deviceNameCell.style.color = 'white';
             newRow.appendChild(deviceNameCell);
-            
+
             // create a new cell for the device ID
             const deviceIDCell = document.createElement('td');
             deviceIDCell.innerHTML = deviceID;
             deviceIDCell.style.color = 'white';
             newRow.appendChild(deviceIDCell);
-            
+
             // create a new cell for the device state
             const deviceStateCell = document.createElement('td');
             deviceStateCell.innerHTML = deviceState;
             deviceStateCell.style.color = 'white';
             newRow.appendChild(deviceStateCell);
-            
-            // create a new cell for the device spectrum
-            const deviceSpectrumCell = document.createElement('td');
-            deviceSpectrumCell.innerHTML = deviceSpectrum;
-            deviceSpectrumCell.style.color = 'white';
-            newRow.appendChild(deviceSpectrumCell);
-            
+
             // also we create a checkbox for each device
             // we need to create a label, then an input, then a span
             const deviceCheckboxCell = document.createElement('td');
@@ -56,17 +48,16 @@ $(function() {
             // add the cell to the row
             newRow.appendChild(deviceCheckboxCell);
 
-            
-            // add the new row to the table
-            document.getElementById('ikea-device-table').appendChild(newRow);
-        })
 
-        // now we need to check the boxes for the devices that are already selected
-        ikeaSelectedDevices.forEach((device) => {
+            // add the new row to the table
+            document.getElementById('hue-device-table').appendChild(newRow);
+        });
+
+        hueSelectedDevices.forEach((device) => {
             // get the device ID
             const deviceID = device
             // get the table
-            const table = document.getElementById('ikea-device-table');
+            const table = document.getElementById('hue-device-table');
             // get the rows
             const rows = table.getElementsByTagName('tr');
             // loop through the rows
@@ -93,7 +84,7 @@ $(function() {
 
 function saveSelectedDevices() {
     // get the table
-    const table = document.getElementById('ikea-device-table');
+    const table = document.getElementById('hue-device-table');
     // get the rows
     const rows = table.getElementsByTagName('tr');
     // create an array to store the selected devices
@@ -116,5 +107,5 @@ function saveSelectedDevices() {
             selectedDevices.push(deviceID);
         }
     }
-    ipcRenderer.send('ikeaSelectorSaveSelectedDevices', selectedDevices);
+    ipcRenderer.send('hueSelectorSaveSelectedDevices', selectedDevices);
 }

@@ -8,10 +8,10 @@ const {
 } = require('electron')
 const BrowserWindow = require('electron').BrowserWindow
 const electronLocalShortcut = require('electron-localshortcut');
-const fs = require('fs');
 const {
     autoUpdater
 } = require("electron-updater")
+const colorConvert = require("color-convert");
 const process = require('process');
 const configDefault = require("../config/config");
 const Store = require('electron-store');
@@ -447,7 +447,14 @@ ipcMain.on('linkHue', async () => {
     }
     await hueInitialize();
 })
-ipcMain.on('getHueDevices', async () => {
+ipcMain.on('refreshHueDevices', async () => {
+    win.webContents.send('toaster', 'Refreshing Hue Devices...')
+    if (debugPreference) {
+        win.webContents.send('log', 'Refreshing Hue Devices...')
+    }
+    await hueControl(0, 255, 0, userBrightness, "refreshDevices");
+})
+ipcMain.on('select-hue-devices', async () => {
     if (debugPreference) {
         win.webContents.send('log', 'Getting Hue Devices...')
     }
@@ -482,10 +489,15 @@ ipcMain.on('ikeaSelectorSaveSelectedDevices', async (event, args) => {
     userConfig.set('Settings.ikeaSettings.deviceIDs', args)
 })
 
+ipcMain.on('hueSelectorSaveSelectedDevices', async (event, args) => {
+    if (debugPreference) {
+        win.webContents.send('log', 'Saving selected Hue devices...')
+    }
+    userConfig.set('Settings.hueSettings.deviceIDs', args)
+})
+
 ipcMain.on('saveConfig', (event, arg) => {
-    let deviceIDs = arg.deviceIDs;
     let deviceIPs = arg.deviceIPs;
-    let hueDeviceIDs = arg.hueDevices;
     const {
         defaultBrightness,
         autoTurnOffLights,
@@ -510,17 +522,13 @@ ipcMain.on('saveConfig', (event, arg) => {
 
 
     deviceIPs = deviceIPs.split(',');
-    deviceIDs = deviceIDs.split(',');
-    hueDeviceIDs = hueDeviceIDs.split(',');
 
 
     userConfig.set('Settings.generalSettings.defaultBrightness', parseInt(defaultBrightness));
     userConfig.set('Settings.generalSettings.autoTurnOffLights', autoTurnOffLights);
     userConfig.set('Settings.MultiViewerForF1Settings.liveTimingURL', liveTimingURL);
     userConfig.set('Settings.hueSettings.hueDisable', hueDisable);
-    userConfig.set('Settings.hueSettings.deviceIDs', hueDeviceIDs);
     userConfig.set('Settings.ikeaSettings.securityCode', securityCode);
-    userConfig.set('Settings.ikeaSettings.deviceIDs', deviceIDs);
     userConfig.set('Settings.ikeaSettings.ikeaDisable', ikeaDisable);
     userConfig.set('Settings.goveeSettings.goveeDisable', goveeDisable);
     userConfig.set('Settings.openRGBSettings.openRGBDisable', openRGBDisable);
@@ -1134,7 +1142,6 @@ async function ikeaControl(r, g, b, brightness, action, flag) {
         }
 
         // convert rgb to hsl
-        const colorConvert = require("color-convert");
         const hsl = colorConvert.rgb.hsl(r, g, b);
         hue = hsl[0];
         if (debugPreference) {
@@ -1250,7 +1257,6 @@ async function hueInitialize() {
     hueApi = await hue.discovery.nupnpSearch();
     if (hueApi.length === 0) {
         win.webContents.send('toaster', "No Hue bridges found");
-        console.error("Unable to find a Hue bridge on the network");
         hueOnline = false;
     } else {
         hueOnline = true;
@@ -1321,27 +1327,49 @@ async function hueInitialize() {
 async function hueControl(r, g, b, brightness, action) {
     brightness = Math.round((brightness / 100) * 254);
 
-    const colorConvert = require("color-convert");
     if (!hueDisabled && hueOnline) {
         if (action === "getDevices") {
             if (hueLights === null || hueLights === undefined) {
                 win.webContents.send('toaster', "No Hue lights found or an error occurred.");
             } else {
-                let html = "<!DOCTYPE html><html lang='en'><head><title>Hue Lights</title><link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css'><style>table { background-color: #333; color: #fff; }</style><script src='https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js'></script></head><body><div class='container'><table class='striped'><thead><tr><th>Light Name</th><th>Light ID</th><th>Device is on</th></tr></thead><tbody>";
-                hueLights.forEach((light) => {
-                    html += "<tr><td>" + light.name + "</td><td>" + light.id + "</td><td>" + light.state.on + "</td></tr>";
+                let deviceInformation = [];
+                let allInformation = [];
+                for (const deviceId in hueLights){
+                    const device = hueLights[deviceId];
+                    const name = device.name;
+                    const id = device.id;
+                    const state = device.state.on
+                    deviceInformation.push({
+                        name: name,
+                        id: id,
+                        state: state
+                    });
+                }
+                const hueSelectedDevices = userConfig.get('Settings.hueSettings.deviceIDs');
+                allInformation.push({
+                    deviceInformation: deviceInformation,
+                    hueSelectedDevices: hueSelectedDevices
                 });
-                html += "</tbody></table></div></body></html>";
-                const win = new BrowserWindow({
-                    width: 800,
+
+                const hueDeviceSelectorWin = new BrowserWindow({
+                    width: 1200,
                     height: 600,
                     webPreferences: {
+                        contextIsolation: false,
                         nodeIntegration: true
                     }
                 });
-                win.removeMenu();
-                await win.loadURL('data:text/html;charset=utf-8,' + encodeURI(html));
+                hueDeviceSelectorWin.removeMenu();
+
+                hueDeviceSelectorWin.webContents.on('did-finish-load', () => {
+                    hueDeviceSelectorWin.webContents.send('hueAllInformation', allInformation);
+                });
+                await hueDeviceSelectorWin.loadFile('src/static/hue/hue-device-selector.html');
             }
+        }
+
+        if (action === "refreshDevices"){
+            hueLights = await authHueApi.lights.getAll();
         }
 
         const {
@@ -1369,8 +1397,11 @@ async function hueControl(r, g, b, brightness, action) {
                 );
             }
         }
+    } else if (action === "getDevices" || action === "refreshDevices") {
+        win.webContents.send('toaster', "Hue is disabled or not connected.");
     }
 }
+
 let nanoLeafWin;
 async function nanoLeafInitialize(action) {
     if(action === "openWindow"){
@@ -1543,7 +1574,6 @@ async function nanoLeafControl(r, g, b, brightness, action){
             win.webContents.send('log', "Turning all the available Nanoleaf devices on...");
         }
         let hue;
-        const colorConvert = require("color-convert");
         const hsl = colorConvert.rgb.hsl(r, g, b);
         hue = hsl[0];
         if (debugPreference) {
