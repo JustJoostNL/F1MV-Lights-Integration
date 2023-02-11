@@ -280,7 +280,6 @@ ipcMain.on('simulate', (event, arg) => {
     simulateFlag(arg).then(r => {
         if (alwaysFalse) {
             console.log(r)
-            win.webContents.send('log', r);
         }
     })
 
@@ -386,8 +385,7 @@ ipcMain.on('check-apis', async () => {
     await updateAllAPIs();
 })
 ipcMain.on('ikea-select-devices', async () => {
-    win.webContents.send('toaster', 'Getting IKEA IDs...')
-    win.webContents.send('log', 'Getting Ikea Device IDs...')
+    win.webContents.send('toaster', 'Opening IKEA Tradfri device selection window...')
     await ikeaControl(0, 255, 0, userBrightness, "getDevices");
 })
 ipcMain.on('send-analytics-button', async () => {
@@ -442,22 +440,14 @@ ipcMain.on('restart-app', () => {
 
 ipcMain.on('linkHue', async () => {
     win.webContents.send('toaster', 'Searching for Hue bridge this may take a few seconds...')
-    if (debugPreference) {
-        win.webContents.send('log', 'Linking Hue...')
-    }
     await hueInitialize();
 })
 ipcMain.on('refreshHueDevices', async () => {
     win.webContents.send('toaster', 'Refreshing Hue Devices...')
-    if (debugPreference) {
-        win.webContents.send('log', 'Refreshing Hue Devices...')
-    }
     await hueControl(0, 255, 0, userBrightness, "refreshDevices");
 })
 ipcMain.on('select-hue-devices', async () => {
-    if (debugPreference) {
-        win.webContents.send('log', 'Getting Hue Devices...')
-    }
+    win.webContents.send('toaster', 'Opening Hue device selection window...')
     await hueControl(0, 255, 0, userBrightness, "getDevices");
 })
 let canReceive = false;
@@ -474,25 +464,16 @@ ipcMain.on('nanoLeaf', async (event, args) => {
 })
 ipcMain.on('nanoLeafDevice', async (event, args) => {
     if(canReceive){
-        if (debugPreference) {
-            win.webContents.send('log', 'Connecting to Nanoleaf Device...')
-        }
         await nanoLeafAuth(args);
         canReceive = false;
     }
 })
 
 ipcMain.on('ikeaSelectorSaveSelectedDevices', async (event, args) => {
-    if (debugPreference) {
-        win.webContents.send('log', 'Saving selected IKEA devices...')
-    }
     userConfig.set('Settings.ikeaSettings.deviceIDs', args)
 })
 
 ipcMain.on('hueSelectorSaveSelectedDevices', async (event, args) => {
-    if (debugPreference) {
-        win.webContents.send('log', 'Saving selected Hue devices...')
-    }
     userConfig.set('Settings.hueSettings.deviceIDs', args)
 })
 
@@ -1265,9 +1246,6 @@ async function hueInitialize() {
         hueClient = await hue.v3.api.createLocal(hueApi[0].ipaddress).connect();
         // toast that the bridge is found + IP
         win.webContents.send('toaster', "Hue bridge found at: " + hueApi[0].ipaddress);
-        if (debugPreference) {
-            win.webContents.send('log', "Hue bridge found at: " + hueApi[0].ipaddress);
-        }
 
         const appName = "F1MV-Lights-Integration";
         const deviceName = "DeviceName";
@@ -1275,19 +1253,16 @@ async function hueInitialize() {
         try {
             if (userConfig.get('Settings.hueSettings.token') === undefined) {
                 if (debugPreference) {
-                    win.webContents.send('log', "No token found, creating one...");
                     win.webContents.send('toaster', "No token found, creating one...");
                 }
                 createdUser = await hueClient.users.createUser(appName, deviceName)
                 userConfig.set('Settings.hueSettings.token', createdUser.username)
                 if (debugPreference) {
-                    win.webContents.send('log', "Token created: " + createdUser.username);
                     win.webContents.send('toaster', "Token created: " + createdUser.username);
                 }
                 token = createdUser.username
             } else {
                 if (debugPreference) {
-                    win.webContents.send('log', "Token found: " + userConfig.get('Settings.hueSettings.token'));
                     win.webContents.send('toaster', "Token found: " + userConfig.get('Settings.hueSettings.token'));
                 }
                 token = userConfig.get('Settings.hueSettings.token');
@@ -1299,7 +1274,6 @@ async function hueInitialize() {
 
             if (hueLights !== undefined) {
                 if (debugPreference) {
-                    win.webContents.send('log', "Amount of Hue lights found: " + hueLights.length);
                     win.webContents.send('toaster', "Amount of Hue lights found: " + hueLights.length);
                 }
                 hueLights.forEach((light) => {
@@ -1308,7 +1282,6 @@ async function hueInitialize() {
                     }
                 });
             } else {
-                win.webContents.send('log', "No Hue lights found or an error occurred");
                 win.webContents.send('toaster', "No Hue lights found or an error occurred");
             }
         } catch (err) {
@@ -1316,10 +1289,10 @@ async function hueInitialize() {
                 if (err.getHueErrorType() === 101) {
                     win.webContents.send('toaster', "The Link button on the bridge was not pressed. Please press the Link button and try again.");
                 } else {
-                    win.webContents.send('log', `Unexpected Error: ${err.message}`);
+                    win.webContents.send('toaster', `Unexpected Error: ${err.message}`);
                 }
             } catch (error) {
-                win.webContents.send('log', `Unexpected Error: ${err.message}`);
+                win.webContents.send('toaster', `Unexpected Error: ${err.message}`);
             }
         }
 
@@ -1967,6 +1940,7 @@ async function sendAnalytics() {
 function reloadFromConfig(){
     const webServerDisableOld = webServerDisabled;
     const goveeDisableOld = goveeDisabled;
+    const ikeaDisableOld = ikeaDisabled;
 
     win.webContents.send('log', "Reloading from config..");
     debugPreference = userConfig.get('Settings.advancedSettings.debugMode');
@@ -2029,6 +2003,18 @@ function reloadFromConfig(){
         govee = undefined
         Govee = undefined
         goveeInitialize().then(r => {
+            if (alwaysFalse) {
+                console.log(r)
+            }
+        });
+    }
+
+    if (ikeaDisableOld && !ikeaDisabled) {
+        ikeaOnline = false;
+        allIkeaDevices = [];
+        colorDevices = [];
+        whiteDevices = [];
+        ikeaInitialize().then(r => {
             if (alwaysFalse) {
                 console.log(r)
             }
