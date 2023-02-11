@@ -31,7 +31,6 @@ $(function() {
         }
 
         $('#sec-code-input').val(arg.Settings.ikeaSettings.securityCode)
-        $('#devices-input').val(arg.Settings.ikeaSettings.deviceIDs)
         if (arg.Settings.goveeSettings.goveeDisable) {
             $('#disable-govee-setting').attr('checked', 'checked')
         }else if (!arg.Settings.goveeSettings.goveeDisable) {
@@ -117,7 +116,6 @@ function saveConfig() {
         hueDevices: $('#hue-devices-input').val(),
         ikeaDisable: $('#disable-ikea-setting').is(':checked'),
         securityCode: $('#sec-code-input').val(),
-        deviceIDs: $('#devices-input').val(),
         goveeDisable: $('#disable-govee-setting').is(':checked'),
         openRGBDisable: $('#disable-openrgb-setting').is(':checked'),
         openRGBServerIP: $('#openrgb-ip-input').val(),
@@ -153,8 +151,8 @@ function hueGetIDs() {
     ipcRenderer.send('getHueDevices')
 }
 
-function ikeaGetIds() {
-    ipcRenderer.send('ikea-get-ids')
+function ikeaSelectDevices() {
+    ipcRenderer.send('ikea-select-devices')
 }
 function sendConfig() {
     ipcRenderer.send('send-config')

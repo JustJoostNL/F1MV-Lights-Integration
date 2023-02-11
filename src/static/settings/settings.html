@@ -121,13 +121,6 @@
 </div>
 <div class="container simulation">
     <h2 class="simulation__title">Ikea Settings</h2>
-    <div class="simulation__buttons">
-        <a class="waves-effect waves-light btn-large simulation__button tooltipped" onclick="ikeaGetIds()" data-position="bottom">
-            <em class="material-icons">pin</em>
-            Get device Id's
-        </a>
-    </div>
-    <span style="color:grey; font-size: 80%">If you click this button, a new window with a list of device's and there ID's will appear (restart the app first if you just filled in the security code!!)</span>
     <p>
         <label>
             <input type="checkbox" id="disable-ikea-setting" class="filled-in" />
@@ -142,13 +135,13 @@
             <span style="color:grey">This is the security code you can find on the back of your gateway</span>
         </label>
     </p>
-    <p>
-        <label>
-            <span>Ikea Device's</span>
-            <input style="color:white" type="text" id="devices-input" value="" />
-            <span style="color:grey">Here you put your Ikea Device ID's from all device's that you want to use</span>
-        </label>
-    </p>
+    <div class="simulation__buttons">
+        <a class="waves-effect waves-light btn-large simulation__button tooltipped" onclick="ikeaSelectDevices()" data-position="bottom">
+            <em class="material-icons">rule</em>
+            Select Ikea Device's
+        </a>
+    </div>
+    <span style="color:grey; font-size: 80%">If you click this button, a new window where you can select device's will open (restart the app first if you just filled in the security code!!)</span>
 </div>
 <div class="container simulation">
     <h2 class="simulation__title">Govee Settings</h2>

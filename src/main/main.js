@@ -385,7 +385,7 @@ ipcMain.on('test-button-dev', async () => {
 ipcMain.on('check-apis', async () => {
     await updateAllAPIs();
 })
-ipcMain.on('ikea-get-ids', async () => {
+ipcMain.on('ikea-select-devices', async () => {
     win.webContents.send('toaster', 'Getting IKEA IDs...')
     win.webContents.send('log', 'Getting Ikea Device IDs...')
     await ikeaControl(0, 255, 0, userBrightness, "getDevices");
@@ -473,6 +473,13 @@ ipcMain.on('nanoLeafDevice', async (event, args) => {
         await nanoLeafAuth(args);
         canReceive = false;
     }
+})
+
+ipcMain.on('ikeaSelectorSaveSelectedDevices', async (event, args) => {
+    if (debugPreference) {
+        win.webContents.send('log', 'Saving selected IKEA devices...')
+    }
+    userConfig.set('Settings.ikeaSettings.deviceIDs', args)
 })
 
 ipcMain.on('saveConfig', (event, arg) => {
@@ -1063,38 +1070,39 @@ async function ikeaCheckSpectrum(){
 
 async function ikeaControl(r, g, b, brightness, action, flag) {
     if (action === "getDevices") {
-        let result = [];
+        let deviceInformation = [];
+        let allInformation = [];
         for (const deviceId in allIkeaDevices){
             const device = allIkeaDevices[deviceId];
             if (device.type !== 2) {
                 continue;
             }
-            result.push({
-                id: device.instanceId,
+            deviceInformation.push({
                 name: device.name,
+                id: device.instanceId,
                 state: device.lightList[0].onOff,
                 spectrum: device.lightList[0].spectrum,
             });
-
         }
-        let html = "<!DOCTYPE html><html lang='en'><head><meta charset='utf-8'><meta name='viewport' content='width=device-width, initial-scale=1'><title>Devices</title><link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css'><script src='https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js'></script><script src='https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js'></script><script src='https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js'></script></head><body><div class='container'><table class='table table-dark table-striped'><thead><tr><th>Device Name</th><th>Device ID</th><th>Device Is On</th><th>Color support</th></tr></thead><tbody>";
-        result.forEach(device => {
-            html = html + "<tr><td>" + device.name + "</td><td>" + device.id + "</td><td>" + device.state + "</td><td>" + device.spectrum + "</td></tr>";
-        });
-        html = html + "</tbody></table></div></body></html>";
-        const win = new BrowserWindow({
-            width: 800,
+        const ikeaSelectedDevices = userConfig.get('Settings.ikeaSettings.deviceIDs');
+        allInformation = {
+            deviceInformation: deviceInformation,
+            ikeaSelectedDevices: ikeaSelectedDevices,
+        }
+        const ikeaDeviceSelectorWin = new BrowserWindow({
+            width: 1200,
             height: 600,
             webPreferences: {
+                contextIsolation: false,
                 nodeIntegration: true
             },
             resizable: false,
             maximizable: false,
             minimizable: true,
         });
-        win.removeMenu();
-        win.webContents.on('did-finish-load', () => {
-            win.webContents.insertCSS(`
+        ikeaDeviceSelectorWin.removeMenu();
+        ikeaDeviceSelectorWin.webContents.on('did-finish-load', () => {
+            ikeaDeviceSelectorWin.webContents.insertCSS(`
             ::-webkit-scrollbar {
                 width: 10px;
             }
@@ -1112,8 +1120,10 @@ async function ikeaControl(r, g, b, brightness, action, flag) {
                     console.log(r)
                 }
             });
+            ikeaDeviceSelectorWin.webContents.send('ikeaAllInformation', allInformation);
         });
-        await win.loadURL('data:text/html;charset=UTF-8,' + encodeURIComponent(html));
+
+        await ikeaDeviceSelectorWin.loadFile('src/static/ikea/ikea-device-selector.html');
     }
 
     if (action === "on" && ikeaOnline === true) {

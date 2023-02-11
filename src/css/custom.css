@@ -176,3 +176,8 @@ nav {
     filter: blur(0px);
     transition: ease 0.25s;
 }
+
+.table-devices-selector-style {
+    background-color: #121212;
+    border: 2px solid #404040;
+}
