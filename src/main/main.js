@@ -46,6 +46,7 @@ let ikeaPSK = userConfig.get('Settings.ikeaSettings.psk');
 
 let Govee;
 let govee;
+let goveeInitialized = false;
 
 let analyticsPreference = userConfig.get('Settings.advancedSettings.analytics')
 const APIURL = "https://api.joost.systems/api/v2"
@@ -815,7 +816,7 @@ setInterval(async () => {
 }, 5000);
 
 async function sendAllAPIStatus() {
-    if(!goveeDisabled){
+    if(!goveeDisabled && goveeInitialized){
         goveeOnline = govee.devicesArray.length > 0;
     } else {
         goveeOnline = false;
@@ -905,8 +906,13 @@ async function discordRPC(){
 }
 
 async function goveeInitialize() {
-    Govee = require("govee-lan-control");
-    govee = new Govee.default();
+    try {
+        Govee = require("govee-lan-control");
+        govee = new Govee.default();
+        goveeInitialized = true;
+    } catch (e) {
+        goveeInitialized = false;
+    }
     govee.on("deviceAdded", (device) => {
         if (debugPreference) {
             win.webContents.send('log', "Govee device found: " + device.model);
@@ -1941,6 +1947,7 @@ async function sendAnalytics() {
 }
 
 function reloadFromConfig(){
+    return;
     const webServerDisableOld = webServerDisabled;
     const goveeDisableOld = goveeDisabled;
     const ikeaDisableOld = ikeaDisabled;
