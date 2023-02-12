@@ -2,11 +2,8 @@ const { ipcRenderer } = require('electron');
 
 $(function() {
     ipcRenderer.on('hueAllInformation', (event, arg) => {
-        const hueSelectedDevices = arg.hueSelectedDevices;
+        const hueSelectedDevices = arg.hueSelectedDevices
         const hueDeviceInformation = arg.deviceInformation;
-
-        console.log(hueDeviceInformation);
-        console.log(hueSelectedDevices);
 
         hueDeviceInformation.forEach((device) => {
             const deviceName = device.name;
@@ -60,7 +57,7 @@ $(function() {
             // get the device ID
             const deviceID = device
             // get the table
-            const table = document.getElementById('hue-device-table');
+            const table = document.getElementById("hue-device-table");
             // get the rows
             const rows = table.getElementsByTagName('tr');
             // loop through the rows
@@ -101,7 +98,7 @@ function saveSelectedDevices() {
         // get the device ID
         const deviceID = deviceIDCell.innerHTML;
         // get the checkbox cell
-        const checkboxCell = cells[4];
+        const checkboxCell = cells[3];
         // get the checkbox input
         const checkboxInput = checkboxCell.getElementsByTagName('input')[0];
         // check if the checkbox is checked

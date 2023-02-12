@@ -53,6 +53,7 @@ let analyticsSent = false;
 
 let updateChannel = userConfig.get('Settings.advancedSettings.updateChannel')
 autoUpdater.channel = updateChannel;
+autoUpdater.autoInstallOnAppQuit = false;
 const updateURL = APIURL + "/github/repos/JustJoostNL/f1mv-lights-integration/releases"
 
 let userBrightness = parseInt(userConfig.get('Settings.generalSettings.defaultBrightness'))
@@ -1242,10 +1243,11 @@ async function hueInitialize() {
         win.webContents.send('toaster', "No Hue bridges found");
         hueOnline = false;
     } else {
+        const hueBridgeIP = hueApi[0].ipaddress;
         hueOnline = true;
-        hueClient = await hue.v3.api.createLocal(hueApi[0].ipaddress).connect();
+        hueClient = await hue.v3.api.createLocal(hueBridgeIP).connect();
         // toast that the bridge is found + IP
-        win.webContents.send('toaster', "Hue bridge found at: " + hueApi[0].ipaddress);
+        win.webContents.send('toaster', "Hue bridge found at: " + hueBridgeIP);
 
         const appName = "F1MV-Lights-Integration";
         const deviceName = "DeviceName";
@@ -1268,7 +1270,7 @@ async function hueInitialize() {
                 token = userConfig.get('Settings.hueSettings.token');
             }
 
-            authHueApi = await hue.v3.api.createLocal(hueApi[0].ipaddress).connect(token);
+            authHueApi = await hue.v3.api.createLocal(hueBridgeIP).connect(token);
 
             hueLights = await authHueApi.lights.getAll();
 
@@ -1301,12 +1303,12 @@ async function hueInitialize() {
 
 async function hueControl(r, g, b, brightness, action) {
     brightness = Math.round((brightness / 100) * 254);
-
     if (!hueDisabled && hueOnline) {
         if (action === "getDevices") {
             if (hueLights === null || hueLights === undefined) {
                 win.webContents.send('toaster', "No Hue lights found or an error occurred.");
             } else {
+                hueLights = await authHueApi.lights.getAll();
                 let deviceInformation = [];
                 let allInformation = [];
                 hueLights.forEach((light) => {
@@ -1320,10 +1322,10 @@ async function hueControl(r, g, b, brightness, action) {
                     });
                 });
                 const hueSelectedDevices = userConfig.get('Settings.hueSettings.deviceIDs');
-                allInformation.push({
+                allInformation = {
                     deviceInformation: deviceInformation,
-                    hueSelectedDevices: hueSelectedDevices
-                });
+                    hueSelectedDevices: hueSelectedDevices,
+                };
 
                 const hueDeviceSelectorWin = new BrowserWindow({
                     width: 1200,
@@ -1344,6 +1346,7 @@ async function hueControl(r, g, b, brightness, action) {
 
         if (action === "refreshDevices"){
             hueLights = await authHueApi.lights.getAll();
+            win.webContents.send('toaster', "Hue lights refreshed, found " + hueLights.length + " lights");
         }
 
         const {
