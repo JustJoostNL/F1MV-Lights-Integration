@@ -12,7 +12,7 @@
     <script>
         const $ = jQuery = require("jquery");
         $(window).on('beforeunload', function() {
-            saveSelectedDevices();
+            saveSelectedEntertainmentZones();
         });
     </script>
     <title>F1MV-Lights-Integration</title>
@@ -25,7 +25,7 @@
     </div>
 </nav>
 <div class="container simulation">
-    <h2 class="simulation__title">Select Hue Devices</h2>
+    <h2 class="simulation__title">Select Hue Entertainment Zones</h2>
 </div>
 
 <!--start table with device name, id, and checkbox-->
@@ -33,13 +33,12 @@
     <table class="table-devices-selector-style">
         <thead>
         <tr>
-            <th style="color:white">Device Name</th>
-            <th style="color:white">Device ID</th>
-            <th style="color:white">Device State</th>
+            <th style="color:white">Zone Name</th>
+            <th style="color:white">Zone ID</th>
             <th style="color:white">Select</th>
         </tr>
         </thead>
-        <tbody id="hue-device-table">
+        <tbody id="hue-zone-table">
         <!-- start of table row -->
         </tbody>
     </table>
@@ -54,6 +53,6 @@
 
 
 <script src="../../renderer/materialize.min.js"></script>
-<script src="../../renderer/hue/rendererHueDeviceSelector.js"></script>
+<script src="../../renderer/hue/rendererHueEntertainmentZoneSelector.js"></script>
 </body>
 </html>

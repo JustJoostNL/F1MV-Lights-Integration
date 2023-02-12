@@ -107,7 +107,8 @@ let autoOff = userConfig.get('Settings.generalSettings.autoTurnOffLights')
 let nanoLeafDevices = userConfig.get('Settings.nanoLeafSettings.devices')
 let ikeaDevices = userConfig.get('Settings.ikeaSettings.deviceIDs');
 let yeelightIPs = userConfig.get('Settings.yeeLightSettings.deviceIPs');
-let hueLightIDsList = userConfig.get('Settings.hueSettings.deviceIDs');
+let hueSelectedDeviceIDs = userConfig.get('Settings.hueSettings.deviceIDs');
+let hueSelectedEntertainmentZonesIDs = userConfig.get('Settings.hueSettings.entertainmentZoneIDs');
 
 let openRGBPort = userConfig.get('Settings.openRGBSettings.openRGBServerPort');
 let openRGBIP = userConfig.get('Settings.openRGBSettings.openRGBServerIP');
@@ -452,6 +453,10 @@ ipcMain.on('select-hue-devices', async () => {
     win.webContents.send('toaster', 'Opening Hue device selection window...')
     await hueControl(0, 255, 0, userBrightness, "getDevices");
 })
+ipcMain.on('select-hue-entertainment-zones', async () => {
+    win.webContents.send('toaster', 'Opening Hue Entertainment Zone selection window...')
+    await hueControl(0, 255, 0, userBrightness, "getEntertainmentZones");
+})
 let canReceive = false;
 ipcMain.on('nanoLeaf', async (event, args) => {
     if(args === 'openWindow'){
@@ -477,6 +482,9 @@ ipcMain.on('ikeaSelectorSaveSelectedDevices', async (event, args) => {
 
 ipcMain.on('hueSelectorSaveSelectedDevices', async (event, args) => {
     userConfig.set('Settings.hueSettings.deviceIDs', args)
+})
+ipcMain.on('hueSelectorSaveSelectedEntertainmentZones', async (event, args) => {
+    userConfig.set('Settings.hueSettings.entertainmentZoneIDs', args)
 })
 
 ipcMain.on('saveConfig', (event, arg) => {
@@ -559,7 +567,7 @@ ipcMain.on('saveConfigColors', (event, arg) => {
 
 async function migrateConfig() {
     // if the config version is != 1 migrate the config
-    if (userConfig.get('version') !== 13) {
+    if (userConfig.get('version') !== 14) {
         setTimeout(() => {
             win.webContents.send('log', 'Migrating config...')
         }, 1500);
@@ -613,13 +621,14 @@ async function migrateConfig() {
                 "hueSettings": {
                     "hueDisable": oldConfig.Settings.hueSettings.hueDisable,
                     "deviceIDs": oldConfig.Settings.hueSettings.deviceIDs,
+                    "entertainmentZoneIDs": ["ENTERTAINMENT_ZONE_ID_HERE", "ENTERTAINMENT_ZONE_ID_HERE"],
                     "token": oldConfig.Settings.hueSettings.token
                 },
                 "ikeaSettings": {
                     "ikeaDisable": oldConfig.Settings.ikeaSettings.ikeaDisable,
                     "securityCode": oldConfig.Settings.ikeaSettings.securityCode,
-                    "identity": undefined,
-                    "psk": undefined,
+                    "identity": oldConfig.Settings.ikeaSettings.identity,
+                    "psk": oldConfig.Settings.ikeaSettings.psk,
                     "deviceIDs": oldConfig.Settings.ikeaSettings.deviceIDs
                 },
                 "goveeSettings": {
@@ -645,8 +654,8 @@ async function migrateConfig() {
                     "discordRPCDisable": oldConfig.Settings.discordSettings.discordRPCDisable,
                 },
                 "webServerSettings": {
-                    "webServerDisable": true,
-                    "webServerPort": 20202
+                    "webServerDisable": oldConfig.Settings.webServerSettings.webServerDisable,
+                    "webServerPort": oldConfig.Settings.webServerSettings.webServerPort,
                 },
                 "advancedSettings": {
                     "debugMode": oldConfig.Settings.advancedSettings.debugMode,
@@ -654,7 +663,7 @@ async function migrateConfig() {
                     "analytics": oldConfig.Settings.advancedSettings.analytics
                 }
             },
-            "version": 13
+            "version": 14
         }
         userConfig.clear();
         userConfig.set(newConfig);
@@ -821,7 +830,13 @@ async function sendAllAPIStatus() {
     } else {
         goveeOnline = false;
     }
-    nanoLeafOnline = false;
+    if (!nanoLeafDisabled) {
+        if (nanoLeafDevices.length > 0) {
+            nanoLeafOnline = true;
+        } else {
+            nanoLeafOnline = false;
+        }
+    }
     const statuses = [
         { name: 'ikea', online: ikeaOnline },
         { name: 'govee', online: goveeOnline },
@@ -1240,7 +1255,8 @@ async function yeelightControl(r, g, b, brightness, action) {
 const hue = require("node-hue-api");
 let hueApi;
 let hueClient;
-let hueLights;
+let hueAllLights;
+let hueEntertainmentZones;
 let createdUser;
 let authHueApi;
 let token;
@@ -1279,13 +1295,14 @@ async function hueInitialize() {
 
             authHueApi = await hue.v3.api.createLocal(hueBridgeIP).connect(token);
 
-            hueLights = await authHueApi.lights.getAll();
+            hueAllLights = await authHueApi.lights.getAll();
+            hueEntertainmentZones = await authHueApi.groups.getEntertainment();
 
-            if (hueLights !== undefined) {
+            if (hueAllLights !== undefined) {
                 if (debugPreference) {
-                    win.webContents.send('toaster', "Amount of Hue lights found: " + hueLights.length);
+                    win.webContents.send('toaster', "Amount of Hue lights found: " + hueAllLights.length);
                 }
-                hueLights.forEach((light) => {
+                hueAllLights.forEach((light) => {
                     if (debugPreference) {
                         win.webContents.send('log', "Hue light found: " + light.name);
                     }
@@ -1312,13 +1329,13 @@ async function hueControl(r, g, b, brightness, action) {
     brightness = Math.round((brightness / 100) * 254);
     if (!hueDisabled && hueOnline) {
         if (action === "getDevices") {
-            if (hueLights === null || hueLights === undefined) {
+            if (hueAllLights === null || hueAllLights === undefined) {
                 win.webContents.send('toaster', "No Hue lights found or an error occurred.");
             } else {
-                hueLights = await authHueApi.lights.getAll();
+                hueAllLights = await authHueApi.lights.getAll();
                 let deviceInformation = [];
                 let allInformation = [];
-                hueLights.forEach((light) => {
+                hueAllLights.forEach((light) => {
                     const name = light.name;
                     const id = light.id;
                     const state = light.state.on
@@ -1350,10 +1367,51 @@ async function hueControl(r, g, b, brightness, action) {
                 await hueDeviceSelectorWin.loadFile('src/static/hue/hue-device-selector.html');
             }
         }
+        if (action === "getEntertainmentZones") {
+            if (hueEntertainmentZones === null || hueEntertainmentZones === undefined) {
+                win.webContents.send('toaster', "No Hue entertainment zones found or an error occurred.");
+            } else {
+                hueEntertainmentZones = await authHueApi.groups.getEntertainment();
+                let entertainmentZoneInformation = [];
+                let allInformation = [];
+                hueEntertainmentZones.forEach((zone) => {
+                    const name = zone.name;
+                    const id = zone.id;
+                    entertainmentZoneInformation.push({
+                        name: name,
+                        id: id,
+                    });
+                });
+                const hueSelectedEntertainmentZones = userConfig.get('Settings.hueSettings.entertainmentZoneIDs');
+                allInformation = {
+                    entertainmentZoneInformation: entertainmentZoneInformation,
+                    hueSelectedEntertainmentZones: hueSelectedEntertainmentZones,
+                };
+
+                const hueEntertainmentZoneSelectorWin = new BrowserWindow({
+                    width: 1200,
+                    height: 600,
+                    webPreferences: {
+                        contextIsolation: false,
+                        nodeIntegration: true
+                    }
+                });
+                hueEntertainmentZoneSelectorWin.removeMenu();
+
+                hueEntertainmentZoneSelectorWin.webContents.on('did-finish-load', () => {
+                    hueEntertainmentZoneSelectorWin.webContents.send('hueAllInformation', allInformation);
+                });
+                await hueEntertainmentZoneSelectorWin.loadFile('src/static/hue/hue-entertainment-zone-selector.html');
+            }
+        }
 
         if (action === "refreshDevices"){
-            hueLights = await authHueApi.lights.getAll();
-            win.webContents.send('toaster', "Hue lights refreshed, found " + hueLights.length + " lights");
+            hueAllLights = await authHueApi.lights.getAll();
+            win.webContents.send('toaster', "Hue lights refreshed, found " + hueAllLights.length + " lights");
+        }
+        if (action === "refreshEntertainmentZones"){
+            hueEntertainmentZones = await authHueApi.groups.getEntertainment();
+            win.webContents.send('toaster', "Hue entertainment zones refreshed, found " + hueEntertainmentZones.length + " zones");
         }
 
         const {
@@ -1364,7 +1422,7 @@ async function hueControl(r, g, b, brightness, action) {
         const [h, s, v] = colorConvert.rgb.hsv([r, g, b]);
         const [hue, sat] = colorConvert.hsv.hsl([h, s, v]);
 
-        for (const light of hueLightIDsList) {
+        for (const light of hueSelectedDeviceIDs) {
             if (action === "on") {
                 // Set the brightness and color of the light
                 lightsOnCounter++;
@@ -1381,7 +1439,25 @@ async function hueControl(r, g, b, brightness, action) {
                 );
             }
         }
-    } else if (action === "getDevices" || action === "refreshDevices") {
+        for (const zoneID of hueSelectedEntertainmentZonesIDs) {
+            if (action === "on") {
+                // Set the brightness and color of the light
+                lightsOnCounter++;
+                await authHueApi.groups.setGroupState(zoneID, new LightState()
+                    .on(true)
+                    .bri(brightness)
+                    .sat(sat)
+                    .hue(hue)
+                );
+            } else if (action === "off") {
+                lightsOffCounter++;
+                await authHueApi.groups.setGroupState(zoneID, new LightState()
+                    .on(false)
+                );
+            }
+        }
+
+    } else if (action === "getDevices" || action === "refreshDevices" || action === "getEntertainmentZones" || action === "refreshEntertainmentZones") {
         win.webContents.send('toaster', "Hue is disabled or not connected.");
     }
 }
@@ -1947,7 +2023,6 @@ async function sendAnalytics() {
 }
 
 function reloadFromConfig(){
-    return;
     const webServerDisableOld = webServerDisabled;
     const goveeDisableOld = goveeDisabled;
     const ikeaDisableOld = ikeaDisabled;
@@ -1977,7 +2052,7 @@ function reloadFromConfig(){
     nanoLeafDevices = userConfig.get('Settings.nanoLeafSettings.devices')
     ikeaDevices = userConfig.get('Settings.ikeaSettings.deviceIDs');
     yeelightIPs = userConfig.get('Settings.yeeLightSettings.deviceIPs');
-    hueLightIDsList = userConfig.get('Settings.hueSettings.deviceIDs');
+    hueSelectedDeviceIDs = userConfig.get('Settings.hueSettings.deviceIDs');
     openRGBPort = userConfig.get('Settings.openRGBSettings.openRGBServerPort');
     openRGBIP = userConfig.get('Settings.openRGBSettings.openRGBServerIP');
     streamDeckDisabled = userConfig.get('Settings.streamDeckSettings.streamDeckDisable');

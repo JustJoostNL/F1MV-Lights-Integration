@@ -57,6 +57,7 @@ const config = {
                 {
                     hueDisable: true,
                     deviceIDs: ["DEVICE_ID_HERE", "DEVICE_ID_HERE"],
+                    entertainmentZoneIDs: ["ENTERTAINMENT_ZONE_ID_HERE", "ENTERTAINMENT_ZONE_ID_HERE"],
                     token: undefined
                 },
 
@@ -143,7 +144,7 @@ const config = {
                 }
         },
         // do not change this version!
-        version: 13,
+        version: 14,
     devConfig:
         {
             autoStartDevTools: false

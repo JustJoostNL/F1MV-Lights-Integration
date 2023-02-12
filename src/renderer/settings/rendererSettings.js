@@ -161,6 +161,10 @@ function hueSelectDevices() {
     ipcRenderer.send('select-hue-devices')
 }
 
+function hueSelectEntertainmentZones(){
+    ipcRenderer.send('select-hue-entertainment-zones')
+}
+
 function ikeaSelectDevices() {
     ipcRenderer.send('ikea-select-devices')
 }

@@ -71,7 +71,7 @@ $(function() {
                 // check if the device ID in the cell is the same as the device ID we are looking for
                 if (deviceIDInCell === deviceID) {
                     // get the checkbox cell
-                    const checkboxCell = cells[4];
+                    const checkboxCell = cells[3];
                     // get the checkbox input
                     const checkboxInput = checkboxCell.getElementsByTagName('input')[0];
                     // check the checkbox
