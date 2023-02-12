@@ -820,6 +820,11 @@ async function sendAllAPIStatus() {
     } else {
         goveeOnline = false;
     }
+    if(!nanoLeafDisabled){
+        nanoLeafOnline = nanoLeafDevices.length > 0;
+    } else {
+        nanoLeafOnline = false;
+    }
     const statuses = [
         { name: 'ikea', online: ikeaOnline },
         { name: 'govee', online: goveeOnline },
@@ -827,7 +832,7 @@ async function sendAllAPIStatus() {
         { name: 'openRGB', online: openRGBOnline },
         { name: 'yeelight', online: !yeelightDisabled },
         { name: 'streamDeck', online: streamDeckOnline },
-        { name: 'nanoLeaf', online: nanoLeafDevices.length > 0 },
+        { name: 'nanoLeaf', online: nanoLeafOnline},
         { name: 'f1mv', online: f1mvAPIOnline },
         { name: 'f1tv', online: f1LiveSession },
         { name: 'update', online: updateAPIOnline },

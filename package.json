@@ -1,6 +1,6 @@
 {
   "name": "F1MV-Lights-Integration",
-  "version": "1.1.3-beta.3",
+  "version": "1.1.3-beta.4",
   "description": "The best way to connect your smart home lights to your F1MV.",
   "author": "JustJoostNL",
   "main": "src/main/main.js",
@@ -35,7 +35,7 @@
     "yeelight.io": "^1.1.7"
   },
   "devDependencies": {
-    "electron": "^22.1.0",
-    "electron-builder": "^24.0.0-alpha.9"
+    "electron": "^23.0.0",
+    "electron-builder": "^24.0.0-alpha.11"
   }
 }
