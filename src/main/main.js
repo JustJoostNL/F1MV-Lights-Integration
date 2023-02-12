@@ -820,11 +820,7 @@ async function sendAllAPIStatus() {
     } else {
         goveeOnline = false;
     }
-    if(!nanoLeafDisabled){
-        nanoLeafOnline = nanoLeafDevices.length > 0;
-    } else {
-        nanoLeafOnline = false;
-    }
+    nanoLeafOnline = false;
     const statuses = [
         { name: 'ikea', online: ikeaOnline },
         { name: 'govee', online: goveeOnline },
