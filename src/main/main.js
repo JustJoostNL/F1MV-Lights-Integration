@@ -1927,7 +1927,7 @@ async function checkMiscAPIS() {
     }
 
 
-    const liveSessionCheckURL = APIURL + "/f1tv/checklivesession";
+    const liveSessionCheckURL = APIURL + "/f1tv/live-session"
     const liveSessionRes = await fetch(liveSessionCheckURL)
     const liveSessionData = await liveSessionRes.json()
     f1LiveSession = liveSessionData.liveSessionFound === true;
