@@ -56,8 +56,8 @@ const config = {
             hueSettings:
                 {
                     hueDisable: true,
-                    deviceIDs: ["DEVICE_ID_HERE", "DEVICE_ID_HERE"],
-                    entertainmentZoneIDs: ["ENTERTAINMENT_ZONE_ID_HERE", "ENTERTAINMENT_ZONE_ID_HERE"],
+                    deviceIDs: [],
+                    entertainmentZoneIDs: [],
                     token: undefined
                 },
 
@@ -72,7 +72,7 @@ const config = {
                     // you don't need to change this
                     psk: undefined,
                     // You can get these values by clicking "Settings" in the app and then click "Get Device IDs"
-                    deviceIDs: ["DEVICE_ID_HERE", "DEVICE_ID_HERE"],
+                    deviceIDs: [],
                 },
 
             goveeSettings:
@@ -104,7 +104,7 @@ const config = {
                     yeeLightDisable: true,
 
                     // Put the IP address of your Yeelight device(s) here, if you have multiple, separate them with a comma (Eg: "IP_ADDRESS_HERE-1", "IP_ADDRESS_HERE-2").
-                    deviceIPs: ["IP_ADDRESS_HERE"],
+                    deviceIPs: [],
                 },
 
             streamDeckSettings:

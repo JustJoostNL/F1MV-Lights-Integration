@@ -1418,10 +1418,6 @@ async function hueControl(r, g, b, brightness, action) {
             LightState
         } = require('node-hue-api').v3.lightStates;
 
-        // Convert the RGB values to hue-saturation values
-        const [h, s, v] = colorConvert.rgb.hsv([r, g, b]);
-        const [hue, sat] = colorConvert.hsv.hsl([h, s, v]);
-
         for (const light of hueSelectedDeviceIDs) {
             if (action === "on") {
                 // Set the brightness and color of the light
@@ -1429,8 +1425,7 @@ async function hueControl(r, g, b, brightness, action) {
                 await authHueApi.lights.setLightState(light, new LightState()
                     .on(true)
                     .bri(brightness)
-                    .sat(sat)
-                    .hue(hue)
+                    .rgb(r, g, b)
                 );
             } else if (action === "off") {
                 lightsOffCounter++;
@@ -1446,8 +1441,7 @@ async function hueControl(r, g, b, brightness, action) {
                 await authHueApi.groups.setGroupState(zoneID, new LightState()
                     .on(true)
                     .bri(brightness)
-                    .sat(sat)
-                    .hue(hue)
+                    .rgb(r, g, b)
                 );
             } else if (action === "off") {
                 lightsOffCounter++;
