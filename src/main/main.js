@@ -1457,6 +1457,7 @@ async function hueControl(r, g, b, brightness, action) {
         for (const zoneID of hueSelectedEntertainmentZonesIDs) {
             const hsl = colorTranslator.ColorTranslator.toHSL('rgb(' + r + ',' + g + ',' + b + ')');
             const hueValue = hsl.split('(')[1].split(',')[0];
+            const saturationValue = hsl.split('(')[1].split(',')[1];
             if (action === "on") {
                 lightsOnCounter++;
                 if (debugPreference) {
@@ -1466,6 +1467,7 @@ async function hueControl(r, g, b, brightness, action) {
                     .on(true)
                     .bri(brightness)
                     .hue(hueValue)
+                    .sat(saturationValue)
                 );
             } else if (action === "off") {
                 lightsOffCounter++;
