@@ -1278,6 +1278,10 @@ async function hueInitialize() {
             win.webContents.send('toaster', "Hue bridge found at: " + bridgeIP);
             hueOnline = true;
         }
+    } else {
+        bridgeIP = userConfig.get('Settings.hueSettings.hueBridgeIP');
+        win.webContents.send('toaster', "Hue bridge found at: " + bridgeIP);
+        hueOnline = true;
     }
     if (hueOnline) {
         hueClient = await hue.v3.api.createLocal(bridgeIP).connect();
