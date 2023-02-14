@@ -11,7 +11,7 @@ const electronLocalShortcut = require('electron-localshortcut');
 const {
     autoUpdater
 } = require("electron-updater")
-const colorConvert = require("color-convert");
+const colorTranslator = require('colortranslator');
 const process = require('process');
 const configDefault = require("../config/config");
 const Store = require('electron-store');
@@ -109,6 +109,8 @@ let ikeaDevices = userConfig.get('Settings.ikeaSettings.deviceIDs');
 let yeelightIPs = userConfig.get('Settings.yeeLightSettings.deviceIPs');
 let hueSelectedDeviceIDs = userConfig.get('Settings.hueSettings.deviceIDs');
 let hueSelectedEntertainmentZonesIDs = userConfig.get('Settings.hueSettings.entertainmentZoneIDs');
+
+let hueBridgeIP = userConfig.get('Settings.hueSettings.hueBridgeIP');
 
 let openRGBPort = userConfig.get('Settings.openRGBSettings.openRGBServerPort');
 let openRGBIP = userConfig.get('Settings.openRGBSettings.openRGBServerIP');
@@ -567,7 +569,7 @@ ipcMain.on('saveConfigColors', (event, arg) => {
 
 async function migrateConfig() {
     // if the config version is != 1 migrate the config
-    if (userConfig.get('version') !== 14) {
+    if (userConfig.get('version') !== 15) {
         setTimeout(() => {
             win.webContents.send('log', 'Migrating config...')
         }, 1500);
@@ -620,8 +622,9 @@ async function migrateConfig() {
                 },
                 "hueSettings": {
                     "hueDisable": oldConfig.Settings.hueSettings.hueDisable,
+                    "hueBridgeIP": undefined,
                     "deviceIDs": oldConfig.Settings.hueSettings.deviceIDs,
-                    "entertainmentZoneIDs": ["ENTERTAINMENT_ZONE_ID_HERE", "ENTERTAINMENT_ZONE_ID_HERE"],
+                    "entertainmentZoneIDs": oldConfig.Settings.hueSettings.entertainmentZoneIDs,
                     "token": oldConfig.Settings.hueSettings.token
                 },
                 "ikeaSettings": {
@@ -663,7 +666,7 @@ async function migrateConfig() {
                     "analytics": oldConfig.Settings.advancedSettings.analytics
                 }
             },
-            "version": 14
+            "version": 15
         }
         userConfig.clear();
         userConfig.set(newConfig);
@@ -1142,16 +1145,17 @@ async function ikeaControl(r, g, b, brightness, action, flag) {
 
     if (action === "on" && ikeaOnline === true) {
         lightsOnCounter++;
-        let hue;
+        let hueValue;
         if (debugPreference) {
             win.webContents.send('log', "Turning on the Ikea lights...");
         }
 
         // convert rgb to hsl
-        const hsl = colorConvert.rgb.hsl(r, g, b);
-        hue = hsl[0];
+        const hsl = colorTranslator.ColorTranslator.toHSL('rgb(' + r + ',' + g + ',' + b + ')');
+        // it returns 'hsl(0, 0%, 0%)' so we need to split it
+        hueValue = hsl.split('(')[1].split(',')[0];
         if (debugPreference) {
-            win.webContents.send('log', "The converted hue value from the given RGB value for Ikea RGB lights is: " + hue);
+            win.webContents.send('log', "The converted hue value from the given RGB value for Ikea RGB lights is: " + hueValue);
         }
 
         colorDevices.forEach(device => {
@@ -1160,7 +1164,7 @@ async function ikeaControl(r, g, b, brightness, action, flag) {
             }
             device = allIkeaDevices[device].lightList[0];
             device.toggle(true);
-            device.setHue(hue, 0);
+            device.setHue(hueValue, 0);
             device.setBrightness(brightness, 0);
         });
         whiteDevices.forEach(device => {
@@ -1261,16 +1265,22 @@ let createdUser;
 let authHueApi;
 let token;
 async function hueInitialize() {
-    hueApi = await hue.discovery.nupnpSearch();
-    if (hueApi.length === 0) {
-        win.webContents.send('toaster', "No Hue bridges found");
-        hueOnline = false;
-    } else {
-        const hueBridgeIP = hueApi[0].ipaddress;
-        hueOnline = true;
-        hueClient = await hue.v3.api.createLocal(hueBridgeIP).connect();
-        // toast that the bridge is found + IP
-        win.webContents.send('toaster', "Hue bridge found at: " + hueBridgeIP);
+    let bridgeIP = userConfig.get('Settings.hueSettings.hueBridgeIP');
+    if (bridgeIP === undefined || bridgeIP === null || bridgeIP === "") {
+        win.webContents.send('toaster', "No Hue bridge IP found, searching for one...");
+        hueApi = await hue.discovery.nupnpSearch();
+        if (hueApi.length === 0) {
+            win.webContents.send('toaster', "No Hue bridges found");
+            hueOnline = false;
+        } else {
+            bridgeIP = hueApi[0].ipaddress;
+            userConfig.set('Settings.hueSettings.hueBridgeIP', bridgeIP);
+            win.webContents.send('toaster', "Hue bridge found at: " + bridgeIP);
+            hueOnline = true;
+        }
+    }
+    if (hueOnline) {
+        hueClient = await hue.v3.api.createLocal(bridgeIP).connect();
 
         const appName = "F1MV-Lights-Integration";
         const deviceName = "DeviceName";
@@ -1293,7 +1303,7 @@ async function hueInitialize() {
                 token = userConfig.get('Settings.hueSettings.token');
             }
 
-            authHueApi = await hue.v3.api.createLocal(hueBridgeIP).connect(token);
+            authHueApi = await hue.v3.api.createLocal(bridgeIP).connect(token);
 
             hueAllLights = await authHueApi.lights.getAll();
             hueEntertainmentZones = await authHueApi.groups.getEntertainment();
@@ -1321,7 +1331,6 @@ async function hueInitialize() {
                 win.webContents.send('toaster', `Unexpected Error: ${err.message}`);
             }
         }
-
     }
 }
 
@@ -1415,13 +1424,17 @@ async function hueControl(r, g, b, brightness, action) {
         }
 
         const {
-            LightState
+            LightState,
+            GroupLightState
         } = require('node-hue-api').v3.lightStates;
+
 
         for (const light of hueSelectedDeviceIDs) {
             if (action === "on") {
-                // Set the brightness and color of the light
                 lightsOnCounter++;
+                if (debugPreference) {
+                    win.webContents.send('log', "Turning on Hue light with ID: " + light);
+                }
                 await authHueApi.lights.setLightState(light, new LightState()
                     .on(true)
                     .bri(brightness)
@@ -1429,23 +1442,33 @@ async function hueControl(r, g, b, brightness, action) {
                 );
             } else if (action === "off") {
                 lightsOffCounter++;
+                if (debugPreference) {
+                    win.webContents.send('log', "Turning off Hue light with ID: " + light);
+                }
                 await authHueApi.lights.setLightState(light, new LightState()
                     .on(false)
                 );
             }
         }
         for (const zoneID of hueSelectedEntertainmentZonesIDs) {
+            const hsl = colorTranslator.ColorTranslator.toHSL('rgb(' + r + ',' + g + ',' + b + ')');
+            const hueValue = hsl.split('(')[1].split(',')[0];
             if (action === "on") {
-                // Set the brightness and color of the light
                 lightsOnCounter++;
-                await authHueApi.groups.setGroupState(zoneID, new LightState()
+                if (debugPreference) {
+                    win.webContents.send('log', "Turning on Hue entertainment zone with ID: " + zoneID);
+                }
+                await authHueApi.groups.setGroupState(zoneID, new GroupLightState()
                     .on(true)
                     .bri(brightness)
-                    .rgb(r, g, b)
+                    .hue(hueValue)
                 );
             } else if (action === "off") {
                 lightsOffCounter++;
-                await authHueApi.groups.setGroupState(zoneID, new LightState()
+                if (debugPreference) {
+                    win.webContents.send('log', "Turning off Hue entertainment zone with ID: " + zoneID);
+                }
+                await authHueApi.groups.setGroupState(zoneID, new GroupLightState()
                     .on(false)
                 );
             }
@@ -2047,6 +2070,8 @@ function reloadFromConfig(){
     ikeaDevices = userConfig.get('Settings.ikeaSettings.deviceIDs');
     yeelightIPs = userConfig.get('Settings.yeeLightSettings.deviceIPs');
     hueSelectedDeviceIDs = userConfig.get('Settings.hueSettings.deviceIDs');
+    hueBridgeIP = userConfig.get('Settings.hueSettings.hueBridgeIP');
+    hueSelectedEntertainmentZonesIDs = userConfig.get('Settings.hueSettings.entertainmentZoneIDs');
     openRGBPort = userConfig.get('Settings.openRGBSettings.openRGBServerPort');
     openRGBIP = userConfig.get('Settings.openRGBSettings.openRGBServerIP');
     streamDeckDisabled = userConfig.get('Settings.streamDeckSettings.streamDeckDisable');

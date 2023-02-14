@@ -56,6 +56,7 @@ const config = {
             hueSettings:
                 {
                     hueDisable: true,
+                    hueBridgeIP: undefined,
                     deviceIDs: [],
                     entertainmentZoneIDs: [],
                     token: undefined
@@ -144,7 +145,7 @@ const config = {
                 }
         },
         // do not change this version!
-        version: 14,
+        version: 15,
     devConfig:
         {
             autoStartDevTools: false
