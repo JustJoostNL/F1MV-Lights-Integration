@@ -1458,8 +1458,10 @@ async function hueControl(r, g, b, brightness, action) {
             // we need to convert the RGB values to a hue and saturation value
             const colorConverter = require('color-convert');
             // now we save the hue and saturation values
-            const hueValue = colorConverter.rgb.hsv(r, g, b)[0];
-            const saturationValue = colorConverter.rgb.hsv(r, g, b)[1];
+            // the maximum hue value is 65535
+            // the maximum saturation value is 254
+            const hueValue = Math.round(colorConverter.rgb.hsv(r, g, b)[0] * (65535 / 360));
+            const saturationValue = Math.round(colorConverter.rgb.hsv(r, g, b)[1] * (254 / 100));
             if (debugPreference) {
                 win.webContents.send('log', "The converted hue value for Philips Hue is: " + hueValue);
                 win.webContents.send('log', "The converted saturation value for Philips Hue is: " + saturationValue);
