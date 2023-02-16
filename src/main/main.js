@@ -1455,8 +1455,15 @@ async function hueControl(r, g, b, brightness, action) {
             }
         }
         for (const zoneID of hueSelectedEntertainmentZonesIDs) {
-            const hsl = colorTranslator.ColorTranslator.toHSL('rgb(' + r + ',' + g + ',' + b + ')');
-            const hueValue = hsl.split('(')[1].split(',')[0];
+            // we need to convert the RGB values to a hue and saturation value
+            const colorConverter = require('color-convert');
+            // now we save the hue and saturation values
+            const hueValue = colorConverter.rgb.hsv(r, g, b)[0];
+            const saturationValue = colorConverter.rgb.hsv(r, g, b)[1];
+            if (debugPreference) {
+                win.webContents.send('log', "The converted hue value for Philips Hue is: " + hueValue);
+                win.webContents.send('log', "The converted saturation value for Philips Hue is: " + saturationValue);
+            }
             if (action === "on") {
                 lightsOnCounter++;
                 if (debugPreference) {
@@ -1466,7 +1473,7 @@ async function hueControl(r, g, b, brightness, action) {
                     .on(true)
                     .bri(brightness)
                     .hue(hueValue)
-                    .sat(254)
+                    .sat(saturationValue)
                 );
             } else if (action === "off") {
                 lightsOffCounter++;
