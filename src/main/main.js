@@ -1443,6 +1443,7 @@ async function hueControl(r, g, b, brightness, action) {
                     .on(true)
                     .bri(brightness)
                     .rgb(r, g, b)
+                    .transitionInstant()
                 );
             } else if (action === "off") {
                 lightsOffCounter++;
@@ -1451,6 +1452,7 @@ async function hueControl(r, g, b, brightness, action) {
                 }
                 await authHueApi.lights.setLightState(light, new LightState()
                     .on(false)
+                    .transitionInstant()
                 );
             }
         }
@@ -1476,6 +1478,7 @@ async function hueControl(r, g, b, brightness, action) {
                     .bri(brightness)
                     .hue(hueValue)
                     .sat(saturationValue)
+                    .transitionInstant()
                 );
             } else if (action === "off") {
                 lightsOffCounter++;
@@ -1484,6 +1487,7 @@ async function hueControl(r, g, b, brightness, action) {
                 }
                 await authHueApi.groups.setGroupState(zoneID, new GroupLightState()
                     .on(false)
+                    .transitionInstant()
                 );
             }
         }
