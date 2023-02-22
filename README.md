@@ -86,8 +86,7 @@ Getting started is very easy. Just follow the steps below. If you have any quest
 
 ### Prerequisites
 
-- You have [NodeJS](https://nodejs.org/en/) installed on your computer
-- You have [MultiViewer For F1](https://beta.f1mv.com) installed
+- You have [MultiViewer For F1](https://multiviewer.app) installed
 
 #### Lights
 - You also need one or multiple lights of the following brands:
