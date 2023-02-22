@@ -2,7 +2,7 @@
     "name": "F1MV Lights Integration",
     "description": "The best way to connect your lights to a Formula 1 session.",
     "author": "JustJoostNL",
-    "image": "https://github.com/JustJoostNL/F1MV-Lights-Integration/blob/master/build/icon-bannerversion.png?raw=true",
+    "image": "https://github.com/JustJoostNL/F1MV-Lights-Integration/blob/master/icons/icon-bannerversion.png?raw=true",
     "endWith": {
         "windows": {
             "x64": ".exe"
