@@ -4,7 +4,7 @@
     "author": "JustJoostNL",
     "image": "https://github.com/JustJoostNL/F1MV-Lights-Integration/blob/master/icons/icon-bannerversion.png?raw=true",
     "endWith": {
-        "windows": {
+        "win32": {
             "x64": ".exe"
         },
         "linux": {
