@@ -12,9 +12,9 @@
     "postinstall": "electron-builder install-app-deps"
   },
   "dependencies": {
-    "@elgato-stream-deck/node": "^5.7.0",
-    "@sentry/electron": "^4.2.0",
-    "@sentry/tracing": "^7.29.0",
+    "@elgato-stream-deck/node": "^5.7.2",
+    "@sentry/electron": "^4.3.0",
+    "@sentry/tracing": "^7.38.0",
     "color-convert": "^2.0.1",
     "colortranslator": "^1.10.2",
     "cors": "^2.8.5",
@@ -26,13 +26,13 @@
     "govee-lan-control": "^2.1.0",
     "jquery": "^3.6.3",
     "nanoleaves": "github:erictrinh/nanoleaves",
-    "node-fetch": "^2.6.8",
+    "node-fetch": "^2.6.9",
     "node-hue-api": "^5.0.0-beta.15",
     "node-persist": "^3.1.0",
     "node-tradfri-client": "3.2.0",
     "openrgb-sdk": "^0.5.2",
     "process": "^0.11.10",
-    "socket.io": "^4.5.4",
+    "socket.io": "^4.6.1",
     "yeelight.io": "^1.1.7"
   },
   "devDependencies": {

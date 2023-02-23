@@ -26,7 +26,19 @@ const Tradfri = require("node-tradfri-client");
 
 let debugPreference = userConfig.get('Settings.advancedSettings.debugMode');
 let f1mvURL = userConfig.get('Settings.MultiViewerForF1Settings.liveTimingURL') + '/api/graphql'
-let f1mvCheckURL = userConfig.get('Settings.MultiViewerForF1Settings.liveTimingURL') + '/api/v1/live-timing/Heartbeat'
+let f1mvCheckURL = userConfig.get('Settings.MultiViewerForF1Settings.liveTimingURL');
+function createF1MVURL() {
+// remove a trailing slash if it exists
+    if (f1mvCheckURL.endsWith('/')) {
+        f1mvCheckURL = f1mvCheckURL.slice(0, -1);
+    }
+// localhost fix
+    if (f1mvCheckURL === 'http://localhost:10101') {
+        f1mvCheckURL = 'http://127.0.0.1:10101'
+    }
+    f1mvCheckURL = f1mvCheckURL + '/api/v1/live-timing/Heartbeat'
+}
+createF1MVURL();
 let ikeaDisabled = userConfig.get('Settings.ikeaSettings.ikeaDisable')
 let goveeDisabled = userConfig.get('Settings.goveeSettings.goveeDisable')
 let yeelightDisabled = userConfig.get('Settings.yeeLightSettings.yeeLightDisable')
@@ -1904,7 +1916,7 @@ async function webServerInitialize() {
         res.send(`
       <html lang="en">
         <body style="background-color: black;">
-          <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.5.4/socket.io.js"></script>
+          <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.6.1/socket.io.js"></script>
           <script>
             const socket = io();
             socket.on('color-change', data => {
@@ -1950,7 +1962,6 @@ async function checkMiscAPIS() {
         });
 
     try {
-
         const response = await fetch(f1mvCheckURL);
         const data = await response.json();
         f1mvAPIOnline = data.error !== 'No data found, do you have live timing running?';
@@ -2066,7 +2077,7 @@ function reloadFromConfig(){
     win.webContents.send('log', "Reloading from config..");
     debugPreference = userConfig.get('Settings.advancedSettings.debugMode');
     f1mvURL = userConfig.get('Settings.MultiViewerForF1Settings.liveTimingURL') + '/api/graphql'
-    f1mvCheckURL = userConfig.get('Settings.MultiViewerForF1Settings.liveTimingURL') + '/api/v1/live-timing/Heartbeat'
+    f1mvCheckURL = userConfig.get('Settings.MultiViewerForF1Settings.liveTimingURL')
     ikeaDisabled = userConfig.get('Settings.ikeaSettings.ikeaDisable')
     goveeDisabled = userConfig.get('Settings.goveeSettings.goveeDisable')
     yeelightDisabled = userConfig.get('Settings.yeeLightSettings.yeeLightDisable')
@@ -2100,6 +2111,8 @@ function reloadFromConfig(){
 
     updateChannel = userConfig.get('Settings.advancedSettings.updateChannel')
     autoUpdater.channel = updateChannel;
+
+    createF1MVURL();
 
     win.webContents.send('log', "Reloaded from config!");
     if (!ikeaDisabled  && ikeaOnline) {
