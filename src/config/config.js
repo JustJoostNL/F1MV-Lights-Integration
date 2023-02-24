@@ -117,7 +117,7 @@ const config = {
             discordSettings:
                 {
                     // set this to true if you don't want to use Discord RPC
-                    discordRPCDisable: true,
+                    discordRPCDisable: false,
                 },
 
             webServerSettings:
@@ -145,7 +145,7 @@ const config = {
                 }
         },
         // do not change this version!
-        version: 15,
+        version: 16,
     devConfig:
         {
             autoStartDevTools: false

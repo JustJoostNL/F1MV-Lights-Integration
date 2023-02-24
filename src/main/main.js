@@ -293,7 +293,6 @@ ipcMain.on('open-config', () => {
     win.webContents.send('log', "Opening config file...");
     userConfig.openInEditor()
 })
-
 ipcMain.on('simulate', (event, arg) => {
     simulateFlag(arg).then(r => {
         if (alwaysFalse) {
@@ -302,7 +301,6 @@ ipcMain.on('simulate', (event, arg) => {
     })
 
 })
-
 ipcMain.on('toggle-devtools', () => {
     win.webContents.toggleDevTools()
 })
@@ -319,7 +317,6 @@ ipcMain.on('toggle-logs', () => {
         win.webContents.send('log', 'Log visibility toggled off.')
     }
 })
-
 ipcMain.on('load-prefs', () => {
     // log pref:
     if(hideLogs){
@@ -333,7 +330,6 @@ ipcMain.on('load-prefs', () => {
         win.webContents.send('f1mv-check-html', false);
     }
 })
-
 ipcMain.on('toggle-debug', () => {
     if (debugPreference) {
         debugPreference = false;
@@ -345,46 +341,6 @@ ipcMain.on('toggle-debug', () => {
         win.webContents.send('log', 'Debug Mode Activated!')
     }
 })
-
-async function simulateFlag(arg) {
-    if (arg === 'Green') {
-        await controlAllLights(greenColor.r, greenColor.g, greenColor.b, userBrightness, "on", "green");
-        simulatedFlagCounter++
-    }
-    if (arg === 'Red') {
-        await controlAllLights(redColor.r, redColor.g, redColor.b, userBrightness, "on", "red");
-        simulatedFlagCounter++
-    }
-    if (arg === 'Yellow') {
-        await controlAllLights(yellowColor.r, yellowColor.g, yellowColor.b, userBrightness, "on", "yellow");
-        simulatedFlagCounter++
-    }
-    if (arg === 'SC') {
-        await controlAllLights(safetyCarColor.r, safetyCarColor.g, safetyCarColor.b, userBrightness, "on", "safetyCar");
-        simulatedFlagCounter++
-    }
-    if (arg === 'VSC') {
-        await controlAllLights(vscColor.r, vscColor.g, vscColor.b, userBrightness, "on", "vsc");
-        simulatedFlagCounter++
-    }
-    if (arg === 'vscEnding') {
-        await controlAllLights(vscEndingColor.r, vscEndingColor.g, vscEndingColor.b, userBrightness, "on", "vscEnding");
-        simulatedFlagCounter++
-    }
-    if (arg === 'alloff') {
-        await controlAllLights(0, 0, 0, 0, "off", "alloff");
-        simulatedFlagCounter++
-    }
-    if (arg === 'alloff') {
-        win.webContents.send('log', "Turned off all lights!")
-    } else if (arg !== 'vscEnding') {
-        win.webContents.send('log', "Simulated " + arg + "!")
-    }
-    if (arg === 'vscEnding') {
-        win.webContents.send('log', "Simulated VSC Ending!")
-    }
-}
-
 ipcMain.on('updatecheck', () => {
     noUpdateFound = false;
     autoUpdater.checkForUpdates().then(r => {
@@ -394,7 +350,6 @@ ipcMain.on('updatecheck', () => {
     })
     win.webContents.send('log', 'Checking for updates...')
 })
-
 ipcMain.on('test-button-dev', async () => {
     win.webContents.send('log', 'Running action mapped on test button...')
     // action here
@@ -410,7 +365,6 @@ ipcMain.on('send-analytics-button', async () => {
     win.webContents.send('log', 'Running send analytics code...')
     await sendAnalytics();
 })
-
 ipcMain.on('f1mv-check', () => {
     if (f1mvCheck) {
         f1mvCheck = false;
@@ -455,7 +409,13 @@ ipcMain.on('restart-app', () => {
     app.relaunch();
     app.exit(0);
 })
-
+ipcMain.on('link-openrgb', () => {
+    openRGBInitialize(true).then(r => {
+        if(alwaysFalse){
+            console.log(r);
+        }
+    });
+});
 ipcMain.on('linkHue', async () => {
     win.webContents.send('toaster', 'Searching for Hue bridge this may take a few seconds...')
     await hueInitialize();
@@ -490,18 +450,15 @@ ipcMain.on('nanoLeafDevice', async (event, args) => {
         canReceive = false;
     }
 })
-
 ipcMain.on('ikeaSelectorSaveSelectedDevices', async (event, args) => {
     userConfig.set('Settings.ikeaSettings.deviceIDs', args)
 })
-
 ipcMain.on('hueSelectorSaveSelectedDevices', async (event, args) => {
     userConfig.set('Settings.hueSettings.deviceIDs', args)
 })
 ipcMain.on('hueSelectorSaveSelectedEntertainmentZones', async (event, args) => {
     userConfig.set('Settings.hueSettings.entertainmentZoneIDs', args)
 })
-
 ipcMain.on('saveConfig', (event, arg) => {
     let deviceIPs = arg.deviceIPs;
     const {
@@ -526,9 +483,7 @@ ipcMain.on('saveConfig', (event, arg) => {
         debugMode,
     } = arg
 
-
     deviceIPs = deviceIPs.split(',');
-
 
     userConfig.set('Settings.generalSettings.defaultBrightness', parseInt(defaultBrightness));
     userConfig.set('Settings.generalSettings.autoTurnOffLights', autoTurnOffLights);
@@ -551,7 +506,6 @@ ipcMain.on('saveConfig', (event, arg) => {
     userConfig.set('Settings.advancedSettings.analytics', analytics);
     userConfig.set('Settings.advancedSettings.debugMode', debugMode);
 });
-
 ipcMain.on('saveConfigColors', (event, arg) => {
     const green = arg.green;
     const yellow = arg.yellow;
@@ -582,7 +536,7 @@ ipcMain.on('saveConfigColors', (event, arg) => {
 
 async function migrateConfig() {
     // if the config version is != 1 migrate the config
-    if (userConfig.get('version') !== 15) {
+    if (userConfig.get('version') !== 16) {
         setTimeout(() => {
             win.webContents.send('log', 'Migrating config...')
         }, 1500);
@@ -635,7 +589,7 @@ async function migrateConfig() {
                 },
                 "hueSettings": {
                     "hueDisable": oldConfig.Settings.hueSettings.hueDisable,
-                    "hueBridgeIP": undefined,
+                    "hueBridgeIP": oldConfig.Settings.hueSettings.hueBridgeIP,
                     "deviceIDs": oldConfig.Settings.hueSettings.deviceIDs,
                     "entertainmentZoneIDs": oldConfig.Settings.hueSettings.entertainmentZoneIDs,
                     "token": oldConfig.Settings.hueSettings.token
@@ -667,7 +621,7 @@ async function migrateConfig() {
                     "streamDeckDisable": oldConfig.Settings.streamDeckSettings.streamDeckDisable,
                 },
                 "discordSettings": {
-                    "discordRPCDisable": oldConfig.Settings.discordSettings.discordRPCDisable,
+                    "discordRPCDisable": false,
                 },
                 "webServerSettings": {
                     "webServerDisable": oldConfig.Settings.webServerSettings.webServerDisable,
@@ -679,7 +633,7 @@ async function migrateConfig() {
                     "analytics": oldConfig.Settings.advancedSettings.analytics
                 }
             },
-            "version": 15
+            "version": 16
         }
         userConfig.clear();
         userConfig.set(newConfig);
@@ -688,6 +642,7 @@ async function migrateConfig() {
         }, 1500);
     }
 }
+
 async function f1mvAPICall() {
     if (f1mvCheck) {
         try {
@@ -763,6 +718,20 @@ async function f1mvLightSync() {
     }
 }
 
+setTimeout(function () {
+    setInterval(function () {
+        if (BrowserWindow.getAllWindows().length > 0) {
+            if (f1mvCheck) {
+                f1mvLightSync().then(r => {
+                    if (alwaysFalse) {
+                        console.log(r)
+                    }
+                });
+            }
+        }
+    }, 300);
+}, 1000);
+
 async function controlAllLights(r, g, b, brightness, action, flag) {
     if (!goveeDisabled) {
         await goveeControl(r, g, b, brightness, action)
@@ -790,19 +759,80 @@ async function controlAllLights(r, g, b, brightness, action, flag) {
     }
 }
 
-setTimeout(function () {
-    setInterval(function () {
-        if (BrowserWindow.getAllWindows().length > 0) {
-            if (f1mvCheck) {
-                f1mvLightSync().then(r => {
-                    if (alwaysFalse) {
-                        console.log(r)
-                    }
-                });
-            }
+async function simulateFlag(arg) {
+    if (arg === 'Green') {
+        await controlAllLights(greenColor.r, greenColor.g, greenColor.b, userBrightness, "on", "green");
+        simulatedFlagCounter++
+    }
+    if (arg === 'Red') {
+        await controlAllLights(redColor.r, redColor.g, redColor.b, userBrightness, "on", "red");
+        simulatedFlagCounter++
+    }
+    if (arg === 'Yellow') {
+        await controlAllLights(yellowColor.r, yellowColor.g, yellowColor.b, userBrightness, "on", "yellow");
+        simulatedFlagCounter++
+    }
+    if (arg === 'SC') {
+        await controlAllLights(safetyCarColor.r, safetyCarColor.g, safetyCarColor.b, userBrightness, "on", "safetyCar");
+        simulatedFlagCounter++
+    }
+    if (arg === 'VSC') {
+        await controlAllLights(vscColor.r, vscColor.g, vscColor.b, userBrightness, "on", "vsc");
+        simulatedFlagCounter++
+    }
+    if (arg === 'vscEnding') {
+        await controlAllLights(vscEndingColor.r, vscEndingColor.g, vscEndingColor.b, userBrightness, "on", "vscEnding");
+        simulatedFlagCounter++
+    }
+    if (arg === 'alloff') {
+        await controlAllLights(0, 0, 0, 0, "off", "alloff");
+        simulatedFlagCounter++
+    }
+    if (arg === 'alloff') {
+        win.webContents.send('log', "Turned off all lights!")
+    } else if (arg !== 'vscEnding') {
+        win.webContents.send('log', "Simulated " + arg + "!")
+    }
+    if (arg === 'vscEnding') {
+        win.webContents.send('log', "Simulated VSC Ending!")
+    }
+}
+
+
+async function sendAllAPIStatus() {
+    if(!goveeDisabled && goveeInitialized){
+        goveeOnline = govee.devicesArray.length > 0;
+    } else {
+        goveeOnline = false;
+    }
+    if (!nanoLeafDisabled) {
+        // noinspection RedundantIfStatementJS
+        if (nanoLeafDevices.length > 0) {
+            nanoLeafOnline = true;
+        } else {
+            nanoLeafOnline = false;
         }
-    }, 300);
-}, 1000);
+    }
+    const statuses = [
+        { name: 'ikea', online: ikeaOnline },
+        { name: 'govee', online: goveeOnline },
+        { name: 'hue', online: hueOnline },
+        { name: 'openRGB', online: openRGBOnline },
+        { name: 'yeelight', online: !yeelightDisabled },
+        { name: 'streamDeck', online: streamDeckOnline },
+        { name: 'nanoLeaf', online: nanoLeafOnline},
+        { name: 'f1mv', online: f1mvAPIOnline },
+        { name: 'f1tv', online: f1LiveSession },
+        { name: 'update', online: updateAPIOnline },
+        { name: 'webServer', online: webServerOnline}
+    ];
+
+    for (const status of statuses) {
+        if (status.online) {
+            win.webContents.send(`${status.name}API`, 'online');
+        }
+    }
+}
 
 async function initIntegrations() {
     const integrations = [
@@ -840,40 +870,6 @@ setInterval(async () => {
     }
 }, 5000);
 
-async function sendAllAPIStatus() {
-    if(!goveeDisabled && goveeInitialized){
-        goveeOnline = govee.devicesArray.length > 0;
-    } else {
-        goveeOnline = false;
-    }
-    if (!nanoLeafDisabled) {
-        // noinspection RedundantIfStatementJS
-        if (nanoLeafDevices.length > 0) {
-            nanoLeafOnline = true;
-        } else {
-            nanoLeafOnline = false;
-        }
-    }
-    const statuses = [
-        { name: 'ikea', online: ikeaOnline },
-        { name: 'govee', online: goveeOnline },
-        { name: 'hue', online: hueOnline },
-        { name: 'openRGB', online: openRGBOnline },
-        { name: 'yeelight', online: !yeelightDisabled },
-        { name: 'streamDeck', online: streamDeckOnline },
-        { name: 'nanoLeaf', online: nanoLeafOnline},
-        { name: 'f1mv', online: f1mvAPIOnline },
-        { name: 'f1tv', online: f1LiveSession },
-        { name: 'update', online: updateAPIOnline },
-        { name: 'webServer', online: webServerOnline}
-    ];
-
-    for (const status of statuses) {
-        if (status.online) {
-            win.webContents.send(`${status.name}API`, 'online');
-        }
-    }
-}
 
 async function discordRPC(){
     const clientId = '1027664070993772594';
@@ -1589,7 +1585,7 @@ async function nanoLeafAuth(ip) {
                         nanoLeafWin.close();
                     }, 7000);
                     setTimeout(() => {
-                        addOtherDeviceDialog();
+                        nanoLeafAddOtherDeviceDialog();
                     }, 8000);
                     break;
                 }
@@ -1662,7 +1658,7 @@ async function nanoLeafAuth(ip) {
                         const config = userConfig.store;
                         win.webContents.send('settings', config);
                         setTimeout(() => {
-                            addOtherDeviceDialog();
+                            nanoLeafAddOtherDeviceDialog();
                         }, 500);
                     } else{
                         nanoLeafWin.close();
@@ -1739,7 +1735,7 @@ async function nanoLeafControl(r, g, b, brightness, action){
     }
 
 }
-function addOtherDeviceDialog(){
+function nanoLeafAddOtherDeviceDialog(){
     if(debugPreference){
         win.webContents.send('log', "Opening the add other device dialog...");
     }
@@ -1760,14 +1756,6 @@ function addOtherDeviceDialog(){
         }
     });
 }
-
-ipcMain.on('link-openrgb', () => {
-    openRGBInitialize(true).then(r => {
-        if(alwaysFalse){
-            console.log(r);
-        }
-    });
-});
 
 const { Client } = require("openrgb-sdk")
 let client;
