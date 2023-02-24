@@ -67,6 +67,12 @@ $(function() {
             $('#disable-hue-setting').removeAttr('checked')
         }
 
+        if (arg.Settings.hueSettings.hue3rdPartyCompatMode) {
+            $('#hue-compat-mode-setting').attr('checked', 'checked')
+        }else if (!arg.Settings.hueSettings.hue3rdPartyCompatMode) {
+            $('#hue-compat-mode-setting').removeAttr('checked')
+        }
+
         if (arg.Settings.nanoLeafSettings.nanoLeafDisable) {
             $('#disable-nanoleaf-setting').attr('checked', 'checked')
         }else if (!arg.Settings.nanoLeafSettings.nanoLeafDisable) {
@@ -112,6 +118,7 @@ function saveConfig() {
         autoTurnOffLights: $('#auto-turn-off-setting').is(':checked'),
         liveTimingURL: $('#live-timing-url-input').val(),
         hueDisable: $('#disable-hue-setting').is(':checked'),
+        hue3rdPartyCompatMode: $('#hue-compat-mode-setting').is(':checked'),
         ikeaDisable: $('#disable-ikea-setting').is(':checked'),
         securityCode: $('#sec-code-input').val(),
         goveeDisable: $('#disable-govee-setting').is(':checked'),

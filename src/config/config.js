@@ -59,7 +59,8 @@ const config = {
                     hueBridgeIP: undefined,
                     deviceIDs: [],
                     entertainmentZoneIDs: [],
-                    token: undefined
+                    token: undefined,
+                    hue3rdPartyCompatMode: false,
                 },
 
             ikeaSettings:
@@ -145,7 +146,7 @@ const config = {
                 }
         },
         // do not change this version!
-        version: 16,
+        version: 17,
     devConfig:
         {
             autoStartDevTools: false
