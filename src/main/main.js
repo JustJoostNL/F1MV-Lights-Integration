@@ -957,45 +957,47 @@ async function goveeControl(r, g, b, brightness, action) {
         if (debugPreference) {
             win.webContents.send('log', "Govee device selected: " + device.model);
         }
-        if (action === "on") {
-            lightsOnCounter++
-            if (debugPreference) {
-                win.webContents.send('log', "Turning on the Govee light with the following values: " + "R: " + r + " G: " + g + " B: " + b + " Brightness: " + brightness);
-            }
-            brightness = parseInt(brightness);
-            r = parseInt(r);
-            g = parseInt(g);
-            b = parseInt(b);
-            device.actions.setBrightness(brightness);
-            device.actions.setColor({
-                rgb: [
-                    r,
-                    g,
-                    b
-                ],
-            });
-            if (device.state.isOn === 0) {
-                device.actions.setOn();
-            }
-        }
-        if (action === "off") {
-            lightsOffCounter++
-            if (debugPreference) {
-                win.webContents.send('log', "Turning off Govee light " + device.model);
-            }
-            device.actions.setOff();
-        }
-        if (action === "getState") {
-            if (debugPreference) {
-                win.webContents.send('log', "Getting the state of Govee light " + device.model);
-            }
-            if (device.state.isOn === 1) {
-                win.webContents.send('log', "The light is on");
-            } else {
-                win.webContents.send('log', "The light is off");
-            }
-            win.webContents.send('log', "The brightness is: " + device.state.brightness);
-            win.webContents.send('log', "The color is: " + device.state.color);
+        switch (action) {
+            case "on":
+                lightsOnCounter++
+                if (debugPreference) {
+                    win.webContents.send('log', "Turning on the Govee light with the following values: " + "R: " + r + " G: " + g + " B: " + b + " Brightness: " + brightness);
+                }
+                brightness = parseInt(brightness);
+                r = parseInt(r);
+                g = parseInt(g);
+                b = parseInt(b);
+                device.actions.setBrightness(brightness);
+                device.actions.setColor({
+                    rgb: [
+                        r,
+                        g,
+                        b
+                    ],
+                });
+                if (device.state.isOn === 0) {
+                    device.actions.setOn();
+                }
+                break;
+            case "off":
+                lightsOffCounter++
+                if (debugPreference) {
+                    win.webContents.send('log', "Turning off Govee light " + device.model);
+                }
+                device.actions.setOff();
+                break;
+            case "getState":
+                if (debugPreference) {
+                    win.webContents.send('log', "Getting the state of Govee light " + device.model);
+                }
+                if (device.state.isOn === 1) {
+                    win.webContents.send('log', "The light is on");
+                } else {
+                    win.webContents.send('log', "The light is off");
+                }
+                win.webContents.send('log', "The brightness is: " + device.state.brightness);
+                win.webContents.send('log', "The color is: " + device.state.color);
+                break;
         }
     });
 }
@@ -1100,40 +1102,42 @@ async function ikeaCheckSpectrum(){
 }
 
 async function ikeaControl(r, g, b, brightness, action, flag) {
-    if (action === "getDevices") {
-        let deviceInformation = [];
-        let allInformation = [];
-        for (const deviceId in allIkeaDevices){
-            const device = allIkeaDevices[deviceId];
-            if (device.type !== 2) {
-                continue;
-            }
-            deviceInformation.push({
-                name: device.name,
-                id: device.instanceId,
-                state: device.lightList[0].onOff,
-                spectrum: device.lightList[0].spectrum,
-            });
-        }
-        const ikeaSelectedDevices = userConfig.get('Settings.ikeaSettings.deviceIDs');
-        allInformation = {
-            deviceInformation: deviceInformation,
-            ikeaSelectedDevices: ikeaSelectedDevices,
-        }
-        const ikeaDeviceSelectorWin = new BrowserWindow({
-            width: 1200,
-            height: 600,
-            webPreferences: {
-                contextIsolation: false,
-                nodeIntegration: true
-            },
-            resizable: false,
-            maximizable: false,
-            minimizable: true,
-        });
-        ikeaDeviceSelectorWin.removeMenu();
-        ikeaDeviceSelectorWin.webContents.on('did-finish-load', () => {
-            ikeaDeviceSelectorWin.webContents.insertCSS(`
+    if (ikeaOnline) {
+        switch (action) {
+            case "getDevices":
+                let deviceInformation = [];
+                let allInformation = [];
+                for (const deviceId in allIkeaDevices) {
+                    const device = allIkeaDevices[deviceId];
+                    if (device.type !== 2) {
+                        continue;
+                    }
+                    deviceInformation.push({
+                        name: device.name,
+                        id: device.instanceId,
+                        state: device.lightList[0].onOff,
+                        spectrum: device.lightList[0].spectrum,
+                    });
+                }
+                const ikeaSelectedDevices = userConfig.get('Settings.ikeaSettings.deviceIDs');
+                allInformation = {
+                    deviceInformation: deviceInformation,
+                    ikeaSelectedDevices: ikeaSelectedDevices,
+                }
+                const ikeaDeviceSelectorWin = new BrowserWindow({
+                    width: 1200,
+                    height: 600,
+                    webPreferences: {
+                        contextIsolation: false,
+                        nodeIntegration: true
+                    },
+                    resizable: false,
+                    maximizable: false,
+                    minimizable: true,
+                });
+                ikeaDeviceSelectorWin.removeMenu();
+                ikeaDeviceSelectorWin.webContents.on('did-finish-load', () => {
+                    ikeaDeviceSelectorWin.webContents.insertCSS(`
             ::-webkit-scrollbar {
                 width: 10px;
             }
@@ -1147,86 +1151,91 @@ async function ikeaControl(r, g, b, brightness, action, flag) {
                 background: #555;
             }
         `).then(r => {
-                if(alwaysFalse) {
-                    console.log(r)
+                        if (alwaysFalse) {
+                            console.log(r)
+                        }
+                    });
+                    ikeaDeviceSelectorWin.webContents.send('ikeaAllInformation', allInformation);
+                });
+                await ikeaDeviceSelectorWin.loadFile('src/static/ikea/ikea-device-selector.html');
+                break;
+
+            case "on":
+                lightsOnCounter++;
+                let hueValue;
+                if (debugPreference) {
+                    win.webContents.send('log', "Turning on the Ikea lights...");
                 }
-            });
-            ikeaDeviceSelectorWin.webContents.send('ikeaAllInformation', allInformation);
-        });
 
-        await ikeaDeviceSelectorWin.loadFile('src/static/ikea/ikea-device-selector.html');
-    }
+                // convert rgb to hsl
+                const hsl = colorTranslator.ColorTranslator.toHSL('rgb(' + r + ',' + g + ',' + b + ')');
+                // it returns 'hsl(0, 0%, 0%)' so we need to split it
+                hueValue = hsl.split('(')[1].split(',')[0];
+                if (debugPreference) {
+                    win.webContents.send('log', "The converted hue value from the given RGB value for Ikea RGB lights is: " + hueValue);
+                }
 
-    if (action === "on" && ikeaOnline === true) {
-        lightsOnCounter++;
-        let hueValue;
-        if (debugPreference) {
-            win.webContents.send('log', "Turning on the Ikea lights...");
+                colorDevices.forEach(device => {
+                    if(debugPreference){
+                        win.webContents.send('log', "Turning on the Ikea RGB light with the ID: " + device);
+                    }
+                    device = allIkeaDevices[device].lightList[0];
+                    device.toggle(true);
+                    device.setHue(hueValue, 0);
+                    device.setBrightness(brightness, 0);
+                });
+                whiteDevices.forEach(device => {
+                    if(debugPreference){
+                        win.webContents.send('log', "Turning on the Ikea White light with the ID: " + device);
+                    }
+                    device = parseInt(device);
+                    device = allIkeaDevices[device].lightList[0];
+                    switch (flag) {
+                        case "green":
+                            device.toggle(true);
+                            device.setBrightness(brightness, 0);
+                            device.setColorTemperature(0, 0);
+                            break;
+                        case "red":
+                            device.toggle(true);
+                            device.setBrightness(brightness, 0);
+                            device.setColorTemperature(454, 0);
+                            break;
+                        case "yellow":
+                        case "safetyCar":
+                        case "vsc":
+                        case "vscEnding":
+                            device.toggle(true);
+                            device.setBrightness(brightness, 0);
+                            device.setColorTemperature(60, 0);
+                            break;
+                    }
+                });
+                break;
+
+            case "off":
+                lightsOffCounter++;
+                colorDevices.forEach(device => {
+                    if(debugPreference){
+                        win.webContents.send('log', "Turning off the Ikea RGB light with the ID: " + device);
+                    }
+                    device = parseInt(device);
+                    device = allIkeaDevices[device].lightList[0];
+                    device.toggle(false);
+                });
+                whiteDevices.forEach(device => {
+                    if(debugPreference){
+                        win.webContents.send('log', "Turning off the Ikea White light with the ID: " + device);
+                    }
+                    device = parseInt(device);
+                    device = allIkeaDevices[device].lightList[0];
+                    device.toggle(false);
+                });
+                break;
         }
 
-        // convert rgb to hsl
-        const hsl = colorTranslator.ColorTranslator.toHSL('rgb(' + r + ',' + g + ',' + b + ')');
-        // it returns 'hsl(0, 0%, 0%)' so we need to split it
-        hueValue = hsl.split('(')[1].split(',')[0];
-        if (debugPreference) {
-            win.webContents.send('log', "The converted hue value from the given RGB value for Ikea RGB lights is: " + hueValue);
-        }
-
-        colorDevices.forEach(device => {
-            if(debugPreference){
-                win.webContents.send('log', "Turning on the Ikea RGB light with the ID: " + device);
-            }
-            device = allIkeaDevices[device].lightList[0];
-            device.toggle(true);
-            device.setHue(hueValue, 0);
-            device.setBrightness(brightness, 0);
-        });
-        whiteDevices.forEach(device => {
-            if(debugPreference){
-                win.webContents.send('log', "Turning on the Ikea White light with the ID: " + device);
-            }
-            device = parseInt(device);
-            device = allIkeaDevices[device].lightList[0];
-            switch (flag) {
-                case "green":
-                    device.toggle(true);
-                    device.setBrightness(brightness, 0);
-                    device.setColorTemperature(0, 0);
-                    break;
-                case "red":
-                    device.toggle(true);
-                    device.setBrightness(brightness, 0);
-                    device.setColorTemperature(454, 0);
-                    break;
-                case "yellow":
-                case "safetyCar":
-                case "vsc":
-                case "vscEnding":
-                    device.toggle(true);
-                    device.setBrightness(brightness, 0);
-                    device.setColorTemperature(60, 0);
-                    break;
-            }
-        });
-    }
-    if (action === "off" && ikeaOnline === true) {
-        lightsOffCounter++;
-        colorDevices.forEach(device => {
-            if(debugPreference){
-                win.webContents.send('log', "Turning off the Ikea RGB light with the ID: " + device);
-            }
-            device = parseInt(device);
-            device = allIkeaDevices[device].lightList[0];
-            device.toggle(false);
-        });
-        whiteDevices.forEach(device => {
-            if(debugPreference){
-                win.webContents.send('log', "Turning off the Ikea White light with the ID: " + device);
-            }
-            device = parseInt(device);
-            device = allIkeaDevices[device].lightList[0];
-            device.toggle(false);
-        });
+    } else if (action === "getDevices"){
+        win.webContents.send('log', "Ikea is disabled or not connected!");
     }
 }
 
@@ -1236,23 +1245,25 @@ async function yeelightControl(r, g, b, brightness, action) {
             const bulb = new Bulb(light);
             bulb.on('connected', (lamp) => {
                 try {
-                    if (action === "on") {
-                        if(debugPreference){
-                            win.webContents.send('log', "Turning on the Yeelight light with the IP: " + light);
-                        }
-                        lightsOnCounter++
-                        lamp.color(r, g, b);
-                        lamp.brightness(brightness);
-                        lamp.onn();
-                        lamp.disconnect();
-                    }
-                    if (action === "off") {
-                        if(debugPreference){
-                            win.webContents.send('log', "Turning off the Yeelight light with the IP: " + light);
-                        }
-                        lightsOffCounter++
-                        lamp.off();
-                        lamp.disconnect();
+                    switch (action){
+                        case "on":
+                            if(debugPreference){
+                                win.webContents.send('log', "Turning on the Yeelight light with the IP: " + light);
+                            }
+                            lightsOnCounter++
+                            lamp.color(r, g, b);
+                            lamp.brightness(brightness);
+                            lamp.onn();
+                            lamp.disconnect();
+                            break;
+                        case "off":
+                            if(debugPreference){
+                                win.webContents.send('log', "Turning off the Yeelight light with the IP: " + light);
+                            }
+                            lightsOffCounter++
+                            lamp.off();
+                            lamp.disconnect();
+                            break;
                     }
                 } catch (err) {
                     if (debugPreference) {
@@ -1355,151 +1366,155 @@ async function hueInitialize() {
 async function hueControl(r, g, b, brightness, action) {
     brightness = Math.round((brightness / 100) * 254);
     if (!hueDisabled && hueOnline) {
-        if (action === "getDevices") {
-            if (hueAllLights === null || hueAllLights === undefined) {
-                win.webContents.send('toaster', "No Hue lights found or an error occurred.");
-            } else {
-                hueAllLights = await authHueApi.lights.getAll();
-                let deviceInformation = [];
-                let allInformation = [];
-                hueAllLights.forEach((light) => {
-                    const name = light.name;
-                    const id = light.id;
-                    const state = light.state.on
-                    deviceInformation.push({
-                        name: name,
-                        id: id,
-                        state: state
-                    });
-                });
-                const hueSelectedDevices = userConfig.get('Settings.hueSettings.deviceIDs');
-                allInformation = {
-                    deviceInformation: deviceInformation,
-                    hueSelectedDevices: hueSelectedDevices,
-                };
-
-                const hueDeviceSelectorWin = new BrowserWindow({
-                    width: 1200,
-                    height: 600,
-                    webPreferences: {
-                        contextIsolation: false,
-                        nodeIntegration: true
-                    }
-                });
-                hueDeviceSelectorWin.removeMenu();
-
-                hueDeviceSelectorWin.webContents.on('did-finish-load', () => {
-                    hueDeviceSelectorWin.webContents.send('hueAllInformation', allInformation);
-                });
-                await hueDeviceSelectorWin.loadFile('src/static/hue/hue-device-selector.html');
-            }
-        }
-        if (action === "getEntertainmentZones") {
-            if (hueEntertainmentZones === null || hueEntertainmentZones === undefined) {
-                win.webContents.send('toaster', "No Hue entertainment zones found or an error occurred.");
-            } else {
-                hueEntertainmentZones = await authHueApi.groups.getEntertainment();
-                let entertainmentZoneInformation = [];
-                let allInformation = [];
-                hueEntertainmentZones.forEach((zone) => {
-                    const name = zone.name;
-                    const id = zone.id;
-                    entertainmentZoneInformation.push({
-                        name: name,
-                        id: id,
-                    });
-                });
-                const hueSelectedEntertainmentZones = userConfig.get('Settings.hueSettings.entertainmentZoneIDs');
-                allInformation = {
-                    entertainmentZoneInformation: entertainmentZoneInformation,
-                    hueSelectedEntertainmentZones: hueSelectedEntertainmentZones,
-                };
-
-                const hueEntertainmentZoneSelectorWin = new BrowserWindow({
-                    width: 1200,
-                    height: 600,
-                    webPreferences: {
-                        contextIsolation: false,
-                        nodeIntegration: true
-                    }
-                });
-                hueEntertainmentZoneSelectorWin.removeMenu();
-
-                hueEntertainmentZoneSelectorWin.webContents.on('did-finish-load', () => {
-                    hueEntertainmentZoneSelectorWin.webContents.send('hueAllInformation', allInformation);
-                });
-                await hueEntertainmentZoneSelectorWin.loadFile('src/static/hue/hue-entertainment-zone-selector.html');
-            }
-        }
-
-        if (action === "refreshDevices"){
-            hueAllLights = await authHueApi.lights.getAll();
-            win.webContents.send('toaster', "Hue lights refreshed, found " + hueAllLights.length + " lights");
-        }
-        if (action === "refreshEntertainmentZones"){
-            hueEntertainmentZones = await authHueApi.groups.getEntertainment();
-            win.webContents.send('toaster', "Hue entertainment zones refreshed, found " + hueEntertainmentZones.length + " zones");
-        }
-
         const {
             LightState,
             GroupLightState
         } = require('node-hue-api').v3.lightStates;
+        switch (action) {
+            case "getDevices":
+                if (hueAllLights === null || hueAllLights === undefined) {
+                    win.webContents.send('toaster', "No Hue lights found or an error occurred.");
+                } else {
+                    hueAllLights = await authHueApi.lights.getAll();
+                    let deviceInformation = [];
+                    let allInformation = [];
+                    hueAllLights.forEach((light) => {
+                        const name = light.name;
+                        const id = light.id;
+                        const state = light.state.on
+                        deviceInformation.push({
+                            name: name,
+                            id: id,
+                            state: state
+                        });
+                    });
+                    const hueSelectedDevices = userConfig.get('Settings.hueSettings.deviceIDs');
+                    allInformation = {
+                        deviceInformation: deviceInformation,
+                        hueSelectedDevices: hueSelectedDevices,
+                    };
 
-        if (action === "on") {
-            for (const light of hueSelectedDeviceIDs) {
-                lightsOnCounter++;
-                if (debugPreference) {
-                    win.webContents.send('log', "Turning on Hue light with ID: " + light);
+                    const hueDeviceSelectorWin = new BrowserWindow({
+                        width: 1200,
+                        height: 600,
+                        webPreferences: {
+                            contextIsolation: false,
+                            nodeIntegration: true
+                        }
+                    });
+                    hueDeviceSelectorWin.removeMenu();
+
+                    hueDeviceSelectorWin.webContents.on('did-finish-load', () => {
+                        hueDeviceSelectorWin.webContents.send('hueAllInformation', allInformation);
+                    });
+                    await hueDeviceSelectorWin.loadFile('src/static/hue/hue-device-selector.html');
                 }
-                await authHueApi.lights.setLightState(light, new LightState()
-                    .on(true)
-                    .bri(brightness)
-                    .rgb(r, g, b)
-                    .transitionInstant()
-                );
-            }
-            let hueValue = 0;
-            let saturationValue = 0;
-            if (hueSelectedEntertainmentZonesIDs.length > 0) {
-                hueValue = Math.round(colorConverter.rgb.hsv(r, g, b)[0] * (65535 / 360));
-                saturationValue = Math.round(colorConverter.rgb.hsv(r, g, b)[1] * (254 / 100));
-            }
-            for (const zoneID of hueSelectedEntertainmentZonesIDs) {
-                lightsOnCounter++;
-                if (debugPreference) {
-                    win.webContents.send('log', "Turning on Hue entertainment zone with ID: " + zoneID);
+                break;
+
+            case "getEntertainmentZones":
+                if (hueEntertainmentZones === null || hueEntertainmentZones === undefined) {
+                    win.webContents.send('toaster', "No Hue entertainment zones found or an error occurred.");
+                } else {
+                    hueEntertainmentZones = await authHueApi.groups.getEntertainment();
+                    let entertainmentZoneInformation = [];
+                    let allInformation = [];
+                    hueEntertainmentZones.forEach((zone) => {
+                        const name = zone.name;
+                        const id = zone.id;
+                        entertainmentZoneInformation.push({
+                            name: name,
+                            id: id,
+                        });
+                    });
+                    const hueSelectedEntertainmentZones = userConfig.get('Settings.hueSettings.entertainmentZoneIDs');
+                    allInformation = {
+                        entertainmentZoneInformation: entertainmentZoneInformation,
+                        hueSelectedEntertainmentZones: hueSelectedEntertainmentZones,
+                    };
+
+                    const hueEntertainmentZoneSelectorWin = new BrowserWindow({
+                        width: 1200,
+                        height: 600,
+                        webPreferences: {
+                            contextIsolation: false,
+                            nodeIntegration: true
+                        }
+                    });
+                    hueEntertainmentZoneSelectorWin.removeMenu();
+
+                    hueEntertainmentZoneSelectorWin.webContents.on('did-finish-load', () => {
+                        hueEntertainmentZoneSelectorWin.webContents.send('hueAllInformation', allInformation);
+                    });
+                    await hueEntertainmentZoneSelectorWin.loadFile('src/static/hue/hue-entertainment-zone-selector.html');
                 }
-                await authHueApi.groups.setGroupState(zoneID, new GroupLightState()
-                    .on(true)
-                    .bri(brightness)
-                    .hue(hueValue)
-                    .sat(saturationValue)
-                    .transitionInstant()
-                );
-            }
-        }
-        if (action === "off"){
-            for (const light of hueSelectedDeviceIDs) {
-                lightsOffCounter++;
-                if (debugPreference) {
-                    win.webContents.send('log', "Turning off Hue light with ID: " + light);
+                break;
+
+            case "refreshDevices":
+                hueAllLights = await authHueApi.lights.getAll();
+                win.webContents.send('toaster', "Hue lights refreshed, found " + hueAllLights.length + " lights");
+                break;
+
+            case "refreshEntertainmentZones":
+                hueEntertainmentZones = await authHueApi.groups.getEntertainment();
+                win.webContents.send('toaster', "Hue entertainment zones refreshed, found " + hueEntertainmentZones.length + " zones");
+                break;
+
+            case "on":
+                for (const light of hueSelectedDeviceIDs) {
+                    lightsOnCounter++;
+                    if (debugPreference) {
+                        win.webContents.send('log', "Turning on Hue light with ID: " + light);
+                    }
+                    await authHueApi.lights.setLightState(light, new LightState()
+                        .on(true)
+                        .bri(brightness)
+                        .rgb(r, g, b)
+                        .transitionInstant()
+                    );
                 }
-                await authHueApi.lights.setLightState(light, new LightState()
-                    .on(false)
-                    .transitionInstant()
-                );
-            }
-            for (const zoneID of hueSelectedEntertainmentZonesIDs) {
-                lightsOffCounter++;
-                if (debugPreference) {
-                    win.webContents.send('log', "Turning off Hue entertainment zone with ID: " + zoneID);
+                let hueValue = 0;
+                let saturationValue = 0;
+                if (hueSelectedEntertainmentZonesIDs.length > 0) {
+                    hueValue = Math.round(colorConverter.rgb.hsv(r, g, b)[0] * (65535 / 360));
+                    saturationValue = Math.round(colorConverter.rgb.hsv(r, g, b)[1] * (254 / 100));
                 }
-                await authHueApi.groups.setGroupState(zoneID, new GroupLightState()
-                    .on(false)
-                    .transitionInstant()
-                );
-            }
+                for (const zoneID of hueSelectedEntertainmentZonesIDs) {
+                    lightsOnCounter++;
+                    if (debugPreference) {
+                        win.webContents.send('log', "Turning on Hue entertainment zone with ID: " + zoneID);
+                    }
+                    await authHueApi.groups.setGroupState(zoneID, new GroupLightState()
+                        .on(true)
+                        .bri(brightness)
+                        .hue(hueValue)
+                        .sat(saturationValue)
+                        .transitionInstant()
+                    );
+                }
+                break;
+
+            case "off":
+                for (const light of hueSelectedDeviceIDs) {
+                    lightsOffCounter++;
+                    if (debugPreference) {
+                        win.webContents.send('log', "Turning off Hue light with ID: " + light);
+                    }
+                    await authHueApi.lights.setLightState(light, new LightState()
+                        .on(false)
+                        .transitionInstant()
+                    );
+                }
+                for (const zoneID of hueSelectedEntertainmentZonesIDs) {
+                    lightsOffCounter++;
+                    if (debugPreference) {
+                        win.webContents.send('log', "Turning off Hue entertainment zone with ID: " + zoneID);
+                    }
+                    await authHueApi.groups.setGroupState(zoneID, new GroupLightState()
+                        .on(false)
+                        .transitionInstant()
+                    );
+                }
+                break;
         }
 
     } else if (action === "getDevices" || action === "refreshDevices" || action === "getEntertainmentZones" || action === "refreshEntertainmentZones") {
@@ -1673,47 +1688,56 @@ async function nanoLeafAuth(ip) {
 }
 
 async function nanoLeafControl(r, g, b, brightness, action){
-    if(action === "on" && nanoLeafOnline){
-        lightsOnCounter++
-        if(debugPreference){
-            win.webContents.send('log', "Turning all the available Nanoleaf devices on...");
-        }
-        let hue;
-        const hsl = colorConvert.rgb.hsl(r, g, b);
-        hue = hsl[0];
-        if (debugPreference) {
-            win.webContents.send('log', "Converted the given RGB for Nanoleaf to a hue value, new value is: " + hue);
-        }
-        for (const device of nanoLeafDevices) {
-            if(debugPreference){
-                win.webContents.send('log', "Turning on Nanoleaf device with host: " + device.host + " and token: " + device.token);
-            }
-            const AuroraAPI = require('nanoleaves');
-            const aurora = new AuroraAPI({
-                host: device.host,
-                token: device.token
-            });
-            aurora.on();
-            aurora.setHue(hue);
-            aurora.setBrightness(brightness);
-        }
-    } else if(action === "off" && nanoLeafOnline){
-        lightsOffCounter++
-        if(debugPreference){
-            win.webContents.send('log', "Turning all the available Nanoleaf devices off...");
-        }
-        for (const device of nanoLeafDevices) {
-            if(debugPreference){
-                win.webContents.send('log', "Turning off Nanoleaf device with host: " + device.host + " and token: " + device.token);
-            }
-            const AuroraAPI = require('nanoleaves');
-            const aurora = new AuroraAPI({
-                host: device.host,
-                token: device.token
-            });
-            aurora.off();
+    if (nanoLeafOnline) {
+        let hueValue;
+        let saturationValue;
+        hueValue = Math.round(colorConverter.rgb.hsv(r, g, b)[0]);
+        saturationValue = Math.round(colorConverter.rgb.hsv(r, g, b)[1]);
+        switch (action) {
+            case "on":
+                lightsOnCounter++
+                if (debugPreference) {
+                    win.webContents.send('log', "Turning all the available Nanoleaf devices on...");
+                }
+                if (debugPreference) {
+                    win.webContents.send('log', "Converted the given RGB for Nanoleaf to a hue value, new value is: " + hue);
+                    win.webContents.send('log', "Converted the given RGB for Nanoleaf to a saturation value, new value is: " + saturation);
+                }
+                for (const device of nanoLeafDevices) {
+                    if (debugPreference) {
+                        win.webContents.send('log', "Turning on Nanoleaf device with host: " + device.host + " and token: " + device.token);
+                    }
+                    const AuroraAPI = require('nanoleaves');
+                    const aurora = new AuroraAPI({
+                        host: device.host,
+                        token: device.token
+                    });
+                    aurora.on();
+                    aurora.setHue(hueValue);
+                    aurora.setSaturation(saturationValue);
+                    aurora.setBrightness(brightness);
+                }
+                break;
+            case "off":
+                lightsOffCounter++
+                if (debugPreference) {
+                    win.webContents.send('log', "Turning all the available Nanoleaf devices off...");
+                }
+                for (const device of nanoLeafDevices) {
+                    if (debugPreference) {
+                        win.webContents.send('log', "Turning off Nanoleaf device with host: " + device.host + " and token: " + device.token);
+                    }
+                    const AuroraAPI = require('nanoleaves');
+                    const aurora = new AuroraAPI({
+                        host: device.host,
+                        token: device.token
+                    });
+                    aurora.off();
+                }
+                break;
         }
     }
+
 }
 function addOtherDeviceDialog(){
     if(debugPreference){
@@ -1790,53 +1814,56 @@ async function openRGBControl(r, g, b, brightness, action){
         if (debugPreference) {
             win.webContents.send('log', "Found " + deviceCount + " OpenRGB devices!");
         }
-        if (action === 'on') {
-            lightsOnCounter++
-            if (debugPreference) {
-                win.webContents.send('log', "Turning all the available OpenRGB devices on...");
-            }
-            for (let i = 0; i < deviceCount; i++) {
-                let device = await client.getControllerData(i)
-                //await client.updateMode(i, 0)
-
+        switch (action) {
+            case "on":
+                lightsOnCounter++
                 if (debugPreference) {
-                    win.webContents.send('log', "Turning on OpenRGB device with name: " + device.name + " and values: " + r + ", " + g + ", " + b + ", " + brightness);
+                    win.webContents.send('log', "Turning all the available OpenRGB devices on...");
+                }
+                for (let i = 0; i < deviceCount; i++) {
+                    let device = await client.getControllerData(i)
+                    //await client.updateMode(i, 0)
+
+                    if (debugPreference) {
+                        win.webContents.send('log', "Turning on OpenRGB device with name: " + device.name + " and values: " + r + ", " + g + ", " + b + ", " + brightness);
+                    }
+
+                    const colors = Array(device.colors.length).fill({
+                        red: r,
+                        green: g,
+                        blue: b
+                    })
+                    await client.updateLeds(i, colors)
+                    if (debugPreference) {
+                        win.webContents.send('log', 'Successfully updated the colors of the OpenRGB device with name: ' + device.name);
+                    }
+                }
+                break;
+            case "off":
+                lightsOffCounter++
+                if (debugPreference) {
+                    win.webContents.send('log', "Turning all the available OpenRGB devices off...");
+                }
+                for (let i = 0; i < deviceCount; i++) {
+                    let device = await client.getControllerData(i)
+                    await client.updateMode(i, 0)
+
+                    if (debugPreference) {
+                        win.webContents.send('log', "Turning off OpenRGB device with name: " + device.name);
+                    }
+
+                    const colors = Array(device.colors.length).fill({
+                        red: 0,
+                        green: 0,
+                        blue: 0
+                    })
+                    await client.updateLeds(i, colors)
+                    if (debugPreference) {
+                        win.webContents.send('log', 'Successfully updated the colors of the OpenRGB device with name: ' + device.name);
+                    }
                 }
 
-                const colors = Array(device.colors.length).fill({
-                    red: r,
-                    green: g,
-                    blue: b
-                })
-                await client.updateLeds(i, colors)
-                if (debugPreference) {
-                    win.webContents.send('log', 'Successfully updated the colors of the OpenRGB device with name: ' + device.name);
-                }
-            }
-        }
-        if (action === 'off') {
-            lightsOffCounter++
-            if (debugPreference) {
-                win.webContents.send('log', "Turning all the available OpenRGB devices off...");
-            }
-            for (let i = 0; i < deviceCount; i++) {
-                let device = await client.getControllerData(i)
-                await client.updateMode(i, 0)
 
-                if (debugPreference) {
-                    win.webContents.send('log', "Turning off OpenRGB device with name: " + device.name);
-                }
-
-                const colors = Array(device.colors.length).fill({
-                    red: 0,
-                    green: 0,
-                    blue: 0
-                })
-                await client.updateLeds(i, colors)
-                if (debugPreference) {
-                    win.webContents.send('log', 'Successfully updated the colors of the OpenRGB device with name: ' + device.name);
-                }
-            }
         }
     } else if(debugPreference){
         win.webContents.send('log', "There is no active connection to OpenRGB, please make sure that OpenRGB is running and that the IP + Port are correct!");
@@ -1874,30 +1901,26 @@ async function streamDeckInitialize(){
 
 async function streamDeckControl(r, g, b, brightness, action){
     if(streamDeckOnline){
-        if(action === 'on'){
-            lightsOnCounter++
-            if(debugPreference){
-                win.webContents.send('log', "Turning all the available Stream Deck keys on...");
-            }
-            for (let i = 0; i < streamDeckKeyCount; i++) {
-                theStreamDeck.setBrightness(brightness)
-                theStreamDeck.fillKeyColor(i, r, g, b)
-                // if(debugPreference){
-                //     win.webContents.send('log', "Turning on Stream Deck key with index: " + i + " and values: " + r + ", " + g + ", " + b + ", " + brightness);
-                // }
-            }
-        }
-        if(action === 'off'){
-            lightsOffCounter++
-            if(debugPreference){
-                win.webContents.send('log', "Turning all the available Stream Deck keys off...");
-            }
-            for (let i = 0; i < streamDeckKeyCount; i++) {
-                theStreamDeck.fillKeyColor(i, 0, 0, 0)
-                // if(debugPreference){
-                //     win.webContents.send('log', "Turning off Stream Deck key with index: " + i);
-                // }
-            }
+        switch (action){
+            case "on":
+                lightsOnCounter++
+                if(debugPreference){
+                    win.webContents.send('log', "Turning all the available Stream Deck keys on...");
+                }
+                for (let i = 0; i < streamDeckKeyCount; i++) {
+                    theStreamDeck.setBrightness(brightness)
+                    theStreamDeck.fillKeyColor(i, r, g, b)
+                }
+                break;
+            case "off":
+                lightsOffCounter++
+                if(debugPreference){
+                    win.webContents.send('log', "Turning all the available Stream Deck keys off...");
+                }
+                for (let i = 0; i < streamDeckKeyCount; i++) {
+                    theStreamDeck.fillKeyColor(i, 0, 0, 0)
+                }
+                break;
         }
     } else if(debugPreference){
         win.webContents.send('log', "There is no active connection to Stream Deck, please make sure that the Stream Deck is connected and that the software is installed!");
