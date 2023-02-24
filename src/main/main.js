@@ -23,6 +23,7 @@ const userConfig = new Store({
     defaults: configDefault
 });
 const Tradfri = require("node-tradfri-client");
+const colorConverter = require('color-convert');
 
 let debugPreference = userConfig.get('Settings.advancedSettings.debugMode');
 let f1mvURL = userConfig.get('Settings.MultiViewerForF1Settings.liveTimingURL') + '/api/graphql'
@@ -846,6 +847,7 @@ async function sendAllAPIStatus() {
         goveeOnline = false;
     }
     if (!nanoLeafDisabled) {
+        // noinspection RedundantIfStatementJS
         if (nanoLeafDevices.length > 0) {
             nanoLeafOnline = true;
         } else {
@@ -1444,9 +1446,8 @@ async function hueControl(r, g, b, brightness, action) {
             GroupLightState
         } = require('node-hue-api').v3.lightStates;
 
-
-        for (const light of hueSelectedDeviceIDs) {
-            if (action === "on") {
+        if (action === "on") {
+            for (const light of hueSelectedDeviceIDs) {
                 lightsOnCounter++;
                 if (debugPreference) {
                     win.webContents.send('log', "Turning on Hue light with ID: " + light);
@@ -1457,30 +1458,14 @@ async function hueControl(r, g, b, brightness, action) {
                     .rgb(r, g, b)
                     .transitionInstant()
                 );
-            } else if (action === "off") {
-                lightsOffCounter++;
-                if (debugPreference) {
-                    win.webContents.send('log', "Turning off Hue light with ID: " + light);
-                }
-                await authHueApi.lights.setLightState(light, new LightState()
-                    .on(false)
-                    .transitionInstant()
-                );
             }
-        }
-        let hueValue;
-        let saturationValue;
-        if (action === "on") {
-            const colorConverter = require('color-convert');
-            hueValue = Math.round(colorConverter.rgb.hsv(r, g, b)[0] * (65535 / 360));
-            saturationValue = Math.round(colorConverter.rgb.hsv(r, g, b)[1] * (254 / 100));
-            if (debugPreference) {
-                win.webContents.send('log', "The converted hue value for Philips Hue is: " + hueValue);
-                win.webContents.send('log', "The converted saturation value for Philips Hue is: " + saturationValue);
+            let hueValue = 0;
+            let saturationValue = 0;
+            if (hueSelectedEntertainmentZonesIDs.length > 0) {
+                hueValue = Math.round(colorConverter.rgb.hsv(r, g, b)[0] * (65535 / 360));
+                saturationValue = Math.round(colorConverter.rgb.hsv(r, g, b)[1] * (254 / 100));
             }
-        }
-        for (const zoneID of hueSelectedEntertainmentZonesIDs) {
-            if (action === "on") {
+            for (const zoneID of hueSelectedEntertainmentZonesIDs) {
                 lightsOnCounter++;
                 if (debugPreference) {
                     win.webContents.send('log', "Turning on Hue entertainment zone with ID: " + zoneID);
@@ -1492,7 +1477,20 @@ async function hueControl(r, g, b, brightness, action) {
                     .sat(saturationValue)
                     .transitionInstant()
                 );
-            } else if (action === "off") {
+            }
+        }
+        if (action === "off"){
+            for (const light of hueSelectedDeviceIDs) {
+                lightsOffCounter++;
+                if (debugPreference) {
+                    win.webContents.send('log', "Turning off Hue light with ID: " + light);
+                }
+                await authHueApi.lights.setLightState(light, new LightState()
+                    .on(false)
+                    .transitionInstant()
+                );
+            }
+            for (const zoneID of hueSelectedEntertainmentZonesIDs) {
                 lightsOffCounter++;
                 if (debugPreference) {
                     win.webContents.send('log', "Turning off Hue entertainment zone with ID: " + zoneID);
@@ -1907,7 +1905,6 @@ async function streamDeckControl(r, g, b, brightness, action){
 }
 
 const express = require('express');
-const colorConverter = require("color-convert");
 const webApp = express();
 const http = require('http').createServer(webApp);
 const io = require('socket.io')(http);
