@@ -65,7 +65,7 @@ let WLEDDisabled = userConfig.get('Settings.WLEDSettings.WLEDDisable');
 let WLEDDeviceIPs = userConfig.get('Settings.WLEDSettings.devices');
 
 let analyticsPreference = userConfig.get('Settings.advancedSettings.analytics')
-const APIURL = "https://api.joost.systems/api/v2"
+const APIURL = "https://preprod-api.joost.systems/api/v2"
 let analyticsSent = false;
 
 let updateChannel = userConfig.get('Settings.advancedSettings.updateChannel')
@@ -1506,10 +1506,9 @@ async function hueControl(r, g, b, brightness, action) {
             case "on":
                 let hueValue = 0;
                 let saturationValue = 0;
-                if (hueSelectedEntertainmentZonesIDs.length > 0) {
-                    hueValue = Math.round(colorConverter.rgb.hsv(r, g, b)[0] * (65535 / 360));
-                    saturationValue = Math.round(colorConverter.rgb.hsv(r, g, b)[1] * (254 / 100));
-                }
+                hueValue = Math.round(colorConverter.rgb.hsv(r, g, b)[0] * (65535 / 360));
+                saturationValue = Math.round(colorConverter.rgb.hsv(r, g, b)[1] * (254 / 100));
+
                 if (hue3rdPartyCompatMode) {
                     for (const light of hueSelectedDeviceIDs) {
                         lightsOnCounter++;
@@ -2038,8 +2037,16 @@ async function WLEDControl(r, g, b, brightness, action){
                 await WLEDDevice.updateState({
                     on: true,
                     brightness: brightness,
+                    mainSegmentId: 0,
+                    segments: [
+                        {
+                            effectId: 0,
+                            colors: [[r,g,b]],
+                            start: 0,
+                            stop: WLEDDevice.info.leds.count
+                        }
+                    ]
                 })
-                await WLEDDevice.setColor([r, g, b])
                 break;
 
             case "off":
@@ -2140,6 +2147,7 @@ async function sendAnalytics() {
 
         //remove personal data from config
         delete config.Settings.ikeaSettings.securityCode;
+        delete config.Settings.ikeaSettings.psk;
         delete config.Settings.hueSettings.token;
         for (const device of config.Settings.nanoLeafSettings.devices) {
             delete device.token;
