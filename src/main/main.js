@@ -140,6 +140,8 @@ let allIkeaDevices = [];
 
 let noUpdateFound = false;
 
+let userActiveUniqueID;
+
 const Sentry = require("@sentry/electron");
 Sentry.init({
     dsn: "https://e64c3ec745124566b849043192e58711@o4504289317879808.ingest.sentry.io/4504289338392576",
@@ -188,6 +190,11 @@ function createWindow() {
             console.log(r)
         }
     })
+    getUniqueID().then(r => {
+        if (alwaysFalse) {
+            console.log(r)
+        }
+    });
     if (BrowserWindow.getAllWindows().length === 0) {
         setTimeout(function () {
             initIntegrations().then(r => {
@@ -251,18 +258,6 @@ app.whenReady().then(() => {
         })
     }
 
-    const body = JSON.stringify({
-        "userActive": "true"
-    });
-    const userActiveURL = APIURL + "/f1mv-lights-integration/analytics/useractive"
-    fetch(userActiveURL, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: body
-    })
-
     autoUpdater.checkForUpdates().then(r => {
         if (alwaysFalse) {
             console.log(r)
@@ -276,6 +271,18 @@ app.whenReady().then(() => {
         }
     })
 })
+
+async function getUniqueID(){
+    const getUniqueIDURL = APIURL + "/f1mv-lights-integration/analytics/useractive/getUniqueID"
+    const response = await fetch(getUniqueIDURL, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+    })
+    const data = await response.json()
+    userActiveUniqueID = data.uniqueID
+}
 
 app.on('window-all-closed', async () => {
     await sendAnalytics()
@@ -829,6 +836,9 @@ async function simulateFlag(arg) {
 
 
 async function sendAllAPIStatus() {
+    if (userActiveUniqueID === undefined) {
+        await getUniqueID();
+    }
     if(!goveeDisabled && goveeInitialized){
         goveeOnline = govee.devicesArray.length > 0;
     } else {
@@ -2072,6 +2082,19 @@ async function checkMiscAPIS() {
         errorCheck = true;
     }
 
+    const userActiveURL = APIURL + "/f1mv-lights-integration/analytics/useractive"
+    const body = {
+        uniqueID: userActiveUniqueID,
+        userActive: true
+    }
+    await fetch(userActiveURL, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(body)
+    })
+
 
     const liveSessionCheckURL = APIURL + "/f1tv/live-session"
     const liveSessionRes = await fetch(liveSessionCheckURL)
@@ -2083,16 +2106,17 @@ async function sendAnalytics() {
     let analyticsIDReturned;
     let analyticsSuccess = false;
     let userActiveSuccess = false;
-    const userActiveBody = JSON.stringify({
-        "userActive": "false"
-    });
+    const userActiveBody = {
+        uniqueID: userActiveUniqueID,
+        userActive: false
+    }
     const userActiveURL = APIURL + "/f1mv-lights-integration/analytics/useractive"
     const userActiveRes = await fetch(userActiveURL, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
         },
-        body: userActiveBody
+        body: JSON.stringify(userActiveBody)
     });
     if (userActiveRes.status === 200) {
         userActiveSuccess = true;
@@ -2140,7 +2164,7 @@ async function sendAnalytics() {
             },
             body: JSON.stringify(data)
         }
-        const analyticsURL = APIURL + "/f1mv-lights-integration/analytics"
+        const analyticsURL = APIURL + "/f1mv-lights-integration/analytics/post"
         const response = await fetch(analyticsURL, options); {
             const responseData = await response.json();
             if (debugPreference) {
