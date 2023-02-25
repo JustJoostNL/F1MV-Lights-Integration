@@ -79,6 +79,12 @@ $(function() {
             $('#disable-nanoleaf-setting').removeAttr('checked')
         }
 
+        if (arg.Settings.WLEDSettings.WLEDDisable) {
+            $('#disable-wled-setting').attr('checked', 'checked')
+        }else if (!arg.Settings.WLEDSettings.WLEDDisable) {
+            $('#disable-wled-setting').removeAttr('checked')
+        }
+
         if (arg.Settings.openRGBSettings.openRGBDisable) {
             $('#disable-openrgb-setting').attr('checked', 'checked')
         }else if (!arg.Settings.openRGBSettings.openRGBDisable) {
@@ -100,6 +106,8 @@ $(function() {
         $('#openrgb-ip-input').val(arg.Settings.openRGBSettings.openRGBServerIP)
         $('#openrgb-port-input').val(arg.Settings.openRGBSettings.openRGBServerPort)
 
+        $('#wled-device-ip-input').val(arg.Settings.WLEDSettings.devices)
+
         $('#webserver-port-input').val(arg.Settings.webServerSettings.webServerPort)
 
         if (arg.Settings.webServerSettings.webServerDisable) {
@@ -113,6 +121,20 @@ $(function() {
 })
 
 function saveConfig() {
+    let WLEDDevices;
+    if ($('#wled-device-ip-input').val() === '') {
+        WLEDDevices = []
+    } else if ($('#wled-device-ip-input').val() !== '') {
+        WLEDDevices = $('#wled-device-ip-input').val()
+    }
+
+    let deviceIPs;
+    if ($('#yeelight-device-ip-input').val() === '') {
+        deviceIPs = []
+    } else if ($('#yeelight-device-ip-input').val() !== '') {
+        deviceIPs = $('#yeelight-device-ip-input').val()
+    }
+
     ipcRenderer.send('saveConfig', {
         defaultBrightness: $('#brightness-input').val(),
         autoTurnOffLights: $('#auto-turn-off-setting').is(':checked'),
@@ -126,9 +148,11 @@ function saveConfig() {
         openRGBServerIP: $('#openrgb-ip-input').val(),
         openRGBServerPort: $('#openrgb-port-input').val(),
         nanoLeafDisable: $('#disable-nanoleaf-setting').is(':checked'),
+        WLEDDisable: $('#disable-wled-setting').is(':checked'),
+        WLEDDevices: WLEDDevices,
         yeeLightDisable: $('#disable-yeelight-setting').is(':checked'),
         streamDeckDisable: $('#disable-stream-deck-setting').is(':checked'),
-        deviceIPs: $('#yeelight-device-ip-input').val(),
+        deviceIPs: deviceIPs,
         discordRPCSetting: $('#disable-discord-rpc-setting').is(':checked'),
         webServerPort: $('#webserver-port-input').val(),
         webServerDisable: $('#disable-webserver-setting').is(':checked'),

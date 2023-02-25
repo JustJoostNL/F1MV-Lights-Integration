@@ -100,6 +100,13 @@ const config = {
                     devices: []
                 },
 
+            WLEDSettings:
+                {
+                    // set this to true if you don't want to use WLED lights
+                    WLEDDisable: true,
+                    devices: []
+                },
+
             yeeLightSettings:
                 {
                     // set this to true if you don't want to use Yeelight lights
@@ -146,7 +153,7 @@ const config = {
                 }
         },
         // do not change this version!
-        version: 17,
+        version: 18,
     devConfig:
         {
             autoStartDevTools: false

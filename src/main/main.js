@@ -28,7 +28,7 @@ const colorConverter = require('color-convert');
 let debugPreference = userConfig.get('Settings.advancedSettings.debugMode');
 let f1mvURL = userConfig.get('Settings.MultiViewerForF1Settings.liveTimingURL') + '/api/graphql'
 let f1mvCheckURL = userConfig.get('Settings.MultiViewerForF1Settings.liveTimingURL');
-function createF1MVURL() {
+function createF1MVCheckURL() {
 // remove a trailing slash if it exists
     if (f1mvCheckURL.endsWith('/')) {
         f1mvCheckURL = f1mvCheckURL.slice(0, -1);
@@ -39,7 +39,7 @@ function createF1MVURL() {
     }
     f1mvCheckURL = f1mvCheckURL + '/api/v1/live-timing/Heartbeat'
 }
-createF1MVURL();
+createF1MVCheckURL();
 let ikeaDisabled = userConfig.get('Settings.ikeaSettings.ikeaDisable')
 let goveeDisabled = userConfig.get('Settings.goveeSettings.goveeDisable')
 let yeelightDisabled = userConfig.get('Settings.yeeLightSettings.yeeLightDisable')
@@ -61,6 +61,9 @@ let Govee;
 let govee;
 let goveeInitialized = false;
 
+let WLEDDisabled = userConfig.get('Settings.WLEDSettings.WLEDDisable');
+let WLEDDeviceIPs = userConfig.get('Settings.WLEDSettings.devices');
+
 let analyticsPreference = userConfig.get('Settings.advancedSettings.analytics')
 const APIURL = "https://api.joost.systems/api/v2"
 let analyticsSent = false;
@@ -79,6 +82,7 @@ let hueOnline = false;
 let nanoLeafOnline = false;
 let openRGBOnline = false;
 let streamDeckOnline = false;
+let WLEDOnline = false;
 
 let f1LiveSession = false;
 let f1mvAPIOnline = false;
@@ -462,6 +466,8 @@ ipcMain.on('hueSelectorSaveSelectedEntertainmentZones', async (event, args) => {
 })
 ipcMain.on('saveConfig', (event, arg) => {
     let deviceIPs = arg.deviceIPs;
+    let WLEDDevices = arg.WLEDDevices;
+
     const {
         defaultBrightness,
         autoTurnOffLights,
@@ -475,6 +481,7 @@ ipcMain.on('saveConfig', (event, arg) => {
         openRGBServerIP,
         openRGBServerPort,
         nanoLeafDisable,
+        WLEDDisable,
         yeeLightDisable,
         streamDeckDisable,
         discordRPCSetting,
@@ -485,7 +492,16 @@ ipcMain.on('saveConfig', (event, arg) => {
         debugMode,
     } = arg
 
-    deviceIPs = deviceIPs.split(',');
+    try {
+        deviceIPs = deviceIPs.split(',');
+    } catch (error) {
+        deviceIPs = [];
+    }
+    try {
+    WLEDDevices = WLEDDevices.split(',');
+    } catch (error) {
+        WLEDDevices = [];
+    }
 
     userConfig.set('Settings.generalSettings.defaultBrightness', parseInt(defaultBrightness));
     userConfig.set('Settings.generalSettings.autoTurnOffLights', autoTurnOffLights);
@@ -499,6 +515,8 @@ ipcMain.on('saveConfig', (event, arg) => {
     userConfig.set('Settings.openRGBSettings.openRGBServerIP', openRGBServerIP);
     userConfig.set('Settings.openRGBSettings.openRGBServerPort', parseInt(openRGBServerPort));
     userConfig.set('Settings.nanoLeafSettings.nanoLeafDisable', nanoLeafDisable);
+    userConfig.set('Settings.WLEDSettings.WLEDDisable', WLEDDisable);
+    userConfig.set('Settings.WLEDSettings.devices', WLEDDevices);
     userConfig.set('Settings.yeeLightSettings.yeeLightDisable', yeeLightDisable);
     userConfig.set('Settings.yeeLightSettings.deviceIPs', deviceIPs);
     userConfig.set('Settings.streamDeckSettings.streamDeckDisable', streamDeckDisable);
@@ -539,7 +557,7 @@ ipcMain.on('saveConfigColors', (event, arg) => {
 
 async function migrateConfig() {
     // if the config version is != 1 migrate the config
-    if (userConfig.get('version') !== 17) {
+    if (userConfig.get('version') !== 18) {
         setTimeout(() => {
             win.webContents.send('log', 'Migrating config...')
         }, 1500);
@@ -617,6 +635,10 @@ async function migrateConfig() {
                     "nanoLeafDisable": oldConfig.Settings.nanoLeafSettings.nanoLeafDisable,
                     "devices": oldConfig.Settings.nanoLeafSettings.devices
                 },
+                "WLEDSettings": {
+                    "WLEDDisable": true,
+                    "devices": []
+                },
                 "yeeLightSettings": {
                     "yeeLightDisable": oldConfig.Settings.yeeLightSettings.yeeLightDisable,
                     "deviceIPs": oldConfig.Settings.yeeLightSettings.deviceIPs
@@ -637,7 +659,7 @@ async function migrateConfig() {
                     "analytics": oldConfig.Settings.advancedSettings.analytics
                 }
             },
-            "version": 17
+            "version": 18
         }
         userConfig.clear();
         userConfig.set(newConfig);
@@ -752,6 +774,9 @@ async function controlAllLights(r, g, b, brightness, action, flag) {
     if (!nanoLeafDisabled) {
         await nanoLeafControl(r, g, b, brightness, action)
     }
+    if (!WLEDDisabled) {
+        await WLEDControl(r, g, b, brightness, action)
+    }
     if (!openRGBDisabled) {
         await openRGBControl(r, g, b, brightness, action)
     }
@@ -817,6 +842,14 @@ async function sendAllAPIStatus() {
             nanoLeafOnline = false;
         }
     }
+    if (!WLEDDisabled) {
+        // noinspection RedundantIfStatementJS
+        if (WLEDDeviceIPs.length > 0) {
+            WLEDOnline = true;
+        } else {
+            WLEDOnline = false;
+        }
+    }
     const statuses = [
         { name: 'ikea', online: ikeaOnline },
         { name: 'govee', online: goveeOnline },
@@ -825,6 +858,7 @@ async function sendAllAPIStatus() {
         { name: 'yeelight', online: !yeelightDisabled },
         { name: 'streamDeck', online: streamDeckOnline },
         { name: 'nanoLeaf', online: nanoLeafOnline},
+        { name: 'WLED', online: WLEDOnline},
         { name: 'f1mv', online: f1mvAPIOnline },
         { name: 'f1tv', online: f1LiveSession },
         { name: 'update', online: updateAPIOnline },
@@ -1716,8 +1750,8 @@ async function nanoLeafControl(r, g, b, brightness, action){
                     win.webContents.send('log', "Turning all the available Nanoleaf devices on...");
                 }
                 if (debugPreference) {
-                    win.webContents.send('log', "Converted the given RGB for Nanoleaf to a hue value, new value is: " + hue);
-                    win.webContents.send('log', "Converted the given RGB for Nanoleaf to a saturation value, new value is: " + saturation);
+                    win.webContents.send('log', "Converted the given RGB for Nanoleaf to a hue value, new value is: " + hueValue);
+                    win.webContents.send('log', "Converted the given RGB for Nanoleaf to a saturation value, new value is: " + saturationValue);
                 }
                 for (const device of nanoLeafDevices) {
                     if (debugPreference) {
@@ -1976,6 +2010,43 @@ async function webServerControl(r, g, b, brightness, action) {
     });
 }
 
+
+async function WLEDControl(r, g, b, brightness, action){
+    brightness = Math.round((brightness / 100) * 254);
+    const { WLEDClient } = require('wled-client')
+    for (const device of WLEDDeviceIPs) {
+        const WLEDDevice = new WLEDClient(device)
+        await WLEDDevice.init().catch((error) => {
+            win.webContents.send('log', "Error: Could not connect to the WLED device with IP: " + device + " Error: " + error.message);
+        })
+        switch (action){
+            case "on":
+                lightsOnCounter++
+                if(debugPreference){
+                    win.webContents.send('log', "Turning on the WLED device with IP: " + device);
+                }
+                await WLEDDevice.updateState({
+                    on: true,
+                    brightness: brightness,
+                })
+                await WLEDDevice.setColor([r, g, b])
+                break;
+
+            case "off":
+                lightsOffCounter++
+                if(debugPreference){
+                    win.webContents.send('log', "Turning off the WLED device with IP: " + device);
+                }
+                await WLEDDevice.updateState({
+                    on: false,
+                    brightness: brightness,
+                })
+                break;
+        }
+        WLEDDevice.disconnect();
+    }
+}
+
 async function checkMiscAPIS() {
     if(debugPreference){
         win.webContents.send('log', "Checking the Update and F1 Live Session API..");
@@ -2137,11 +2208,13 @@ function reloadFromConfig(){
     discordRPCDisabled = userConfig.get('Settings.discordSettings.discordRPCDisable');
     webServerPort = userConfig.get('Settings.webServerSettings.webServerPort');
     webServerDisabled = userConfig.get('Settings.webServerSettings.webServerDisable');
+    WLEDDisabled = userConfig.get('Settings.WLEDSettings.WLEDDisable');
+    WLEDDeviceIPs = userConfig.get('Settings.WLEDSettings.devices');
 
     updateChannel = userConfig.get('Settings.advancedSettings.updateChannel')
     autoUpdater.channel = updateChannel;
 
-    createF1MVURL();
+    createF1MVCheckURL();
 
     win.webContents.send('log', "Reloaded from config!");
     if (!ikeaDisabled  && ikeaOnline) {

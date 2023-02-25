@@ -33,6 +33,7 @@
     "openrgb-sdk": "^0.5.2",
     "process": "^0.11.10",
     "socket.io": "^4.6.1",
+    "wled-client": "^0.22.1",
     "yeelight.io": "^1.1.7"
   },
   "devDependencies": {

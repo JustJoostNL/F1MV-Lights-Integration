@@ -87,6 +87,15 @@ $(function() {
             $('#nanoLeafAPI').find('.status').removeClass('success').addClass('error')
         }
     })
+    ipcRenderer.on('WLEDAPI', (event, arg) => {
+        if (arg === 'online') {
+            $('#WLEDAPI').find('.status').removeClass('error').addClass('success')
+        }
+
+        if (arg === 'offline') {
+            $('#WLEDAPI').find('.status').removeClass('success').addClass('error')
+        }
+    })
 
     ipcRenderer.on('openRGBAPI', (event, arg) => {
         if (arg === 'online') {
@@ -164,6 +173,11 @@ $(function() {
             $('#nanoLeafAPI').hide()
         } else {
             $('#nanoLeafAPI').show()
+        }
+        if(arg.Settings.WLEDSettings.WLEDDisable) {
+            $('#WLEDAPI').hide()
+        } else {
+            $('#WLEDAPI').show()
         }
         if(arg.Settings.openRGBSettings.openRGBDisable) {
             $('#openRGBAPI').hide()
