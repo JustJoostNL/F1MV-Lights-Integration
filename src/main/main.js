@@ -940,7 +940,7 @@ async function discordRPC(){
                     url: 'https://multiviewer.app/download',
                 },
                 {
-                    label: `Download F1MV-Lights-Integrat..`,
+                    label: `Download F1MV Lights Integrat..`,
                     url: 'https://github.com/JustJoostNL/F1MV-Lights-Integration/releases/latest',
                 }
             ],
