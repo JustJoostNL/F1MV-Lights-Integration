@@ -65,7 +65,7 @@ let WLEDDisabled = userConfig.get('Settings.WLEDSettings.WLEDDisable');
 let WLEDDeviceIPs = userConfig.get('Settings.WLEDSettings.devices');
 
 let analyticsPreference = userConfig.get('Settings.advancedSettings.analytics')
-const APIURL = "https://preprod-api.joost.systems/api/v2"
+const APIURL = "https://api.joost.systems/api/v2"
 let analyticsSent = false;
 
 let updateChannel = userConfig.get('Settings.advancedSettings.updateChannel')
@@ -273,7 +273,7 @@ app.whenReady().then(() => {
 })
 
 async function getUniqueID(){
-    const getUniqueIDURL = APIURL + "/f1mv-lights-integration/analytics/useractive/getUniqueID"
+    const getUniqueIDURL = APIURL + "/f1mvli/analytics/active-users/getUniqueID"
     const response = await fetch(getUniqueIDURL, {
         method: 'GET',
         headers: {
@@ -2089,7 +2089,7 @@ async function checkMiscAPIS() {
         errorCheck = true;
     }
 
-    const userActiveURL = APIURL + "/f1mv-lights-integration/analytics/useractive"
+    const userActiveURL = APIURL + "/f1mvli/analytics/active-users/post"
     const body = {
         uniqueID: userActiveUniqueID,
         userActive: true
@@ -2117,7 +2117,7 @@ async function sendAnalytics() {
         uniqueID: userActiveUniqueID,
         userActive: false
     }
-    const userActiveURL = APIURL + "/f1mv-lights-integration/analytics/useractive"
+    const userActiveURL = APIURL + "/f1mvli/analytics/active-users/post"
     const userActiveRes = await fetch(userActiveURL, {
         method: 'POST',
         headers: {
@@ -2172,7 +2172,7 @@ async function sendAnalytics() {
             },
             body: JSON.stringify(data)
         }
-        const analyticsURL = APIURL + "/f1mv-lights-integration/analytics/post"
+        const analyticsURL = APIURL + "/f1mvli/analytics/post"
         const response = await fetch(analyticsURL, options); {
             const responseData = await response.json();
             if (debugPreference) {
