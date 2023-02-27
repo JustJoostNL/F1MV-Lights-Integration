@@ -23,9 +23,7 @@ const userConfig = new Store({
 });
 const Tradfri = require("node-tradfri-client");
 
-const colorConverter = require('color-convert');
 const { ColorTranslator } = require('colortranslator');
-const { colord } = require('colord');
 
 let debugPreference = userConfig.get('Settings.advancedSettings.debugMode');
 let f1mvURL = userConfig.get('Settings.MultiViewerForF1Settings.liveTimingURL') + '/api/graphql'
@@ -1515,8 +1513,12 @@ async function hueControl(r, g, b, brightness, action) {
             case "on":
                 let hueValue = 0;
                 let saturationValue = 0;
-                hueValue = Math.round(colorConverter.rgb.hsv(r, g, b)[0] * (65535 / 360));
-                saturationValue = Math.round(colorConverter.rgb.hsv(r, g, b)[1] * (254 / 100));
+
+                const color = new ColorTranslator('rgb(' + r + ',' + g + ',' + b + ')');
+                hueValue = color.H
+                saturationValue = color.S
+                hueValue = Math.round(hueValue * (65535 / 360));
+                saturationValue = Math.round(saturationValue * (254 / 100));
 
                 if (hue3rdPartyCompatMode) {
                     for (const light of hueSelectedDeviceIDs) {
@@ -1759,8 +1761,9 @@ async function nanoLeafControl(r, g, b, brightness, action){
     if (nanoLeafOnline) {
         let hueValue;
         let saturationValue;
-        hueValue = Math.round(colorConverter.rgb.hsv(r, g, b)[0]);
-        saturationValue = Math.round(colorConverter.rgb.hsv(r, g, b)[1]);
+        const color = new ColorTranslator('rgb(' + r + ',' + g + ',' + b + ')');
+        hueValue = color.H
+        saturationValue = color.S
         switch (action) {
             case "on":
                 lightsOnCounter++
