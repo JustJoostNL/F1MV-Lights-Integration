@@ -11,7 +11,6 @@ const electronLocalShortcut = require('electron-localshortcut');
 const {
     autoUpdater
 } = require("electron-updater")
-const colorTranslator = require('colortranslator');
 const process = require('process');
 const configDefault = require("../config/config");
 const Store = require('electron-store');
@@ -23,7 +22,10 @@ const userConfig = new Store({
     defaults: configDefault
 });
 const Tradfri = require("node-tradfri-client");
+
 const colorConverter = require('color-convert');
+const { ColorTranslator } = require('colortranslator');
+const { colord } = require('colord');
 
 let debugPreference = userConfig.get('Settings.advancedSettings.debugMode');
 let f1mvURL = userConfig.get('Settings.MultiViewerForF1Settings.liveTimingURL') + '/api/graphql'
@@ -1207,14 +1209,15 @@ async function ikeaControl(r, g, b, brightness, action, flag) {
             case "on":
                 lightsOnCounter++;
                 let hueValue;
+                let saturationValue;
                 if (debugPreference) {
                     win.webContents.send('log', "Turning on the Ikea lights...");
                 }
 
                 // convert rgb to hsl
-                const hsl = colorTranslator.ColorTranslator.toHSL('rgb(' + r + ',' + g + ',' + b + ')');
-                // it returns 'hsl(0, 0%, 0%)' so we need to split it
-                hueValue = hsl.split('(')[1].split(',')[0];
+                const color = new ColorTranslator('rgb(' + r + ',' + g + ',' + b + ')');
+                hueValue = color.H
+                saturationValue = color.S
                 if (debugPreference) {
                     win.webContents.send('log', "The converted hue value from the given RGB value for Ikea RGB lights is: " + hueValue);
                 }
@@ -1226,6 +1229,7 @@ async function ikeaControl(r, g, b, brightness, action, flag) {
                     device = allIkeaDevices[device].lightList[0];
                     device.toggle(true);
                     device.setHue(hueValue, 0);
+                    device.setSaturation(saturationValue, 0);
                     device.setBrightness(brightness, 0);
                 });
                 whiteDevices.forEach(device => {

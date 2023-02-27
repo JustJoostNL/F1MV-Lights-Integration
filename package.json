@@ -16,6 +16,7 @@
     "@sentry/electron": "^4.3.0",
     "@sentry/tracing": "^7.38.0",
     "color-convert": "^2.0.1",
+    "colord": "^2.9.3",
     "colortranslator": "^1.10.2",
     "cors": "^2.8.5",
     "discord-rpc": "github:JustJoostNL/DiscordRPC",
