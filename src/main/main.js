@@ -1326,6 +1326,7 @@ async function yeelightControl(r, g, b, brightness, action) {
 }
 
 const hue = require("node-hue-api");
+let hueBridgeFound = false;
 let hueApi;
 let hueClient;
 let hueAllLights;
@@ -1340,19 +1341,19 @@ async function hueInitialize() {
         hueApi = await hue.discovery.nupnpSearch();
         if (hueApi.length === 0) {
             win.webContents.send('toaster', "No Hue bridges found");
-            hueOnline = false;
+            hueBridgeFound = false;
         } else {
             bridgeIP = hueApi[0].ipaddress;
             userConfig.set('Settings.hueSettings.hueBridgeIP', bridgeIP);
             win.webContents.send('toaster', "Hue bridge found at: " + bridgeIP);
-            hueOnline = true;
+            hueBridgeFound = true;
         }
     } else {
         bridgeIP = userConfig.get('Settings.hueSettings.hueBridgeIP');
         win.webContents.send('toaster', "Hue bridge found at: " + bridgeIP);
-        hueOnline = true;
+        hueBridgeFound = true;
     }
-    if (hueOnline) {
+    if (hueBridgeFound) {
         hueClient = await hue.v3.api.createLocal(bridgeIP).connect();
 
         const appName = "F1MV-Lights-Integration";
@@ -1378,6 +1379,8 @@ async function hueInitialize() {
 
             authHueApi = await hue.v3.api.createLocal(bridgeIP).connect(token);
 
+            hueOnline = true;
+
             hueAllLights = await authHueApi.lights.getAll();
             hueEntertainmentZones = await authHueApi.groups.getEntertainment();
 
@@ -1394,6 +1397,7 @@ async function hueInitialize() {
                 win.webContents.send('toaster', "No Hue lights found or an error occurred");
             }
         } catch (err) {
+            hueOnline = false;
             try {
                 if (err.getHueErrorType() === 101) {
                     win.webContents.send('toaster', "The Link button on the bridge was not pressed. Please press the Link button and try again.");
@@ -1401,6 +1405,7 @@ async function hueInitialize() {
                     win.webContents.send('toaster', `Unexpected Error: ${err.message}`);
                 }
             } catch (error) {
+                hueOnline = false;
                 win.webContents.send('toaster', `Unexpected Error: ${err.message}`);
             }
         }
