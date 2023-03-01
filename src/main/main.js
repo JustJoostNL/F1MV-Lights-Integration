@@ -19,7 +19,19 @@ const {
 } = require("yeelight.io");
 const userConfig = new Store({
     name: 'settings',
-    defaults: configDefault
+    defaults: configDefault,
+    migrations: {
+        '1.1.7': userConfig => {
+            console.log('Migrating config...')
+            userConfig.set('version', '1.1.7');
+            console.log('Config migrated!')
+        },
+        // '1.1.8': userConfig => {
+        //     console.log('Migrating config...')
+        //     userConfig.set('version', '1.1.8');
+        //     console.log('Config migrated!')
+        // },
+    }
 });
 const Tradfri = require("node-tradfri-client");
 
@@ -215,11 +227,6 @@ function createWindow() {
 
 app.whenReady().then(() => {
     createWindow()
-    migrateConfig().then(r => {
-        if (debugPreference) {
-            console.log(r)
-        }
-    });
 
     electronLocalShortcut.register(win, 'shift+d', () => {
         if (!devMode) {
@@ -561,120 +568,6 @@ ipcMain.on('saveConfigColors', (event, arg) => {
     userConfig.set('Settings.generalSettings.colorSettings.vscEnding.g', parseInt(vscEnding.g));
     userConfig.set('Settings.generalSettings.colorSettings.vscEnding.b', parseInt(vscEnding.b));
 })
-
-async function migrateConfig() {
-    // if the config version is != 1 migrate the config
-    if (userConfig.get('version') !== 18) {
-        setTimeout(() => {
-            win.webContents.send('log', 'Migrating config...')
-        }, 1500);
-        // migrate the config
-        const oldConfig = userConfig.store;
-        const newConfig = {
-            "Settings": {
-                "generalSettings": {
-                    "autoTurnOffLights": oldConfig.Settings.generalSettings.autoTurnOffLights,
-                    "defaultBrightness": oldConfig.Settings.generalSettings.defaultBrightness,
-                    "hideLogs": oldConfig.Settings.generalSettings.hideLogs,
-                    "colorSettings": {
-                        green: {
-                            r: oldConfig.Settings.generalSettings.colorSettings.green.r,
-                            g: oldConfig.Settings.generalSettings.colorSettings.green.g,
-                            b: oldConfig.Settings.generalSettings.colorSettings.green.b
-                        },
-                        yellow: {
-                            r: oldConfig.Settings.generalSettings.colorSettings.yellow.r,
-                            g: oldConfig.Settings.generalSettings.colorSettings.yellow.g,
-                            b: oldConfig.Settings.generalSettings.colorSettings.yellow.b
-                        },
-                        red: {
-                            r: oldConfig.Settings.generalSettings.colorSettings.red.r,
-                            g: oldConfig.Settings.generalSettings.colorSettings.red.g,
-                            b: oldConfig.Settings.generalSettings.colorSettings.red.b
-                        },
-                        safetyCar: {
-                            r: oldConfig.Settings.generalSettings.colorSettings.safetyCar.r,
-                            g: oldConfig.Settings.generalSettings.colorSettings.safetyCar.g,
-                            b: oldConfig.Settings.generalSettings.colorSettings.safetyCar.b
-
-                        },
-                        vsc: {
-                            r: oldConfig.Settings.generalSettings.colorSettings.vsc.r,
-                            g: oldConfig.Settings.generalSettings.colorSettings.vsc.g,
-                            b: oldConfig.Settings.generalSettings.colorSettings.vsc.b
-                        },
-                        vscEnding: {
-                            r: oldConfig.Settings.generalSettings.colorSettings.vscEnding.r,
-                            g: oldConfig.Settings.generalSettings.colorSettings.vscEnding.g,
-                            b: oldConfig.Settings.generalSettings.colorSettings.vscEnding.b
-
-                        }
-                    }
-                },
-                "MultiViewerForF1Settings": {
-                    "liveTimingURL": oldConfig.Settings.MultiViewerForF1Settings.liveTimingURL,
-                    "f1mvCheck": oldConfig.Settings.MultiViewerForF1Settings.f1mvCheck,
-                },
-                "hueSettings": {
-                    "hueDisable": oldConfig.Settings.hueSettings.hueDisable,
-                    "hueBridgeIP": oldConfig.Settings.hueSettings.hueBridgeIP,
-                    "deviceIDs": oldConfig.Settings.hueSettings.deviceIDs,
-                    "entertainmentZoneIDs": oldConfig.Settings.hueSettings.entertainmentZoneIDs,
-                    "token": oldConfig.Settings.hueSettings.token,
-                    "hue3rdPartyCompatMode": false,
-                },
-                "ikeaSettings": {
-                    "ikeaDisable": oldConfig.Settings.ikeaSettings.ikeaDisable,
-                    "securityCode": oldConfig.Settings.ikeaSettings.securityCode,
-                    "identity": oldConfig.Settings.ikeaSettings.identity,
-                    "psk": oldConfig.Settings.ikeaSettings.psk,
-                    "deviceIDs": oldConfig.Settings.ikeaSettings.deviceIDs
-                },
-                "goveeSettings": {
-                    "goveeDisable": oldConfig.Settings.goveeSettings.goveeDisable
-                },
-                "openRGBSettings": {
-                    "openRGBDisable": oldConfig.Settings.openRGBSettings.openRGBDisable,
-                    "openRGBServerIP": oldConfig.Settings.openRGBSettings.openRGBServerIP,
-                    "openRGBServerPort": oldConfig.Settings.openRGBSettings.openRGBServerPort,
-                },
-                "nanoLeafSettings": {
-                    "nanoLeafDisable": oldConfig.Settings.nanoLeafSettings.nanoLeafDisable,
-                    "devices": oldConfig.Settings.nanoLeafSettings.devices
-                },
-                "WLEDSettings": {
-                    "WLEDDisable": true,
-                    "devices": []
-                },
-                "yeeLightSettings": {
-                    "yeeLightDisable": oldConfig.Settings.yeeLightSettings.yeeLightDisable,
-                    "deviceIPs": oldConfig.Settings.yeeLightSettings.deviceIPs
-                },
-                "streamDeckSettings": {
-                    "streamDeckDisable": oldConfig.Settings.streamDeckSettings.streamDeckDisable,
-                },
-                "discordSettings": {
-                    "discordRPCDisable": false,
-                },
-                "webServerSettings": {
-                    "webServerDisable": oldConfig.Settings.webServerSettings.webServerDisable,
-                    "webServerPort": oldConfig.Settings.webServerSettings.webServerPort,
-                },
-                "advancedSettings": {
-                    "debugMode": oldConfig.Settings.advancedSettings.debugMode,
-                    "updateChannel": oldConfig.Settings.advancedSettings.updateChannel,
-                    "analytics": oldConfig.Settings.advancedSettings.analytics
-                }
-            },
-            "version": 18
-        }
-        userConfig.clear();
-        userConfig.set(newConfig);
-        setTimeout(() => {
-            win.webContents.send('log', 'Config migrated!')
-        }, 1500);
-    }
-}
 
 async function f1mvAPICall() {
     if (f1mvCheck) {
@@ -2046,6 +1939,7 @@ async function WLEDControl(r, g, b, brightness, action){
                 if(debugPreference){
                     win.webContents.send('log', "Turning on the WLED device with IP: " + device);
                 }
+                await WLEDDevice.clearSegments()
                 await WLEDDevice.updateState({
                     on: true,
                     brightness: brightness,
