@@ -12,19 +12,30 @@ const {
     autoUpdater
 } = require("electron-updater")
 const process = require('process');
-const configDefault = require("../config/config");
 const Store = require('electron-store');
 const {
     Bulb
 } = require("yeelight.io");
+const configDefault = require("../config/config");
 const userConfig = new Store({
     name: 'settings',
     defaults: configDefault,
+    beforeEachMigration: (store, context) => {
+        console.log(`Migrating the config from ${context.fromVersion} → ${context.toVersion}`);
+
+    },
     migrations: {
         '1.1.7': userConfig => {
-            console.log('Migrating config...')
             userConfig.set('version', '1.1.7');
-            console.log('Config migrated!')
+            // new settings:
+            userConfig.set('Settings.generalSettings.goBackToStatic', true)
+            userConfig.set('Settings.generalSettings.goBackToStaticDelay', 10)
+            userConfig.set('Settings.generalSettings.staticBrightness', 70)
+            userConfig.set('Settings.generalSettings.colorSettings.staticColor', {
+                r: 255,
+                g: 255,
+                b: 255
+            })
         },
         // '1.1.8': userConfig => {
         //     console.log('Migrating config...')
@@ -38,20 +49,20 @@ const Tradfri = require("node-tradfri-client");
 const { ColorTranslator } = require('colortranslator');
 
 let debugPreference = userConfig.get('Settings.advancedSettings.debugMode');
-let f1mvURL = userConfig.get('Settings.MultiViewerForF1Settings.liveTimingURL') + '/api/graphql'
-let f1mvCheckURL = userConfig.get('Settings.MultiViewerForF1Settings.liveTimingURL');
-function createF1MVCheckURL() {
-// remove a trailing slash if it exists
-    if (f1mvCheckURL.endsWith('/')) {
-        f1mvCheckURL = f1mvCheckURL.slice(0, -1);
+let f1mvRawURL = userConfig.get('Settings.MultiViewerForF1Settings.liveTimingURL');
+let f1mvURL;
+let f1mvCheckURL;
+function createF1MVURLs() {
+    if (f1mvRawURL.endsWith('/')) {
+        f1mvRawURL = f1mvRawURL.slice(0, -1);
     }
-// localhost fix
-    if (f1mvCheckURL === 'http://localhost:10101') {
-        f1mvCheckURL = 'http://127.0.0.1:10101'
+    if (f1mvRawURL === 'http://localhost:10101') {
+        f1mvRawURL = 'http://127.0.0.1:10101'
     }
-    f1mvCheckURL = f1mvCheckURL + '/api/v1/live-timing/Heartbeat'
+    f1mvURL = f1mvRawURL + '/api/graphql'
+    f1mvCheckURL = f1mvRawURL + '/api/v1/live-timing/Heartbeat'
 }
-createF1MVCheckURL();
+createF1MVURLs();
 let ikeaDisabled = userConfig.get('Settings.ikeaSettings.ikeaDisable')
 let goveeDisabled = userConfig.get('Settings.goveeSettings.goveeDisable')
 let yeelightDisabled = userConfig.get('Settings.yeeLightSettings.yeeLightDisable')
@@ -2113,7 +2124,7 @@ function reloadFromConfig(){
 
     win.webContents.send('log', "Reloading from config..");
     debugPreference = userConfig.get('Settings.advancedSettings.debugMode');
-    f1mvURL = userConfig.get('Settings.MultiViewerForF1Settings.liveTimingURL') + '/api/graphql'
+    f1mvRawURL = userConfig.get('Settings.MultiViewerForF1Settings.liveTimingURL');
     f1mvCheckURL = userConfig.get('Settings.MultiViewerForF1Settings.liveTimingURL')
     ikeaDisabled = userConfig.get('Settings.ikeaSettings.ikeaDisable')
     goveeDisabled = userConfig.get('Settings.goveeSettings.goveeDisable')
@@ -2152,7 +2163,7 @@ function reloadFromConfig(){
     updateChannel = userConfig.get('Settings.advancedSettings.updateChannel')
     autoUpdater.channel = updateChannel;
 
-    createF1MVCheckURL();
+    createF1MVURLs();
 
     win.webContents.send('log', "Reloaded from config!");
     if (!ikeaDisabled  && ikeaOnline) {

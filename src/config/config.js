@@ -8,11 +8,21 @@ const config = {
                     // the default brightness of the lights
                     defaultBrightness: 100,
 
+                    goBackToStatic: true,
+                    goBackToStaticDelay: 10,
+                    staticBrightness: 70,
+
                     hideLogs: true,
 
                     // here you can define other colors then the default ones
                     colorSettings:
                         {
+                            staticColor: {
+                                r: 255,
+                                g: 255,
+                                b: 255
+                            },
+
                             green: {
                                 r: 0,
                                 g: 255,
@@ -153,7 +163,7 @@ const config = {
                 }
         },
         // do not change this version!
-        version: 18,
+        version: "1.1.7",
     devConfig:
         {
             autoStartDevTools: false
