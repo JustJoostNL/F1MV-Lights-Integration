@@ -14,7 +14,7 @@
   "dependencies": {
     "@elgato-stream-deck/node": "^5.7.2",
     "@sentry/electron": "^4.3.0",
-    "@sentry/tracing": "^7.38.0",
+    "@sentry/tracing": "^7.43.0",
     "color-convert": "^2.0.1",
     "colord": "^2.9.3",
     "colortranslator": "^1.10.2",
@@ -25,11 +25,10 @@
     "electron-updater": "^5.3.0",
     "express": "^4.18.2",
     "govee-lan-control": "^2.1.0",
-    "jquery": "^3.6.3",
+    "jquery": "^3.6.4",
     "nanoleaves": "github:erictrinh/nanoleaves",
     "node-fetch": "^2.6.9",
     "node-hue-api": "^5.0.0-beta.15",
-    "node-persist": "^3.1.0",
     "node-tradfri-client": "3.2.0",
     "openrgb-sdk": "^0.5.2",
     "process": "^0.11.10",
@@ -38,8 +37,8 @@
     "yeelight.io": "^1.1.7"
   },
   "devDependencies": {
-    "electron": "^23.0.0",
-    "electron-builder": "^24.0.0-alpha.11",
+    "electron": "^23.1.4",
+    "electron-builder": "^24.0.0-alpha.13",
     "eslint": "^8.36.0"
   }
 }
