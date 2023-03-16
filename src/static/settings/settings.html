@@ -12,7 +12,7 @@
     <script>
         const $ = jQuery = require("jquery");
     </script>
-    <title>F1MV-Lights-Integration</title>
+    <title>F1MV Lights Integration</title>
 </head>
 
 <body>
@@ -63,14 +63,41 @@
             <span>Automatically turn off lights when the session ended</span>
         </label>
     </p>
-    <span style="color:grey; font-size: 80%">This will turn off the lights automatically when the session has ended</span>
-    <p>
+    <span style="color:grey; font-size: 80%;">This will turn off the lights automatically when the session has ended</span>
+    <p style="margin-bottom: 40px; margin-top: 40px">
         <label>
             <span>Default brightness</span>
             <input style="color:white" type="number" id="brightness-input" value="" />
             <span style="color:grey">This is the brightness the lights will have, the maximum is 100.</span>
         </label>
     </p>
+    <p>
+        <label>
+            <input type="checkbox" id="go-back-to-static-setting" class="filled-in" />
+            <span>Go back to static color</span>
+        </label>
+    </p>
+    <span style="color:grey; font-size: 80%">Automatically go back to a (custom) static color after a (custom) amount of time.</span>
+    <p>
+        <label>
+            <span>Go back to static delay</span>
+            <input style="color:white" type="number" id="go-back-to-static-delay-input" value="" />
+            <span style="color:grey">This is the delay in seconds before the lights go back to a static color.</span>
+        </label>
+    </p>
+    <p>
+        <label>
+            <span>Go back to static brightness</span>
+            <input style="color:white" type="number" id="go-back-to-static-brightness-input" value="" />
+            <span style="color:grey">This is the brightness the lights will have, when they go back to a static color. The maximum is 100.</span>
+        </label>
+    </p>
+    <div style="margin-top: 40px" class="simulation__buttons">
+        <a class="waves-effect waves-light btn-large simulation__button tooltipped" href="colorSettings.html" data-position="bottom">
+            <em class="material-icons">palette</em>
+            Color Settings
+        </a>
+    </div>
 </div>
 <div class="container simulation">
     <h2 class="simulation__title">F1MV Settings</h2>
@@ -81,12 +108,6 @@
             <span style="color:grey">This is the MultiViewer For F1 Live Timing URL</span>
         </label>
     </p>
-    <div class="simulation__buttons">
-        <a class="waves-effect waves-light btn-large simulation__button tooltipped" href="colorSettings.html" data-position="bottom">
-            <em class="material-icons">palette</em>
-            Color Settings
-        </a>
-    </div>
 </div>
 <div class="container simulation">
     <h2 class="simulation__title">Philips Hue Settings</h2>

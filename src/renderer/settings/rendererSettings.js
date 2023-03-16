@@ -103,6 +103,15 @@ $(function() {
 			$("#disable-discord-rpc-setting").removeAttr("checked");
 		}
 
+		if(arg.Settings.generalSettings.goBackToStatic) {
+			$("#go-back-to-static-setting").attr("checked", "checked");
+		} else if (!arg.Settings.generalSettings.goBackToStatic) {
+			$("#go-back-to-static-setting").removeAttr("checked");
+		}
+
+		$("#go-back-to-static-delay-input").val(arg.Settings.generalSettings.goBackToStaticDelay);
+		$("#go-back-to-static-brightness-input").val(arg.Settings.generalSettings.staticBrightness);
+
 		$("#openrgb-ip-input").val(arg.Settings.openRGBSettings.openRGBServerIP);
 		$("#openrgb-port-input").val(arg.Settings.openRGBSettings.openRGBServerPort);
 
@@ -138,6 +147,9 @@ function saveConfig() {
 	ipcRenderer.send("saveConfig", {
 		defaultBrightness: $("#brightness-input").val(),
 		autoTurnOffLights: $("#auto-turn-off-setting").is(":checked"),
+		goBackToStatic: $("#go-back-to-static-setting").is(":checked"),
+		goBackToStaticDelay: $("#go-back-to-static-delay-input").val(),
+		staticBrightness: $("#go-back-to-static-brightness-input").val(),
 		liveTimingURL: $("#live-timing-url-input").val(),
 		hueDisable: $("#disable-hue-setting").is(":checked"),
 		hue3rdPartyCompatMode: $("#hue-compat-mode-setting").is(":checked"),

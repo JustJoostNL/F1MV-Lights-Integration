@@ -149,6 +149,7 @@ let goBackToStaticDelay = userConfig.get("Settings.generalSettings.goBackToStati
 goBackToStaticDelay = goBackToStaticDelay * 1000;
 let goBackToStaticBrightness = userConfig.get("Settings.generalSettings.staticBrightness");
 let goBackToStaticRuns = false;
+let goBackToStaticTimeout;
 
 
 let nanoLeafDevices = userConfig.get("Settings.nanoLeafSettings.devices");
@@ -502,6 +503,9 @@ ipcMain.on("saveConfig", (event, arg) => {
 	const {
 		defaultBrightness,
 		autoTurnOffLights,
+		goBackToStatic,
+		goBackToStaticDelay,
+		staticBrightness,
 		liveTimingURL,
 		hueDisable,
 		hue3rdPartyCompatMode,
@@ -536,6 +540,9 @@ ipcMain.on("saveConfig", (event, arg) => {
 
 	userConfig.set("Settings.generalSettings.defaultBrightness", parseInt(defaultBrightness));
 	userConfig.set("Settings.generalSettings.autoTurnOffLights", autoTurnOffLights);
+	userConfig.set("Settings.generalSettings.goBackToStatic", goBackToStatic);
+	userConfig.set("Settings.generalSettings.goBackToStaticDelay", parseInt(goBackToStaticDelay));
+	userConfig.set("Settings.generalSettings.staticBrightness", parseInt(staticBrightness));
 	userConfig.set("Settings.MultiViewerForF1Settings.liveTimingURL", liveTimingURL);
 	userConfig.set("Settings.hueSettings.hueDisable", hueDisable);
 	userConfig.set("Settings.hueSettings.hue3rdPartyCompatMode", hue3rdPartyCompatMode);
@@ -559,6 +566,7 @@ ipcMain.on("saveConfig", (event, arg) => {
 	userConfig.set("Settings.advancedSettings.debugMode", debugMode);
 });
 ipcMain.on("saveConfigColors", (event, arg) => {
+	const staticColor = arg.staticColor;
 	const green = arg.green;
 	const yellow = arg.yellow;
 	const red = arg.red;
@@ -566,6 +574,10 @@ ipcMain.on("saveConfigColors", (event, arg) => {
 	const vsc = arg.vsc;
 	const vscEnding = arg.vscEnding;
 
+
+	userConfig.set("Settings.generalSettings.colorSettings.staticColor.r", parseInt(staticColor.r));
+	userConfig.set("Settings.generalSettings.colorSettings.staticColor.g", parseInt(staticColor.g));
+	userConfig.set("Settings.generalSettings.colorSettings.staticColor.b", parseInt(staticColor.b));
 	userConfig.set("Settings.generalSettings.colorSettings.green.r", parseInt(green.r));
 	userConfig.set("Settings.generalSettings.colorSettings.green.g", parseInt(green.g));
 	userConfig.set("Settings.generalSettings.colorSettings.green.b", parseInt(green.b));
@@ -704,23 +716,27 @@ async function controlAllLights(r, g, b, brightness, action, flag) {
 		await webServerControl(r, g, b, brightness, action);
 	}
 	if (goBackToStaticPref) {
-		console.log(action);
 		if (action === "off"){
+			clearTimeout(goBackToStaticTimeout);
+		}
+		if (action === "off" || flag === "static"){
 			return;
 		}
-		goBackToStatic();
+		if (goBackToStaticRuns){
+			clearTimeout(goBackToStaticTimeout);
+			goBackToStatic();
+		} else {
+			goBackToStaticRuns = true;
+			goBackToStatic();
+		}
 	}
 }
 
 function goBackToStatic(){
-	if (!goBackToStaticRuns) {
-		goBackToStaticRuns = true;
-		setTimeout(function () {
-			console.log("Going back...");
-			controlAllLights(staticColor.r, staticColor.g, staticColor.b, goBackToStaticBrightness, "on", "green");
-			goBackToStaticRuns = false;
-		}, goBackToStaticDelay);
-	}
+	goBackToStaticTimeout = setTimeout(function () {
+		controlAllLights(staticColor.r, staticColor.g, staticColor.b, goBackToStaticBrightness, "on", "static");
+		goBackToStaticRuns = false;
+	}, goBackToStaticDelay);
 }
 
 async function simulateFlag(arg) {
@@ -2185,6 +2201,10 @@ function reloadFromConfig(){
 	webServerDisabled = userConfig.get("Settings.webServerSettings.webServerDisable");
 	WLEDDisabled = userConfig.get("Settings.WLEDSettings.WLEDDisable");
 	WLEDDeviceIPs = userConfig.get("Settings.WLEDSettings.devices");
+	goBackToStaticPref = userConfig.get("Settings.generalSettings.goBackToStatic");
+	goBackToStaticDelay = userConfig.get("Settings.generalSettings.goBackToStaticDelay");
+	goBackToStaticDelay = goBackToStaticDelay * 1000;
+	goBackToStaticBrightness = userConfig.get("Settings.generalSettings.staticBrightness");
 
 	updateChannel = userConfig.get("Settings.advancedSettings.updateChannel");
 	autoUpdater.channel = updateChannel;

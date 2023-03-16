@@ -5,6 +5,9 @@ $(function() {
 
 		console.log("Loading settings...");
 
+		$("#static-color-red").val(arg.Settings.generalSettings.colorSettings.staticColor.r);
+		$("#static-color-green").val(arg.Settings.generalSettings.colorSettings.staticColor.g);
+		$("#static-color-blue").val(arg.Settings.generalSettings.colorSettings.staticColor.b);
 		$("#green-flag-red").val(arg.Settings.generalSettings.colorSettings.green.r);
 		$("#green-flag-green").val(arg.Settings.generalSettings.colorSettings.green.g);
 		$("#green-flag-blue").val(arg.Settings.generalSettings.colorSettings.green.b);
@@ -28,6 +31,11 @@ $(function() {
 
 function saveConfigColors() {
 	ipcRenderer.send("saveConfigColors", {
+		staticColor: {
+			r: $("#static-color-red").val(),
+			g: $("#static-color-green").val(),
+			b: $("#static-color-blue").val()
+		},
 		green: {
 			r: $("#green-flag-red").val(),
 			g: $("#green-flag-green").val(),
