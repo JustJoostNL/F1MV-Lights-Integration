@@ -71,6 +71,7 @@ const config = {
                 	entertainmentZoneIDs: [],
                 	token: undefined,
                 	hue3rdPartyCompatMode: false,
+					enableFade: false,
                 },
 
         	ikeaSettings:

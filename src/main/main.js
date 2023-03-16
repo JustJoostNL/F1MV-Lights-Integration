@@ -37,11 +37,10 @@ const userConfig = new Store({
 				b: 255
 			});
 		},
-		// '1.1.8': userConfig => {
-		//     console.log('Migrating config...')
-		//     userConfig.set('version', '1.1.8');
-		//     console.log('Config migrated!')
-		// },
+		'1.1.8': userConfig => {
+		    userConfig.set('version', "1.1.8");
+			userConfig.set('Settings.hueSettings.enableFade', false);
+		},
 	}
 });
 const Tradfri = require("node-tradfri-client");
@@ -160,6 +159,7 @@ let hueSelectedEntertainmentZonesIDs = userConfig.get("Settings.hueSettings.ente
 let hue3rdPartyCompatMode = userConfig.get("Settings.hueSettings.hue3rdPartyCompatMode");
 
 let hueBridgeIP = userConfig.get("Settings.hueSettings.hueBridgeIP");
+let hueEnableFade = userConfig.get("Settings.hueSettings.enableFade");
 
 let openRGBPort = userConfig.get("Settings.openRGBSettings.openRGBServerPort");
 let openRGBIP = userConfig.get("Settings.openRGBSettings.openRGBServerIP");
@@ -460,6 +460,7 @@ ipcMain.on("linkHue", async () => {
 ipcMain.on("refreshHueDevices", async () => {
 	win.webContents.send("toaster", "Refreshing Hue Devices...");
 	await hueControl(0, 255, 0, userBrightness, "refreshDevices");
+	await hueControl(0, 255, 0, userBrightness, "refreshEntertainmentZones");
 });
 ipcMain.on("select-hue-devices", async () => {
 	win.webContents.send("toaster", "Opening Hue device selection window...");
@@ -508,6 +509,7 @@ ipcMain.on("saveConfig", (event, arg) => {
 		staticBrightness,
 		liveTimingURL,
 		hueDisable,
+		hueFade,
 		hue3rdPartyCompatMode,
 		ikeaDisable,
 		securityCode,
@@ -546,6 +548,7 @@ ipcMain.on("saveConfig", (event, arg) => {
 	userConfig.set("Settings.MultiViewerForF1Settings.liveTimingURL", liveTimingURL);
 	userConfig.set("Settings.hueSettings.hueDisable", hueDisable);
 	userConfig.set("Settings.hueSettings.hue3rdPartyCompatMode", hue3rdPartyCompatMode);
+	userConfig.set("Settings.hueSettings.enableFade", hueFade);
 	userConfig.set("Settings.ikeaSettings.securityCode", securityCode);
 	userConfig.set("Settings.ikeaSettings.ikeaDisable", ikeaDisable);
 	userConfig.set("Settings.goveeSettings.goveeDisable", goveeDisable);
@@ -1472,13 +1475,16 @@ async function hueControl(r, g, b, brightness, action) {
 					if (debugPreference) {
 						win.webContents.send("log", "Turning on Hue light with ID: " + light);
 					}
-					await authHueApi.lights.setLightState(light, new LightState()
+					const lightState = new LightState()
 						.on(true)
 						.bri(brightness)
 						.hue(hueValue)
-						.sat(saturationValue)
-						.transitionInstant()
-					);
+						.sat(saturationValue);
+
+					if (!hueEnableFade) {
+						lightState.transitionInstant();
+					}
+					await authHueApi.lights.setLightState(light, lightState);
 				}
 			} else {
 				for (const light of hueSelectedDeviceIDs) {
@@ -1486,12 +1492,15 @@ async function hueControl(r, g, b, brightness, action) {
 					if (debugPreference) {
 						win.webContents.send("log", "Turning on Hue light with ID: " + light);
 					}
-					await authHueApi.lights.setLightState(light, new LightState()
+					const lightState = new LightState()
 						.on(true)
 						.bri(brightness)
 						.rgb(r, g, b)
-						.transitionInstant()
-					);
+
+					if (!hueEnableFade) {
+						lightState.transitionInstant();
+					}
+					await authHueApi.lights.setLightState(light, lightState);
 				}
 			}
 			for (const zoneID of hueSelectedEntertainmentZonesIDs) {
@@ -1499,13 +1508,16 @@ async function hueControl(r, g, b, brightness, action) {
 				if (debugPreference) {
 					win.webContents.send("log", "Turning on Hue entertainment zone with ID: " + zoneID);
 				}
-				await authHueApi.groups.setGroupState(zoneID, new GroupLightState()
+				const lightState = new GroupLightState()
 					.on(true)
 					.bri(brightness)
 					.hue(hueValue)
-					.sat(saturationValue)
-					.transitionInstant()
-				);
+					.sat(saturationValue);
+
+				if (!hueEnableFade) {
+					lightState.transitionInstant();
+				}
+				await authHueApi.groups.setGroupState(zoneID, lightState);
 			}
 			break;
 
@@ -1515,20 +1527,26 @@ async function hueControl(r, g, b, brightness, action) {
 				if (debugPreference) {
 					win.webContents.send("log", "Turning off Hue light with ID: " + light);
 				}
-				await authHueApi.lights.setLightState(light, new LightState()
-					.on(false)
-					.transitionInstant()
-				);
+				const lightState = new LightState()
+					.on(false);
+
+				if (!hueEnableFade) {
+					lightState.transitionInstant();
+				}
+				await authHueApi.lights.setLightState(light, lightState);
 			}
 			for (const zoneID of hueSelectedEntertainmentZonesIDs) {
 				lightsOffCounter++;
 				if (debugPreference) {
 					win.webContents.send("log", "Turning off Hue entertainment zone with ID: " + zoneID);
 				}
-				await authHueApi.groups.setGroupState(zoneID, new GroupLightState()
-					.on(false)
-					.transitionInstant()
-				);
+				const lightState = new GroupLightState()
+					.on(false);
+
+				if (!hueEnableFade) {
+					lightState.transitionInstant();
+				}
+				await authHueApi.groups.setGroupState(zoneID, lightState);
 			}
 			break;
 		}
@@ -2191,6 +2209,7 @@ function reloadFromConfig(){
 	yeelightIPs = userConfig.get("Settings.yeeLightSettings.deviceIPs");
 	hueSelectedDeviceIDs = userConfig.get("Settings.hueSettings.deviceIDs");
 	hueBridgeIP = userConfig.get("Settings.hueSettings.hueBridgeIP");
+	hueEnableFade = userConfig.get("Settings.hueSettings.enableFade");
 	hueSelectedEntertainmentZonesIDs = userConfig.get("Settings.hueSettings.entertainmentZoneIDs");
 	hue3rdPartyCompatMode = userConfig.get("Settings.hueSettings.hue3rdPartyCompatMode");
 	openRGBPort = userConfig.get("Settings.openRGBSettings.openRGBServerPort");
