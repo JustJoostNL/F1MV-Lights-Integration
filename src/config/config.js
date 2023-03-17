@@ -54,7 +54,43 @@ const config = {
                         		b: 0
 
                         	}
-                        }
+                        },
+                	effectSettings: [
+                		{
+                			name: "VSC Ending Blink Effect",
+                			onFlag: "vscEnding",
+                			enabled: true,
+                			actions: [
+                				{
+                					type: "on",
+                					color: {
+                						r: 0,
+                						g: 255,
+                						b: 0
+                					},
+                					brightness: 100,
+                				},
+                				{
+                					type: "delay",
+                					delay: 500,
+                				},
+                				{
+                					type: "on",
+                					color: {
+                						r: 255,
+                						g: 150,
+                						b: 0
+                					},
+                					brightness: 100,
+                				},
+                				{
+                					type: "delay",
+                					delay: 500,
+                				}
+                			],
+                			amount: 5
+                		}
+                	]
                 },
 
         	MultiViewerForF1Settings:
@@ -71,7 +107,7 @@ const config = {
                 	entertainmentZoneIDs: [],
                 	token: undefined,
                 	hue3rdPartyCompatMode: false,
-					enableFade: false,
+                	enableFade: false,
                 },
 
         	ikeaSettings:
@@ -164,7 +200,7 @@ const config = {
                 }
         },
 	// do not change this version!
-	version: "1.1.7",
+	version: "1.1.8",
 	devConfig:
         {
         	autoStartDevTools: false

@@ -37,12 +37,54 @@ const userConfig = new Store({
 				b: 255
 			});
 		},
-		'1.1.8': userConfig => {
-		    userConfig.set('version', "1.1.8");
-			userConfig.set('Settings.hueSettings.enableFade', false);
+		"1.1.8": userConfig => {
+		    userConfig.set("version", "1.1.8");
+			userConfig.set("Settings.hueSettings.enableFade", false);
+			userConfig.set("Settings.generalSettings.effectSettings", [
+				{
+					name: "VSC Blink Effect",
+					onFlag: "vscEnding",
+					enabled: true,
+					actions: [
+						{
+							type: "on",
+							color: {
+								r: 0,
+								g: 255,
+								b: 0
+							},
+							brightness: 100,
+						},
+						{
+							type: "delay",
+							delay: 500,
+						},
+						{
+							type: "on",
+							color: {
+								r: 255,
+								g: 150,
+								b: 0
+							},
+							brightness: 100,
+						},
+						{
+							type: "delay",
+							delay: 500,
+						}
+					],
+					amount: 5
+				}
+			]);
 		},
 	}
 });
+
+
+async function sleep(ms) {
+	return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 const Tradfri = require("node-tradfri-client");
 
 const { ColorTranslator } = require("colortranslator");
@@ -122,6 +164,8 @@ let f1mvCheck = userConfig.get("Settings.MultiViewerForF1Settings.f1mvCheck");
 const alwaysFalse = false;
 
 let hideLogs = userConfig.get("Settings.generalSettings.hideLogs");
+
+let effectSettings = userConfig.get("Settings.generalSettings.effectSettings");
 
 let errorCheck;
 
@@ -690,7 +734,75 @@ setTimeout(function () {
 	}, 300);
 }, 1000);
 
+
+async function effectHandler(flag){
+	for (let i = 0; i < effectSettings.length; i++) {
+		// check if the effect is enabled
+		if (effectSettings[i].enabled) {
+			// check if the flag matches the effect
+			if (effectSettings[i].onFlag === flag) {
+				// loop through the amount of times the effect should be run
+				for (let j = 0; j < effectSettings[i].amount; j++) {
+					// loop through the actions
+					for (let k = 0; k < effectSettings[i].actions.length; k++) {
+						// check the type of action and run the code
+						switch (effectSettings[i].actions[k].type) {
+						case "on":
+							let flagState;
+							let colorR = effectSettings[i].actions[k].color.r;
+							let colorG = effectSettings[i].actions[k].color.g;
+							let colorB = effectSettings[i].actions[k].color.b;
+							switch (true) {
+							case colorR === greenColor.r && colorG === greenColor.g && colorB === greenColor.b:
+								flagState = "green";
+								break;
+							case colorR === yellowColor.r && colorG === yellowColor.g && colorB === yellowColor.b:
+								flagState = "yellow";
+								break;
+							case colorR === safetyCarColor.r && colorG === safetyCarColor.g && colorB === safetyCarColor.b:
+								flagState = "safetyCar";
+								break;
+							case colorR === redColor.r && colorG === redColor.g && colorB === redColor.b:
+								flagState = "red";
+								break;
+							case colorR === vscColor.r && colorG === vscColor.g && colorB === vscColor.b:
+								flagState = "vsc";
+								break;
+							case colorR === vscEndingColor.r && colorG === vscEndingColor.g && colorB === vscEndingColor.b:
+								flagState = "vscEnding";
+								break;
+							default:
+								flagState = "none";
+								break;
+							}
+							let brightness = effectSettings[i].actions[k].brightness;
+							await controlAllLights(colorR, colorG, colorB, brightness, "on", flagState);
+							break;
+						case "off":
+							await controlAllLights(0, 0, 0, 0, "off", "off");
+							break;
+						case "delay":
+							let sleepDelay = effectSettings[i].actions[k].delay;
+							await sleep(sleepDelay);
+							break;
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+
 async function controlAllLights(r, g, b, brightness, action, flag) {
+	for (let i = 0; i < effectSettings.length; i++) {
+		if (effectSettings[i].enabled) {
+			if (effectSettings[i].onFlag === flag) {
+				await effectHandler(flag);
+				return;
+			}
+		}
+	}
 	if (!goveeDisabled) {
 		await goveeControl(r, g, b, brightness, action);
 	}
@@ -1495,7 +1607,7 @@ async function hueControl(r, g, b, brightness, action) {
 					const lightState = new LightState()
 						.on(true)
 						.bri(brightness)
-						.rgb(r, g, b)
+						.rgb(r, g, b);
 
 					if (!hueEnableFade) {
 						lightState.transitionInstant();
@@ -2224,6 +2336,7 @@ function reloadFromConfig(){
 	goBackToStaticDelay = userConfig.get("Settings.generalSettings.goBackToStaticDelay");
 	goBackToStaticDelay = goBackToStaticDelay * 1000;
 	goBackToStaticBrightness = userConfig.get("Settings.generalSettings.staticBrightness");
+	effectSettings = userConfig.get("Settings.generalSettings.effectSettings");
 
 	updateChannel = userConfig.get("Settings.advancedSettings.updateChannel");
 	autoUpdater.channel = updateChannel;
