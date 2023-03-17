@@ -6,11 +6,10 @@ generateUpdatesFilesForAllChannels: true
 asar: true
 
 files: [
-  "!.node-persist/**/*",
   "!.devcontainer/**/*",
   "!.deepsource.toml",
   "!dist/**/*",
-  "!devices.html"
+  "!node_modules/**/*.{mk,a,o,h}"
 ]
 
 directories:
