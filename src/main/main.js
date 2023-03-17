@@ -12,6 +12,7 @@ const {
 	autoUpdater
 } = require("electron-updater");
 const process = require("process");
+const path = require("path");
 const Store = require("electron-store");
 const {
 	Bulb
@@ -285,6 +286,7 @@ function createWindow() {
 			}
 		});
 	}
+	createDeepLinks();
 }
 
 
@@ -341,6 +343,16 @@ app.whenReady().then(() => {
 		}
 	});
 });
+
+function createDeepLinks(){
+	if (process.defaultApp) {
+		if (process.argv.length >= 2) {
+			app.setAsDefaultProtocolClient('f1mvli', process.execPath, [path.resolve(process.argv[1])])
+		}
+	} else {
+		app.setAsDefaultProtocolClient('f1mvli')
+	}
+}
 
 async function getUniqueID(){
 	const getUniqueIDURL = APIURL + "/f1mvli/analytics/active-users/getUniqueID";
