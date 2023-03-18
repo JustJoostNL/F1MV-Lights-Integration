@@ -115,7 +115,7 @@ const config = {
                 	// set this to true if you don't want to use IKEA lights
                 	ikeaDisable: true,
                 	// Here you need to fill in the security code from your IKEA Tradfri gateway, you can find it on the bottom of the gateway.
-                	securityCode: "SECURITY_CODE_HERE",
+                	securityCode: "",
                 	// you don't need to change this
                 	identity: undefined,
                 	// you don't need to change this
@@ -139,6 +139,15 @@ const config = {
                 	// the port of your OpenRGB server
                 	openRGBServerPort: 6742,
                 },
+
+        	homeAssistantSettings:
+				{
+					homeAssistantDisable: true,
+					host: "",
+					port: 8123,
+					token: "",
+					devices: []
+				},
 
         	nanoLeafSettings:
                 {
@@ -200,7 +209,7 @@ const config = {
                 }
         },
 	// do not change this version!
-	version: "1.1.8",
+	version: "1.1.9",
 	devConfig:
         {
         	autoStartDevTools: false

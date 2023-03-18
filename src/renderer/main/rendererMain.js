@@ -1,120 +1,18 @@
 const { ipcRenderer } = require("electron");
 const startTime = new Date().getTime();
 $(function() {
-	ipcRenderer.on("f1mvAPI", (event, arg) => {
-		if (arg === "online") {
-			$("#f1mv").find(".status").removeClass("error").addClass("success");
-		}
+	const APIs = ["f1mvAPI", "goveeAPI", "streamDeckAPI", "updateAPI", "f1tvAPI", "ikeaAPI", "yeeLightAPI", "hueAPI", "nanoLeafAPI", "WLEDAPI", "openRGBAPI", "homeAssistantAPI", "webServerAPI"];
 
-		if (arg === "offline") {
-			$("#f1mv").find(".status").removeClass("success").addClass("error");
-		}
-	});
-
-	ipcRenderer.on("goveeAPI", (event, arg) => {
-		if (arg === "online") {
-			$("#goveeAPI").find(".status").removeClass("error").addClass("success");
-		}
-
-		if (arg === "offline") {
-			$("#goveeAPI").find(".status").removeClass("success").addClass("error");
-		}
-	});
-
-	ipcRenderer.on("streamDeckAPI", (event, arg) => {
-		if (arg === "online") {
-			$("#streamDeckAPI").find(".status").removeClass("error").addClass("success");
-		}
-
-		if (arg === "offline") {
-			$("#streamDeckAPI").find(".status").removeClass("success").addClass("error");
-		}
-	});
-
-	ipcRenderer.on("updateAPI", (event, arg) => {
-		if (arg === "online") {
-			$("#updateAPI").find(".status").removeClass("error").addClass("success");
-		}
-
-		if (arg === "offline") {
-			$("#updateAPI").find(".status").removeClass("success").addClass("error");
-		}
-	});
-
-	ipcRenderer.on("f1tvAPI", (event, arg) => {
-		if (arg === "online") {
-			$("#f1tvAPI").find(".status").removeClass("error").addClass("success");
-		}
-
-		if (arg === "offline") {
-			$("#f1tvAPI").find(".status").removeClass("success").addClass("error");
-		}
-	});
-
-	ipcRenderer.on("ikeaAPI", (event, arg) => {
-		if (arg === "online") {
-			$("#ikeaAPI").find(".status").removeClass("error").addClass("success");
-		}
-
-		if (arg === "offline") {
-			$("#ikeaAPI").find(".status").removeClass("success").addClass("error");
-		}
-	});
-	ipcRenderer.on("yeelightAPI", (event, arg) => {
-		if (arg === "online") {
-			$("#yeelightAPI").find(".status").removeClass("error").addClass("success");
-		}
-
-		if (arg === "offline") {
-			$("#yeelightAPI").find(".status").removeClass("success").addClass("error");
-		}
-	});
-	ipcRenderer.on("hueAPI", (event, arg) => {
-		if (arg === "online") {
-			$("#hueAPI").find(".status").removeClass("error").addClass("success");
-		}
-
-		if (arg === "offline") {
-			$("#hueAPI").find(".status").removeClass("success").addClass("error");
-		}
-	});
-	ipcRenderer.on("nanoLeafAPI", (event, arg) => {
-		if (arg === "online") {
-			$("#nanoLeafAPI").find(".status").removeClass("error").addClass("success");
-		}
-
-		if (arg === "offline") {
-			$("#nanoLeafAPI").find(".status").removeClass("success").addClass("error");
-		}
-	});
-	ipcRenderer.on("WLEDAPI", (event, arg) => {
-		if (arg === "online") {
-			$("#WLEDAPI").find(".status").removeClass("error").addClass("success");
-		}
-
-		if (arg === "offline") {
-			$("#WLEDAPI").find(".status").removeClass("success").addClass("error");
-		}
-	});
-
-	ipcRenderer.on("openRGBAPI", (event, arg) => {
-		if (arg === "online") {
-			$("#openRGBAPI").find(".status").removeClass("error").addClass("success");
-		}
-
-		if (arg === "offline") {
-			$("#openRGBAPI").find(".status").removeClass("success").addClass("error");
-		}
-	});
-
-	ipcRenderer.on("webServerAPI", (event, arg) => {
-		if (arg === "online") {
-			$("#webServerAPI").find(".status").removeClass("error").addClass("success");
-		}
-
-		if (arg === "offline") {
-			$("#webServerAPI").find(".status").removeClass("success").addClass("error");
-		}
+	APIs.forEach(api => {
+		ipcRenderer.on(api, (event, arg) => {
+			const statusElement = $(`#${api}`).find(".status");
+			if (arg === "online") {
+				statusElement.removeClass("error").addClass("success");
+			}
+			else if (arg === "offline") {
+				statusElement.removeClass("success").addClass("error");
+			}
+		});
 	});
 
 });
@@ -159,51 +57,15 @@ ipcRenderer.on("auto-devtools", (event, arg) => {
 	$("#dev").find("i").removeClass("code").addClass("code_off");
 });
 ipcRenderer.on("hide-disabled-integrations", (event, arg) => {
-	if (arg.Settings.hueSettings.hueDisable) {
-		$("#hueAPI").hide();
-	} else {
-		$("#hueAPI").show();
-	}
-	if(arg.Settings.yeeLightSettings.yeeLightDisable) {
-		$("#yeelightAPI").hide();
-	} else {
-		$("#yeelightAPI").show();
-	}
-	if(arg.Settings.nanoLeafSettings.nanoLeafDisable) {
-		$("#nanoLeafAPI").hide();
-	} else {
-		$("#nanoLeafAPI").show();
-	}
-	if(arg.Settings.WLEDSettings.WLEDDisable) {
-		$("#WLEDAPI").hide();
-	} else {
-		$("#WLEDAPI").show();
-	}
-	if(arg.Settings.openRGBSettings.openRGBDisable) {
-		$("#openRGBAPI").hide();
-	} else {
-		$("#openRGBAPI").show();
-	}
-	if(arg.Settings.goveeSettings.goveeDisable) {
-		$("#goveeAPI").hide();
-	} else {
-		$("#goveeAPI").show();
-	}
-	if(arg.Settings.ikeaSettings.ikeaDisable) {
-		$("#ikeaAPI").hide();
-	} else {
-		$("#ikeaAPI").show();
-	}
-	if(arg.Settings.streamDeckSettings.streamDeckDisable) {
-		$("#streamDeckAPI").hide();
-	} else {
-		$("#streamDeckAPI").show();
-	}
-	if(arg.Settings.webServerSettings.webServerDisable) {
-		$("#webServerAPI").hide();
-	} else {
-		$("#webServerAPI").show();
-	}
+	const integrations = ["hue", "yeeLight", "nanoLeaf", "WLED", "openRGB", "homeAssistant", "govee", "ikea", "streamDeck", "webServer"];
+	integrations.forEach((integration) => {
+		const setting = arg.Settings[integration + "Settings"];
+		if (setting[integration + "Disable"]) {
+			$("#" + integration + "API").hide();
+		} else {
+			$("#" + integration + "API").show();
+		}
+	});
 });
 ipcRenderer.on("hide-logs", (event, arg) => {
 	if (arg === true) {
@@ -333,3 +195,14 @@ function checkAPIS(){
 function loadPrefs(){
 	ipcRenderer.send("load-prefs");
 }
+window.utils = {
+	test: () => {
+		console.log("test");
+	},
+	loadPrefs: () => {
+		ipcRenderer.send("load-prefs");
+	},
+	checkAPIS: () => {
+		ipcRenderer.send("check-apis");
+	},
+};

@@ -3,133 +3,52 @@ const { ipcRenderer } = require("electron");
 
 $(function() {
 	ipcRenderer.on("settings", (event, arg) => {
+		const { Settings } = arg;
 
-		if(arg.Settings.nanoLeafSettings.devices.length === 0){
-			$("#nanoleaf-lights").append("<div class=\"check\"<p>No connected Nanoleaf devices found</p></div>").show();
-		} else if(arg.Settings.nanoLeafSettings.devices.length > 0){
-			arg.Settings.nanoLeafSettings.devices.forEach(function(light) {
+		// Display nanoleaf devices
+		const nanoleafDevices = Settings.nanoLeafSettings.devices;
+		$("#nanoleaf-lights").toggle(nanoleafDevices.length > 0);
+		if (nanoleafDevices.length === 0) {
+			$("#nanoleaf-lights").append("<div class=\"check\"<p>No connected Nanoleaf devices found</p></div>");
+		} else {
+			nanoleafDevices.forEach((light) => {
 				$("#nanoleaf-lights").append(`<div class="check" id="${light.host}"><span class="status success"></span><p>${light.host}</p></div>`);
 			});
-			$("#nanoleaf-lights").show();
 		}
 
-
-		$("#brightness-input").val(arg.Settings.generalSettings.defaultBrightness);
-
-		if (arg.Settings.generalSettings.autoTurnOffLights) {
-			$("#auto-turn-off-setting").attr("checked", "checked");
-		}else if (!arg.Settings.generalSettings.autoTurnOffLights) {
-			$("#auto-turn-off-setting").removeAttr("checked");
-		}
-
-		$("#live-timing-url-input").val(arg.Settings.MultiViewerForF1Settings.liveTimingURL);
-
-		if (arg.Settings.ikeaSettings.ikeaDisable) {
-			$("#disable-ikea-setting").attr("checked", "checked");
-		}else if (!arg.Settings.ikeaSettings.ikeaDisable) {
-			$("#disable-ikea-setting").removeAttr("checked");
-		}
-
-		$("#sec-code-input").val(arg.Settings.ikeaSettings.securityCode);
-		if (arg.Settings.goveeSettings.goveeDisable) {
-			$("#disable-govee-setting").attr("checked", "checked");
-		}else if (!arg.Settings.goveeSettings.goveeDisable) {
-			$("#disable-govee-setting").removeAttr("checked");
-		}
-
-		if (arg.Settings.yeeLightSettings.yeeLightDisable) {
-			$("#disable-yeelight-setting").attr("checked", "checked");
-		}else if (!arg.Settings.yeeLightSettings.yeeLightDisable) {
-			$("#disable-yeelight-setting").removeAttr("checked");
-		}
-
-		$("#yeelight-device-ip-input").val(arg.Settings.yeeLightSettings.deviceIPs);
-		$("#nanoleaf-device-ip-input").val(arg.Settings.nanoLeafSettings.devices);
-
-		// search in the settings for the dropdown menu with this id: 'update-channel-setting' and set the value to the current update channel
-		$("#update-channel-setting").val(arg.Settings.advancedSettings.updateChannel);
-
-		if (arg.Settings.advancedSettings.analytics) {
-			$("#analytics-setting").attr("checked", "checked");
-		}else if (!arg.Settings.advancedSettings.analytics) {
-			$("#analytics-setting").removeAttr("checked");
-		}
-
-		if (arg.Settings.advancedSettings.debugMode) {
-			$("#debug-mode-setting").attr("checked", "checked");
-		}else if (!arg.Settings.advancedSettings.debugMode) {
-			$("#debug-mode-setting").removeAttr("checked");
-		}
-
-		if (arg.Settings.hueSettings.hueDisable) {
-			$("#disable-hue-setting").attr("checked", "checked");
-		}else if (!arg.Settings.hueSettings.hueDisable) {
-			$("#disable-hue-setting").removeAttr("checked");
-		}
-
-		if (arg.Settings.hueSettings.enableFade) {
-			$("#hue-fade-setting").attr("checked", "checked");
-		}else if (!arg.Settings.hueSettings.enableFade) {
-			$("#hue-fade-setting").removeAttr("checked");
-		}
-
-		if (arg.Settings.hueSettings.hue3rdPartyCompatMode) {
-			$("#hue-compat-mode-setting").attr("checked", "checked");
-		}else if (!arg.Settings.hueSettings.hue3rdPartyCompatMode) {
-			$("#hue-compat-mode-setting").removeAttr("checked");
-		}
-
-		if (arg.Settings.nanoLeafSettings.nanoLeafDisable) {
-			$("#disable-nanoleaf-setting").attr("checked", "checked");
-		}else if (!arg.Settings.nanoLeafSettings.nanoLeafDisable) {
-			$("#disable-nanoleaf-setting").removeAttr("checked");
-		}
-
-		if (arg.Settings.WLEDSettings.WLEDDisable) {
-			$("#disable-wled-setting").attr("checked", "checked");
-		}else if (!arg.Settings.WLEDSettings.WLEDDisable) {
-			$("#disable-wled-setting").removeAttr("checked");
-		}
-
-		if (arg.Settings.openRGBSettings.openRGBDisable) {
-			$("#disable-openrgb-setting").attr("checked", "checked");
-		}else if (!arg.Settings.openRGBSettings.openRGBDisable) {
-			$("#disable-openrgb-setting").removeAttr("checked");
-		}
-
-		if (arg.Settings.streamDeckSettings.streamDeckDisable) {
-			$("#disable-stream-deck-setting").attr("checked", "checked");
-		}else if (!arg.Settings.streamDeckSettings.streamDeckDisable) {
-			$("#disable-stream-deck-setting").removeAttr("checked");
-		}
-
-		if (arg.Settings.discordSettings.discordRPCDisable) {
-			$("#disable-discord-rpc-setting").attr("checked", "checked");
-		}else if (!arg.Settings.discordSettings.discordRPCDisable) {
-			$("#disable-discord-rpc-setting").removeAttr("checked");
-		}
-
-		if(arg.Settings.generalSettings.goBackToStatic) {
-			$("#go-back-to-static-setting").attr("checked", "checked");
-		} else if (!arg.Settings.generalSettings.goBackToStatic) {
-			$("#go-back-to-static-setting").removeAttr("checked");
-		}
-
-		$("#go-back-to-static-delay-input").val(arg.Settings.generalSettings.goBackToStaticDelay);
-		$("#go-back-to-static-brightness-input").val(arg.Settings.generalSettings.staticBrightness);
-
-		$("#openrgb-ip-input").val(arg.Settings.openRGBSettings.openRGBServerIP);
-		$("#openrgb-port-input").val(arg.Settings.openRGBSettings.openRGBServerPort);
-
-		$("#wled-device-ip-input").val(arg.Settings.WLEDSettings.devices);
-
-		$("#webserver-port-input").val(arg.Settings.webServerSettings.webServerPort);
-
-		if (arg.Settings.webServerSettings.webServerDisable) {
-			$("#disable-webserver-setting").attr("checked", "checked");
-		}else if (!arg.Settings.webServerSettings.webServerDisable) {
-			$("#disable-webserver-setting").removeAttr("checked");
-		}
+		// Set other settings
+		$("#brightness-input").val(Settings.generalSettings.defaultBrightness);
+		$("#auto-turn-off-setting").prop("checked", Settings.generalSettings.autoTurnOffLights);
+		$("#live-timing-url-input").val(Settings.MultiViewerForF1Settings.liveTimingURL);
+		$("#go-back-to-static-delay-input").val(Settings.generalSettings.goBackToStaticDelay);
+		$("#go-back-to-static-brightness-input").val(Settings.generalSettings.staticBrightness);
+		$("#webserver-port-input").val(Settings.webServerSettings.webServerPort);
+		$("#disable-webserver-setting").prop("checked", Settings.webServerSettings.webServerDisable);
+		$("#openrgb-ip-input").val(Settings.openRGBSettings.openRGBServerIP);
+		$("#openrgb-port-input").val(Settings.openRGBSettings.openRGBServerPort);
+		$("#disable-ikea-setting").prop("checked", Settings.ikeaSettings.ikeaDisable);
+		$("#sec-code-input").val(Settings.ikeaSettings.securityCode);
+		$("#disable-govee-setting").prop("checked", Settings.goveeSettings.goveeDisable);
+		$("#disable-yeelight-setting").prop("checked", Settings.yeeLightSettings.yeeLightDisable);
+		$("#yeelight-device-ip-input").val(Settings.yeeLightSettings.deviceIPs);
+		$("#nanoleaf-device-ip-input").val(nanoleafDevices);
+		$("#update-channel-setting").val(Settings.advancedSettings.updateChannel);
+		$("#analytics-setting").prop("checked", Settings.advancedSettings.analytics);
+		$("#debug-mode-setting").prop("checked", Settings.advancedSettings.debugMode);
+		$("#disable-hue-setting").prop("checked", Settings.hueSettings.hueDisable);
+		$("#hue-fade-setting").prop("checked", Settings.hueSettings.enableFade);
+		$("#hue-compat-mode-setting").prop("checked", Settings.hueSettings.hue3rdPartyCompatMode);
+		$("#disable-nanoleaf-setting").prop("checked", Settings.nanoLeafSettings.nanoLeafDisable);
+		$("#disable-wled-setting").prop("checked", Settings.WLEDSettings.WLEDDisable);
+		$("#wled-device-ip-input").val(Settings.WLEDSettings.devices);
+		$("#disable-openrgb-setting").prop("checked", Settings.openRGBSettings.openRGBDisable);
+		$("#disable-home-assistant-setting").prop("checked", Settings.homeAssistantSettings.homeAssistantDisable);
+		$("#home-assistant-ip-input").val(Settings.homeAssistantSettings.host);
+		$("#home-assistant-port-input").val(Settings.homeAssistantSettings.port);
+		$("#home-assistant-token-input").val(Settings.homeAssistantSettings.token);
+		$("#disable-stream-deck-setting").prop("checked", Settings.streamDeckSettings.streamDeckDisable);
+		$("#disable-discord-rpc-setting").prop("checked", Settings.discordSettings.discordRPCDisable);
+		$("#go-back-to-static-setting").prop("checked", Settings.generalSettings.goBackToStatic);
 	});
 
 
@@ -166,6 +85,10 @@ function saveConfig() {
 		openRGBDisable: $("#disable-openrgb-setting").is(":checked"),
 		openRGBServerIP: $("#openrgb-ip-input").val(),
 		openRGBServerPort: $("#openrgb-port-input").val(),
+		homeAssistantDisable: $("#disable-home-assistant-setting").is(":checked"),
+		homeAssistantHost: $("#home-assistant-ip-input").val(),
+		homeAssistantPort: $("#home-assistant-port-input").val(),
+		homeAssistantToken: $("#home-assistant-token-input").val(),
 		nanoLeafDisable: $("#disable-nanoleaf-setting").is(":checked"),
 		WLEDDisable: $("#disable-wled-setting").is(":checked"),
 		WLEDDevices: WLEDDevices,
@@ -217,6 +140,9 @@ function hueSelectEntertainmentZones(){
 
 function ikeaSelectDevices() {
 	ipcRenderer.send("ikea-select-devices");
+}
+function homeAssistantSelectDevices() {
+	ipcRenderer.send("home-assistant-select-devices");
 }
 function sendConfig() {
 	ipcRenderer.send("send-config");

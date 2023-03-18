@@ -78,6 +78,16 @@ const userConfig = new Store({
 				}
 			]);
 		},
+		"1.1.9": userConfig => {
+			userConfig.set("version", "1.1.9");
+			userConfig.set("Settings.homeAssistantSettings", {
+				homeAssistantDisable: true,
+				host: "",
+				port: 8123,
+				token: "",
+				devices: []
+			});
+		},
 	}
 });
 
@@ -146,6 +156,7 @@ let goveeOnline = false;
 let hueOnline = false;
 let nanoLeafOnline = false;
 let openRGBOnline = false;
+let homeAssistantOnline = false;
 let streamDeckOnline = false;
 let WLEDOnline = false;
 
@@ -208,6 +219,12 @@ let hueEnableFade = userConfig.get("Settings.hueSettings.enableFade");
 
 let openRGBPort = userConfig.get("Settings.openRGBSettings.openRGBServerPort");
 let openRGBIP = userConfig.get("Settings.openRGBSettings.openRGBServerIP");
+
+let homeAssistantDisabled = userConfig.get("Settings.homeAssistantSettings.homeAssistantDisable");
+let homeAssistantIP = userConfig.get("Settings.homeAssistantSettings.host");
+let homeAssistantPort = userConfig.get("Settings.homeAssistantSettings.port");
+let homeAssistantToken = userConfig.get("Settings.homeAssistantSettings.token");
+let homeAssistantDevices = userConfig.get("Settings.homeAssistantSettings.devices");
 
 const Ikea = require("node-tradfri-client");
 let ikeaCreds;
@@ -347,10 +364,10 @@ app.whenReady().then(() => {
 function createDeepLinks(){
 	if (process.defaultApp) {
 		if (process.argv.length >= 2) {
-			app.setAsDefaultProtocolClient('f1mvli', process.execPath, [path.resolve(process.argv[1])])
+			app.setAsDefaultProtocolClient("f1mvli", process.execPath, [path.resolve(process.argv[1])]);
 		}
 	} else {
-		app.setAsDefaultProtocolClient('f1mvli')
+		app.setAsDefaultProtocolClient("f1mvli");
 	}
 }
 
@@ -452,7 +469,6 @@ ipcMain.on("check-apis", async () => {
 	await updateAllAPIs();
 });
 ipcMain.on("ikea-select-devices", async () => {
-	win.webContents.send("toaster", "Opening IKEA Tradfri device selection window...");
 	await ikeaControl(0, 255, 0, userBrightness, "getDevices");
 });
 ipcMain.on("send-analytics-button", async () => {
@@ -519,12 +535,13 @@ ipcMain.on("refreshHueDevices", async () => {
 	await hueControl(0, 255, 0, userBrightness, "refreshEntertainmentZones");
 });
 ipcMain.on("select-hue-devices", async () => {
-	win.webContents.send("toaster", "Opening Hue device selection window...");
 	await hueControl(0, 255, 0, userBrightness, "getDevices");
 });
 ipcMain.on("select-hue-entertainment-zones", async () => {
-	win.webContents.send("toaster", "Opening Hue Entertainment Zone selection window...");
 	await hueControl(0, 255, 0, userBrightness, "getEntertainmentZones");
+});
+ipcMain.on("home-assistant-select-devices", async () => {
+	await homeAssistantControl(0, 255, 0, userBrightness, "getDevices");
 });
 let canReceive = false;
 ipcMain.on("nanoLeaf", async (event, args) => {
@@ -553,6 +570,9 @@ ipcMain.on("hueSelectorSaveSelectedDevices", async (event, args) => {
 ipcMain.on("hueSelectorSaveSelectedEntertainmentZones", async (event, args) => {
 	userConfig.set("Settings.hueSettings.entertainmentZoneIDs", args);
 });
+ipcMain.on("homeAssistantSelectorSaveSelectedDevices", async (event, args) => {
+	userConfig.set("Settings.homeAssistantSettings.devices", args);
+});
 ipcMain.on("saveConfig", (event, arg) => {
 	let deviceIPs = arg.deviceIPs;
 	let WLEDDevices = arg.WLEDDevices;
@@ -573,6 +593,10 @@ ipcMain.on("saveConfig", (event, arg) => {
 		openRGBDisable,
 		openRGBServerIP,
 		openRGBServerPort,
+		homeAssistantDisable,
+		homeAssistantHost,
+		homeAssistantPort,
+		homeAssistantToken,
 		nanoLeafDisable,
 		WLEDDisable,
 		yeeLightDisable,
@@ -611,6 +635,10 @@ ipcMain.on("saveConfig", (event, arg) => {
 	userConfig.set("Settings.openRGBSettings.openRGBDisable", openRGBDisable);
 	userConfig.set("Settings.openRGBSettings.openRGBServerIP", openRGBServerIP);
 	userConfig.set("Settings.openRGBSettings.openRGBServerPort", parseInt(openRGBServerPort));
+	userConfig.set("Settings.homeAssistantSettings.homeAssistantDisable", homeAssistantDisable);
+	userConfig.set("Settings.homeAssistantSettings.host", homeAssistantHost);
+	userConfig.set("Settings.homeAssistantSettings.port", parseInt(homeAssistantPort));
+	userConfig.set("Settings.homeAssistantSettings.token", homeAssistantToken);
 	userConfig.set("Settings.nanoLeafSettings.nanoLeafDisable", nanoLeafDisable);
 	userConfig.set("Settings.WLEDSettings.WLEDDisable", WLEDDisable);
 	userConfig.set("Settings.WLEDSettings.devices", WLEDDevices);
@@ -836,6 +864,9 @@ async function controlAllLights(r, g, b, brightness, action, flag) {
 	if (!openRGBDisabled) {
 		await openRGBControl(r, g, b, brightness, action);
 	}
+	if (!homeAssistantDisabled) {
+		await homeAssistantControl(r, g, b, brightness, action);
+	}
 	if (!streamDeckDisabled) {
 		await streamDeckControl(r, g, b, brightness, action);
 	}
@@ -931,11 +962,15 @@ async function sendAllAPIStatus() {
 			WLEDOnline = false;
 		}
 	}
+	if (!homeAssistantDisabled) {
+		await homeAssistantOnlineCheck();
+	}
 	const statuses = [
 		{ name: "ikea", online: ikeaOnline },
 		{ name: "govee", online: goveeOnline },
 		{ name: "hue", online: hueOnline },
 		{ name: "openRGB", online: openRGBOnline },
+		{ name: "homeAssistant", online: homeAssistantOnline},
 		{ name: "yeelight", online: !yeelightDisabled },
 		{ name: "streamDeck", online: streamDeckOnline },
 		{ name: "nanoLeaf", online: nanoLeafOnline},
@@ -959,6 +994,7 @@ async function initIntegrations() {
 		{ name: "govee", func: goveeInitialize, disabled: goveeDisabled },
 		{ name: "hue", func: hueInitialize, disabled: hueDisabled },
 		{ name: "openRGB", func: openRGBInitialize, disabled: openRGBDisabled },
+		{ name: "homeAssistant", func: homeAssistantInitialize, disabled: homeAssistantDisabled },
 		{ name: "streamDeck", func: streamDeckInitialize, disabled: streamDeckDisabled },
 		{ name: "discordRPC", func: discordRPC, disabled: false },
 		{ name: "webServer", func: webServerInitialize, disabled: webServerDisabled }
@@ -1354,7 +1390,7 @@ async function ikeaControl(r, g, b, brightness, action, flag) {
 		}
 
 	} else if (action === "getDevices"){
-		win.webContents.send("log", "Ikea is disabled or not connected!");
+		win.webContents.send("toaster", "Ikea is disabled or not connected!");
 	}
 }
 
@@ -2165,6 +2201,136 @@ async function WLEDControl(r, g, b, brightness, action){
 	}
 }
 
+async function homeAssistantOnlineCheck(){
+	const headers  = {
+		"Content-Type": "application/json",
+		"Authorization": "Bearer " + homeAssistantToken,
+		"Accept": "application/json"
+	};
+	const url = "http://" + homeAssistantIP + ":" + homeAssistantPort + "/api/";
+	const options = {
+		method: "GET",
+		headers: headers,
+	};
+	const res = await fetch(url, options);
+	const data = await res.json();
+	if(data.message === "API running."){
+		homeAssistantOnline = true;
+		return "online";
+	} else {
+		homeAssistantOnline = false;
+		return "offline";
+	}
+}
+
+async function homeAssistantInitialize() {
+	if(debugPreference){
+		win.webContents.send("log", "Checking if the Home Assistant API is online...");
+	}
+	const status = await homeAssistantOnlineCheck();
+	if(status === "online"){
+		if(debugPreference){
+			win.webContents.send("log", "Home Assistant API is online!");
+		}
+	} else {
+		win.webContents.send("log", "Error: Could not connect to the Home Assistant API, please make sure that the IP and Port are correct!");
+	}
+}
+
+async function homeAssistantControl(r, g, b, brightness, action){
+	if (homeAssistantOnline) {
+		brightness = Math.round((brightness / 100) * 254);
+		switch (action) {
+		case "getDevices":
+			const headers = {
+				"Authorization": "Bearer " + homeAssistantToken,
+				"content-type": "application/json",
+			};
+			const host = "http://" + homeAssistantIP + ":" + homeAssistantPort;
+			const url = host + "/api/states";
+			const response = await fetch(url, {
+				method: "GET",
+				headers: headers,
+			});
+			const data = await response.json();
+			let deviceInformation = [];
+			let allInformation = [];
+			for (const item of data) {
+				if (item.entity_id.startsWith("light.")) {
+					const name = item.attributes.friendly_name;
+					const id = item.entity_id;
+					const state = item.state;
+					deviceInformation.push({
+						name: name,
+						id: id,
+						state: state
+					});
+				}
+			}
+			const homeAssistantSelectedDevices = userConfig.get("Settings.homeAssistantSettings.devices");
+			allInformation = {
+				deviceInformation: deviceInformation,
+				homeAssistantSelectedDevices: homeAssistantSelectedDevices
+			};
+			const homeAssistantDeviceSelectorWin = new BrowserWindow({
+				width: 1200,
+				height: 600,
+				webPreferences: {
+					contextIsolation: false,
+					nodeIntegration: true,
+				},
+			});
+			homeAssistantDeviceSelectorWin.removeMenu();
+
+			homeAssistantDeviceSelectorWin.webContents.on("did-finish-load", () => {
+				homeAssistantDeviceSelectorWin.webContents.send("homeAssistantAllInformation", allInformation);
+			});
+			await homeAssistantDeviceSelectorWin.loadFile("src/static/homeassistant/homeassistant-device-selector.html");
+			break;
+		case "on":
+			// for each device in the array of devices, turn on the light, with the given color and brightness
+			const reqURLOn = "http://" + homeAssistantIP + ":" + homeAssistantPort + "/api/services/light/turn_on";
+			for (const device in homeAssistantDevices) {
+				const headers =  {
+					"Authorization": "Bearer " + homeAssistantToken,
+					"content-type": "application/json",
+				};
+				const postData = {
+					"entity_id": homeAssistantDevices[device],
+					"rgb_color": [r, g, b],
+					"brightness": brightness
+				};
+				const options = {
+					method: "POST",
+					headers: headers,
+					body: JSON.stringify(postData)
+				};
+				await fetch(reqURLOn, options);
+			}
+			break;
+		case "off":
+			const reqURLOff = "http://" + homeAssistantIP + ":" + homeAssistantPort + "/api/services/light/turn_off";
+			for (const device in homeAssistantDevices) {
+				const headers =  {
+					"Authorization": "Bearer " + homeAssistantToken,
+					"content-type": "application/json",
+				};
+				const postData = {
+					"entity_id": homeAssistantDevices[device]
+				};
+				const options = {
+					method: "POST",
+					headers: headers,
+					body: JSON.stringify(postData)
+				};
+				await fetch(reqURLOff, options);
+			}
+			break;
+		}
+	}
+}
+
+
 async function checkMiscAPIS() {
 	if(debugPreference){
 		win.webContents.send("log", "Checking the Update and F1 Live Session API..");
@@ -2305,6 +2471,7 @@ function reloadFromConfig(){
 	const webServerDisableOld = webServerDisabled;
 	const goveeDisableOld = goveeDisabled;
 	const ikeaDisableOld = ikeaDisabled;
+	const homeAssistantDisableOld = homeAssistantDisabled;
 
 	win.webContents.send("log", "Reloading from config..");
 	debugPreference = userConfig.get("Settings.advancedSettings.debugMode");
@@ -2349,6 +2516,11 @@ function reloadFromConfig(){
 	goBackToStaticDelay = goBackToStaticDelay * 1000;
 	goBackToStaticBrightness = userConfig.get("Settings.generalSettings.staticBrightness");
 	effectSettings = userConfig.get("Settings.generalSettings.effectSettings");
+	homeAssistantDisabled = userConfig.get("Settings.homeAssistantSettings.homeAssistantDisable");
+	homeAssistantIP = userConfig.get("Settings.homeAssistantSettings.host");
+	homeAssistantPort = userConfig.get("Settings.homeAssistantSettings.port");
+	homeAssistantToken = userConfig.get("Settings.homeAssistantSettings.token");
+	homeAssistantDevices = userConfig.get("Settings.homeAssistantSettings.devices");
 
 	updateChannel = userConfig.get("Settings.advancedSettings.updateChannel");
 	autoUpdater.channel = updateChannel;
@@ -2392,6 +2564,14 @@ function reloadFromConfig(){
 		colorDevices = [];
 		whiteDevices = [];
 		ikeaInitialize().then(r => {
+			if (alwaysFalse) {
+				console.log(r);
+			}
+		});
+	}
+
+	if (homeAssistantDisableOld && !homeAssistantDisabled) {
+		homeAssistantInitialize().then(r => {
 			if (alwaysFalse) {
 				console.log(r);
 			}
