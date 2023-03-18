@@ -35,7 +35,8 @@
     "process": "^0.11.10",
     "socket.io": "^4.6.1",
     "wled-client": "^0.22.1",
-    "yeelight.io": "^1.1.7"
+    "yeelight.io": "^1.1.7",
+    "magic-home": "^2.9.0"
   },
   "devDependencies": {
     "electron": "^23.1.4",

@@ -191,6 +191,14 @@ const config = {
                 	// the port of the web server
                 	webServerPort: 20202,
                 },
+			magicHomeSettings:
+				{
+					// set this to true if you don't want to use Magic Home lights
+					magicHomeDisable: true,
+
+					// Put the IP address of your Magic Home device(s) here, if you have multiple, separate them with a comma (Eg: "IP_ADDRESS_HERE-1", "IP_ADDRESS_HERE-2").
+					magicHomeDeviceIPs: [],
+				},
 
         	advancedSettings:
                 {

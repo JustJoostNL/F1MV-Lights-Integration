@@ -49,6 +49,8 @@ $(function() {
 		$("#disable-stream-deck-setting").prop("checked", Settings.streamDeckSettings.streamDeckDisable);
 		$("#disable-discord-rpc-setting").prop("checked", Settings.discordSettings.discordRPCDisable);
 		$("#go-back-to-static-setting").prop("checked", Settings.generalSettings.goBackToStatic);
+		$("#disable-magichome-setting").prop("checked", Settings.magicHomeSettings.magicHomeDisable);
+		$("#magichome-device-ip-input").val(Settings.magicHomeSettings.magicHomeDeviceIPs);
 	});
 
 
@@ -67,6 +69,12 @@ function saveConfig() {
 		deviceIPs = [];
 	} else if ($("#yeelight-device-ip-input").val() !== "") {
 		deviceIPs = $("#yeelight-device-ip-input").val();
+	}
+	let magicHomeDeviceIPs;
+	if ($("#magichome-device-ip-input").val() === "") {
+		magicHomeDeviceIPs = [];
+	} else if ($("#magichome-device-ip-input").val() !== "") {
+		magicHomeDeviceIPs = $("#magichome-device-ip-input").val();
 	}
 
 	ipcRenderer.send("saveConfig", {
@@ -95,6 +103,8 @@ function saveConfig() {
 		yeeLightDisable: $("#disable-yeelight-setting").is(":checked"),
 		streamDeckDisable: $("#disable-stream-deck-setting").is(":checked"),
 		deviceIPs: deviceIPs,
+		magicHomeDisable: $("#disable-magichome-setting").is(":checked"),
+		magicHomeDeviceIPs: magicHomeDeviceIPs,
 		discordRPCSetting: $("#disable-discord-rpc-setting").is(":checked"),
 		webServerPort: $("#webserver-port-input").val(),
 		webServerDisable: $("#disable-webserver-setting").is(":checked"),

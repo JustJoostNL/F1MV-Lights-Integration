@@ -220,6 +220,9 @@ let hueEnableFade = userConfig.get("Settings.hueSettings.enableFade");
 let openRGBPort = userConfig.get("Settings.openRGBSettings.openRGBServerPort");
 let openRGBIP = userConfig.get("Settings.openRGBSettings.openRGBServerIP");
 
+let magicHomeDisabled = userConfig.get("Settings.magicHomeSettings.magicHomeDisable");
+let magicHomeDeviceIPs = userConfig.get("Settings.magicHomeSettings.magicHomeDeviceIPs");
+
 let homeAssistantDisabled = userConfig.get("Settings.homeAssistantSettings.homeAssistantDisable");
 let homeAssistantIP = userConfig.get("Settings.homeAssistantSettings.host");
 let homeAssistantPort = userConfig.get("Settings.homeAssistantSettings.port");
@@ -575,6 +578,7 @@ ipcMain.on("homeAssistantSelectorSaveSelectedDevices", async (event, args) => {
 });
 ipcMain.on("saveConfig", (event, arg) => {
 	let deviceIPs = arg.deviceIPs;
+	let magicHomeDeviceIPs = arg.magicHomeDeviceIPs;
 	let WLEDDevices = arg.WLEDDevices;
 
 	const {
@@ -615,6 +619,11 @@ ipcMain.on("saveConfig", (event, arg) => {
 		deviceIPs = [];
 	}
 	try {
+		magicHomeDeviceIPs = magicHomeDeviceIPs.split(",");
+	} catch (error) {
+		magicHomeDeviceIPs = [];
+	}
+	try {
 		WLEDDevices = WLEDDevices.split(",");
 	} catch (error) {
 		WLEDDevices = [];
@@ -648,6 +657,8 @@ ipcMain.on("saveConfig", (event, arg) => {
 	userConfig.set("Settings.discordSettings.discordRPCDisable", discordRPCSetting);
 	userConfig.set("Settings.webServerSettings.webServerDisable", webServerDisable);
 	userConfig.set("Settings.webServerSettings.webServerPort", parseInt(webServerPort));
+	userConfig.set("Settings.magicHomeSettings.magicHomeDisabled", magicHomeDisabled);
+	userConfig.set("Settings.magicHomeSettings.magicHomeDeviceIPs", magicHomeDeviceIPs);
 	userConfig.set("Settings.advancedSettings.updateChannel", updateChannel);
 	userConfig.set("Settings.advancedSettings.analytics", analytics);
 	userConfig.set("Settings.advancedSettings.debugMode", debugMode);
@@ -867,6 +878,9 @@ async function controlAllLights(r, g, b, brightness, action, flag) {
 	if (!homeAssistantDisabled) {
 		await homeAssistantControl(r, g, b, brightness, action);
 	}
+	if (!magicHomeDisabled) {
+		await magicHomeControl(r, g, b, brightness, action);
+	}
 	if (!streamDeckDisabled) {
 		await streamDeckControl(r, g, b, brightness, action);
 	}
@@ -972,6 +986,7 @@ async function sendAllAPIStatus() {
 		{ name: "openRGB", online: openRGBOnline },
 		{ name: "homeAssistant", online: homeAssistantOnline},
 		{ name: "yeelight", online: !yeelightDisabled },
+		{ name: "magichome", online: !magicHomeDisabled },
 		{ name: "streamDeck", online: streamDeckOnline },
 		{ name: "nanoLeaf", online: nanoLeafOnline},
 		{ name: "WLED", online: WLEDOnline},
@@ -995,6 +1010,7 @@ async function initIntegrations() {
 		{ name: "hue", func: hueInitialize, disabled: hueDisabled },
 		{ name: "openRGB", func: openRGBInitialize, disabled: openRGBDisabled },
 		{ name: "homeAssistant", func: homeAssistantInitialize, disabled: homeAssistantDisabled },
+		{ name: "magicHome", func: magicHomeInitialize, disabled: magicHomeDisabled },
 		{ name: "streamDeck", func: streamDeckInitialize, disabled: streamDeckDisabled },
 		{ name: "discordRPC", func: discordRPC, disabled: false },
 		{ name: "webServer", func: webServerInitialize, disabled: webServerDisabled }
@@ -2521,6 +2537,8 @@ function reloadFromConfig(){
 	homeAssistantPort = userConfig.get("Settings.homeAssistantSettings.port");
 	homeAssistantToken = userConfig.get("Settings.homeAssistantSettings.token");
 	homeAssistantDevices = userConfig.get("Settings.homeAssistantSettings.devices");
+	magicHomeDisabled = userConfig.get("Settings.magicHomeSettings.magicHomeDisable");
+	magicHomeDeviceIPs = userConfig.get("Settings.magicHomeSettings.magicHomeDeviceIPs");
 
 	updateChannel = userConfig.get("Settings.advancedSettings.updateChannel");
 	autoUpdater.channel = updateChannel;
