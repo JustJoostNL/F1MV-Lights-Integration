@@ -1,5 +1,13 @@
 const { ipcRenderer } = require("electron");
 
+const flagToElementId = {
+	"green": "#go-back-to-static-green-flag-setting",
+	"yellow": "#go-back-to-static-yellow-flag-setting",
+	"red": "#go-back-to-static-red-flag-setting",
+	"safetyCar": "#go-back-to-static-safety-car-setting",
+	"vsc": "#go-back-to-static-vsc-setting",
+	"vscEnding": "#go-back-to-static-vsc-ending-setting"
+};
 
 $(function() {
 	ipcRenderer.on("settings", (event, arg) => {
@@ -16,19 +24,11 @@ $(function() {
 			});
 		}
 
+
 		Settings.generalSettings.goBackToStaticEnabledFlags.forEach((flag) => {
-			if (flag === "green") {
-				$("#go-back-to-static-green-flag-setting").prop("checked", true);
-			} else if (flag === "yellow") {
-				$("#go-back-to-static-yellow-flag-setting").prop("checked", true);
-			} else if (flag === "red") {
-				$("#go-back-to-static-red-flag-setting").prop("checked", true);
-			} else if (flag === "safetyCar") {
-				$("#go-back-to-static-safety-car-setting").prop("checked", true);
-			} else if (flag === "vsc") {
-				$("#go-back-to-static-vsc-setting").prop("checked", true);
-			} else if (flag === "vscEnding") {
-				$("#go-back-to-static-vsc-ending-setting").prop("checked", true);
+			const elementId = flagToElementId[flag];
+			if (elementId) {
+				$(elementId).prop("checked", true);
 			}
 		});
 
@@ -86,25 +86,13 @@ function saveConfig() {
 		deviceIPs = $("#yeelight-device-ip-input").val();
 	}
 
-	let goBackToStaticEnabledFlags = [];
-	if ($("#go-back-to-static-green-flag-setting").is(":checked")) {
-		goBackToStaticEnabledFlags.push("green");
-	}
-	if ($("#go-back-to-static-yellow-flag-setting").is(":checked")) {
-		goBackToStaticEnabledFlags.push("yellow");
-	}
-	if ($("#go-back-to-static-red-flag-setting").is(":checked")) {
-		goBackToStaticEnabledFlags.push("red");
-	}
-	if ($("#go-back-to-static-safety-car-setting").is(":checked")) {
-		goBackToStaticEnabledFlags.push("safetyCar");
-	}
-	if ($("#go-back-to-static-vsc-setting").is(":checked")) {
-		goBackToStaticEnabledFlags.push("vsc");
-	}
-	if ($("#go-back-to-static-vsc-ending-setting").is(":checked")) {
-		goBackToStaticEnabledFlags.push("vscEnding");
-	}
+	const goBackToStaticEnabledFlags = [];
+	Object.keys(flagToElementId).forEach((flag) => {
+		const elementId = flagToElementId[flag];
+		if ($(elementId).is(":checked")) {
+			goBackToStaticEnabledFlags.push(flag);
+		}
+	});
 
 	ipcRenderer.send("saveConfig", {
 		defaultBrightness: $("#brightness-input").val(),

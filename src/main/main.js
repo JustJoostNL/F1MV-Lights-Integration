@@ -89,11 +89,7 @@ const userConfig = new Store({
 			});
 			userConfig.set("Settings.hueSettings.enableFadeWithEffects", false);
 			userConfig.set("Settings.generalSettings.goBackToStaticEnabledFlags", [
-				"yellow",
-				"red",
-				"safetyCar",
-				"vsc",
-				"vscEnding"
+				"green",
 			]);
 		},
 	}

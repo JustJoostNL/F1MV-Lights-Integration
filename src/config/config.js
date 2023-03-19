@@ -10,11 +10,7 @@ const config = {
 
                 	goBackToStatic: true,
                 	goBackToStaticEnabledFlags: [
-                		"yellow",
-                		"red",
-                		"safetyCar",
-                		"vsc",
-                		"vscEnding"
+                		"green",
                 	],
                 	goBackToStaticDelay: 10,
                 	staticBrightness: 70,
