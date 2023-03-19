@@ -92,11 +92,51 @@
             <span style="color:grey">This is the brightness the lights will have, when they go back to a static color. The maximum is 100.</span>
         </label>
     </p>
+    <p>
+        <label>
+            <input type="checkbox" id="go-back-to-static-green-flag-setting" class="filled-in" />
+            <span>Go back to static when green flag</span>
+        </label>
+    </p>
+    <p>
+        <label>
+            <input type="checkbox" id="go-back-to-static-yellow-flag-setting" class="filled-in" />
+            <span>Go back to static when yellow flag</span>
+        </label>
+    </p>
+    <p>
+        <label>
+            <input type="checkbox" id="go-back-to-static-red-flag-setting" class="filled-in" />
+            <span>Go back to static when red flag</span>
+        </label>
+    </p>
+    <p>
+        <label>
+            <input type="checkbox" id="go-back-to-static-safety-car-setting" class="filled-in" />
+            <span>Go back to static when safety car</span>
+        </label>
+    </p>
+    <p>
+        <label>
+            <input type="checkbox" id="go-back-to-static-vsc-setting" class="filled-in" />
+            <span>Go back to static when virtual safety car</span>
+        </label>
+    </p>
+    <p>
+        <label>
+            <input type="checkbox" id="go-back-to-static-vsc-ending-setting" class="filled-in" />
+            <span>Go back to static when virtual safety car ending</span>
+        </label>
+    </p>
     <div style="margin-top: 40px" class="simulation__buttons">
         <a class="waves-effect waves-light btn-large simulation__button tooltipped" href="colorSettings.html" data-position="bottom">
             <em class="material-icons">palette</em>
             Color Settings
         </a>
+<!--        <a class="waves-effect waves-light btn-large simulation__button tooltipped" href="effectSettings.html" data-position="bottom">-->
+<!--            <em class="material-icons">light_mode</em>-->
+<!--            Effect Settings-->
+<!--        </a>-->
     </div>
 </div>
 <div class="container simulation">
@@ -150,6 +190,13 @@
         </label>
     </p>
     <small style="font-size: 12px; color:gray">Enable this if you want the lights to fade to the new color</small>
+    <p>
+        <label>
+            <input type="checkbox" id="hue-fade-with-effects-setting" class="filled-in" />
+            <span>Enable Fade For Effects</span>
+        </label>
+    </p>
+    <small style="font-size: 12px; color:gray">Enable this if you want the lights to fade to the new color when an effect is active</small>
 </div>
 <div class="container simulation">
     <h2 class="simulation__title">Ikea Settings</h2>

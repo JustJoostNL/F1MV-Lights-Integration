@@ -180,4 +180,6 @@ nav {
 .table-devices-selector-style {
     background-color: #121212;
     border: 2px solid #404040;
+    border-collapse: separate;
+    border-spacing: 0;
 }

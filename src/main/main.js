@@ -87,6 +87,14 @@ const userConfig = new Store({
 				token: "",
 				devices: []
 			});
+			userConfig.set("Settings.hueSettings.enableFadeWithEffects", false);
+			userConfig.set("Settings.generalSettings.goBackToStaticEnabledFlags", [
+				"yellow",
+				"red",
+				"safetyCar",
+				"vsc",
+				"vscEnding"
+			]);
 		},
 	}
 });
@@ -200,6 +208,7 @@ let vscEndingColor = userConfig.get("Settings.generalSettings.colorSettings.vscE
 
 let autoOff = userConfig.get("Settings.generalSettings.autoTurnOffLights");
 let goBackToStaticPref = userConfig.get("Settings.generalSettings.goBackToStatic");
+let goBackToStaticEnabledFlags = userConfig.get("Settings.generalSettings.goBackToStaticEnabledFlags");
 let goBackToStaticDelay = userConfig.get("Settings.generalSettings.goBackToStaticDelay");
 goBackToStaticDelay = goBackToStaticDelay * 1000;
 let goBackToStaticBrightness = userConfig.get("Settings.generalSettings.staticBrightness");
@@ -216,6 +225,7 @@ let hue3rdPartyCompatMode = userConfig.get("Settings.hueSettings.hue3rdPartyComp
 
 let hueBridgeIP = userConfig.get("Settings.hueSettings.hueBridgeIP");
 let hueEnableFade = userConfig.get("Settings.hueSettings.enableFade");
+let hueEnableFadeWithEffects = userConfig.get("Settings.hueSettings.enableFadeWithEffects");
 
 let openRGBPort = userConfig.get("Settings.openRGBSettings.openRGBServerPort");
 let openRGBIP = userConfig.get("Settings.openRGBSettings.openRGBServerIP");
@@ -573,6 +583,19 @@ ipcMain.on("hueSelectorSaveSelectedEntertainmentZones", async (event, args) => {
 ipcMain.on("homeAssistantSelectorSaveSelectedDevices", async (event, args) => {
 	userConfig.set("Settings.homeAssistantSettings.devices", args);
 });
+ipcMain.on("save-selected-effects", async (event, args) => {
+	for (let i = 0; i < args.length; i++) {
+		const effectName = args[i].name;
+		const effectEnabled = args[i].enabled;
+		const effectSettings = userConfig.get("Settings.generalSettings.effectSettings");
+		for (let i = 0; i < effectSettings.length; i++) {
+			if (effectSettings[i].name === effectName) {
+				effectSettings[i].enabled = effectEnabled;
+			}
+		}
+		userConfig.set("Settings.generalSettings.effectSettings", effectSettings);
+	}
+});
 ipcMain.on("saveConfig", (event, arg) => {
 	let deviceIPs = arg.deviceIPs;
 	let WLEDDevices = arg.WLEDDevices;
@@ -581,11 +604,13 @@ ipcMain.on("saveConfig", (event, arg) => {
 		defaultBrightness,
 		autoTurnOffLights,
 		goBackToStatic,
+		goBackToStaticEnabledFlags,
 		goBackToStaticDelay,
 		staticBrightness,
 		liveTimingURL,
 		hueDisable,
 		hueFade,
+		hueFadeWithEffects,
 		hue3rdPartyCompatMode,
 		ikeaDisable,
 		securityCode,
@@ -623,12 +648,14 @@ ipcMain.on("saveConfig", (event, arg) => {
 	userConfig.set("Settings.generalSettings.defaultBrightness", parseInt(defaultBrightness));
 	userConfig.set("Settings.generalSettings.autoTurnOffLights", autoTurnOffLights);
 	userConfig.set("Settings.generalSettings.goBackToStatic", goBackToStatic);
+	userConfig.set("Settings.generalSettings.goBackToStaticEnabledFlags", goBackToStaticEnabledFlags);
 	userConfig.set("Settings.generalSettings.goBackToStaticDelay", parseInt(goBackToStaticDelay));
 	userConfig.set("Settings.generalSettings.staticBrightness", parseInt(staticBrightness));
 	userConfig.set("Settings.MultiViewerForF1Settings.liveTimingURL", liveTimingURL);
 	userConfig.set("Settings.hueSettings.hueDisable", hueDisable);
 	userConfig.set("Settings.hueSettings.hue3rdPartyCompatMode", hue3rdPartyCompatMode);
 	userConfig.set("Settings.hueSettings.enableFade", hueFade);
+	userConfig.set("Settings.hueSettings.enableFadeWithEffects", hueFadeWithEffects);
 	userConfig.set("Settings.ikeaSettings.securityCode", securityCode);
 	userConfig.set("Settings.ikeaSettings.ikeaDisable", ikeaDisable);
 	userConfig.set("Settings.goveeSettings.goveeDisable", goveeDisable);
@@ -838,7 +865,12 @@ async function controlAllLights(r, g, b, brightness, action, flag) {
 	for (let i = 0; i < effectSettings.length; i++) {
 		if (effectSettings[i].enabled) {
 			if (effectSettings[i].onFlag === flag) {
+				const oldHueFadeState = hueEnableFade;
+				if (hueEnableFadeWithEffects) {
+					hueEnableFade = false;
+				}
 				await effectHandler(flag);
+				hueEnableFade = oldHueFadeState;
 				return;
 			}
 		}
@@ -882,19 +914,23 @@ async function controlAllLights(r, g, b, brightness, action, flag) {
 		}
 		if (goBackToStaticRuns){
 			clearTimeout(goBackToStaticTimeout);
-			goBackToStatic();
+			goBackToStatic(flag);
 		} else {
 			goBackToStaticRuns = true;
-			goBackToStatic();
+			goBackToStatic(flag);
 		}
 	}
 }
 
-function goBackToStatic(){
-	goBackToStaticTimeout = setTimeout(function () {
-		controlAllLights(staticColor.r, staticColor.g, staticColor.b, goBackToStaticBrightness, "on", "static");
+function goBackToStatic(flag){
+	if (goBackToStaticEnabledFlags.includes(flag)){
+		goBackToStaticTimeout = setTimeout(function () {
+			controlAllLights(staticColor.r, staticColor.g, staticColor.b, goBackToStaticBrightness, "on", "static");
+			goBackToStaticRuns = false;
+		}, goBackToStaticDelay);
+	} else {
 		goBackToStaticRuns = false;
-	}, goBackToStaticDelay);
+	}
 }
 
 async function simulateFlag(arg) {
@@ -2501,6 +2537,7 @@ function reloadFromConfig(){
 	hueSelectedDeviceIDs = userConfig.get("Settings.hueSettings.deviceIDs");
 	hueBridgeIP = userConfig.get("Settings.hueSettings.hueBridgeIP");
 	hueEnableFade = userConfig.get("Settings.hueSettings.enableFade");
+	hueEnableFadeWithEffects = userConfig.get("Settings.hueSettings.enableFadeWithEffects");
 	hueSelectedEntertainmentZonesIDs = userConfig.get("Settings.hueSettings.entertainmentZoneIDs");
 	hue3rdPartyCompatMode = userConfig.get("Settings.hueSettings.hue3rdPartyCompatMode");
 	openRGBPort = userConfig.get("Settings.openRGBSettings.openRGBServerPort");
@@ -2512,6 +2549,7 @@ function reloadFromConfig(){
 	WLEDDisabled = userConfig.get("Settings.WLEDSettings.WLEDDisable");
 	WLEDDeviceIPs = userConfig.get("Settings.WLEDSettings.devices");
 	goBackToStaticPref = userConfig.get("Settings.generalSettings.goBackToStatic");
+	goBackToStaticEnabledFlags = userConfig.get("Settings.generalSettings.goBackToStaticEnabledFlags");
 	goBackToStaticDelay = userConfig.get("Settings.generalSettings.goBackToStaticDelay");
 	goBackToStaticDelay = goBackToStaticDelay * 1000;
 	goBackToStaticBrightness = userConfig.get("Settings.generalSettings.staticBrightness");

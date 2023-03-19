@@ -9,6 +9,13 @@ const config = {
                 	defaultBrightness: 100,
 
                 	goBackToStatic: true,
+                	goBackToStaticEnabledFlags: [
+                		"yellow",
+                		"red",
+                		"safetyCar",
+                		"vsc",
+                		"vscEnding"
+                	],
                 	goBackToStaticDelay: 10,
                 	staticBrightness: 70,
 
@@ -108,6 +115,7 @@ const config = {
                 	token: undefined,
                 	hue3rdPartyCompatMode: false,
                 	enableFade: false,
+                	enableFadeWithEffects: false,
                 },
 
         	ikeaSettings:

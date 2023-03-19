@@ -16,6 +16,22 @@ $(function() {
 			});
 		}
 
+		Settings.generalSettings.goBackToStaticEnabledFlags.forEach((flag) => {
+			if (flag === "green") {
+				$("#go-back-to-static-green-flag-setting").prop("checked", true);
+			} else if (flag === "yellow") {
+				$("#go-back-to-static-yellow-flag-setting").prop("checked", true);
+			} else if (flag === "red") {
+				$("#go-back-to-static-red-flag-setting").prop("checked", true);
+			} else if (flag === "safetyCar") {
+				$("#go-back-to-static-safety-car-setting").prop("checked", true);
+			} else if (flag === "vsc") {
+				$("#go-back-to-static-vsc-setting").prop("checked", true);
+			} else if (flag === "vscEnding") {
+				$("#go-back-to-static-vsc-ending-setting").prop("checked", true);
+			}
+		});
+
 		// Set other settings
 		$("#brightness-input").val(Settings.generalSettings.defaultBrightness);
 		$("#auto-turn-off-setting").prop("checked", Settings.generalSettings.autoTurnOffLights);
@@ -37,6 +53,7 @@ $(function() {
 		$("#debug-mode-setting").prop("checked", Settings.advancedSettings.debugMode);
 		$("#disable-hue-setting").prop("checked", Settings.hueSettings.hueDisable);
 		$("#hue-fade-setting").prop("checked", Settings.hueSettings.enableFade);
+		$("#hue-fade-with-effects-setting").prop("checked", Settings.hueSettings.enableFadeWithEffects);
 		$("#hue-compat-mode-setting").prop("checked", Settings.hueSettings.hue3rdPartyCompatMode);
 		$("#disable-nanoleaf-setting").prop("checked", Settings.nanoLeafSettings.nanoLeafDisable);
 		$("#disable-wled-setting").prop("checked", Settings.WLEDSettings.WLEDDisable);
@@ -69,16 +86,38 @@ function saveConfig() {
 		deviceIPs = $("#yeelight-device-ip-input").val();
 	}
 
+	let goBackToStaticEnabledFlags = [];
+	if ($("#go-back-to-static-green-flag-setting").is(":checked")) {
+		goBackToStaticEnabledFlags.push("green");
+	}
+	if ($("#go-back-to-static-yellow-flag-setting").is(":checked")) {
+		goBackToStaticEnabledFlags.push("yellow");
+	}
+	if ($("#go-back-to-static-red-flag-setting").is(":checked")) {
+		goBackToStaticEnabledFlags.push("red");
+	}
+	if ($("#go-back-to-static-safety-car-setting").is(":checked")) {
+		goBackToStaticEnabledFlags.push("safetyCar");
+	}
+	if ($("#go-back-to-static-vsc-setting").is(":checked")) {
+		goBackToStaticEnabledFlags.push("vsc");
+	}
+	if ($("#go-back-to-static-vsc-ending-setting").is(":checked")) {
+		goBackToStaticEnabledFlags.push("vscEnding");
+	}
+
 	ipcRenderer.send("saveConfig", {
 		defaultBrightness: $("#brightness-input").val(),
 		autoTurnOffLights: $("#auto-turn-off-setting").is(":checked"),
 		goBackToStatic: $("#go-back-to-static-setting").is(":checked"),
+		goBackToStaticEnabledFlags: goBackToStaticEnabledFlags,
 		goBackToStaticDelay: $("#go-back-to-static-delay-input").val(),
 		staticBrightness: $("#go-back-to-static-brightness-input").val(),
 		liveTimingURL: $("#live-timing-url-input").val(),
 		hueDisable: $("#disable-hue-setting").is(":checked"),
 		hue3rdPartyCompatMode: $("#hue-compat-mode-setting").is(":checked"),
 		hueFade: $("#hue-fade-setting").is(":checked"),
+		hueFadeWithEffects: $("#hue-fade-with-effects-setting").is(":checked"),
 		ikeaDisable: $("#disable-ikea-setting").is(":checked"),
 		securityCode: $("#sec-code-input").val(),
 		goveeDisable: $("#disable-govee-setting").is(":checked"),
