@@ -50,8 +50,7 @@ export default function threeDotMenu() {
                 onClose={handleClose}
                 MenuListProps={{
                     'aria-labelledby': 'basic-button',
-                }
-                }
+                }}
             >
                 <MenuItem onClick={handleClose}>
                     <SettingsIcon

@@ -32,8 +32,10 @@ const indexHtml = join(process.env.DIST, 'index.html')
 
 async function createWindow() {
   win = new BrowserWindow({
-    title: 'Main window',
+    title: 'F1MV Lights Integration',
     icon: join(process.env.PUBLIC, 'favicon.ico'),
+    width: 1200,
+    height: 700,
     webPreferences: {
       preload,
       nodeIntegration: true,

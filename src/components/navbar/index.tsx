@@ -3,7 +3,7 @@ import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
-import threeDotMenu from './menu';
+import Menu from './menu';
 
 export default function NavBar() {
     return (
@@ -21,7 +21,7 @@ export default function NavBar() {
                     >
                         F1MV Lights Integration
                     </Typography>
-                    {threeDotMenu()}
+                    {Menu()}
                 </Toolbar>
             </AppBar>
         </Box>

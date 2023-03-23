@@ -1,10 +1,10 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-import App from './App'
-import './index.scss'
+import App from './pages/App'
+import './style/index.scss'
 import {createTheme, ThemeProvider} from "@mui/material";
 
-// we want a theme with the roboto font
+
 const theme = createTheme({
     palette: {
         mode: 'dark',
