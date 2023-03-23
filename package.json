@@ -1,44 +1,54 @@
 {
   "name": "F1MV-Lights-Integration",
-  "version": "1.1.9",
+  "version": "2.0.0",
+  "main": "dist-electron/main/index.js",
   "description": "The best way to connect your smart home lights to your F1MV.",
   "author": "JustJoostNL",
-  "main": "src/main/main.js",
-  "type": "commonjs",
+  "license": "GPL-3.0-only",
+  "debug": {
+    "env": {
+      "VITE_DEV_SERVER_URL": "http://127.0.0.1:7777/"
+    }
+  },
   "scripts": {
-    "start": "electron .",
-    "package": "electron-builder --dir",
-    "make": "electron-builder",
-    "postinstall": "electron-builder install-app-deps"
+    "dev": "vite",
+    "build": "tsc && vite build && electron-builder",
+    "preview": "vite preview"
   },
   "dependencies": {
-    "@elgato-stream-deck/node": "^5.7.2",
-    "@sentry/electron": "^4.3.0",
-    "@sentry/tracing": "^7.43.0",
-    "color-convert": "^2.0.1",
-    "colord": "^2.9.3",
-    "colortranslator": "^1.10.2",
-    "cors": "^2.8.5",
-    "discord-rpc": "github:JustJoostNL/DiscordRPC",
-    "electron-localshortcut": "^3.2.1",
+    "@emotion/react": "11.10.6",
+    "@emotion/styled": "11.10.6",
+    "@mui/icons-material": "5.11.11",
+    "@mui/material": "5.11.14",
+    "@types/react": "18.0.28",
+    "@types/react-dom": "18.0.11",
     "electron-store": "^8.1.0",
     "electron-updater": "^5.3.0",
-    "express": "^4.18.2",
-    "govee-lan-control": "^2.1.0",
-    "jquery": "^3.6.4",
-    "nanoleaves": "github:erictrinh/nanoleaves",
-    "node-fetch": "^2.6.9",
-    "node-hue-api": "^5.0.0-beta.15",
-    "node-tradfri-client": "3.2.0",
-    "openrgb-sdk": "^0.5.2",
-    "process": "^0.11.10",
-    "socket.io": "^4.6.1",
-    "wled-client": "^0.22.1",
-    "yeelight.io": "^1.1.7"
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
+    "typescript": "5.0.2"
   },
   "devDependencies": {
-    "electron": "^23.1.4",
-    "electron-builder": "^24.0.0-alpha.13",
-    "eslint": "^8.36.0"
+    "@types/react": "^18.0.28",
+    "@types/react-dom": "^18.0.11",
+    "@typescript-eslint/eslint-plugin": "^5.56.0",
+    "@typescript-eslint/parser": "^5.56.0",
+    "@vitejs/plugin-react": "^3.1.0",
+    "electron": "^23.2.0",
+    "electron-builder": "^23.6.0",
+    "eslint": "^8.36.0",
+    "eslint-plugin-react": "^7.32.2",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^6.9.0",
+    "sass": "^1.59.3",
+    "typescript": "^5.0.2",
+    "vite": "^4.2.1",
+    "vite-electron-plugin": "^0.8.2",
+    "vite-plugin-electron": "^0.11.1",
+    "vite-plugin-electron-renderer": "^0.13.5"
+  },
+  "engines": {
+    "node": "^14.18.0 || >=16.0.0"
   }
 }

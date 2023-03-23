@@ -1,0 +1,71 @@
+{
+  "productName": "F1MV-Lights-Integration",
+  "appId": "com.justjoostnl.f1mv.lights.integration",
+  "copyright": "Copyright © 2023 JustJoostNL",
+
+  generateUpdatesFilesForAllChannels: true,
+  "asar": true,
+
+  "directories": {
+    "output": "release/${version}"
+  },
+
+
+  "files": [
+    "!.devcontainer/**/*",
+    "!.deepsource.toml",
+    "!dist/**/*",
+    "!node_modules/**/*.{mk,a,o,h}",
+    "!node_modules/node-hid/build/Release/.forge-meta",
+
+    "dist-electron",
+    "dist"
+  ],
+
+
+  "mac": {
+    category: "public.app-category.utilities",
+    "artifactName": "${productName}_${version}.${ext}",
+    minimumSystemVersion: "10.12.0",
+    "target": [
+      "dmg"
+    ]
+  },
+
+
+  "win": {
+    "target": [
+      {
+        "target": "nsis",
+        "arch": [
+          "x64"
+        ]
+      }
+    ],
+    "artifactName": "${productName}_${version}.${ext}"
+  },
+
+
+  "linux": {
+    "target": [
+      "AppImage"
+    ],
+    "artifactName": "${productName}_${version}.${ext}"
+  },
+
+  "appImage": {
+    "category": "Utility"
+  },
+
+
+  "nsis": {
+    "oneClick": true,
+    "perMachine": true,
+    "deleteAppDataOnUninstall": true
+  },
+
+
+  "publish": {
+    "provider": "github"
+  }
+}
