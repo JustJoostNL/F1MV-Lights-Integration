@@ -21,7 +21,11 @@ const Main = () => {
                 style={{ minHeight: "100vh" }}
             >
                 <Grid item xs={3}>
-                    <CircularProgress thickness={5} sx={{ ml: 2 }} />
+                    <CircularProgress
+                        thickness={5}
+                        color={"secondary"}
+                        sx={{ ml: 2 }}
+                    />
                     <Typography
                         sx={{
                             color: "text.primary",

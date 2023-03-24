@@ -4,6 +4,7 @@ import Menu from '@mui/material/Menu';
 import Divider from '@mui/material/Divider';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import SettingsIcon from '@mui/icons-material/Settings';
+import HomeIcon from '@mui/icons-material/Home';
 import InfoIcon from '@mui/icons-material/Info';
 import OpenIcon from '@mui/icons-material/OpenInNew';
 import MenuItem from '@mui/material/MenuItem';
@@ -20,6 +21,22 @@ export default function threeDotMenu() {
     const handleClose = () => {
         setAnchorEl(null);
     };
+    const handleOpenSettings = () => {
+        setAnchorEl(null);
+        window.location.hash = '/settings'
+    }
+    const handleOpenHome = () => {
+        setAnchorEl(null);
+        window.location.hash = '/home'
+    }
+    const handleOpenAbout = () => {
+        setAnchorEl(null);
+        window.location.hash = '/about'
+    }
+    const handleOpenF1MV = () => {
+        setAnchorEl(null);
+        window.location.href = 'multiviewer://'
+    }
 
     // get the version from package.json
     const currentAppVersion = 'v' + packageJson.version
@@ -52,7 +69,19 @@ export default function threeDotMenu() {
                     'aria-labelledby': 'basic-button',
                 }}
             >
-                <MenuItem onClick={handleClose}>
+                <MenuItem onClick={handleOpenHome}>
+                    <HomeIcon
+                        sx={{
+                            mr: 2
+                        }}/>
+                    <Typography
+                        variant="body2"
+                        sx={menuItemStyle}>
+                        Home
+                    </Typography>
+                </MenuItem>
+                <Divider />
+                <MenuItem onClick={handleOpenSettings}>
                     <SettingsIcon
                         sx={{
                             mr: 2
@@ -64,7 +93,7 @@ export default function threeDotMenu() {
                     </Typography>
                 </MenuItem>
                 <MenuItem
-                    onClick={handleClose}>
+                    onClick={handleOpenAbout}>
                     <InfoIcon
                         sx={{
                             mr: 2
@@ -76,7 +105,7 @@ export default function threeDotMenu() {
                     </Typography>
                 </MenuItem>
                 <Divider />
-                <MenuItem onClick={handleClose}>
+                <MenuItem onClick={handleOpenF1MV}>
                     <img
                         src={f1mvLogo}
                         alt="MultiViewer for F1 Logo"

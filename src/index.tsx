@@ -12,8 +12,8 @@ const theme = createTheme({
             main: '#212121',
         },
         secondary: {
-            main: '#212121',
-        },
+            main: '#f44336',
+        }
     },
     components: {
         MuiAppBar: {

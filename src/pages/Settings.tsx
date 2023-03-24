@@ -1,13 +1,10 @@
-import Typography from "@mui/material/Typography";
 import NavBar from "@/components/navbar";
 
 export default function Main() {
     return (
         <div>
-            <NavBar />
-            <Typography>
-                Settings
-            </Typography>
+            <NavBar showSettingsBackButton={true} />
+            <h1>Settings</h1>
         </div>
     )
 }
