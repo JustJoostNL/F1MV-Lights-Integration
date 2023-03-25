@@ -1,14 +1,14 @@
-import React from 'react';
+import React from "react";
 import NavBar from "@/components/navbar";
-import SettingsPage from '@/components/settings';
+import SettingsPage from "@/components/settings";
 
 function Settings() {
-    return (
-        <div>
-            <NavBar showSettingsBackButton={true} />
-            <SettingsPage />
-        </div>
-    )
+	return (
+		<div>
+			<NavBar showSettingsBackButton={true} />
+			<SettingsPage />
+		</div>
+	);
 }
 
 export default Settings;
