@@ -7,6 +7,7 @@ module.exports = {
 		"eslint:recommended",
 		"plugin:react/recommended",
 		"plugin:@typescript-eslint/eslint-recommended",
+		"plugin:react-hooks/recommended",
 		"plugin:@typescript-eslint/recommended",
 	],
 	"overrides": [
@@ -18,6 +19,7 @@ module.exports = {
 	},
 	"plugins": [
 		"react",
+		"react-hooks",
 		"@typescript-eslint"
 	],
 	"rules": {

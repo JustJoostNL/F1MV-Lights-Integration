@@ -2,6 +2,7 @@ import { app, BrowserWindow, shell, ipcMain } from "electron";
 import { release } from "node:os";
 import { join } from "node:path";
 import { update } from "./update";
+import {handleConfigGet, handleConfigGetAll, handleConfigSet} from "./config/config";
 
 
 process.env.DIST_ELECTRON = join(__dirname, "../");
@@ -44,6 +45,8 @@ async function createWindow() {
 		resizable: true,
 		maximizable: true,
 		minimizable: false,
+		minWidth: 800,
+		minHeight: 600,
 	});
 
 	if (process.env.VITE_DEV_SERVER_URL) { // electron-vite-vue#298
@@ -131,3 +134,6 @@ ipcMain.handle("open-win", (_, arg) => {
 	}
 });
 
+ipcMain.handle("config:set", handleConfigSet)
+ipcMain.handle("config:get", handleConfigGet)
+ipcMain.handle("config:get:all", handleConfigGetAll)

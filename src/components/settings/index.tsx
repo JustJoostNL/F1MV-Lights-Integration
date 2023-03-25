@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Typography, Accordion, AccordionSummary, AccordionDetails } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import { settingsData } from "./settingsData";
+import { allSettings } from "./allSettings";
 
 const SettingsPage: React.FC = () => {
 	const [paperWidth, setPaperWidth] = useState<number>(400);
@@ -20,7 +20,7 @@ const SettingsPage: React.FC = () => {
 			<Typography variant="h2" sx={{ textAlign: "center", mb: "80px", mt: "80px" }}>
                 Settings
 			</Typography>
-			{settingsData.map(({ heading, content }) => (
+			{allSettings.map(({ heading, content }) => (
 				<div key={heading} style={{ marginBottom: "20px" }}>
 					<Accordion sx={{ boxShadow: "none", backgroundColor: "transparent", borderRadius: "10px" }}>
 						<AccordionSummary expandIcon={<ExpandMoreIcon />}>
@@ -29,9 +29,7 @@ const SettingsPage: React.FC = () => {
 							</Typography>
 						</AccordionSummary>
 						<AccordionDetails sx={{ display: "flex", flexDirection: "column", alignItems: "flex-start", padding: "20px" }}>
-							<Typography variant="body1" sx={{ color: "grey", textAlign: "left", mb: "20px" }}>
-								{content}
-							</Typography>
+							{content}
 						</AccordionDetails>
 					</Accordion>
 				</div>

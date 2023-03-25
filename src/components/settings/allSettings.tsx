@@ -1,7 +1,6 @@
-import React from "react";
-import Typography from "@mui/material/Typography";
 import {alpha, styled, Switch} from "@mui/material";
 import {lightBlue} from "@mui/material/colors";
+import GeneralSettingsContent from "@/components/settings/settings/generalSettings/generalSettings";
 
 export const BlueSwitch = styled(Switch)(({ theme }) => ({
 	"& .MuiSwitch-switchBase.Mui-checked": {
@@ -15,37 +14,19 @@ export const BlueSwitch = styled(Switch)(({ theme }) => ({
 	},
 }));
 
-function GeneralSettingsContent() {
-	return (
-		<div>
-			<div>
-				<Typography
-					variant="h6"
-					component="div"
-					sx={{
-						color: "white",
-					}}
-				>
-                        Enable F1MV
-				</Typography>
-				<Typography
-					variant="body2"
-					component="div"
-					sx={{
-						color: "grey",
-					}}
-				>
-                        Enable F1MV to control your lights
-				</Typography>
-				<BlueSwitch/>
-			</div>
-		</div>
-	);
-}
+export const settingBoxSX = {
+	display: "flex",
+	justifyContent: "space-between",
+	width: "100%",
+	color: "white",
+	textAlign: "left",
+	marginBottom: "20px",
+	marginRight: "600px"
+};
 
 const ipsum = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas laoreet, diam vel facilisis vehicula, massa metus facilisis nibh, sit amet commodo erat leo vel lacus.";
 
-export const settingsData = [
+export const allSettings = [
 	{
 		heading: "General Settings",
 		content: GeneralSettingsContent()

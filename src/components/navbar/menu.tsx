@@ -12,7 +12,7 @@ import f1mvLogo from "../../assets/f1mv-logo.png";
 import packageJson from "../../../package.json";
 import Typography from "@mui/material/Typography";
 
-export default function threeDotMenu() {
+export default function ThreeDotMenu() {
 	const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
 	const open = Boolean(anchorEl);
 	const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
