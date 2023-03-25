@@ -70,6 +70,23 @@ app.whenReady().then(onReady)
 
 function onReady() {
   createWindow()
+
+  win.webContents.on("did-finish-load", () => {
+    win.webContents.insertCSS(`
+            ::-webkit-scrollbar {
+                width: 10px;
+            }
+            ::-webkit-scrollbar-track {
+                background: #1e1e1e;
+            }
+            ::-webkit-scrollbar-thumb {
+                background: #888;
+            }
+            ::-webkit-scrollbar-thumb:hover {
+                background: #555;
+            }
+        `)
+  });
 }
 
 app.on('window-all-closed', () => {

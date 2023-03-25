@@ -6,7 +6,6 @@ import electron from 'vite-electron-plugin'
 import { customStart, loadViteEnv } from 'vite-electron-plugin/plugin'
 import preload from 'vite-plugin-electron'
 import renderer from 'vite-plugin-electron-renderer'
-import pkg from './package.json'
 
 let preloadHasReady = false
 
@@ -73,13 +72,6 @@ export default defineConfig(({ command }) => {
         nodeIntegration: true,
       }),
     ],
-    server: !!process.env.VSCODE_DEBUG ? (() => {
-      const url = new URL(pkg.debug.env.VITE_DEV_SERVER_URL)
-      return {
-        host: url.hostname,
-        port: +url.port,
-      }
-    })() : undefined,
     clearScreen: false,
   }
 })
