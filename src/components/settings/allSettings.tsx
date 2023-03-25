@@ -29,7 +29,7 @@ const ipsum = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas
 export const allSettings = [
 	{
 		heading: "General Settings",
-		content: GeneralSettingsContent()
+		content: <GeneralSettingsContent />
 	},
 	{
 		heading: "F1MV Settings",
