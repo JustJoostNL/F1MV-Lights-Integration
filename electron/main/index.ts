@@ -45,7 +45,7 @@ async function createWindow() {
 		resizable: true,
 		maximizable: true,
 		minimizable: false,
-		minWidth: 800,
+		minWidth: 1075,
 		minHeight: 600,
 	});
 
@@ -134,6 +134,12 @@ ipcMain.handle("open-win", (_, arg) => {
 	}
 });
 
+// config
 ipcMain.handle("config:set", handleConfigSet);
 ipcMain.handle("config:get", handleConfigGet);
 ipcMain.handle("config:get:all", handleConfigGetAll);
+
+// utils
+ipcMain.handle("utils:getWindowSize", () => {
+	return win?.getSize();
+});

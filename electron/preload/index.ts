@@ -10,6 +10,9 @@ export const f1mvli = {
 	updater: {
 		checkForUpdate: () => ipcRenderer.invoke("updater:checkForUpdate"),
 	},
+	utils: {
+		getWindowSize: () => ipcRenderer.invoke("utils:getWindowSize"),
+	}
 };
 
 // @ts-ignore

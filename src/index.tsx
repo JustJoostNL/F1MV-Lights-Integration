@@ -3,6 +3,7 @@ import ReactDOM from "react-dom/client";
 import App from "./pages/App";
 import "./style/index.scss";
 import {createTheme, ThemeProvider} from "@mui/material";
+import { lightBlue} from "@mui/material/colors";
 
 
 const theme = createTheme({
@@ -11,9 +12,7 @@ const theme = createTheme({
 		primary: {
 			main: "#212121",
 		},
-		secondary: {
-			main: "#81d4fa",
-		}
+		secondary: lightBlue,
 	},
 	components: {
 		MuiAppBar: {

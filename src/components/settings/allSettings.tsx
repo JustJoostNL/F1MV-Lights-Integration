@@ -1,6 +1,8 @@
 import {alpha, styled, Switch} from "@mui/material";
 import {lightBlue} from "@mui/material/colors";
 import GeneralSettingsContent from "@/components/settings/settings/general-settings/GeneralSettings";
+import F1MVSettingsContent from "@/components/settings/settings/f1mv-settings/F1MVSettings";
+import HueSettingsContent from "@/components/settings/settings/hue-settings/HueSettings";
 
 export const BlueSwitch = styled(Switch)(({ theme }) => ({
 	"& .MuiSwitch-switchBase.Mui-checked": {
@@ -33,11 +35,11 @@ export const allSettings = [
 	},
 	{
 		heading: "F1MV Settings",
-		content: ipsum
+		content: <F1MVSettingsContent/>
 	},
 	{
 		heading: "Philips Hue Settings",
-		content: ipsum
+		content: <HueSettingsContent/>
 	},
 	{
 		heading: "Ikea Settings",

@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from "react";
 import {BlueSwitch, settingBoxSX} from "@/components/settings/allSettings";
 import {Box, Checkbox, Divider, FormControlLabel, FormGroup, TextField, Typography} from "@mui/material";
-import {BlueSlider} from "@/components/settings/settings/general-settings/BlueSlider";
+import {BlueSlider} from "@/components/settings/BlueSlider";
 import {HandleFlagChange} from "@/components/settings/settings/general-settings/HandleFlagChange";
 
 
