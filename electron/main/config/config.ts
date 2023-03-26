@@ -6,7 +6,7 @@ const userConfig = new Store({
 	defaults: defaultConfig,
 	watch: true,
 	migrations: {
-		'2.0.0': userConfig => {
+		"2.0.0": userConfig => {
 			userConfig.set("version", "2.0.0");
 		}
 	}
@@ -19,14 +19,14 @@ userConfig.onDidAnyChange(() => {
 
 export const handleConfigSet = (event, key, value) => {
 	userConfig.set(key, value);
-}
+};
 export const handleConfigGet = (event, key) => {
 	return userConfig.get(key);
-}
+};
 
 export const handleConfigGetAll = async () => {
 	return userConfig.store;
-}
+};
 
 //-------------------------------------------
 

@@ -13,7 +13,7 @@ export default function GeneralSettingsContent() {
 			const config = await window.f1mvli.config.getAll();
 			setSettings(config.Settings.generalSettings);
 		}
-		fetchConfig()
+		fetchConfig();
 	}, []);
 
 	const handleSetSingleSetting = (setting: string, value: any) => {
@@ -21,7 +21,7 @@ export default function GeneralSettingsContent() {
 			...settings,
 			[setting]: value,
 		});
-	}
+	};
 
 	const saveConfig = async () => {
 		if (!settings) return;
@@ -151,7 +151,7 @@ export default function GeneralSettingsContent() {
 										control={
 											<Checkbox
 												color="secondary"
-												id={`go-back-to-static-flag-green`}
+												id={"go-back-to-static-flag-green"}
 												checked={settings.goBackToStaticEnabledFlags.includes("green")}
 												onChange={(event) => HandleFlagChange("green", event.target.checked, settings, setSettings)}
 											/>
@@ -164,7 +164,7 @@ export default function GeneralSettingsContent() {
 										control={
 											<Checkbox
 												color="secondary"
-												id={`go-back-to-static-flag-yellow`}
+												id={"go-back-to-static-flag-yellow"}
 												checked={settings.goBackToStaticEnabledFlags.includes("yellow")}
 												onChange={(event) => HandleFlagChange("yellow", event.target.checked, settings, setSettings)}
 											/>
@@ -177,7 +177,7 @@ export default function GeneralSettingsContent() {
 										control={
 											<Checkbox
 												color="secondary"
-												id={`go-back-to-static-flag-red`}
+												id={"go-back-to-static-flag-red"}
 												checked={settings.goBackToStaticEnabledFlags.includes("red")}
 												onChange={(event) => HandleFlagChange("red", event.target.checked, settings, setSettings)}
 											/>
@@ -190,7 +190,7 @@ export default function GeneralSettingsContent() {
 										control={
 											<Checkbox
 												color="secondary"
-												id={`go-back-to-static-flag-safetyCar`}
+												id={"go-back-to-static-flag-safetyCar"}
 												checked={settings.goBackToStaticEnabledFlags.includes("safetyCar")}
 												onChange={(event) => HandleFlagChange("safetyCar", event.target.checked, settings, setSettings)}
 											/>
@@ -203,7 +203,7 @@ export default function GeneralSettingsContent() {
 										control={
 											<Checkbox
 												color="secondary"
-												id={`go-back-to-static-flag-vsc`}
+												id={"go-back-to-static-flag-vsc"}
 												checked={settings.goBackToStaticEnabledFlags.includes("vsc")}
 												onChange={(event) => HandleFlagChange("vsc", event.target.checked, settings, setSettings)}
 											/>
@@ -216,7 +216,7 @@ export default function GeneralSettingsContent() {
 										control={
 											<Checkbox
 												color="secondary"
-												id={`go-back-to-static-flag-vscEnding`}
+												id={"go-back-to-static-flag-vscEnding"}
 												checked={settings.goBackToStaticEnabledFlags.includes("vscEnding")}
 												onChange={(event) => HandleFlagChange("vscEnding", event.target.checked, settings, setSettings)}
 											/>

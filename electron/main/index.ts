@@ -134,6 +134,6 @@ ipcMain.handle("open-win", (_, arg) => {
 	}
 });
 
-ipcMain.handle("config:set", handleConfigSet)
-ipcMain.handle("config:get", handleConfigGet)
-ipcMain.handle("config:get:all", handleConfigGetAll)
+ipcMain.handle("config:set", handleConfigSet);
+ipcMain.handle("config:get", handleConfigGet);
+ipcMain.handle("config:get:all", handleConfigGetAll);
