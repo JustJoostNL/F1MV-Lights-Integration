@@ -5,8 +5,6 @@ import Settings from "@/pages/Settings";
 import Home from "@/pages/Home";
 import About from "@/pages/about";
 
-console.log("[App.tsx]", `Hello world from Electron ${process.versions.electron}!`);
-
 const router = createHashRouter([
 	{
 		path: "/",

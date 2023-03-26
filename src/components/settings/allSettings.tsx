@@ -1,6 +1,6 @@
 import {alpha, styled, Switch} from "@mui/material";
 import {lightBlue} from "@mui/material/colors";
-import GeneralSettingsContent from "@/components/settings/settings/generalSettings/generalSettings";
+import GeneralSettingsContent from "@/components/settings/settings/general-settings/GeneralSettings";
 
 export const BlueSwitch = styled(Switch)(({ theme }) => ({
 	"& .MuiSwitch-switchBase.Mui-checked": {

@@ -4,6 +4,7 @@ import defaultConfig from "./defaultConfig";
 const userConfig = new Store({
 	name: "settings",
 	defaults: defaultConfig,
+	watch: true,
 	migrations: {
 		'2.0.0': userConfig => {
 			userConfig.set("version", "2.0.0");
@@ -18,15 +19,12 @@ userConfig.onDidAnyChange(() => {
 
 export const handleConfigSet = (event, key, value) => {
 	userConfig.set(key, value);
-	console.log(`Config key ${key} set to ${value}`);
 }
 export const handleConfigGet = (event, key) => {
-	console.log(`Config key '${key}' requested`)
 	return userConfig.get(key);
 }
 
-export const handleConfigGetAll = () => {
-	console.log("All config requested");
+export const handleConfigGetAll = async () => {
 	return userConfig.store;
 }
 
