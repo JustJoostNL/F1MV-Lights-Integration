@@ -23,7 +23,6 @@
 
   "mac": {
     category: "public.app-category.utilities",
-    "artifactName": "${productName}_${version}.${ext}",
     minimumSystemVersion: "10.12.0",
     "target": [
       "dmg"
@@ -40,7 +39,6 @@
         ]
       }
     ],
-    "artifactName": "${productName}_${version}.${ext}"
   },
 
 
@@ -48,7 +46,6 @@
     "target": [
       "AppImage"
     ],
-    "artifactName": "${productName}_${version}.${ext}"
   },
 
   "appImage": {
