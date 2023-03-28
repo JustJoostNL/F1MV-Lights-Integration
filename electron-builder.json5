@@ -12,12 +12,10 @@
 
 
   "files": [
-    "!.devcontainer/**/*",
     "!.deepsource.toml",
     "!dist/**/*",
     "!node_modules/**/*.{mk,a,o,h}",
     "!node_modules/node-hid/build/Release/.forge-meta",
-
     "dist-electron",
     "dist"
   ],

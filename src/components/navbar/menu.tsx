@@ -8,9 +8,12 @@ import HomeIcon from "@mui/icons-material/Home";
 import InfoIcon from "@mui/icons-material/Info";
 import OpenIcon from "@mui/icons-material/OpenInNew";
 import MenuItem from "@mui/material/MenuItem";
+import DonateIcon from "@mui/icons-material/SavingsRounded";
 import f1mvLogo from "../../assets/f1mv-logo.png";
 import packageJson from "../../../package.json";
 import Typography from "@mui/material/Typography";
+import {green} from "@mui/material/colors";
+import { shell } from "electron";
 
 export default function ThreeDotMenu() {
 	const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
@@ -35,7 +38,12 @@ export default function ThreeDotMenu() {
 	};
 	const handleOpenF1MV = () => {
 		setAnchorEl(null);
-		window.location.href = "multiviewer://";
+		shell.openExternal("multiviewer://");
+	};
+
+	const handleOpenDonate = () => {
+		setAnchorEl(null);
+		shell.openExternal("https://buymeacoffee.com/justjoostnl");
 	};
 
 	// get the version from package.json
@@ -104,6 +112,25 @@ export default function ThreeDotMenu() {
                         About
 					</Typography>
 				</MenuItem>
+				<Divider />
+				<MenuItem onClick={handleOpenDonate}>
+					<DonateIcon
+						sx={{
+							mr: 2,
+							color: green[500]
+						}}/>
+					<Typography
+						variant="body2"
+						sx={menuItemStyle}>
+						Donate <OpenIcon
+							sx={{
+								ml: 1,
+								color: "grey.500",
+								fontSize: "0.9rem"
+							}} />
+					</Typography>
+				</MenuItem>
+
 				<Divider />
 				<MenuItem onClick={handleOpenF1MV}>
 					<img

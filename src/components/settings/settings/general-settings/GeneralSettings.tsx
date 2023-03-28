@@ -17,6 +17,9 @@ export default function GeneralSettingsContent() {
 	}, []);
 
 	const handleSetSingleSetting = (setting: string, value: any) => {
+		if (typeof value === "string" && value.match(/^[0-9]+$/)) {
+			value = parseInt(value);
+		}
 		setSettings({
 			...settings,
 			[setting]: value,

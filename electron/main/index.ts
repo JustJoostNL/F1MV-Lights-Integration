@@ -2,7 +2,7 @@ import { app, BrowserWindow, shell, ipcMain } from "electron";
 import { release } from "node:os";
 import { join } from "node:path";
 import { update } from "./update";
-import {handleConfigGet, handleConfigGetAll, handleConfigSet} from "./config/config";
+import {handleConfigGet, handleConfigGetAll, handleConfigOpenInEditor, handleConfigSet} from "./config/config";
 
 
 process.env.DIST_ELECTRON = join(__dirname, "../");
@@ -138,6 +138,7 @@ ipcMain.handle("open-win", (_, arg) => {
 ipcMain.handle("config:set", handleConfigSet);
 ipcMain.handle("config:get", handleConfigGet);
 ipcMain.handle("config:get:all", handleConfigGetAll);
+ipcMain.handle("config:open:inEditor", handleConfigOpenInEditor);
 
 // utils
 ipcMain.handle("utils:getWindowSize", () => {

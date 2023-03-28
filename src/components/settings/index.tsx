@@ -2,9 +2,20 @@ import React, { useEffect, useState } from "react";
 import { Typography, Accordion, AccordionSummary, AccordionDetails } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { allSettings } from "./allSettings";
+import {useHotkeys} from "react-hotkeys-hook";
 
 const SettingsPage: React.FC = () => {
 	const [paperWidth, setPaperWidth] = useState<number>(400);
+
+	const integrationSettings = allSettings.filter((setting) => setting.type === "integration");
+	const nonIntegrationSettings = allSettings.filter((setting) => setting.type !== "integration" && setting.type !== "advanced");
+	const advancedSettings = allSettings.filter((setting) => setting.type === "advanced");
+
+	useHotkeys("shift+o", () => {
+		window.f1mvli.config.openInEditor();
+	});
+
+	console.log(integrationSettings, nonIntegrationSettings, advancedSettings);
 
 	useEffect(() => {
 		const handleResize = () => {
@@ -18,9 +29,9 @@ const SettingsPage: React.FC = () => {
 	return (
 		<div>
 			<Typography variant="h2" sx={{ textAlign: "center", mb: "80px", mt: "80px" }}>
-                Settings
+					Settings
 			</Typography>
-			{allSettings.map(({ heading, content }) => (
+			{nonIntegrationSettings.map(({ heading, content }) => (
 				<div key={heading} style={{ marginBottom: "20px" }}>
 					<Accordion sx={{ boxShadow: "none", backgroundColor: "transparent", borderRadius: "10px" }}>
 						<AccordionSummary expandIcon={<ExpandMoreIcon />}>
@@ -34,6 +45,47 @@ const SettingsPage: React.FC = () => {
 					</Accordion>
 				</div>
 			))}
+			<div style={{ marginBottom: "20px" }}>
+				<Accordion sx={{ boxShadow: "none", backgroundColor: "transparent", borderRadius: "10px" }}>
+					<AccordionSummary expandIcon={<ExpandMoreIcon />}>
+						<Typography variant="h5" sx={{ fontWeight: "bold", color: "white", textAlign: "left", ml: "20px" }}>
+								Integration Settings
+						</Typography>
+					</AccordionSummary>
+					<AccordionDetails sx={{ display: "flex", flexDirection: "column", alignItems: "flex-start", padding: "20px" }}>
+						{integrationSettings.map(({ heading, content }) => (
+							<div key={heading} style={{ marginBottom: "20px" }}>
+								<Accordion sx={{ boxShadow: "none", backgroundColor: "transparent", borderRadius: "10px", mr: "45px" }}>
+									<AccordionSummary expandIcon={<ExpandMoreIcon />}>
+										<Typography variant="h5" sx={{ fontWeight: "bold", color: "white", textAlign: "left", ml: "20px" }}>
+											{heading}
+										</Typography>
+									</AccordionSummary>
+									<AccordionDetails sx={{ display: "flex", flexDirection: "column", alignItems: "flex-start", padding: "20px" }}>
+										{content}
+									</AccordionDetails>
+								</Accordion>
+							</div>
+						))}
+					</AccordionDetails>
+				</Accordion>
+			</div>
+			<div style={{ marginBottom: "20px" }}>
+				{advancedSettings.map(({ heading, content }) => (
+					<div key={heading} style={{ marginBottom: "20px" }}>
+						<Accordion sx={{ boxShadow: "none", backgroundColor: "transparent", borderRadius: "10px" }}>
+							<AccordionSummary expandIcon={<ExpandMoreIcon />}>
+								<Typography variant="h5" sx={{ fontWeight: "bold", color: "white", textAlign: "left", ml: "20px" }}>
+									{heading}
+								</Typography>
+							</AccordionSummary>
+							<AccordionDetails sx={{ display: "flex", flexDirection: "column", alignItems: "flex-start", padding: "20px" }}>
+								{content}
+							</AccordionDetails>
+						</Accordion>
+					</div>
+				))}
+			</div>
 		</div>
 	);
 };

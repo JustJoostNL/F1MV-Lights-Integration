@@ -6,6 +6,7 @@ export const f1mvli = {
 		get: (key: string) => ipcRenderer.invoke("config:get", key),
 		getAll: () => ipcRenderer.invoke("config:get:all"),
 		delete: (key: string) => ipcRenderer.invoke("config:delete", key),
+		openInEditor: () => ipcRenderer.invoke("config:open:inEditor"),
 	},
 	updater: {
 		checkForUpdate: () => ipcRenderer.invoke("updater:checkForUpdate"),

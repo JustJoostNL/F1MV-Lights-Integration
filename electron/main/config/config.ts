@@ -28,6 +28,10 @@ export const handleConfigGetAll = async () => {
 	return userConfig.store;
 };
 
+export const handleConfigOpenInEditor = () => {
+	userConfig.openInEditor();
+};
+
 //-------------------------------------------
 
 // general settings

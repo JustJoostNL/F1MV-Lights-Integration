@@ -3,6 +3,17 @@ import {lightBlue} from "@mui/material/colors";
 import GeneralSettingsContent from "@/components/settings/settings/general-settings/GeneralSettings";
 import F1MVSettingsContent from "@/components/settings/settings/f1mv-settings/F1MVSettings";
 import HueSettingsContent from "@/components/settings/settings/hue-settings/HueSettings";
+import IkeaSettingsContent from "@/components/settings/settings/ikea-settings/IkeaSettings";
+import GoveeSettingsContent from "@/components/settings/settings/govee-settings/GoveeSettings";
+import OpenRGBSettingsContent from "@/components/settings/settings/openrgb-settings/OpenRGBSettings";
+import HassSettingsContent from "@/components/settings/settings/hass-settings/HassSettings";
+import NanoleafSettingsContent from "@/components/settings/settings/nanoleaf-settings/NanoleafSettings";
+import WLEDSettingsContent from "@/components/settings/settings/wled-settings/WLEDSettings";
+import YeelightSettingsContent from "@/components/settings/settings/yeelight-settings/YeelightSettings";
+import ElgatoSDSettingsContent from "@/components/settings/settings/elgato-sd-settings/ElgatoSDSettings";
+import DiscordSettingsContent from "@/components/settings/settings/discord-settings/DiscordSettings";
+import WebServerSettingsContent from "@/components/settings/settings/webserver-settings/WebServerSettings";
+import AdvancedSettingsContent from "@/components/settings/settings/advanced-settings/AdvancedSettings";
 
 export const BlueSwitch = styled(Switch)(({ theme }) => ({
 	"& .MuiSwitch-switchBase.Mui-checked": {
@@ -31,58 +42,72 @@ const ipsum = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas
 export const allSettings = [
 	{
 		heading: "General Settings",
-		content: <GeneralSettingsContent />
+		content: <GeneralSettingsContent />,
+		type: "general"
 	},
 	{
 		heading: "F1MV Settings",
-		content: <F1MVSettingsContent/>
+		content: <F1MVSettingsContent/>,
+		type: "f1mv"
 	},
 	{
 		heading: "Philips Hue Settings",
-		content: <HueSettingsContent/>
+		content: <HueSettingsContent/>,
+		type: "integration"
 	},
 	{
 		heading: "Ikea Settings",
-		content: ipsum
+		content: <IkeaSettingsContent/>,
+		type: "integration"
 	},
 	{
 		heading: "Govee Settings",
-		content: ipsum
+		content: <GoveeSettingsContent/>,
+		type: "integration"
 	},
 	{
 		heading: "OpenRGB Settings",
-		content: ipsum
+		content: <OpenRGBSettingsContent/>,
+		type: "integration"
 	},
 	{
 		heading: "Home Assistant Settings",
-		content: ipsum
+		content: <HassSettingsContent/>,
+		type: "integration"
 	},
 	{
 		heading: "Nanoleaf Settings",
-		content: ipsum
+		content: <NanoleafSettingsContent/>,
+		type: "integration"
 	},
 	{
 		heading: "WLED Settings",
-		content: ipsum
+		content: <WLEDSettingsContent/>,
+		type: "integration"
 	},
 	{
 		heading: "YeeLight Settings",
-		content: ipsum
+		content: <YeelightSettingsContent/>,
+		type: "integration"
 	},
 	{
 		heading: "Elgato Stream Deck Settings",
-		content:  ipsum
+		content:  <ElgatoSDSettingsContent/>,
+		type: "integration"
 	},
 	{
 		heading: "Discord Settings",
-		content: ipsum
+		content: <DiscordSettingsContent/>,
+		type: "integration"
 	},
 	{
 		heading: "Webserver Settings",
-		content: ipsum
+		content: <WebServerSettingsContent/>,
+		type: "integration"
 	},
 	{
 		heading: "Advanced Settings",
-		disabled: true
+		content: <AdvancedSettingsContent/>,
+		type: "advanced",
 	},
 ];
