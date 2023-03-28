@@ -39,4 +39,5 @@ jobs:
         with:
           name: build
           path: |
+            *
             !dist
