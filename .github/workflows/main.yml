@@ -38,9 +38,5 @@ jobs:
         uses: actions/upload-artifact@v3.1.1
         with:
           name: build
-#          path: |
-#            out/win-unpacked
-#            out/linux-unpacked
-#            out/*.dmg
-#            out/*.AppImage
-#            out/*.exe
+          path: |
+            *
