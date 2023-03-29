@@ -5,6 +5,7 @@ import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import Typography from "@mui/material/Typography";
 import AddIcon from "@mui/icons-material/Add";
+import {font} from "@/index";
 
 
 export default function HassMenu(){
@@ -19,7 +20,7 @@ export default function HassMenu(){
 
 	const menuItemStyle = {
 		fontSize: "1.0rem",
-		fontFamily: "Segoe UI",
+		fontFamily: font,
 		width: "100%",
 	};
 

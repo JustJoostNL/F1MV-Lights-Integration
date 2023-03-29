@@ -5,6 +5,8 @@ import "./style/index.scss";
 import {createTheme, ThemeProvider} from "@mui/material";
 import { lightBlue} from "@mui/material/colors";
 
+export const font = "-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, sans-serif"
+
 
 const theme = createTheme({
 	palette: {

@@ -7,6 +7,7 @@ import SearchIcon from "@mui/icons-material/Search";
 import Typography from "@mui/material/Typography";
 import Divider from "@mui/material/Divider";
 import AddIcon from "@mui/icons-material/Add";
+import {font} from "@/index";
 
 
 export default function YeelightMenu(){
@@ -21,7 +22,7 @@ export default function YeelightMenu(){
 
 	const menuItemStyle = {
 		fontSize: "1.0rem",
-		fontFamily: "Segoe UI",
+		fontFamily: font,
 		width: "100%",
 	};
 

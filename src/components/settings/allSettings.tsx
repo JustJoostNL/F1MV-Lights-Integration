@@ -37,8 +37,6 @@ export const settingBoxSX = {
 	marginRight: "600px"
 };
 
-const ipsum = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas laoreet, diam vel facilisis vehicula, massa metus facilisis nibh, sit amet commodo erat leo vel lacus.";
-
 export const allSettings = [
 	{
 		heading: "General Settings",

@@ -2,7 +2,7 @@
 .idea/*
 *.iml
 
-out/
+out/*
 output/*
 dist/*
 release/*

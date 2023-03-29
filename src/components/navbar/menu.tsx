@@ -14,6 +14,7 @@ import packageJson from "../../../package.json";
 import Typography from "@mui/material/Typography";
 import {green} from "@mui/material/colors";
 import { shell } from "electron";
+import {font} from "@/index";
 
 export default function ThreeDotMenu() {
 	const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
@@ -51,7 +52,7 @@ export default function ThreeDotMenu() {
 
 	const menuItemStyle = {
 		fontSize: "1.0rem",
-		fontFamily: "Segoe UI",
+		fontFamily: font,
 		width: "100%",
 	};
 
@@ -130,7 +131,6 @@ export default function ThreeDotMenu() {
 							}} />
 					</Typography>
 				</MenuItem>
-
 				<Divider />
 				<MenuItem onClick={handleOpenF1MV}>
 					<img
@@ -159,7 +159,7 @@ export default function ThreeDotMenu() {
 					sx={{
 						color: "grey.500",
 						fontSize: "0.9rem",
-						fontFamily: "Segoe UI",
+						fontFamily: font,
 						ml: 1,
 						width: "100%",
 						padding: "0.5rem"

@@ -8,6 +8,7 @@ import Typography from "@mui/material/Typography";
 import RefreshIcon from "@mui/icons-material/Refresh";
 import SearchIcon from "@mui/icons-material/Search";
 import AddIcon from "@mui/icons-material/Add";
+import {font} from "@/index";
 
 export default function HueMenu() {
 	const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
@@ -21,7 +22,7 @@ export default function HueMenu() {
 
 	const menuItemStyle = {
 		fontSize: "1.0rem",
-		fontFamily: "Segoe UI",
+		fontFamily: font,
 		width: "100%",
 	};
 

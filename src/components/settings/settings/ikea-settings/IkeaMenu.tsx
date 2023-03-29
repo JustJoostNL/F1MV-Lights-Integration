@@ -8,6 +8,7 @@ import Typography from "@mui/material/Typography";
 import Divider from "@mui/material/Divider";
 import AddIcon from "@mui/icons-material/Add";
 import LinkIcon from "@mui/icons-material/Link";
+import {font} from "@/index";
 
 
 export default function IkeaMenu(){
@@ -22,7 +23,7 @@ export default function IkeaMenu(){
 
 	const menuItemStyle = {
 		fontSize: "1.0rem",
-		fontFamily: "Segoe UI",
+		fontFamily: font,
 		width: "100%",
 	};
 

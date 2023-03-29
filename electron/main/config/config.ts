@@ -1,14 +1,13 @@
 import Store from "electron-store";
 import defaultConfig from "./defaultConfig";
+import {configMigrations} from "./migrations";
 
 const userConfig = new Store({
 	name: "settings",
 	defaults: defaultConfig,
 	watch: true,
 	migrations: {
-		"2.0.0": userConfig => {
-			userConfig.set("version", "2.0.0");
-		}
+		configMigrations
 	}
 });
 
