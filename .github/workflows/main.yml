@@ -39,4 +39,8 @@ jobs:
         with:
           name: build
           path: |
-            release/*
+            out/win-unpacked
+            out/linux-unpacked
+            out/*.dmg
+            out/*.AppImage
+            out/*.exe
