@@ -74,7 +74,7 @@ export default function About() {
 					</Typography>
 				</Box>
 
-				<Box mt={7} mb={2}>
+				<Box mt={7} mb={0}>
 					<Typography variant="h5">Enjoy the app!</Typography>
 				</Box>
 			</Box>

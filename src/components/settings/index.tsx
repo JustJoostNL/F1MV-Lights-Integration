@@ -29,7 +29,7 @@ const SettingsPage: React.FC = () => {
 	});
 
 	useHotkeys("shift+o", () => {
-		window.f1mvli.config.openInEditor()
+		window.f1mvli.config.openInEditor();
 	});
 
 	useEffect(() => {
