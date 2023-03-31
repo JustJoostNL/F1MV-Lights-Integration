@@ -3,6 +3,7 @@ import { release } from "node:os";
 import { join } from "node:path";
 import { update } from "./update";
 import {handleConfigGet, handleConfigGetAll, handleConfigOpenInEditor, handleConfigSet} from "./config/config";
+import initApp from "./app";
 
 
 process.env.DIST_ELECTRON = join(__dirname, "../");
@@ -94,6 +95,8 @@ function onReady() {
             }
         `);
 	});
+
+	initApp();
 }
 
 app.on("window-all-closed", () => {
