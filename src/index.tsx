@@ -22,12 +22,11 @@ const theme = createTheme({
 		MuiAppBar: {
 			styleOverrides: {
 				root: {
-					backgroundColor: "#212121",
+					backgroundColor: "#2d2d2d",
 				}
 			}
 		}
 	}
-
 });
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(

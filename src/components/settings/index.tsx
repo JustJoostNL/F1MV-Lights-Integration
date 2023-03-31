@@ -1,21 +1,36 @@
 import React, { useEffect, useState } from "react";
-import { Typography, Accordion, AccordionSummary, AccordionDetails } from "@mui/material";
+import {Typography, Accordion, AccordionSummary, AccordionDetails, Button} from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import { allSettings } from "./allSettings";
+import {allSettings} from "./allSettings";
 import {useHotkeys} from "react-hotkeys-hook";
+import JsonTree from "@/components/json-tree";
 
 const SettingsPage: React.FC = () => {
 	const [paperWidth, setPaperWidth] = useState<number>(400);
+	const [showDebugTree, setShowDebugTree] = useState<boolean>(false);
+	const [config, setConfig] = useState<any | null>(null);
 
 	const integrationSettings = allSettings.filter((setting) => setting.type === "integration");
 	const nonIntegrationSettings = allSettings.filter((setting) => setting.type !== "integration" && setting.type !== "advanced");
 	const advancedSettings = allSettings.filter((setting) => setting.type === "advanced");
 
-	useHotkeys("shift+o", () => {
-		window.f1mvli.config.openInEditor();
+	useEffect(() => {
+		async function fetchConfig() {
+			setInterval(async () => {
+				const config = await window.f1mvli.config.getAll();
+				setConfig(config);
+			}, 1000);
+		}
+		fetchConfig();
+	}, []);
+
+	useHotkeys("d", () => {
+		setShowDebugTree(!showDebugTree);
 	});
 
-	console.log(integrationSettings, nonIntegrationSettings, advancedSettings);
+	useHotkeys("shift+o", () => {
+		window.f1mvli.config.openInEditor()
+	});
 
 	useEffect(() => {
 		const handleResize = () => {
@@ -25,6 +40,7 @@ const SettingsPage: React.FC = () => {
 		handleResize();
 		return () => window.removeEventListener("resize", handleResize);
 	}, []);
+
 
 	return (
 		<div>
@@ -86,6 +102,9 @@ const SettingsPage: React.FC = () => {
 					</div>
 				))}
 			</div>
+			{showDebugTree && (
+				<JsonTree data={config} />
+			)}
 		</div>
 	);
 };
