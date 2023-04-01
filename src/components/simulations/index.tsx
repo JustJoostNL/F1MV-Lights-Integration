@@ -10,7 +10,7 @@ import MinorCrashIcon from "@mui/icons-material/MinorCrash";
 import DirectionsCar from "@mui/icons-material/DirectionsCar";
 import NoCrash from "@mui/icons-material/NoCrash";
 import FlashOff from "@mui/icons-material/FlashOff";
-import simulateFlag from "../../../electron/main/app/light-controller/simulations";
+import simulateFlag from "../../../electron/main/app/light-controller/simulateFlag";
 
 export default function SimulationMenu() {
 	const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
