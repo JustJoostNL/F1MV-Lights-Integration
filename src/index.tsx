@@ -4,6 +4,12 @@ import App from "./pages/App";
 import "./style/index.scss";
 import {createTheme, ThemeProvider} from "@mui/material";
 import { lightBlue} from "@mui/material/colors";
+import * as Sentry from "@sentry/electron";
+
+Sentry.init({
+	dsn: "https://e64c3ec745124566b849043192e58711@o4504289317879808.ingest.sentry.io/4504289338392576",
+	tracesSampleRate: 0.2
+});
 
 export const font = "-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, sans-serif";
 

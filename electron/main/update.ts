@@ -4,6 +4,7 @@ import {
 	type UpdateDownloadedEvent,
 	autoUpdater
 } from "electron-updater";
+import {configVars} from "./config/config";
 
 export function update(win: Electron.BrowserWindow) {
 
@@ -11,6 +12,8 @@ export function update(win: Electron.BrowserWindow) {
 	autoUpdater.autoDownload = false;
 	autoUpdater.disableWebInstaller = false;
 	autoUpdater.allowDowngrade = false;
+	autoUpdater.autoInstallOnAppQuit = false;
+	autoUpdater.channel = <string>configVars.updateChannel;
 
 	// start check
 	autoUpdater.on("checking-for-update", function () { });

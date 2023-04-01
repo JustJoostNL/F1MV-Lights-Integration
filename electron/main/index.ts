@@ -1,9 +1,17 @@
 import { app, BrowserWindow, shell, ipcMain } from "electron";
 import { release } from "node:os";
-import { join } from "node:path";
+import path, { join } from "node:path";
 import { update } from "./update";
 import {handleConfigGet, handleConfigGetAll, handleConfigOpenInEditor, handleConfigSet} from "./config/config";
 import initApp from "./app";
+import * as Sentry from "@sentry/electron";
+import {analyticsHandler} from "./app/analytics/analytics";
+
+Sentry.init({
+	dsn: "https://e64c3ec745124566b849043192e58711@o4504289317879808.ingest.sentry.io/4504289338392576",
+	release: "F1MV-Lights-Integration@" + app.getVersion(),
+	tracesSampleRate: 0.2,
+});
 
 
 process.env.DIST_ELECTRON = join(__dirname, "../");
@@ -96,11 +104,20 @@ function onReady() {
         `);
 	});
 
+	if (process.defaultApp) {
+		if (process.argv.length >= 2) {
+			app.setAsDefaultProtocolClient("f1mvli", process.execPath, [path.resolve(process.argv[1])]);
+		}
+	} else {
+		app.setAsDefaultProtocolClient("f1mvli");
+	}
+
 	initApp();
 }
 
 app.on("window-all-closed", () => {
 	win = null;
+	analyticsHandler("activeUsersClose");
 	if (process.platform !== "darwin") app.quit();
 });
 

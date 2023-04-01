@@ -31,7 +31,7 @@ export const handleConfigOpenInEditor = () => {
 	userConfig.openInEditor();
 };
 
-export let configVars = {
+export const configVars = {
 	// general settings
 	autoTurnOffLights: userConfig.get("Settings.generalSettings.autoTurnOffLights"),
 	defaultBrightness: userConfig.get("Settings.generalSettings.defaultBrightness"),
@@ -120,7 +120,7 @@ export let configVars = {
 	updateChannel: userConfig.get("Settings.advancedSettings.updateChannel"),
 	analyticsPreference: userConfig.get("Settings.advancedSettings.analytics"),
 
-}
+};
 
 
 function loadConfigInVars(){
