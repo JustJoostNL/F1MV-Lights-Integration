@@ -1,6 +1,8 @@
 import {configVars} from "../../config/config";
 import {f1mvURLs} from "../vars/vars";
 import {statuses} from "../vars/vars";
+import fetch from "node-fetch";
+
 export async function F1MVAPICall(){
 	if (configVars.f1mvSync){
 		let errorCheck: boolean;

@@ -168,6 +168,5 @@ ipcMain.handle("utils:getWindowSize", () => {
 
 // simulate flags
 ipcMain.on("flagSim", (_, arg) => {
-	console.log('hi')
 	simulateFlag(arg)
 })

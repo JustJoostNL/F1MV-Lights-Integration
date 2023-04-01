@@ -1,5 +1,6 @@
 import {configVars} from "../../config/config";
 import {analytics, apiURLs} from "../vars/vars";
+import fetch from "node-fetch";
 
 let res;
 export async function analyticsHandler(action){

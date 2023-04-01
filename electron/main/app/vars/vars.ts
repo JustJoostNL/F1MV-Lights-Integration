@@ -12,6 +12,23 @@ export const statuses = {
 	SStateCheck: "",
 };
 
+// integration states
+export const integrationStates = {
+	ikeaOnline: false,
+	goveeOnline: false,
+	hueOnline: false,
+	openRGBOnline: false,
+	homeAssistantOnline: false,
+	yeeLightOnline: false,
+	streamDeckOnline: false,
+	nanoLeafOnline: false,
+	WLEDOnline: false,
+	F1MVAPIOnline: false,
+	F1LiveSession: false,
+	updateAPIOnline: false,
+	webServerOnline: false,
+}
+
 // API URLS
 export const baseURL = "https://api.joost.systems/api/v2";
 export const apiURLs = {
@@ -32,5 +49,10 @@ export const analytics = {
 export const goBackToStatic = {
 	goBackToStaticTimeout: null,
 	goBackToStaticRuns: false,
-
 };
+
+// govee
+export const goveeVars = {
+	govee: null,
+	goveeInitialized: false,
+}
