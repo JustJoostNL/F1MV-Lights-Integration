@@ -10,7 +10,7 @@ import MinorCrashIcon from "@mui/icons-material/MinorCrash";
 import DirectionsCar from "@mui/icons-material/DirectionsCar";
 import NoCrash from "@mui/icons-material/NoCrash";
 import FlashOff from "@mui/icons-material/FlashOff";
-import simulateFlag from "../../../electron/main/app/light-controller/simulateFlag";
+import {ipcRenderer} from "electron";
 
 export default function SimulationMenu() {
 	const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
@@ -23,31 +23,32 @@ export default function SimulationMenu() {
 	};
 
 	const handleGreenFlag = () => {
-		simulateFlag("green");
+		// we send a request to the main process to simulate a flag
+		ipcRenderer.send("flagSim", "green");
 		handleClose();
 	};
 	const handleYellowFlag = () => {
-		simulateFlag("yellow");
+		ipcRenderer.send("flagSim", "yellow");
 		handleClose();
 	};
 	const handleRedFlag = () => {
-		simulateFlag("red");
+		ipcRenderer.send("flagSim", "red");
 		handleClose();
 	};
 	const handleSafetyCar = () => {
-		simulateFlag("SC");
+		ipcRenderer.send("flagSim", "SC");
 		handleClose();
 	};
 	const handleVirtualSafetyCar = () => {
-		simulateFlag("VSC");
+		ipcRenderer.send("flagSim", "VSC");
 		handleClose();
 	};
 	const handleVirtualSafetyCarEnding = () => {
-		simulateFlag("vscEnding");
+		ipcRenderer.send("flagSim", "vscEnding");
 		handleClose();
 	};
 	const handleAllOff = () => {
-		simulateFlag("alloff");
+		ipcRenderer.send("flagSim", "alloff");
 		handleClose();
 	};
 
@@ -153,7 +154,7 @@ export default function SimulationMenu() {
                         Virtual Safety Car Ending
 					</Typography>
 				</MenuItem>
-				<MenuItem onClick={handleVirtualSafetyCarEnding}>
+				<MenuItem onClick={handleAllOff}>
 					<FlashOff
 						sx={{
 							mr: 2

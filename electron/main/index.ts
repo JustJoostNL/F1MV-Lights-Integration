@@ -6,6 +6,7 @@ import {handleConfigGet, handleConfigGetAll, handleConfigOpenInEditor, handleCon
 import initApp from "./app";
 import * as Sentry from "@sentry/electron";
 import {analyticsHandler} from "./app/analytics/analytics";
+import simulateFlag from "./app/light-controller/simulateFlag";
 
 Sentry.init({
 	dsn: "https://e64c3ec745124566b849043192e58711@o4504289317879808.ingest.sentry.io/4504289338392576",
@@ -164,3 +165,9 @@ ipcMain.handle("config:open:inEditor", handleConfigOpenInEditor);
 ipcMain.handle("utils:getWindowSize", () => {
 	return win?.getSize();
 });
+
+// simulate flags
+ipcMain.on("flagSim", (_, arg) => {
+	console.log('hi')
+	simulateFlag(arg)
+})
