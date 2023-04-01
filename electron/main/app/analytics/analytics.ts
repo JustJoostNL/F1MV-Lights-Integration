@@ -18,7 +18,6 @@ export async function analyticsHandler(action){
 		return uniqueId;
 	case "activeUsersInit":
 		setInterval(async () => {
-			console.log(analytics.uniqueID);
 			await fetch(apiURLs.activeUsersPostURL, {
 				method: "POST",
 				headers: headers,

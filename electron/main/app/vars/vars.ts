@@ -3,6 +3,14 @@ export const f1mvURLs = {
 	liveTimingURL: "",
 	heartBeatURL: "",
 };
+// statuses
+export const statuses = {
+	SState: "",
+	SInfo: "",
+	TState: "",
+	TStateCheck: "",
+	SStateCheck: "",
+};
 
 // API URLS
 export const baseURL = "https://api.joost.systems/api/v2";

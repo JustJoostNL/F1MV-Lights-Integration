@@ -59,7 +59,7 @@ export const configVars = {
 
 	// F1MV settings
 	F1MVURL: userConfig.get("Settings.MultiViewerForF1Settings.liveTimingURL"),
-	f1mvSync: userConfig.get("Settings.MultiViewerForF1Settings.syncWithF1MV"),
+	f1mvSync: userConfig.get("Settings.MultiViewerForF1Settings.f1mvCheck"),
 
 	// Hue settings
 	hueDisable: userConfig.get("Settings.hueSettings.hueDisable"),
