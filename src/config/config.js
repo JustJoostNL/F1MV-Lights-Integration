@@ -213,7 +213,7 @@ const config = {
                 }
         },
 	// do not change this version!
-	version: "1.1.9",
+	version: "1.1.10",
 	devConfig:
         {
         	autoStartDevTools: false

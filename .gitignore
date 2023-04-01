@@ -6,6 +6,8 @@ out/
 output/*
 dist/*
 release.txt
+dist-electron/*
+
 
 .prettierrc
 .prettierrc.json
