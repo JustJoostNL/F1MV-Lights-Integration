@@ -1,0 +1,43 @@
+import effectHandler from "../effects/effectHandler";
+import {configVars} from "../../config/config";
+import {goBackToStatic} from "../vars/vars";
+import goBackToStaticColor from "./goBackToStatic";
+
+export default async function controlAllLights(r, g, b, brightness, action, flag) {
+	const effectSettings = <Array<any>>configVars.effectSettings;
+	const goBackToStaticPref = configVars.goBackToStatic;
+	const hueEnableFade = configVars.hueEnableFade;
+	const hueEnableFadeWithEffects = configVars.hueEnableFadeWhenEffect;
+
+	for (let i = 0; i < effectSettings.length; i++) {
+		if (effectSettings[i].enabled) {
+			if (effectSettings[i].onFlag === flag) {
+				const oldHueFadeState = hueEnableFade;
+				if (hueEnableFadeWithEffects) {
+					configVars.hueEnableFade = false;
+				}
+				await effectHandler(flag);
+				configVars.hueEnableFade = oldHueFadeState;
+				return;
+			}
+		}
+	}
+	// control other lights:
+	// lights come here
+	// --------------------
+	if (goBackToStaticPref) {
+		if (action === "off"){
+			clearTimeout(goBackToStatic.goBackToStaticTimeout);
+		}
+		if (action === "off" || flag === "static"){
+			return;
+		}
+		if (goBackToStatic.goBackToStaticRuns){
+			clearTimeout(goBackToStatic.goBackToStaticTimeout);
+			await goBackToStaticColor(flag);
+		} else {
+			goBackToStatic.goBackToStaticRuns = true;
+			await goBackToStaticColor(flag);
+		}
+	}
+}

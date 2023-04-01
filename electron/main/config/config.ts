@@ -151,7 +151,7 @@ function loadConfigInVars(){
 
 	// F1MV settings
 	configVars.F1MVURL = userConfig.get("Settings.MultiViewerForF1Settings.liveTimingURL");
-	configVars.f1mvSync = userConfig.get("Settings.MultiViewerForF1Settings.syncWithF1MV");
+	configVars.f1mvSync = userConfig.get("Settings.MultiViewerForF1Settings.f1mvCheck");
 
 	// Hue settings
 	configVars.hueDisable = userConfig.get("Settings.hueSettings.hueDisable");

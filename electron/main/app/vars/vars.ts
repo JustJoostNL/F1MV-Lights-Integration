@@ -27,3 +27,10 @@ export const apiURLs = {
 export const analytics = {
 	uniqueID: "",
 };
+
+// go back to static
+export const goBackToStatic = {
+	goBackToStaticTimeout: null,
+	goBackToStaticRuns: false,
+
+};
