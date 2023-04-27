@@ -2520,6 +2520,7 @@ function reloadFromConfig(){
 	userBrightness = parseInt(userConfig.get("Settings.generalSettings.defaultBrightness"));
 	f1mvCheck = userConfig.get("Settings.MultiViewerForF1Settings.f1mvCheck");
 	hideLogs = userConfig.get("Settings.generalSettings.hideLogs");
+	staticColor = userConfig.get("Settings.generalSettings.colorSettings.staticColor");
 	greenColor = userConfig.get("Settings.generalSettings.colorSettings.green");
 	yellowColor = userConfig.get("Settings.generalSettings.colorSettings.yellow");
 	redColor = userConfig.get("Settings.generalSettings.colorSettings.red");
