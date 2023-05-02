@@ -21,6 +21,7 @@
     "@mui/icons-material": "5.11.11",
     "@mui/material": "5.11.14",
     "@sentry/electron": "^4.3.0",
+    "electron-log": "^5.0.0-beta.22",
     "electron-store": "^8.1.0",
     "electron-updater": "^5.3.0",
     "govee-lan-control": "^3.0.0",
@@ -30,11 +31,13 @@
     "react-hotkeys-hook": "^4.3.8",
     "react-json-tree": "^0.18.0",
     "react-router-dom": "^6.9.0",
+    "react-window": "^1.8.9",
     "typescript": "5.0.2"
   },
   "devDependencies": {
     "@types/react": "^18.0.28",
     "@types/react-dom": "^18.0.11",
+    "@types/react-window": "^1.8.5",
     "@typescript-eslint/eslint-plugin": "^5.56.0",
     "@typescript-eslint/parser": "^5.56.0",
     "@vitejs/plugin-react": "^3.1.0",

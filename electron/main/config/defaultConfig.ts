@@ -1,5 +1,5 @@
 const config = {
-	Settings:
+  Settings:
         {
         	generalSettings:
                 {
@@ -212,9 +212,9 @@ const config = {
                 	analytics: true,
                 }
         },
-	// do not change this version!
-	version: "2.0.0",
-	devConfig:
+  // do not change this version!
+  version: "2.0.0",
+  devConfig:
         {
         	autoStartDevTools: false
         }

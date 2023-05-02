@@ -1,19 +1,23 @@
 import { ipcRenderer } from "electron";
 
 export const f1mvli = {
-	config: {
-		set: (key: string, value) => ipcRenderer.invoke("config:set", key, value),
-		get: (key: string) => ipcRenderer.invoke("config:get", key),
-		getAll: () => ipcRenderer.invoke("config:get:all"),
-		delete: (key: string) => ipcRenderer.invoke("config:delete", key),
-		openInEditor: () => ipcRenderer.invoke("config:open:inEditor"),
-	},
-	updater: {
-		checkForUpdate: () => ipcRenderer.invoke("updater:checkForUpdate"),
-	},
-	utils: {
-		getWindowSize: () => ipcRenderer.invoke("utils:getWindowSize"),
-	}
+  config: {
+    set: (key: string, value) => ipcRenderer.invoke("config:set", key, value),
+    get: (key: string) => ipcRenderer.invoke("config:get", key),
+    getAll: () => ipcRenderer.invoke("config:get:all"),
+    delete: (key: string) => ipcRenderer.invoke("config:delete", key),
+    openInEditor: () => ipcRenderer.invoke("config:open:inEditor"),
+  },
+  updater: {
+    checkForUpdate: () => ipcRenderer.invoke("updater:checkForUpdate"),
+  },
+  log: {
+    openLogFile: () => ipcRenderer.invoke("log:openLogFile"),
+    getLogs: () => ipcRenderer.invoke("log:getLogs"),
+  },
+  utils: {
+    getWindowSize: () => ipcRenderer.invoke("utils:getWindowSize"),
+  }
 };
 
 // @ts-ignore

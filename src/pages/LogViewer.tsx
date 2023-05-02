@@ -1,15 +1,13 @@
 import React from "react";
 import NavBar from "@/components/navbar";
-import SettingsPage from "@/components/settings";
+import LogViewer from "@/components/log-viewer";
 
-function Settings() {
+export default function LogViewerPage() {
 
   return (
     <div>
       <NavBar showSettingsBackButton={true} />
-      <SettingsPage />
+      <LogViewer />
     </div>
   );
 }
-
-export default Settings;

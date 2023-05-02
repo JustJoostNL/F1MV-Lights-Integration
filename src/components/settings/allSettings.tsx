@@ -1,5 +1,5 @@
-import {alpha, styled, Switch} from "@mui/material";
-import {lightBlue} from "@mui/material/colors";
+import { alpha, styled, Switch } from "@mui/material";
+import { lightBlue } from "@mui/material/colors";
 import GeneralSettingsContent from "@/components/settings/settings/general-settings/GeneralSettings";
 import F1MVSettingsContent from "@/components/settings/settings/f1mv-settings/F1MVSettings";
 import HueSettingsContent from "@/components/settings/settings/hue-settings/HueSettings";
@@ -16,96 +16,96 @@ import WebServerSettingsContent from "@/components/settings/settings/webserver-s
 import AdvancedSettingsContent from "@/components/settings/settings/advanced-settings/AdvancedSettings";
 
 export const BlueSwitch = styled(Switch)(({ theme }) => ({
-	"& .MuiSwitch-switchBase.Mui-checked": {
-		color: lightBlue[200],
-		"&:hover": {
-			backgroundColor: alpha(lightBlue[200], theme.palette.action.hoverOpacity),
-		},
-	},
-	"& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track": {
-		backgroundColor: lightBlue[200],
-	},
+  "& .MuiSwitch-switchBase.Mui-checked": {
+    color: lightBlue[200],
+    "&:hover": {
+      backgroundColor: alpha(lightBlue[200], theme.palette.action.hoverOpacity),
+    },
+  },
+  "& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track": {
+    backgroundColor: lightBlue[200],
+  },
 }));
 
 export const settingBoxSX = {
-	display: "flex",
-	justifyContent: "space-between",
-	width: "100%",
-	color: "white",
-	textAlign: "left",
-	marginBottom: "20px",
-	marginRight: "600px"
+  display: "flex",
+  justifyContent: "space-between",
+  width: "100%",
+  color: "white",
+  textAlign: "left",
+  marginBottom: "20px",
+  marginRight: "600px"
 };
 
 export const allSettings = [
-	{
-		heading: "General Settings",
-		content: <GeneralSettingsContent />,
-		type: "general"
-	},
-	{
-		heading: "F1MV Settings",
-		content: <F1MVSettingsContent/>,
-		type: "f1mv"
-	},
-	{
-		heading: "Philips Hue Settings",
-		content: <HueSettingsContent/>,
-		type: "integration"
-	},
-	{
-		heading: "Ikea Settings",
-		content: <IkeaSettingsContent/>,
-		type: "integration"
-	},
-	{
-		heading: "Govee Settings",
-		content: <GoveeSettingsContent/>,
-		type: "integration"
-	},
-	{
-		heading: "OpenRGB Settings",
-		content: <OpenRGBSettingsContent/>,
-		type: "integration"
-	},
-	{
-		heading: "Home Assistant Settings",
-		content: <HassSettingsContent/>,
-		type: "integration"
-	},
-	{
-		heading: "Nanoleaf Settings",
-		content: <NanoleafSettingsContent/>,
-		type: "integration"
-	},
-	{
-		heading: "WLED Settings",
-		content: <WLEDSettingsContent/>,
-		type: "integration"
-	},
-	{
-		heading: "YeeLight Settings",
-		content: <YeelightSettingsContent/>,
-		type: "integration"
-	},
-	{
-		heading: "Elgato Stream Deck Settings",
-		content:  <ElgatoSDSettingsContent/>,
-		type: "integration"
-	},
-	{
-		heading: "Discord Settings",
-		content: <DiscordSettingsContent/>,
-		type: "integration"
-	},
-	{
-		heading: "Webserver Settings",
-		content: <WebServerSettingsContent/>,
-		type: "integration"
-	},
-	{
-		heading: "Advanced Settings",
-		content: <AdvancedSettingsContent/>,
-		type: "advanced",
-	},
+  {
+    heading: "General Settings",
+    content: <GeneralSettingsContent />,
+    type: "general"
+  },
+  {
+    heading: "F1MV Settings",
+    content: <F1MVSettingsContent/>,
+    type: "f1mv"
+  },
+  {
+    heading: "Philips Hue Settings",
+    content: <HueSettingsContent/>,
+    type: "integration"
+  },
+  {
+    heading: "Ikea Settings",
+    content: <IkeaSettingsContent/>,
+    type: "integration"
+  },
+  {
+    heading: "Govee Settings",
+    content: <GoveeSettingsContent/>,
+    type: "integration"
+  },
+  {
+    heading: "OpenRGB Settings",
+    content: <OpenRGBSettingsContent/>,
+    type: "integration"
+  },
+  {
+    heading: "Home Assistant Settings",
+    content: <HassSettingsContent/>,
+    type: "integration"
+  },
+  {
+    heading: "Nanoleaf Settings",
+    content: <NanoleafSettingsContent/>,
+    type: "integration"
+  },
+  {
+    heading: "WLED Settings",
+    content: <WLEDSettingsContent/>,
+    type: "integration"
+  },
+  {
+    heading: "YeeLight Settings",
+    content: <YeelightSettingsContent/>,
+    type: "integration"
+  },
+  {
+    heading: "Elgato Stream Deck Settings",
+    content:  <ElgatoSDSettingsContent/>,
+    type: "integration"
+  },
+  {
+    heading: "Discord Settings",
+    content: <DiscordSettingsContent/>,
+    type: "integration"
+  },
+  {
+    heading: "Webserver Settings",
+    content: <WebServerSettingsContent/>,
+    type: "integration"
+  },
+  {
+    heading: "Advanced Settings",
+    content: <AdvancedSettingsContent/>,
+    type: "advanced",
+  },
 ];

@@ -1,67 +1,67 @@
-import React, {useEffect, useState} from "react";
-import {Box, Typography} from "@mui/material";
-import {BlueSwitch, settingBoxSX} from "@/components/settings/allSettings";
+import React, { useEffect, useState } from "react";
+import { Box, Typography } from "@mui/material";
+import { BlueSwitch, settingBoxSX } from "@/components/settings/allSettings";
 
 export default function ElgatoSDSettingsContent() {
-	const [settings, setSettings] = useState<any | null>(null);
+  const [settings, setSettings] = useState<any | null>(null);
 
 
-	useEffect(() => {
-		async function fetchConfig() {
-			const config = await window.f1mvli.config.getAll();
-			setSettings(config.Settings.streamDeckSettings);
-		}
-		fetchConfig();
-	}, []);
+  useEffect(() => {
+    async function fetchConfig() {
+      const config = await window.f1mvli.config.getAll();
+      setSettings(config.Settings.streamDeckSettings);
+    }
+    fetchConfig();
+  }, []);
 
-	const handleSetSingleSetting = (setting: string, value: any) => {
-		setSettings({
-			...settings,
-			[setting]: value,
-		});
-	};
+  const handleSetSingleSetting = (setting: string, value: any) => {
+    setSettings({
+      ...settings,
+      [setting]: value,
+    });
+  };
 
-	const saveConfig = async () => {
-		if (!settings) return;
-		await window.f1mvli.config.set("Settings.streamDeckSettings", settings);
-	};
+  const saveConfig = async () => {
+    if (!settings) return;
+    await window.f1mvli.config.set("Settings.streamDeckSettings", settings);
+  };
 
-	useEffect(() => {
-		const handleUnload = async () => {
-			await saveConfig();
-		};
+  useEffect(() => {
+    const handleUnload = async () => {
+      await saveConfig();
+    };
 
-		window.addEventListener("unload", handleUnload);
+    window.addEventListener("unload", handleUnload);
 
-		return () => {
-			window.removeEventListener("unload", handleUnload);
-			saveConfig();
-		};
-	}, [saveConfig]);
+    return () => {
+      window.removeEventListener("unload", handleUnload);
+      saveConfig();
+    };
+  }, [saveConfig]);
 
-	return (
-		<>
-			{settings && (
-				<div>
-					<Box sx={settingBoxSX}>
-						<div>
-							<Typography variant="h6" component="div">
+  return (
+    <>
+      {settings && (
+        <div>
+          <Box sx={settingBoxSX}>
+            <div>
+              <Typography variant="h6" component="div">
                                 Disable Elgato Stream Deck Integration
-							</Typography>
-							<Typography variant="body2" component="div" sx={{color: "grey"}}>
+              </Typography>
+              <Typography variant="body2" component="div" sx={{ color: "grey" }}>
                                 This will disable the Elgato Stream Deck integration, enable this if you don't have an Elgato Stream Deck.
-							</Typography>
-						</div>
-						<BlueSwitch
-							id="disable-govee-switch"
-							checked={settings.streamDeckDisable}
-							onChange={(event) => {
-								handleSetSingleSetting("streamDeckDisable", event.target.checked);
-							}}
-						/>
-					</Box>
-				</div>
-			)}
-		</>
-	);
+              </Typography>
+            </div>
+            <BlueSwitch
+              id="disable-govee-switch"
+              checked={settings.streamDeckDisable}
+              onChange={(event) => {
+                handleSetSingleSetting("streamDeckDisable", event.target.checked);
+              }}
+            />
+          </Box>
+        </div>
+      )}
+    </>
+  );
 }

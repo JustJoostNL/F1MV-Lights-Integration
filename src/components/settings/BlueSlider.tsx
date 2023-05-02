@@ -9,16 +9,16 @@ interface BlueSliderProps {
 }
 
 export function BlueSlider({ id, value, onChange }: BlueSliderProps) {
-	return (
-		<Box width={300}>
-			<Slider
-				id={id}
-				color="secondary"
-				value={value}
-				aria-label="Default"
-				valueLabelDisplay="auto"
-				onChange={onChange}
-			/>
-		</Box>
-	);
+  return (
+    <Box width={300}>
+      <Slider
+        id={id}
+        color="secondary"
+        value={value}
+        aria-label="Default"
+        valueLabelDisplay="auto"
+        onChange={onChange}
+      />
+    </Box>
+  );
 }

@@ -25,7 +25,8 @@ module.exports = {
 	"rules": {
 		"indent": [
 			"error",
-			"tab"
+			2,
+			{SwitchCase: 1}
 		],
 		"linebreak-style": [
 			"error",
@@ -38,6 +39,10 @@ module.exports = {
 		"semi": [
 			"error",
 			"always"
-		]
+		],
+		"object-curly-spacing": [
+			"error",
+			"always"
+		],
 	}
 };
