@@ -41,71 +41,85 @@ export const allSettings = [
   {
     heading: "General Settings",
     content: <GeneralSettingsContent />,
+    description: "Turn off lights when session ended — Default Brightness — Go back to static — Color Settings",
     type: "general"
   },
   {
     heading: "F1MV Settings",
     content: <F1MVSettingsContent/>,
+    description: "Live Timing URL — Sync with MultiViewer",
     type: "f1mv"
   },
   {
     heading: "Philips Hue Settings",
     content: <HueSettingsContent/>,
+    description: "Disable Hue Integration — Hue 3rd party compatibility mode — Enable fade — Enable fade for effects — Hue Tools",
     type: "integration"
   },
   {
     heading: "Ikea Settings",
     content: <IkeaSettingsContent/>,
+    description: "Disable Ikea Integration — Ikea Gateway Security Code — Ikea Tools",
     type: "integration"
   },
   {
     heading: "Govee Settings",
     content: <GoveeSettingsContent/>,
+    description: "Disable Govee Integration",
     type: "integration"
   },
   {
     heading: "OpenRGB Settings",
     content: <OpenRGBSettingsContent/>,
+    description: "Disable OpenRGB Integration — OpenRGB Server IP — OpenRGB Server Port",
     type: "integration"
   },
   {
     heading: "Home Assistant Settings",
     content: <HassSettingsContent/>,
+    description: "Disable Home Assistant Integration — Home Assistant IP — Home Assistant Port — Home Assistant API Token — Home Assistant Tools",
     type: "integration"
   },
   {
     heading: "Nanoleaf Settings",
     content: <NanoleafSettingsContent/>,
+    description: "Disable Nanoleaf Integration — Nanoleaf Tools",
     type: "integration"
   },
   {
     heading: "WLED Settings",
     content: <WLEDSettingsContent/>,
+    description: "Disable WLED Integration — WLED Tools",
     type: "integration"
   },
   {
     heading: "YeeLight Settings",
     content: <YeelightSettingsContent/>,
+    description: "Disable YeeLight Integration — YeeLight Tools",
     type: "integration"
   },
   {
     heading: "Elgato Stream Deck Settings",
     content:  <ElgatoSDSettingsContent/>,
+    description: "Disable the Elgato Stream Deck Integration",
     type: "integration"
   },
   {
     heading: "Discord Settings",
     content: <DiscordSettingsContent/>,
+    description: "Disable Discord Rich Presence Integration",
     type: "integration"
   },
   {
     heading: "Webserver Settings",
     content: <WebServerSettingsContent/>,
+    description: "Disable the Webserver — Webserver Port",
     type: "integration"
   },
   {
     heading: "Advanced Settings",
     content: <AdvancedSettingsContent/>,
+    description: "More advanced settings, meant for developers/experts.",
     type: "advanced",
   },
 ];

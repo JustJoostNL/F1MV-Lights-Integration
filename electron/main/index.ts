@@ -169,6 +169,9 @@ ipcMain.handle("config:set", handleConfigSet);
 ipcMain.handle("config:get", handleConfigGet);
 ipcMain.handle("config:get:all", handleConfigGetAll);
 ipcMain.handle("config:open:inEditor", handleConfigOpenInEditor);
+export function configChangedEmitEvent(){
+  win?.webContents.send("config:didAnyChange");
+}
 
 // utils
 ipcMain.handle("utils:getWindowSize", () => {

@@ -3,6 +3,7 @@ import { BlueSwitch, settingBoxSX } from "@/components/settings/allSettings";
 import { Box, Checkbox, Divider, FormControlLabel, FormGroup, TextField, Typography } from "@mui/material";
 import { BlueSlider } from "@/components/settings/BlueSlider";
 import { HandleFlagChange } from "@/components/settings/settings/general-settings/HandleFlagChange";
+import ColorSettings from "@/components/settings/settings/general-settings/ColorSettings";
 
 
 export default function GeneralSettingsContent() {
@@ -229,11 +230,12 @@ export default function GeneralSettingsContent() {
                 </FormGroup>
               </Box>
             </>)}
+          <Divider sx={{ mb: "20px" }}/>
+          {/*<ColorSettings/>*/}
         </div>
       )}
     </>
   );
-
 }
 
 

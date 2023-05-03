@@ -56,14 +56,14 @@ export default function AdvancedSettingsContent() {
     <>
       {settings && (
         <div>
-          <Alert sx={{ mb: "20px", mr: "710px" }} severity="error">Changing these settings is strongly disrecommended!!</Alert>
+          <Alert sx={{ mb: "20px", mr: "685px" }} severity="error">Changing these settings is strongly disrecommended!!</Alert>
           <Box sx={settingBoxSX}>
             <div>
               <Typography variant="h6" component="div">
-                                Debug Mode
+               Debug Mode
               </Typography>
               <Typography variant="body2" component="div" sx={{ color: "grey" }}>
-                                This will enable debug mode, enable this if you want to see debug messages.
+                This will enable debug mode, enable this if you want to see debug messages.
               </Typography>
             </div>
             <BlueSwitch
@@ -77,10 +77,10 @@ export default function AdvancedSettingsContent() {
           <Box sx={settingBoxSX}>
             <div>
               <Typography variant="h6" component="div">
-                                Update Channel
+                Update Channel
               </Typography>
               <Typography variant="body2" component="div" sx={{ color: "grey" }}>
-                                This will change the update channel, you can choose between latest, beta and alpha.
+                This will change the update channel, you can choose between latest, beta and alpha.
               </Typography>
             </div>
             <Autocomplete

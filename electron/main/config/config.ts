@@ -2,6 +2,7 @@ import Store from "electron-store";
 import defaultConfig from "./defaultConfig";
 import { configMigrations } from "./migrations";
 import log from "electron-log";
+import {configChangedEmitEvent} from "../index";
 
 const userConfig = new Store({
   name: "settings",
@@ -15,6 +16,7 @@ const userConfig = new Store({
 userConfig.onDidAnyChange(() => {
   log.info("Config changed, reloading from config...");
   loadConfigInVars();
+  configChangedEmitEvent();
 });
 
 export const handleConfigSet = (event, key, value) => {
