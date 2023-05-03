@@ -8,6 +8,7 @@ import Typography from "@mui/material/Typography";
 import Divider from "@mui/material/Divider";
 import AddIcon from "@mui/icons-material/Add";
 import { font } from "@/index";
+import ReactGA from "react-ga4";
 
 
 export default function NanoleafMenu(){
@@ -19,6 +20,21 @@ export default function NanoleafMenu(){
   const handleClose = () => {
     setAnchorEl(null);
   };
+  const handleAddNanoleafDevice = () => {
+    setAnchorEl(null);
+    ReactGA.event({
+      category: "nanoleaf_tools_menu",
+      action: "add_nanoleaf_device",
+    });
+  };
+  const handleViewCurrentlyConnectedNanoleafDevices = () => {
+    setAnchorEl(null);
+    ReactGA.event({
+      category: "nanoleaf_tools_menu",
+      action: "view_currently_connected_nanoleaf_devices",
+    });
+  };
+
 
   const menuItemStyle = {
     fontSize: "1.0rem",
@@ -50,7 +66,7 @@ export default function NanoleafMenu(){
           "aria-labelledby": "basic-button",
         }}
       >
-        <MenuItem onClick={handleClose}>
+        <MenuItem onClick={handleAddNanoleafDevice}>
           <AddIcon
             sx={{
               mr: 2
@@ -63,7 +79,7 @@ export default function NanoleafMenu(){
         </MenuItem>
         <Divider />
         <MenuItem
-          onClick={handleClose}>
+          onClick={handleViewCurrentlyConnectedNanoleafDevices}>
           <SearchIcon sx={{
             mr: 2
           }}/>

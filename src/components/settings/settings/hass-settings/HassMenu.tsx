@@ -6,6 +6,7 @@ import MenuItem from "@mui/material/MenuItem";
 import Typography from "@mui/material/Typography";
 import AddIcon from "@mui/icons-material/Add";
 import { font } from "@/index";
+import ReactGA from "react-ga4";
 
 
 export default function HassMenu(){
@@ -16,6 +17,14 @@ export default function HassMenu(){
   };
   const handleClose = () => {
     setAnchorEl(null);
+  };
+
+  const handleSelectHassDevices = () => {
+    setAnchorEl(null);
+    ReactGA.event({
+      category: "hass_tools_menu",
+      action: "select_hass_devices",
+    });
   };
 
   const menuItemStyle = {
@@ -49,7 +58,7 @@ export default function HassMenu(){
         }}
       >
         <MenuItem
-          onClick={handleClose}>
+          onClick={handleSelectHassDevices}>
           <AddIcon
             sx={{
               mr: 2

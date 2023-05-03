@@ -1,54 +1,41 @@
 import { Box, AppBar, Toolbar, Typography, IconButton } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import Menu from "./menu";
+import ReactGA from "react-ga4";
 
-export default function NavBar({ showBackButton }: { showBackButton: boolean }) {
+type NavBarProps = {
+  showBackButton: boolean;
+};
+
+export default function NavBar({ showBackButton }: NavBarProps) {
+
+  const handleBackButton = () => {
+    window.location.hash = "/home";
+    ReactGA.event({
+      category: "button_press",
+      action: "navbar_back_button",
+    });
+  };
+
   return (
-    <Box sx={{ flexGrow: 1 }}>
-      <AppBar position="fixed">
-        <Toolbar sx={{ flexGrow: 1, textAlign: "right" }}>
-          {showBackButton && (
-            <Box sx={{ display: "flex", alignItems: "center" }}>
-              <IconButton
-                edge="start"
-                color="inherit"
-                aria-label="menu"
-                sx={{ mr: 2 }}
-                onClick={() => (window.location.hash = "/home")}
-              >
-                <ArrowBackIcon />
-              </IconButton>
-              <Typography
-                variant="h6"
-                component="div"
-                sx={{
-                  flexGrow: 1,
-                  textAlign: "left",
-                  fontSize: "2rem",
-                }}
-              >
-                                F1MV Lights Integration
-              </Typography>
-            </Box>
-          )}
-          {!showBackButton && (
-            <Typography
-              variant="h6"
-              component="div"
-              sx={{
-                flexGrow: 1,
-                textAlign: "left",
-                fontSize: "2rem",
-              }}
-            >
-                            F1MV Lights Integration
-            </Typography>
-          )}
-          <Box sx={{ ml: "auto" }}>
-            <Menu />
-          </Box>
-        </Toolbar>
-      </AppBar>
-    </Box>
+    <AppBar position="fixed">
+      <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
+        {showBackButton && (
+          <IconButton
+            edge="start"
+            color="inherit"
+            aria-label="menu"
+            sx={{ mr: 2 }}
+            onClick={handleBackButton}
+          >
+            <ArrowBackIcon />
+          </IconButton>
+        )}
+        <Typography variant="h6" component="div" sx={{ flexGrow: 1, textAlign: "left", fontSize: "2rem" }}>
+          F1MV Lights Integration
+        </Typography>
+        <Menu />
+      </Toolbar>
+    </AppBar>
   );
 }

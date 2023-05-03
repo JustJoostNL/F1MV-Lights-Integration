@@ -6,7 +6,6 @@ import goveeControl from "../integrations/govee/goveeControl";
 
 export default async function controlAllLights(r, g, b, brightness, action, flag) {
   const effectSettings = <Array<any>>configVars.effectSettings;
-  const goBackToStaticPref = configVars.goBackToStatic;
   const hueEnableFade = configVars.hueEnableFade;
   const hueEnableFadeWithEffects = configVars.hueEnableFadeWhenEffect;
 
@@ -19,6 +18,7 @@ export default async function controlAllLights(r, g, b, brightness, action, flag
         }
         await effectHandler(flag);
         configVars.hueEnableFade = oldHueFadeState;
+        await goBackToStaticHandler(action, flag);
         return;
       }
     }
@@ -28,7 +28,13 @@ export default async function controlAllLights(r, g, b, brightness, action, flag
   if (!configVars.goveeDisable){
     await goveeControl(r, g, b, brightness, action);
   }
-  // --------------------
+
+  // -----------
+  await goBackToStaticHandler(action, flag);
+}
+
+async function goBackToStaticHandler(action, flag){
+  const goBackToStaticPref = configVars.goBackToStatic;
   if (goBackToStaticPref) {
     if (action === "off"){
       clearTimeout(goBackToStatic.goBackToStaticTimeout);

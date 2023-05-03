@@ -8,6 +8,7 @@ import Typography from "@mui/material/Typography";
 import Divider from "@mui/material/Divider";
 import AddIcon from "@mui/icons-material/Add";
 import { font } from "@/index";
+import ReactGA from "react-ga4";
 
 
 export default function YeelightMenu(){
@@ -18,6 +19,20 @@ export default function YeelightMenu(){
   };
   const handleClose = () => {
     setAnchorEl(null);
+  };
+  const handleAddYeelightDevice = () => {
+    setAnchorEl(null);
+    ReactGA.event({
+      category: "yeelight_tools_menu",
+      action: "add_yeelight_device",
+    });
+  };
+  const handleViewCurrentlyConnectedYeelightDevices = () => {
+    setAnchorEl(null);
+    ReactGA.event({
+      category: "yeelight_tools_menu",
+      action: "view_currently_connected_yeelight_devices",
+    });
   };
 
   const menuItemStyle = {
@@ -50,7 +65,7 @@ export default function YeelightMenu(){
           "aria-labelledby": "basic-button",
         }}
       >
-        <MenuItem onClick={handleClose}>
+        <MenuItem onClick={handleAddYeelightDevice}>
           <AddIcon
             sx={{
               mr: 2
@@ -63,7 +78,7 @@ export default function YeelightMenu(){
         </MenuItem>
         <Divider />
         <MenuItem
-          onClick={handleClose}>
+          onClick={handleViewCurrentlyConnectedYeelightDevices}>
           <SearchIcon sx={{
             mr: 2
           }}/>

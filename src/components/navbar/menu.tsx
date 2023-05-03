@@ -16,6 +16,7 @@ import Typography from "@mui/material/Typography";
 import { green, red } from "@mui/material/colors";
 import { shell } from "electron";
 import { font } from "@/index";
+import ReactGA from "react-ga4";
 
 export default function ThreeDotMenu() {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
@@ -33,6 +34,10 @@ export default function ThreeDotMenu() {
   const handleOpenHome = () => {
     setAnchorEl(null);
     window.location.hash = "/home";
+    ReactGA.event({
+      category: "button_press",
+      action: "three_dot_menu_home_button_press",
+    });
   };
   const handleOpenAbout = () => {
     setAnchorEl(null);
@@ -46,11 +51,19 @@ export default function ThreeDotMenu() {
   const handleExitApp = () => {
     setAnchorEl(null);
     window.f1mvli.utils.exitApp();
+    ReactGA.event({
+      category: "button_press",
+      action: "exit_app_button_press",
+    });
   };
 
   const handleOpenDonate = () => {
     setAnchorEl(null);
     shell.openExternal("https://buymeacoffee.com/justjoostnl");
+    ReactGA.event({
+      category: "button_press",
+      action: "donate_button_click",
+    });
   };
 
   // get the version from package.json

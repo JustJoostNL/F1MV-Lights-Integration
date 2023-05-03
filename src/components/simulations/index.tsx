@@ -26,56 +26,56 @@ export default function SimulationMenu() {
   const handleGreenFlag = () => {
     ipcRenderer.send("flagSim", "Green");
     ReactGA.event({
-      category: "flag-simulation",
-      action: "Green Flag (sim)",
+      category: "flag_simulation",
+      action: "green_flag_sim",
     });
     handleClose();
   };
   const handleYellowFlag = () => {
     ipcRenderer.send("flagSim", "Yellow");
     ReactGA.event({
-      category: "flag-simulation",
-      action: "Yellow Flag (sim)",
+      category: "flag_simulation",
+      action: "yellow_flag_sim",
     });
     handleClose();
   };
   const handleRedFlag = () => {
     ipcRenderer.send("flagSim", "Red");
     ReactGA.event({
-      category: "flag-simulation",
-      action: "Red Flag (sim)",
+      category: "flag_simulation",
+      action: "red_flag_sim",
     });
     handleClose();
   };
   const handleSafetyCar = () => {
     ipcRenderer.send("flagSim", "SC");
     ReactGA.event({
-      category: "flag-simulation",
-      action: "Safety Car (sim)",
+      category: "flag_simulation",
+      action: "safety_car_sim",
     });
     handleClose();
   };
   const handleVirtualSafetyCar = () => {
     ipcRenderer.send("flagSim", "VSC");
     ReactGA.event({
-      category: "flag-simulation",
-      action: "Virtual Safety Car (sim)",
+      category: "flag_simulation",
+      action: "virtual_safety_car_sim",
     });
     handleClose();
   };
   const handleVirtualSafetyCarEnding = () => {
     ipcRenderer.send("flagSim", "vscEnding");
     ReactGA.event({
-      category: "flag-simulation",
-      action: "Virtual Safety Car Ending (sim)",
+      category: "flag_simulation",
+      action: "virtual_safety_car_ending_sim",
     });
     handleClose();
   };
   const handleAllOff = () => {
     ipcRenderer.send("flagSim", "alloff");
     ReactGA.event({
-      category: "flag-simulation",
-      action: "All Off (sim)",
+      category: "flag_simulation",
+      action: "all_off_sim",
     });
     handleClose();
   };

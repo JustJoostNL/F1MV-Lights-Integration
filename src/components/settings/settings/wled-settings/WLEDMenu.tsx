@@ -8,6 +8,7 @@ import Typography from "@mui/material/Typography";
 import Divider from "@mui/material/Divider";
 import AddIcon from "@mui/icons-material/Add";
 import { font } from "@/index";
+import ReactGA from "react-ga4";
 
 
 export default function WLEDMenu(){
@@ -18,6 +19,20 @@ export default function WLEDMenu(){
   };
   const handleClose = () => {
     setAnchorEl(null);
+  };
+  const handleAddWLEDDevice = () => {
+    setAnchorEl(null);
+    ReactGA.event({
+      category: "wled_tools_menu",
+      action: "add_wled_device",
+    });
+  };
+  const handleViewCurrentlyConnectedWLEDDevices = () => {
+    setAnchorEl(null);
+    ReactGA.event({
+      category: "wled_tools_menu",
+      action: "view_currently_connected_wled_devices",
+    });
   };
 
   const menuItemStyle = {
@@ -50,7 +65,7 @@ export default function WLEDMenu(){
           "aria-labelledby": "basic-button",
         }}
       >
-        <MenuItem onClick={handleClose}>
+        <MenuItem onClick={handleAddWLEDDevice}>
           <AddIcon
             sx={{
               mr: 2
@@ -63,7 +78,7 @@ export default function WLEDMenu(){
         </MenuItem>
         <Divider />
         <MenuItem
-          onClick={handleClose}>
+          onClick={handleViewCurrentlyConnectedWLEDDevices}>
           <SearchIcon sx={{
             mr: 2
           }}/>

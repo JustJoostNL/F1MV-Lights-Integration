@@ -9,6 +9,7 @@ import RefreshIcon from "@mui/icons-material/Refresh";
 import SearchIcon from "@mui/icons-material/Search";
 import AddIcon from "@mui/icons-material/Add";
 import { font } from "@/index";
+import ReactGA from "react-ga4";
 
 export default function HueMenu() {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
@@ -19,6 +20,44 @@ export default function HueMenu() {
   const handleClose = () => {
     setAnchorEl(null);
   };
+
+  const handleSelectHueDevices = () => {
+    setAnchorEl(null);
+    ReactGA.event({
+      category: "hue_tools_menu",
+      action: "select_hue_devices",
+    });
+  };
+  const handleSelectHueEntertainmentZones = () => {
+    setAnchorEl(null);
+    ReactGA.event({
+      category: "hue_tools_menu",
+      action: "select_hue_entertainment_zones",
+    });
+  };
+  const handleSearchForHueBridgesLocal = () => {
+    setAnchorEl(null);
+    ReactGA.event({
+      category: "hue_tools_menu",
+      action: "search_for_hue_bridges_local",
+    });
+  };
+  const handleSearchForHueBridgesRemote = () => {
+    setAnchorEl(null);
+    ReactGA.event({
+      category: "hue_tools_menu",
+      action: "search_for_hue_bridges_remote",
+    });
+  };
+  const handleRefreshHueDevices = () => {
+    setAnchorEl(null);
+    ReactGA.event({
+      category: "hue_tools_menu",
+      action: "refresh_hue_devices",
+    });
+  };
+
+
 
   const menuItemStyle = {
     fontSize: "1.0rem",
@@ -50,7 +89,7 @@ export default function HueMenu() {
           "aria-labelledby": "basic-button",
         }}
       >
-        <MenuItem onClick={handleClose}>
+        <MenuItem onClick={handleSearchForHueBridgesLocal}>
           <SearchIcon
             sx={{
               mr: 2
@@ -61,7 +100,7 @@ export default function HueMenu() {
                         Search for Hue bridges (local discovery)
           </Typography>
         </MenuItem>
-        <MenuItem onClick={handleClose}>
+        <MenuItem onClick={handleSearchForHueBridgesRemote}>
           <SearchIcon
             sx={{
               mr: 2
@@ -73,7 +112,7 @@ export default function HueMenu() {
           </Typography>
         </MenuItem>
         <Divider />
-        <MenuItem onClick={handleClose}>
+        <MenuItem onClick={handleRefreshHueDevices}>
           <RefreshIcon
             sx={{
               mr: 2
@@ -86,7 +125,7 @@ export default function HueMenu() {
         </MenuItem>
         <Divider />
         <MenuItem
-          onClick={handleClose}>
+          onClick={handleSelectHueDevices}>
           <AddIcon
             sx={{
               mr: 2
@@ -98,7 +137,7 @@ export default function HueMenu() {
           </Typography>
         </MenuItem>
         <MenuItem
-          onClick={handleClose}>
+          onClick={handleSelectHueEntertainmentZones}>
           <AddIcon
             sx={{
               mr: 2

@@ -12,7 +12,7 @@ const Main = () => {
       log.transports.console.level = false;
     }
 
-    ReactGA.initialize("G-ELC5VHXLD5", {
+    ReactGA.initialize("G-BMW3JWS0RJ", {
       //testMode: !!process.env.VITE_DEV_SERVER_URL,
       gaOptions: {
         appName: "F1MV-Lights-Integration",

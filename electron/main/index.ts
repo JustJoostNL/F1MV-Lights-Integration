@@ -14,6 +14,7 @@ import simulateFlag from "./app/light-controller/simulateFlag";
 import { autoUpdater } from "electron-updater";
 import initUpdater from "./update";
 import log from "electron-log";
+import session = Electron.session;
 
 Sentry.init({
   dsn: "https://e64c3ec745124566b849043192e58711@o4504289317879808.ingest.sentry.io/4504289338392576",
@@ -68,9 +69,9 @@ async function createWindow() {
 
   if (process.env.VITE_DEV_SERVER_URL) { // electron-vite-vue#298
     await win.loadURL(url);
-    // Open devTool if the app is not packaged
     win.webContents.openDevTools();
   } else {
+    win.removeMenu();
     await win.loadFile(indexHtml);
   }
 

@@ -10,24 +10,24 @@ export default function QuickAccessButtons(){
     log.info("Opening config file...");
     window.f1mvli.config.openInEditor();
     ReactGA.event({
-      category: "button-press",
-      action: "Open Config (BP)",
+      category: "button_press",
+      action: "open_config_button_press",
     });
   };
   const handleCheckForUpdates = () => {
     log.info("Checking for updates...");
     window.f1mvli.updater.checkForUpdate();
     ReactGA.event({
-      category: "button-press",
-      action: "Check for Updates (BP)",
+      category: "button_press",
+      action: "check_for_updates_button_press",
     });
   };
   const handleOpenLogFile = () => {
     log.info("Opening log file...");
     window.f1mvli.log.openLogFile();
     ReactGA.event({
-      category: "button-press",
-      action: "Open Log File (BP)",
+      category: "button_press",
+      action: "open_log_file_button_press",
     });
   };
 

@@ -9,6 +9,7 @@ import Divider from "@mui/material/Divider";
 import AddIcon from "@mui/icons-material/Add";
 import LinkIcon from "@mui/icons-material/Link";
 import { font } from "@/index";
+import ReactGA from "react-ga4";
 
 
 export default function IkeaMenu(){
@@ -19,6 +20,20 @@ export default function IkeaMenu(){
   };
   const handleClose = () => {
     setAnchorEl(null);
+  };
+  const handleSelectIkeaDevices = () => {
+    setAnchorEl(null);
+    ReactGA.event({
+      category: "ikea_tools_menu",
+      action: "select_ikea_devices",
+    });
+  };
+  const handleSearchAndConnect = () => {
+    setAnchorEl(null);
+    ReactGA.event({
+      category: "ikea_tools_menu",
+      action: "search_and_connect_to_gateway",
+    });
   };
 
   const menuItemStyle = {
@@ -51,7 +66,7 @@ export default function IkeaMenu(){
           "aria-labelledby": "basic-button",
         }}
       >
-        <MenuItem onClick={handleClose}>
+        <MenuItem onClick={handleSearchAndConnect}>
           <SearchIcon sx={{ mr: 0.3 }}/> + <LinkIcon sx={{ mr: 2, ml: 0.5 }}/>
           <Typography
             variant="body2"
@@ -61,7 +76,7 @@ export default function IkeaMenu(){
         </MenuItem>
         <Divider />
         <MenuItem
-          onClick={handleClose}>
+          onClick={handleSelectIkeaDevices}>
           <AddIcon
             sx={{
               mr: 2

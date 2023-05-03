@@ -1,4 +1,5 @@
 import { rmSync } from 'node:fs'
+//@ts-ignore
 import path from 'node:path'
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
@@ -69,6 +70,7 @@ export default defineConfig(({ command }) => {
       }),
       // Use Node.js API in the Renderer process
       renderer({
+        // @ts-ignore
         nodeIntegration: true,
       }),
     ],
