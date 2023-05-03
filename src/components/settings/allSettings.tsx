@@ -41,13 +41,13 @@ export const allSettings = [
   {
     heading: "General Settings",
     content: <GeneralSettingsContent />,
-    description: "Turn off lights when session ended — Default Brightness — Go back to static — Color Settings",
+    description: "Settings related to F1MV Lights Integration",
     type: "general"
   },
   {
     heading: "F1MV Settings",
     content: <F1MVSettingsContent/>,
-    description: "Live Timing URL — Sync with MultiViewer",
+    description: "Settings related to MultiViewer",
     type: "f1mv"
   },
   {

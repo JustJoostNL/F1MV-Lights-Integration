@@ -2,6 +2,7 @@ import { app, BrowserWindow, shell, ipcMain } from "electron";
 import { release } from "node:os";
 import path, { join } from "node:path";
 import {
+  configVars,
   handleConfigGet,
   handleConfigGetAll,
   handleConfigOpenInEditor,
@@ -115,9 +116,17 @@ function onReady() {
   log.initialize({ preload: true });
   log.transports.console.level = false;
   if (process.env.VITE_DEV_SERVER_URL) {
-    log.transports.console.level = "debug";
+    if (configVars.debugMode){
+      log.transports.console.level = "debug";
+    } else {
+      log.transports.console.level = "info";
+    }
   }
-  log.transports.file.level = "debug";
+  if (configVars.debugMode){
+    log.transports.file.level = "debug";
+  } else {
+    log.transports.file.level = "info";
+  }
 
   log.info("App starting...");
   initUpdater();

@@ -231,7 +231,7 @@ export default function GeneralSettingsContent() {
               </Box>
             </>)}
           <Divider sx={{ mb: "20px" }}/>
-          {/*<ColorSettings/>*/}
+          <ColorSettings/>
         </div>
       )}
     </>

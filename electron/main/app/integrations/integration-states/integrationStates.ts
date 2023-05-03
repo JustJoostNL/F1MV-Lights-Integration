@@ -3,10 +3,8 @@ import { goveeVars } from "../../vars/vars";
 import { integrationStates } from "../../vars/vars";
 
 export default async function handleIntegrationStates(){
-  if (!configVars.goveeDisable && goveeVars.goveeInitialized){
-    if (goveeVars.govee.devicesArray.length > 0){
-      integrationStates.goveeOnline = true;
-    }
+  if (!configVars.goveeDisable && goveeVars.goveeInitialized && goveeVars.govee.devicesArray.length > 0) {
+    integrationStates.goveeOnline = true;
   }
   if (!configVars.nanoLeafDisable){
     // todo

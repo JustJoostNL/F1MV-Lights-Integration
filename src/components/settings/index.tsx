@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Typography, Accordion, AccordionSummary, AccordionDetails, Button } from "@mui/material";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import ExpandMoreIcon from "@mui/icons-material/ExpandLess";
 import { allSettings } from "./allSettings";
 import { useHotkeys } from "react-hotkeys-hook";
 import JsonTree from "@/components/json-tree";
@@ -91,7 +91,7 @@ const SettingsPage: React.FC = () => {
                         {heading}
                       </Typography>
                       <Typography variant="h6" component="h6" sx={{ fontSize: "1rem", ml: "5px", color: "grey.400" }}>
-                        {description}
+                        {/*{description}*/}
                       </Typography>
                     </div>
                   </AccordionSummary>

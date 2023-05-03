@@ -3,6 +3,9 @@ import defaultConfig from "./defaultConfig";
 import { configMigrations } from "./migrations";
 import log from "electron-log";
 import {configChangedEmitEvent} from "../index";
+import createF1MVURLs from "../app/f1mv/createF1MVURLs";
+import {goveeVars, integrationStates} from "../app/vars/vars";
+import goveeInitialize from "../app/integrations/govee/goveeInit";
 
 const userConfig = new Store({
   name: "settings",
@@ -15,6 +18,21 @@ const userConfig = new Store({
 
 userConfig.onDidAnyChange(() => {
   log.info("Config changed, reloading from config...");
+  const newVariables = {
+    "webServerDisable": userConfig.get("Settings.webServerSettings.webServerDisable"),
+    "goveeDisable": userConfig.get("Settings.goveeSettings.goveeDisable"),
+    "ikeaDisable": userConfig.get("Settings.ikeaSettings.ikeaDisable"),
+    "homeAssistantDisable": userConfig.get("Settings.homeAssistantSettings.homeAssistantDisable"),
+    "debugMode": userConfig.get("Settings.advancedSettings.debugMode"),
+  }
+  const oldVariables = {
+    "webServerDisable": configVars.webServerDisable,
+    "goveeDisable": configVars.goveeDisable,
+    "ikeaDisable": configVars.ikeaDisable,
+    "homeAssistantDisable": configVars.homeAssistantDisable,
+    "debugMode": configVars.debugMode,
+  }
+  handleConfigChanges(newVariables, oldVariables);
   loadConfigInVars();
   configChangedEmitEvent();
 });
@@ -125,6 +143,57 @@ export const configVars = {
 
 };
 
+
+function handleConfigChanges(newVars, oldVars){
+  createF1MVURLs();
+
+  if (!configVars.ikeaDisable && integrationStates.ikeaOnline){
+    log.debug("Checking all the IKEA devices spectrum's again...")
+    // todo: check ikea spectrum
+  }
+
+  if (oldVars.webServerDisable && !newVars.webServerDisable){
+    log.info("Webserver enabled, starting...");
+    // todo: start webserver
+  } else if (!oldVars.webServerDisable && newVars.webServerDisable) {
+    log.info("Webserver disabled, stopping...");
+    // todo: stop webserver
+  }
+
+  if (oldVars.goveeDisable && !newVars.goveeDisable) {
+    log.debug("Govee integration enabled, starting...");
+    goveeVars.govee = undefined;
+    goveeInitialize();
+  }
+
+  if (oldVars.ikeaDisable && !newVars.ikeaDisable) {
+    integrationStates.ikeaOnline = false;
+    //todo: clear devices + init again
+    //allIkeaDevices = [];
+    //colorDevices = [];
+    //whiteDevices = [];
+
+    //ikeaInitialize();
+  }
+
+  if (oldVars.homeAssistantDisable && !newVars.homeAssistantDisable) {
+    // todo: init again
+    //homeAssistantInitialize();
+  }
+
+  if (oldVars.debugMode && !newVars.debugMode) {
+    log.transports.file.level = "info";
+    if (process.env.VITE_DEV_SERVER_URL){
+      log.transports.console.level = "info";
+    }
+  } else if (!oldVars.debugMode && newVars.debugMode) {
+    log.transports.file.level = "debug";
+    if (process.env.VITE_DEV_SERVER_URL){
+      log.transports.console.level = "debug";
+    }
+  }
+
+}
 
 function loadConfigInVars(){
   // general settings

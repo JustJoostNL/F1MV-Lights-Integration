@@ -86,7 +86,6 @@ export default function AdvancedSettingsContent() {
             <Autocomplete
               disablePortal={true}
               autoComplete={true}
-              autoCorrect={"latest"}
               autoSelect={true}
               clearIcon={false}
               value={updateChannelOptions.find((option) => option.label === settings.updateChannel)}
