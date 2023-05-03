@@ -18,7 +18,7 @@ export default function About() {
         <Typography variant="h4" sx={{ mt: 5 }} gutterBottom>About F1MV-Lights-Integration</Typography>
 
         <Typography variant="body1" gutterBottom>
-					F1MV-Lights-Integration is the perfect tool for Formula 1 fans who want to add a new level of excitement to their viewing experience. By integrating your smart home lights with Formula 1 sessions, you can immerse yourself in the race like never before.
+					F1MV-Lights-Integration is the perfect tool for Formula 1 fans who want to add a new level of excitement to their viewing experience. By integrating your smart home lights with Formula 1 sessions, you can immerse yourself in the session like never before.
         </Typography>
 
         <Box mt={4} mb={2}>
