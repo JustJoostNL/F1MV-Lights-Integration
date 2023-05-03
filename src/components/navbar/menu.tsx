@@ -9,10 +9,11 @@ import InfoIcon from "@mui/icons-material/Info";
 import OpenIcon from "@mui/icons-material/OpenInNew";
 import MenuItem from "@mui/material/MenuItem";
 import DonateIcon from "@mui/icons-material/SavingsRounded";
+import ExitIcon from "@mui/icons-material/ExitToApp";
 import f1mvLogo from "../../assets/f1mv-logo.png";
 import packageJson from "../../../package.json";
 import Typography from "@mui/material/Typography";
-import { green } from "@mui/material/colors";
+import { green, red } from "@mui/material/colors";
 import { shell } from "electron";
 import { font } from "@/index";
 
@@ -40,6 +41,11 @@ export default function ThreeDotMenu() {
   const handleOpenF1MV = () => {
     setAnchorEl(null);
     shell.openExternal("multiviewer://");
+  };
+
+  const handleExitApp = () => {
+    setAnchorEl(null);
+    window.f1mvli.utils.exitApp();
   };
 
   const handleOpenDonate = () => {
@@ -144,12 +150,26 @@ export default function ThreeDotMenu() {
           <Typography
             variant="body2"
             sx={menuItemStyle}>
-                        Open MultiViewer for F1 <OpenIcon
+            Open MultiViewer for F1
+            <OpenIcon
               sx={{
                 ml: 1,
                 color: "grey.500",
                 fontSize: "0.9rem"
               }} />
+          </Typography>
+        </MenuItem>
+        <Divider />
+        <MenuItem onClick={handleExitApp}>
+          <ExitIcon
+            sx={{
+              mr: 2,
+              color: red[500]
+            }}/>
+          <Typography
+            variant="body2"
+            sx={menuItemStyle}>
+            Exit
           </Typography>
         </MenuItem>
         <Divider />
@@ -164,7 +184,7 @@ export default function ThreeDotMenu() {
             width: "100%",
             padding: "0.5rem"
           }}>
-                    Current version: {currentAppVersion}
+              Current version: {currentAppVersion}
         </Typography>
       </Menu>
     </div>

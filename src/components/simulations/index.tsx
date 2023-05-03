@@ -11,6 +11,7 @@ import DirectionsCar from "@mui/icons-material/DirectionsCar";
 import NoCrash from "@mui/icons-material/NoCrash";
 import FlashOff from "@mui/icons-material/FlashOff";
 import { ipcRenderer } from "electron";
+import ReactGA from "react-ga4";
 
 export default function SimulationMenu() {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
@@ -24,30 +25,58 @@ export default function SimulationMenu() {
 
   const handleGreenFlag = () => {
     ipcRenderer.send("flagSim", "Green");
+    ReactGA.event({
+      category: "flag-simulation",
+      action: "Green Flag (sim)",
+    });
     handleClose();
   };
   const handleYellowFlag = () => {
     ipcRenderer.send("flagSim", "Yellow");
+    ReactGA.event({
+      category: "flag-simulation",
+      action: "Yellow Flag (sim)",
+    });
     handleClose();
   };
   const handleRedFlag = () => {
     ipcRenderer.send("flagSim", "Red");
+    ReactGA.event({
+      category: "flag-simulation",
+      action: "Red Flag (sim)",
+    });
     handleClose();
   };
   const handleSafetyCar = () => {
     ipcRenderer.send("flagSim", "SC");
+    ReactGA.event({
+      category: "flag-simulation",
+      action: "Safety Car (sim)",
+    });
     handleClose();
   };
   const handleVirtualSafetyCar = () => {
     ipcRenderer.send("flagSim", "VSC");
+    ReactGA.event({
+      category: "flag-simulation",
+      action: "Virtual Safety Car (sim)",
+    });
     handleClose();
   };
   const handleVirtualSafetyCarEnding = () => {
     ipcRenderer.send("flagSim", "vscEnding");
+    ReactGA.event({
+      category: "flag-simulation",
+      action: "Virtual Safety Car Ending (sim)",
+    });
     handleClose();
   };
   const handleAllOff = () => {
     ipcRenderer.send("flagSim", "alloff");
+    ReactGA.event({
+      category: "flag-simulation",
+      action: "All Off (sim)",
+    });
     handleClose();
   };
 

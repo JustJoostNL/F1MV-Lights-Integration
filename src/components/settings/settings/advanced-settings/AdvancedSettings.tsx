@@ -111,7 +111,7 @@ export default function AdvancedSettingsContent() {
               </Typography>
             </div>
             <BlueSwitch
-              id="debug-mode-switch"
+              id="analytics-switch"
               checked={settings.analytics}
               onChange={(event) => {
                 handleSetSingleSetting("analytics", event.target.checked);

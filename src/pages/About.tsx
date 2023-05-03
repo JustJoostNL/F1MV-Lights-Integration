@@ -2,13 +2,18 @@ import React from "react";
 import NavBar from "@/components/navbar";
 import { Box, Typography, List, ListItem, ListItemIcon, ListItemText } from "@mui/material";
 import { CheckCircleOutline } from "@mui/icons-material";
+import ReactGA from "react-ga4";
 
 
 
 export default function About() {
+  ReactGA.send({ hitType: "pageview", page: "/about" });
+  window.f1mvli.utils.changeWindowTitle("About — F1MV-Lights-Integration");
+
   return (
     <div>
-      <NavBar showSettingsBackButton={true} />
+      <title>About -- F1MV-Lights-Integration</title>
+      <NavBar showBackButton={true} />
       <Box p={4}>
         <Typography variant="h4" sx={{ mt: 5 }} gutterBottom>About F1MV-Lights-Integration</Typography>
 

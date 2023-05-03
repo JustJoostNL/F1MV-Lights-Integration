@@ -173,6 +173,12 @@ ipcMain.handle("config:open:inEditor", handleConfigOpenInEditor);
 ipcMain.handle("utils:getWindowSize", () => {
   return win?.getSize();
 });
+ipcMain.handle("utils:changeWindowTitle", (_, arg) => {
+  win?.setTitle(arg);
+});
+ipcMain.handle("utils:exitApp", () => {
+  app.quit();
+});
 
 // updater
 ipcMain.handle("updater:checkForUpdate", () => {

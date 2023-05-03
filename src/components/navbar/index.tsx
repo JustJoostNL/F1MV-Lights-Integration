@@ -2,12 +2,12 @@ import { Box, AppBar, Toolbar, Typography, IconButton } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import Menu from "./menu";
 
-export default function NavBar({ showSettingsBackButton }: { showSettingsBackButton: boolean }) {
+export default function NavBar({ showBackButton }: { showBackButton: boolean }) {
   return (
     <Box sx={{ flexGrow: 1 }}>
       <AppBar position="fixed">
         <Toolbar sx={{ flexGrow: 1, textAlign: "right" }}>
-          {showSettingsBackButton && (
+          {showBackButton && (
             <Box sx={{ display: "flex", alignItems: "center" }}>
               <IconButton
                 edge="start"
@@ -31,7 +31,7 @@ export default function NavBar({ showSettingsBackButton }: { showSettingsBackBut
               </Typography>
             </Box>
           )}
-          {!showSettingsBackButton && (
+          {!showBackButton && (
             <Typography
               variant="h6"
               component="div"

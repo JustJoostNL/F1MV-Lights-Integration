@@ -3,7 +3,7 @@ import { createHashRouter, RouterProvider } from "react-router-dom";
 import Main from "@/pages/Main";
 import Settings from "@/pages/Settings";
 import Home from "@/pages/Home";
-import About from "@/pages/about";
+import About from "@/pages/About";
 import LogViewerPage from "@/pages/LogViewer";
 
 const router = createHashRouter([
