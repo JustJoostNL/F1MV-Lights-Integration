@@ -3,6 +3,7 @@ import { analytics, apiURLs } from "../vars/vars";
 import fetch from "node-fetch";
 
 let res;
+let activeUsersPostInterval;
 export async function analyticsHandler(action){
   const headers = {
     "Content-Type": "application/json",
@@ -18,7 +19,7 @@ export async function analyticsHandler(action){
       analytics.uniqueID = uniqueId;
       return uniqueId;
     case "activeUsersInit":
-      setInterval(async () => {
+      activeUsersPostInterval = setInterval(async () => {
         await fetch(apiURLs.activeUsersPostURL, {
           method: "POST",
           headers: headers,
@@ -30,6 +31,7 @@ export async function analyticsHandler(action){
       }, 15000);
       break;
     case "activeUsersClose":
+      clearInterval(activeUsersPostInterval);
       await fetch(apiURLs.activeUsersPostURL, {
         method: "POST",
         headers: headers,

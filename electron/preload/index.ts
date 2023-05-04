@@ -16,6 +16,7 @@ export const f1mvli = {
     getLogs: () => ipcRenderer.invoke("log:getLogs"),
   },
   utils: {
+    getStates: () => ipcRenderer.invoke("utils:getStates"),
     getWindowSize: () => ipcRenderer.invoke("utils:getWindowSize"),
     changeWindowTitle : (title: string) => ipcRenderer.invoke("utils:changeWindowTitle", title),
     exitApp: () => ipcRenderer.invoke("utils:exitApp"),

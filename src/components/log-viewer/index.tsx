@@ -10,7 +10,8 @@ export default function LogViewer() {
 
   useEffect(() => {
     async function fetchLogs() {
-      const logData = await window.f1mvli.log.getLogs();
+      let logData = await window.f1mvli.log.getLogs();
+      logData = logData.reverse();
       setLogs(logData);
     }
     fetchLogs();
@@ -18,8 +19,9 @@ export default function LogViewer() {
 
   useEffect(() => {
     const intervalId = setInterval(async () => {
-      const newLogs = await window.f1mvli.log.getLogs();
+      let newLogs = await window.f1mvli.log.getLogs();
       if (newLogs.length > logs.length) {
+        newLogs.reverse()
         setLogs(newLogs);
       }
     }, 1000);

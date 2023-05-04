@@ -51,67 +51,67 @@ export const allSettings = [
     type: "f1mv"
   },
   {
-    heading: "Philips Hue Settings",
+    heading: "Philips Hue",
     content: <HueSettingsContent/>,
     description: "Disable Hue Integration — Hue 3rd party compatibility mode — Enable fade — Enable fade for effects — Hue Tools",
     type: "integration"
   },
   {
-    heading: "Ikea Settings",
+    heading: "IKEA",
     content: <IkeaSettingsContent/>,
     description: "Disable Ikea Integration — Ikea Gateway Security Code — Ikea Tools",
     type: "integration"
   },
   {
-    heading: "Govee Settings",
+    heading: "Govee",
     content: <GoveeSettingsContent/>,
     description: "Disable Govee Integration",
     type: "integration"
   },
   {
-    heading: "OpenRGB Settings",
+    heading: "OpenRGB",
     content: <OpenRGBSettingsContent/>,
     description: "Disable OpenRGB Integration — OpenRGB Server IP — OpenRGB Server Port",
     type: "integration"
   },
   {
-    heading: "Home Assistant Settings",
+    heading: "Home Assistant",
     content: <HassSettingsContent/>,
     description: "Disable Home Assistant Integration — Home Assistant IP — Home Assistant Port — Home Assistant API Token — Home Assistant Tools",
     type: "integration"
   },
   {
-    heading: "Nanoleaf Settings",
+    heading: "Nanoleaf",
     content: <NanoleafSettingsContent/>,
     description: "Disable Nanoleaf Integration — Nanoleaf Tools",
     type: "integration"
   },
   {
-    heading: "WLED Settings",
+    heading: "WLED",
     content: <WLEDSettingsContent/>,
     description: "Disable WLED Integration — WLED Tools",
     type: "integration"
   },
   {
-    heading: "YeeLight Settings",
+    heading: "YeeLight",
     content: <YeelightSettingsContent/>,
     description: "Disable YeeLight Integration — YeeLight Tools",
     type: "integration"
   },
   {
-    heading: "Elgato Stream Deck Settings",
+    heading: "Elgato Stream Deck",
     content:  <ElgatoSDSettingsContent/>,
     description: "Disable the Elgato Stream Deck Integration",
     type: "integration"
   },
   {
-    heading: "Discord Settings",
+    heading: "Discord",
     content: <DiscordSettingsContent/>,
     description: "Disable Discord Rich Presence Integration",
     type: "integration"
   },
   {
-    heading: "Webserver Settings",
+    heading: "Webserver",
     content: <WebServerSettingsContent/>,
     description: "Disable the Webserver — Webserver Port",
     type: "integration"

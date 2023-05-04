@@ -16,6 +16,7 @@ import { autoUpdater } from "electron-updater";
 import initUpdater from "./update";
 import log from "electron-log";
 import session = Electron.session;
+import {handleIntegrationStates} from "./app/integrations/integration-states/integrationStates";
 
 Sentry.init({
   dsn: "https://e64c3ec745124566b849043192e58711@o4504289317879808.ingest.sentry.io/4504289338392576",
@@ -183,6 +184,9 @@ export function configChangedEmitEvent(){
 }
 
 // utils
+ipcMain.handle("utils:getStates", () => {
+  return handleIntegrationStates();
+});
 ipcMain.handle("utils:getWindowSize", () => {
   return win?.getSize();
 });
