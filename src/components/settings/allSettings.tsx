@@ -123,3 +123,30 @@ export const allSettings = [
     type: "advanced",
   },
 ];
+
+
+//config
+let receivedConfig: any = null;
+
+async function fetchConfig() {
+  receivedConfig = await window.f1mvli.config.getAll();
+}
+fetchConfig();
+
+export async function getConfig() {
+  return receivedConfig;
+}
+
+export async function refreshConfig() {
+  await fetchConfig();
+}
+
+export const handleSetSingleSetting = (setting: string, value: any, setSettings: any, settings: any) => {
+  if (typeof value === "string" && value.match(/^[0-9]+$/)) {
+    value = parseInt(value);
+  }
+  setSettings({
+    ...settings,
+    [setting]: value,
+  });
+};

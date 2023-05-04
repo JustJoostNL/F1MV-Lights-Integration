@@ -34,6 +34,7 @@ userConfig.onDidAnyChange(() => {
   };
   handleConfigChanges(newVariables, oldVariables);
   loadConfigInVars();
+  createF1MVURLs();
   configChangedEmitEvent();
 });
 
@@ -45,7 +46,6 @@ export const handleConfigGet = (event, key) => {
 };
 
 export const handleConfigGetAll = async () => {
-  log.debug("all called");
   return userConfig.store;
 };
 
@@ -146,7 +146,6 @@ export const configVars = {
 
 
 function handleConfigChanges(newVars, oldVars){
-  createF1MVURLs();
 
   if (!configVars.ikeaDisable && integrationStates.ikeaOnline){
     log.debug("Checking all the IKEA devices spectrum's again...");

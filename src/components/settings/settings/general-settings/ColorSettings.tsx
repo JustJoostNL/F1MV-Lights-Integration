@@ -2,8 +2,8 @@ import React, { useEffect, useState } from "react";
 import { RgbColorPicker } from "react-colorful";
 import Typography from "@mui/material/Typography";
 import { AutocompleteChangeReason, Box } from "@mui/material";
-import { Autocomplete, TextField, Input } from "@mui/material";
-import { settingBoxSX } from "@/components/settings/allSettings";
+import { Autocomplete, TextField } from "@mui/material";
+import { getConfig, settingBoxSX, handleSetSingleSetting } from "@/components/settings/allSettings";
 
 interface IColorSettings {
   [key: string]: string;
@@ -50,21 +50,11 @@ export default function ColorSettings() {
 
   useEffect(() => {
     async function fetchConfig() {
-      const config = await window.f1mvli.config.getAll();
+      const config = await getConfig();
       setSettings(config.Settings.generalSettings.colorSettings);
     }
     fetchConfig();
   }, []);
-
-  const handleSetSingleSetting = (setting: string, value: any) => {
-    if (typeof value === "string" && value.match(/^[0-9]+$/)) {
-      value = parseInt(value);
-    }
-    setSettings({
-      ...settings,
-      [setting]: value,
-    });
-  };
 
   const saveConfig = async () => {
     if (!settings) return;
@@ -141,7 +131,7 @@ export default function ColorSettings() {
                     //@ts-ignore
                     value={settings[selectedFlag].r}
                     //@ts-ignore
-                    onChange={(e) => handleSetSingleSetting(selectedFlag, { ...settings[selectedFlag], r: parseInt(e.target.value) })}
+                    onChange={(e) => handleSetSingleSetting(selectedFlag, { ...settings[selectedFlag], r: parseInt(e.target.value) }, setSettings, settings)}
                     style={{ marginRight: "16px", width: "30%" }}
                   />
                   <TextField
@@ -157,7 +147,7 @@ export default function ColorSettings() {
                     //@ts-ignore
                     value={settings[selectedFlag].g}
                     //@ts-ignore
-                    onChange={(e) => handleSetSingleSetting(selectedFlag, { ...settings[selectedFlag], g: parseInt(e.target.value) })}
+                    onChange={(e) => handleSetSingleSetting(selectedFlag, { ...settings[selectedFlag], g: parseInt(e.target.value) }, setSettings, settings)}
                     style={{ marginRight: "16px", width: "30%" }}
                   />
                   <TextField
@@ -173,7 +163,7 @@ export default function ColorSettings() {
                     //@ts-ignore
                     value={settings[selectedFlag].b}
                     //@ts-ignore
-                    onChange={(e) => handleSetSingleSetting(selectedFlag, { ...settings[selectedFlag], b: parseInt(e.target.value) })}
+                    onChange={(e) => handleSetSingleSetting(selectedFlag, { ...settings[selectedFlag], b: parseInt(e.target.value) }, setSettings, settings)}
                     style={{ width: "30%" }}
                   />
                 </div>
@@ -182,7 +172,7 @@ export default function ColorSettings() {
                 <RgbColorPicker
                   //@ts-ignore
                   color={settings[selectedFlag]}
-                  onChange={(color) => handleSetSingleSetting(selectedFlag, color)}
+                  onChange={(color) => handleSetSingleSetting(selectedFlag, color, setSettings, settings)}
                 />
               </div>
             </Box>

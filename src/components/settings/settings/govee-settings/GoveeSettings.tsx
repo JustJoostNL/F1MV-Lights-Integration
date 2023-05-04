@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Box, Typography } from "@mui/material";
-import { BlueSwitch, settingBoxSX } from "@/components/settings/allSettings";
+import { BlueSwitch, getConfig, settingBoxSX, handleSetSingleSetting } from "@/components/settings/allSettings";
 
 export default function GoveeSettingsContent() {
   const [settings, setSettings] = useState<any | null>(null);
@@ -8,18 +8,11 @@ export default function GoveeSettingsContent() {
 
   useEffect(() => {
     async function fetchConfig() {
-      const config = await window.f1mvli.config.getAll();
+      const config = await getConfig();
       setSettings(config.Settings.goveeSettings);
     }
     fetchConfig();
   }, []);
-
-  const handleSetSingleSetting = (setting: string, value: any) => {
-    setSettings({
-      ...settings,
-      [setting]: value,
-    });
-  };
 
   const saveConfig = async () => {
     if (!settings) return;
@@ -56,7 +49,7 @@ export default function GoveeSettingsContent() {
               id="disable-govee-switch"
               checked={settings.goveeDisable}
               onChange={(event) => {
-                handleSetSingleSetting("goveeDisable", event.target.checked);
+                handleSetSingleSetting("goveeDisable", event.target.checked, setSettings, settings);
               }}
             />
           </Box>

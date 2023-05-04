@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useHotkeys } from "react-hotkeys-hook";
 import { Alert, Box, TextField, Typography } from "@mui/material";
-import { BlueSwitch, settingBoxSX } from "@/components/settings/allSettings";
+import { BlueSwitch, settingBoxSX, handleSetSingleSetting, getConfig } from "@/components/settings/allSettings";
 import Divider from "@mui/material/Divider";
 import Toaster from "@/components/toaster/Toaster";
 import IkeaMenu from "@/components/settings/settings/ikea-settings/IkeaMenu";
@@ -17,18 +17,11 @@ export default function IkeaSettingsContent() {
 
   useEffect(() => {
     async function fetchConfig() {
-      const config = await window.f1mvli.config.getAll();
+      const config = await getConfig();
       setSettings(config.Settings.ikeaSettings);
     }
     fetchConfig();
   }, []);
-
-  const handleSetSingleSetting = (setting: string, value: any) => {
-    setSettings({
-      ...settings,
-      [setting]: value,
-    });
-  };
 
   const saveConfig = async () => {
     if (!settings) return;
@@ -65,7 +58,7 @@ export default function IkeaSettingsContent() {
               id="disable-ikea-switch"
               checked={settings.ikeaDisable}
               onChange={(event) => {
-                handleSetSingleSetting("ikeaDisable", event.target.checked);
+                handleSetSingleSetting("ikeaDisable", event.target.checked, setSettings, settings);
               }}
             />
           </Box>
@@ -89,7 +82,7 @@ export default function IkeaSettingsContent() {
                     variant="outlined"
                     value={settings.securityCode}
                     onChange={(event) => {
-                      handleSetSingleSetting("securityCode", event.target.value);
+                      handleSetSingleSetting("securityCode", event.target.value, setSettings, settings);
                     }}
                   />
                 </Box>
@@ -120,7 +113,7 @@ export default function IkeaSettingsContent() {
                     variant="outlined"
                     value={settings.identity}
                     onChange={(event) => {
-                      handleSetSingleSetting("identity", event.target.value);
+                      handleSetSingleSetting("identity", event.target.value, setSettings, settings);
                     }}
                   />
                 </Box>
@@ -140,7 +133,7 @@ export default function IkeaSettingsContent() {
                     variant="outlined"
                     value={settings.psk}
                     onChange={(event) => {
-                      handleSetSingleSetting("psk", event.target.value);
+                      handleSetSingleSetting("psk", event.target.value, setSettings, settings);
                     }}
                   />
                 </Box>

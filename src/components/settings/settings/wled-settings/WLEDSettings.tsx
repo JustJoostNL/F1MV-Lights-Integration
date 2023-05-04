@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Box, Typography } from "@mui/material";
-import { BlueSwitch, settingBoxSX } from "@/components/settings/allSettings";
+import { BlueSwitch, settingBoxSX, handleSetSingleSetting, getConfig } from "@/components/settings/allSettings";
 import WLEDMenu from "@/components/settings/settings/wled-settings/WLEDMenu";
-import NanoleafMenu from "@/components/settings/settings/nanoleaf-settings/NanoleafMenu";
 
 export default function WLEDSettingsContent() {
   const [settings, setSettings] = useState<any | null>(null);
@@ -10,18 +9,11 @@ export default function WLEDSettingsContent() {
 
   useEffect(() => {
     async function fetchConfig() {
-      const config = await window.f1mvli.config.getAll();
+      const config = await getConfig();
       setSettings(config.Settings.WLEDSettings);
     }
     fetchConfig();
   }, []);
-
-  const handleSetSingleSetting = (setting: string, value: any) => {
-    setSettings({
-      ...settings,
-      [setting]: value,
-    });
-  };
 
   const saveConfig = async () => {
     if (!settings) return;
@@ -58,7 +50,7 @@ export default function WLEDSettingsContent() {
               id="disable-wled-switch"
               checked={settings.WLEDDisable}
               onChange={(event) => {
-                handleSetSingleSetting("WLEDDisable", event.target.checked);
+                handleSetSingleSetting("WLEDDisable", event.target.checked, setSettings, settings);
               }}
             />
           </Box>

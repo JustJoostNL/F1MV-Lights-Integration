@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Box, Typography } from "@mui/material";
-import { BlueSwitch, settingBoxSX } from "@/components/settings/allSettings";
+import { BlueSwitch, getConfig, settingBoxSX, handleSetSingleSetting } from "@/components/settings/allSettings";
 
 export default function ElgatoSDSettingsContent() {
   const [settings, setSettings] = useState<any | null>(null);
@@ -8,18 +8,11 @@ export default function ElgatoSDSettingsContent() {
 
   useEffect(() => {
     async function fetchConfig() {
-      const config = await window.f1mvli.config.getAll();
+      const config = await getConfig();
       setSettings(config.Settings.streamDeckSettings);
     }
     fetchConfig();
   }, []);
-
-  const handleSetSingleSetting = (setting: string, value: any) => {
-    setSettings({
-      ...settings,
-      [setting]: value,
-    });
-  };
 
   const saveConfig = async () => {
     if (!settings) return;
@@ -56,7 +49,7 @@ export default function ElgatoSDSettingsContent() {
               id="disable-govee-switch"
               checked={settings.streamDeckDisable}
               onChange={(event) => {
-                handleSetSingleSetting("streamDeckDisable", event.target.checked);
+                handleSetSingleSetting("streamDeckDisable", event.target.checked, setSettings, settings);
               }}
             />
           </Box>

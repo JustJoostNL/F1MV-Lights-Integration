@@ -1,24 +1,18 @@
 import React, { useEffect, useState } from "react";
 import { Box, TextField, Typography } from "@mui/material";
 import { BlueSwitch, settingBoxSX } from "@/components/settings/allSettings";
+import { getConfig, handleSetSingleSetting } from "@/components/settings/allSettings";
 
 export default function F1MVSettingsContent() {
   const [settings, setSettings] = useState<any | null>(null);
 
   useEffect(() => {
     async function fetchConfig() {
-      const config = await window.f1mvli.config.getAll();
+      const config = await getConfig();
       setSettings(config.Settings.MultiViewerForF1Settings);
     }
     fetchConfig();
   }, []);
-
-  const handleSetSingleSetting = (setting: string, value: any) => {
-    setSettings({
-      ...settings,
-      [setting]: value,
-    });
-  };
 
   const saveConfig = async () => {
     if (!settings) return;
@@ -58,7 +52,7 @@ export default function F1MVSettingsContent() {
               variant="outlined"
               value={settings.liveTimingURL}
               onChange={(event) => {
-                handleSetSingleSetting("liveTimingURL", event.target.value);
+                handleSetSingleSetting("liveTimingURL", event.target.value, setSettings, settings);
               }}
             />
           </Box>
@@ -75,7 +69,7 @@ export default function F1MVSettingsContent() {
               id="f1mv-sync-switch"
               checked={settings.f1mvCheck}
               onChange={(event) => {
-                handleSetSingleSetting("f1mvCheck", event.target.checked);
+                handleSetSingleSetting("f1mvCheck", event.target.checked, setSettings, settings);
               }}
             />
           </Box>

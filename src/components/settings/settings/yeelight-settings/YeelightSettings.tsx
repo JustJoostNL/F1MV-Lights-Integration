@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Box, Typography } from "@mui/material";
-import { BlueSwitch, settingBoxSX } from "@/components/settings/allSettings";
+import { BlueSwitch, settingBoxSX, handleSetSingleSetting, getConfig } from "@/components/settings/allSettings";
 import YeelightMenu from "@/components/settings/settings/yeelight-settings/YeelightMenu";
 
 export default function YeelightSettingsContent() {
@@ -9,18 +9,11 @@ export default function YeelightSettingsContent() {
 
   useEffect(() => {
     async function fetchConfig() {
-      const config = await window.f1mvli.config.getAll();
+      const config = await getConfig();
       setSettings(config.Settings.yeeLightSettings);
     }
     fetchConfig();
   }, []);
-
-  const handleSetSingleSetting = (setting: string, value: any) => {
-    setSettings({
-      ...settings,
-      [setting]: value,
-    });
-  };
 
   const saveConfig = async () => {
     if (!settings) return;
@@ -57,7 +50,7 @@ export default function YeelightSettingsContent() {
               id="disable-wled-switch"
               checked={settings.yeeLightDisable}
               onChange={(event) => {
-                handleSetSingleSetting("yeeLightDisable", event.target.checked);
+                handleSetSingleSetting("yeeLightDisable", event.target.checked, setSettings, settings);
               }}
             />
           </Box>

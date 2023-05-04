@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Box, TextField, Typography } from "@mui/material";
-import { BlueSwitch, settingBoxSX } from "@/components/settings/allSettings";
+import { BlueSwitch, settingBoxSX, getConfig, handleSetSingleSetting } from "@/components/settings/allSettings";
 import Divider from "@mui/material/Divider";
 
 export default function OpenRGBSettingsContent() {
@@ -9,21 +9,11 @@ export default function OpenRGBSettingsContent() {
 
   useEffect(() => {
     async function fetchConfig() {
-      const config = await window.f1mvli.config.getAll();
+      const config = await getConfig();
       setSettings(config.Settings.openRGBSettings);
     }
     fetchConfig();
   }, []);
-
-  const handleSetSingleSetting = (setting: string, value: any) => {
-    if (typeof value === "string" && value.match(/^[0-9]+$/)) {
-      value = parseInt(value);
-    }
-    setSettings({
-      ...settings,
-      [setting]: value,
-    });
-  };
 
   const saveConfig = async () => {
     if (!settings) return;
@@ -60,7 +50,7 @@ export default function OpenRGBSettingsContent() {
               id="disable-openrgb-switch"
               checked={settings.openRGBDisable}
               onChange={(event) => {
-                handleSetSingleSetting("openRGBDisable", event.target.checked);
+                handleSetSingleSetting("openRGBDisable", event.target.checked, setSettings, settings);
               }}
             />
           </Box>
@@ -84,7 +74,7 @@ export default function OpenRGBSettingsContent() {
                     variant="outlined"
                     value={settings.openRGBServerIP}
                     onChange={(event) => {
-                      handleSetSingleSetting("openRGBServerIP", event.target.value);
+                      handleSetSingleSetting("openRGBServerIP", event.target.value, setSettings, settings);
                     }}
                   />
                 </Box>
@@ -104,7 +94,7 @@ export default function OpenRGBSettingsContent() {
                     variant="outlined"
                     value={settings.openRGBServerPort}
                     onChange={(event) => {
-                      handleSetSingleSetting("openRGBServerPort", event.target.value);
+                      handleSetSingleSetting("openRGBServerPort", event.target.value, setSettings, settings);
                     }}
                   />
                 </Box>

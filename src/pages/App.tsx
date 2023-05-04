@@ -1,10 +1,12 @@
 import "../style/App.scss";
 import { createHashRouter, RouterProvider } from "react-router-dom";
 import Main from "@/pages/Main";
-import Settings from "@/pages/Settings";
+import SettingsLoading from "@/pages/Settings";
 import Home from "@/pages/Home";
 import About from "@/pages/About";
 import LogViewerPage from "@/pages/LogViewer";
+import LoadingScreen from "@/pages/LoadingScreen";
+import Settings from "@/pages/RealSettings";
 
 const router = createHashRouter([
   {
@@ -21,11 +23,19 @@ const router = createHashRouter([
   },
   {
     path: "/settings",
+    element: <SettingsLoading/>
+  },
+  {
+    path: "/real-settings",
     element: <Settings/>
   },
   {
     path: "/log-viewer",
     element: <LogViewerPage/>
+  },
+  {
+    path: "/loading-screen",
+    element: <LoadingScreen/>
   }
 ]);
 

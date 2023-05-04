@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Box, TextField, Typography } from "@mui/material";
-import { BlueSwitch, settingBoxSX } from "@/components/settings/allSettings";
+import { BlueSwitch, getConfig, settingBoxSX, handleSetSingleSetting } from "@/components/settings/allSettings";
 import Divider from "@mui/material/Divider";
 import HassMenu from "@/components/settings/settings/hass-settings/HassMenu";
 
@@ -10,21 +10,11 @@ export default function HassSettingsContent() {
 
   useEffect(() => {
     async function fetchConfig() {
-      const config = await window.f1mvli.config.getAll();
+      const config = await getConfig();
       setSettings(config.Settings.homeAssistantSettings);
     }
     fetchConfig();
   }, []);
-
-  const handleSetSingleSetting = (setting: string, value: any) => {
-    if (typeof value === "string" && value.match(/^[0-9]+$/)) {
-      value = parseInt(value);
-    }
-    setSettings({
-      ...settings,
-      [setting]: value,
-    });
-  };
 
   const saveConfig = async () => {
     if (!settings) return;
@@ -61,7 +51,7 @@ export default function HassSettingsContent() {
               id="disable-hass-switch"
               checked={settings.homeAssistantDisable}
               onChange={(event) => {
-                handleSetSingleSetting("homeAssistantDisable", event.target.checked);
+                handleSetSingleSetting("homeAssistantDisable", event.target.checked, setSettings, settings);
               }}
             />
           </Box>
@@ -85,7 +75,7 @@ export default function HassSettingsContent() {
                     variant="outlined"
                     value={settings.host}
                     onChange={(event) => {
-                      handleSetSingleSetting("host", event.target.value);
+                      handleSetSingleSetting("host", event.target.value, setSettings, settings);
                     }}
                   />
                 </Box>
@@ -105,7 +95,7 @@ export default function HassSettingsContent() {
                     variant="outlined"
                     value={settings.port}
                     onChange={(event) => {
-                      handleSetSingleSetting("port", event.target.value);
+                      handleSetSingleSetting("port", event.target.value, setSettings, settings);
                     }}
                   />
                 </Box>
@@ -125,7 +115,7 @@ export default function HassSettingsContent() {
                     variant="outlined"
                     value={settings.token}
                     onChange={(event) => {
-                      handleSetSingleSetting("token", event.target.value);
+                      handleSetSingleSetting("token", event.target.value, setSettings, settings);
                     }}
                   />
                 </Box>

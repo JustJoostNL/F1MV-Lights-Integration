@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { BlueSwitch, settingBoxSX } from "@/components/settings/allSettings";
+import { BlueSwitch, settingBoxSX, getConfig, handleSetSingleSetting } from "@/components/settings/allSettings";
 import { Alert, Box, TextField, Typography } from "@mui/material";
 import HueMenu from "@/components/settings/settings/hue-settings/HueMenu";
 import { useHotkeys } from "react-hotkeys-hook";
@@ -10,8 +10,6 @@ export default function HueSettingsContent() {
   const [settings, setSettings] = useState<any | null>(null);
   const [hueAdvancedSettings, setHueAdvancedSettings] = useState(false);
 
-  // for the user to show the custom IP setting, he just needs to do a little secret trick, just needs to do ctrl+shift+h
-
   useHotkeys("shift+a+1", () => {
     setHueAdvancedSettings(!hueAdvancedSettings);
   });
@@ -19,18 +17,11 @@ export default function HueSettingsContent() {
 
   useEffect(() => {
     async function fetchConfig() {
-      const config = await window.f1mvli.config.getAll();
+      const config = await getConfig();
       setSettings(config.Settings.hueSettings);
     }
     fetchConfig();
   }, []);
-
-  const handleSetSingleSetting = (setting: string, value: any) => {
-    setSettings({
-      ...settings,
-      [setting]: value,
-    });
-  };
 
   const saveConfig = async () => {
     if (!settings) return;
@@ -67,7 +58,7 @@ export default function HueSettingsContent() {
               id="disable-hue-switch"
               checked={settings.hueDisable}
               onChange={(event) => {
-                handleSetSingleSetting("hueDisable", event.target.checked);
+                handleSetSingleSetting("hueDisable", event.target.checked, setSettings, settings);
               }}
             />
           </Box>
@@ -95,7 +86,7 @@ export default function HueSettingsContent() {
                     variant="outlined"
                     value={settings.hueBridgeIP}
                     onChange={(event) => {
-                      handleSetSingleSetting("hueBridgeIP", event.target.value);
+                      handleSetSingleSetting("hueBridgeIP", event.target.value, setSettings, settings);
                     }}
                   />
                 </Box>
@@ -115,7 +106,7 @@ export default function HueSettingsContent() {
                     variant="outlined"
                     value={settings.token}
                     onChange={(event) => {
-                      handleSetSingleSetting("token", event.target.value);
+                      handleSetSingleSetting("token", event.target.value, setSettings, settings);
                     }}
                   />
                 </Box>
@@ -137,7 +128,7 @@ export default function HueSettingsContent() {
                       id="hue-3rd-party-compat-mode-switch"
                       checked={settings.hue3rdPartyCompatMode}
                       onChange={(event) => {
-                        handleSetSingleSetting("hue3rdPartyCompatMode", event.target.checked);
+                        handleSetSingleSetting("hue3rdPartyCompatMode", event.target.checked, setSettings, settings);
                       }}
                     />
                   </Box>
@@ -154,7 +145,7 @@ export default function HueSettingsContent() {
                       id="hue-3rd-party-fade-switch"
                       checked={settings.enableFade}
                       onChange={(event) => {
-                        handleSetSingleSetting("enableFade", event.target.checked);
+                        handleSetSingleSetting("enableFade", event.target.checked, setSettings, settings);
                       }}
                     />
                   </Box>
@@ -171,7 +162,7 @@ export default function HueSettingsContent() {
                       id="hue-3rd-party-fade-with-effects-switch"
                       checked={settings.enableFadeWithEffects}
                       onChange={(event) => {
-                        handleSetSingleSetting("enableFadeWithEffects", event.target.checked);
+                        handleSetSingleSetting("enableFadeWithEffects", event.target.checked, setSettings, settings);
                       }}
                     />
                   </Box>

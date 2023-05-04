@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { BlueSwitch, settingBoxSX } from "@/components/settings/allSettings";
+import { BlueSwitch, getConfig, settingBoxSX, handleSetSingleSetting } from "@/components/settings/allSettings";
 import { Box, Checkbox, Divider, FormControlLabel, FormGroup, TextField, Typography } from "@mui/material";
 import { BlueSlider } from "@/components/settings/BlueSlider";
 import { HandleFlagChange } from "@/components/settings/settings/general-settings/HandleFlagChange";
@@ -11,21 +11,11 @@ export default function GeneralSettingsContent() {
 
   useEffect(() => {
     async function fetchConfig() {
-      const config = await window.f1mvli.config.getAll();
+      const config = await getConfig();
       setSettings(config.Settings.generalSettings);
     }
     fetchConfig();
   }, []);
-
-  const handleSetSingleSetting = (setting: string, value: any) => {
-    if (typeof value === "string" && value.match(/^[0-9]+$/)) {
-      value = parseInt(value);
-    }
-    setSettings({
-      ...settings,
-      [setting]: value,
-    });
-  };
 
   const saveConfig = async () => {
     if (!settings) return;
@@ -63,7 +53,7 @@ export default function GeneralSettingsContent() {
               id="auto-turn-off-lights-switch"
               checked={settings.autoTurnOffLights}
               onChange={(event) => {
-                handleSetSingleSetting("autoTurnOffLights", event.target.checked);
+                handleSetSingleSetting("autoTurnOffLights", event.target.checked, setSettings, settings);
               }}
             />
           </Box>
@@ -80,7 +70,7 @@ export default function GeneralSettingsContent() {
               id="default-bri-slider"
               value={settings.defaultBrightness}
               onChange= {(event, value) => {
-                handleSetSingleSetting("defaultBrightness", value);
+                handleSetSingleSetting("defaultBrightness", value, setSettings, settings);
               }}
             />
           </Box>
@@ -98,7 +88,7 @@ export default function GeneralSettingsContent() {
               id="go-back-to-static-switch"
               checked={settings.goBackToStatic}
               onChange={(event) => {
-                handleSetSingleSetting("goBackToStatic", event.target.checked);
+                handleSetSingleSetting("goBackToStatic", event.target.checked, setSettings, settings);
               }}
             />
           </Box>
@@ -120,7 +110,7 @@ export default function GeneralSettingsContent() {
                   variant="outlined"
                   value={settings.goBackToStaticDelay}
                   onChange={(event) => {
-                    handleSetSingleSetting("goBackToStaticDelay", event.target.value);
+                    handleSetSingleSetting("goBackToStaticDelay", event.target.value, setSettings, settings);
                   }}
                 />
               </Box>
@@ -137,7 +127,7 @@ export default function GeneralSettingsContent() {
                   id="go-back-to-static-bri-slider"
                   value={settings.staticBrightness}
                   onChange= {(event, value) => {
-                    handleSetSingleSetting("staticBrightness", value);
+                    handleSetSingleSetting("staticBrightness", value, setSettings, settings);
                   }}
                 />
               </Box>
@@ -157,7 +147,7 @@ export default function GeneralSettingsContent() {
                         color="secondary"
                         id={"go-back-to-static-flag-green"}
                         checked={settings.goBackToStaticEnabledFlags.includes("green")}
-                        onChange={(event) => HandleFlagChange("green", event.target.checked, settings, setSettings)}
+                        onChange={(event) => HandleFlagChange("green", event.target.checked, setSettings, settings)}
                       />
                     }
                     label={"Green"}
@@ -170,7 +160,7 @@ export default function GeneralSettingsContent() {
                         color="secondary"
                         id={"go-back-to-static-flag-yellow"}
                         checked={settings.goBackToStaticEnabledFlags.includes("yellow")}
-                        onChange={(event) => HandleFlagChange("yellow", event.target.checked, settings, setSettings)}
+                        onChange={(event) => HandleFlagChange("yellow", event.target.checked, setSettings, settings)}
                       />
                     }
                     label={"Yellow"}
@@ -183,7 +173,7 @@ export default function GeneralSettingsContent() {
                         color="secondary"
                         id={"go-back-to-static-flag-red"}
                         checked={settings.goBackToStaticEnabledFlags.includes("red")}
-                        onChange={(event) => HandleFlagChange("red", event.target.checked, settings, setSettings)}
+                        onChange={(event) => HandleFlagChange("red", event.target.checked, setSettings, settings)}
                       />
                     }
                     label={"Red"}
@@ -196,7 +186,7 @@ export default function GeneralSettingsContent() {
                         color="secondary"
                         id={"go-back-to-static-flag-safetyCar"}
                         checked={settings.goBackToStaticEnabledFlags.includes("safetyCar")}
-                        onChange={(event) => HandleFlagChange("safetyCar", event.target.checked, settings, setSettings)}
+                        onChange={(event) => HandleFlagChange("safetyCar", event.target.checked, setSettings, settings)}
                       />
                     }
                     label={"Safety Car"}
@@ -209,7 +199,7 @@ export default function GeneralSettingsContent() {
                         color="secondary"
                         id={"go-back-to-static-flag-vsc"}
                         checked={settings.goBackToStaticEnabledFlags.includes("vsc")}
-                        onChange={(event) => HandleFlagChange("vsc", event.target.checked, settings, setSettings)}
+                        onChange={(event) => HandleFlagChange("vsc", event.target.checked, setSettings, settings)}
                       />
                     }
                     label={"VSC"}
@@ -222,7 +212,7 @@ export default function GeneralSettingsContent() {
                         color="secondary"
                         id={"go-back-to-static-flag-vscEnding"}
                         checked={settings.goBackToStaticEnabledFlags.includes("vscEnding")}
-                        onChange={(event) => HandleFlagChange("vscEnding", event.target.checked, settings, setSettings)}
+                        onChange={(event) => HandleFlagChange("vscEnding", event.target.checked, setSettings, settings)}
                       />
                     }
                     label={"VSC Ending"}

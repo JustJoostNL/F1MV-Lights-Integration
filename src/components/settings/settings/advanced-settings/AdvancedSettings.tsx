@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Alert, Autocomplete, Box, TextField, Typography } from "@mui/material";
-import { BlueSwitch, settingBoxSX } from "@/components/settings/allSettings";
-import { blue, lightBlue } from "@mui/material/colors";
+import { BlueSwitch, getConfig, settingBoxSX, handleSetSingleSetting } from "@/components/settings/allSettings";
 
 export default function AdvancedSettingsContent() {
   const [settings, setSettings] = useState<any | null>(null);
@@ -21,18 +20,11 @@ export default function AdvancedSettingsContent() {
 
   useEffect(() => {
     async function fetchConfig() {
-      const config = await window.f1mvli.config.getAll();
+      const config = await getConfig();
       setSettings(config.Settings.advancedSettings);
     }
     fetchConfig();
   }, []);
-
-  const handleSetSingleSetting = (setting: string, value: any) => {
-    setSettings({
-      ...settings,
-      [setting]: value,
-    });
-  };
 
   const saveConfig = async () => {
     if (!settings) return;
@@ -70,7 +62,7 @@ export default function AdvancedSettingsContent() {
               id="debug-mode-switch"
               checked={settings.debugMode}
               onChange={(event) => {
-                handleSetSingleSetting("debugMode", event.target.checked);
+                handleSetSingleSetting("debugMode", event.target.checked, setSettings, settings);
               }}
             />
           </Box>
@@ -91,7 +83,7 @@ export default function AdvancedSettingsContent() {
               value={updateChannelOptions.find((option) => option.label === settings.updateChannel)}
               onChange={(event, newValue) => {
                 // @ts-ignore
-                handleSetSingleSetting("updateChannel", newValue.label);
+                handleSetSingleSetting("updateChannel", newValue.label, setSettings, settings);
               }}
               autoHighlight={true}
               id={"update-channel-selector"}
@@ -113,7 +105,7 @@ export default function AdvancedSettingsContent() {
               id="analytics-switch"
               checked={settings.analytics}
               onChange={(event) => {
-                handleSetSingleSetting("analytics", event.target.checked);
+                handleSetSingleSetting("analytics", event.target.checked, setSettings, settings);
               }}
             />
           </Box>
