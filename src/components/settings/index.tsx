@@ -4,7 +4,7 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandLess";
 import { allSettings } from "./allSettings";
 import { useHotkeys } from "react-hotkeys-hook";
 import JsonTree from "@/components/json-tree";
-import {ipcRenderer} from "electron";
+import { ipcRenderer } from "electron";
 
 const SettingsPage: React.FC = () => {
   const [paperWidth, setPaperWidth] = useState<number>(400);
@@ -24,7 +24,7 @@ const SettingsPage: React.FC = () => {
     ipcRenderer.on("config:didAnyChange", fetchConfig);
     return () => {
       ipcRenderer.removeListener("config:didAnyChange", fetchConfig);
-    }
+    };
   }, []);
 
   useHotkeys("d", () => {
@@ -73,12 +73,12 @@ const SettingsPage: React.FC = () => {
         <Accordion sx={{ boxShadow: "none", backgroundColor: "transparent", borderRadius: "10px" }}>
           <AccordionSummary expandIcon={<ExpandMoreIcon />}>
             <div style={{ display: "flex", flexDirection: "column" }}>
-            <Typography variant="h5" sx={{ fontWeight: "bold", color: "white", textAlign: "left", ml: "5px" }}>
+              <Typography variant="h5" sx={{ fontWeight: "bold", color: "white", textAlign: "left", ml: "5px" }}>
 								Integration Settings
-            </Typography>
-            <Typography variant="h6" component="h6" sx={{ fontSize: "1rem", ml: "5px", color: "grey.400" }}>
+              </Typography>
+              <Typography variant="h6" component="h6" sx={{ fontSize: "1rem", ml: "5px", color: "grey.400" }}>
               Philips Hue — Ikea — Govee — OpenRGB — Home Assistant — Nanoleaf — WLED — YeeLight — Stream Deck — Discord — Webserver
-            </Typography>
+              </Typography>
             </div>
           </AccordionSummary>
           <AccordionDetails sx={{ display: "flex", flexDirection: "column", alignItems: "flex-start", padding: "20px" }}>

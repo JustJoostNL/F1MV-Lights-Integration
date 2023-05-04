@@ -13,7 +13,7 @@ const Main = () => {
     }
 
     ReactGA.initialize("G-BMW3JWS0RJ", {
-      //testMode: !!process.env.VITE_DEV_SERVER_URL,
+      testMode: !!process.env.VITE_DEV_SERVER_URL,
       gaOptions: {
         appName: "F1MV-Lights-Integration",
         appId: "com.justjoostnl.f1mv.lights.integration",

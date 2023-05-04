@@ -2,9 +2,9 @@ import Store from "electron-store";
 import defaultConfig from "./defaultConfig";
 import { configMigrations } from "./migrations";
 import log from "electron-log";
-import {configChangedEmitEvent} from "../index";
+import { configChangedEmitEvent } from "../index";
 import createF1MVURLs from "../app/f1mv/createF1MVURLs";
-import {goveeVars, integrationStates} from "../app/vars/vars";
+import { goveeVars, integrationStates } from "../app/vars/vars";
 import goveeInitialize from "../app/integrations/govee/goveeInit";
 
 const userConfig = new Store({
@@ -24,14 +24,14 @@ userConfig.onDidAnyChange(() => {
     "ikeaDisable": userConfig.get("Settings.ikeaSettings.ikeaDisable"),
     "homeAssistantDisable": userConfig.get("Settings.homeAssistantSettings.homeAssistantDisable"),
     "debugMode": userConfig.get("Settings.advancedSettings.debugMode"),
-  }
+  };
   const oldVariables = {
     "webServerDisable": configVars.webServerDisable,
     "goveeDisable": configVars.goveeDisable,
     "ikeaDisable": configVars.ikeaDisable,
     "homeAssistantDisable": configVars.homeAssistantDisable,
     "debugMode": configVars.debugMode,
-  }
+  };
   handleConfigChanges(newVariables, oldVariables);
   loadConfigInVars();
   configChangedEmitEvent();
@@ -45,6 +45,7 @@ export const handleConfigGet = (event, key) => {
 };
 
 export const handleConfigGetAll = async () => {
+  log.debug("all called");
   return userConfig.store;
 };
 
@@ -148,7 +149,7 @@ function handleConfigChanges(newVars, oldVars){
   createF1MVURLs();
 
   if (!configVars.ikeaDisable && integrationStates.ikeaOnline){
-    log.debug("Checking all the IKEA devices spectrum's again...")
+    log.debug("Checking all the IKEA devices spectrum's again...");
     // todo: check ikea spectrum
   }
 
