@@ -2,7 +2,7 @@
   "name": "F1MV-Lights-Integration",
   "version": "2.0.0",
   "main": "dist-electron/main/index.js",
-  "description": "The best way to connect your smart home lights to your F1MV.",
+  "description": "The best way to connect your smart home lights to MultiViewer.",
   "author": "JustJoostNL",
   "license": "GPL-3.0-only",
   "debug": {

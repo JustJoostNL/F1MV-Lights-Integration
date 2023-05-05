@@ -1,7 +1,7 @@
 import { alpha, styled, Switch } from "@mui/material";
 import { lightBlue } from "@mui/material/colors";
 import GeneralSettingsContent from "@/components/settings/settings/general-settings/GeneralSettings";
-import F1MVSettingsContent from "@/components/settings/settings/f1mv-settings/F1MVSettings";
+import MultiViewerSettingsContent from "@/components/settings/settings/multiviewer-settings/MultiViewerSettings";
 import HueSettingsContent from "@/components/settings/settings/hue-settings/HueSettings";
 import IkeaSettingsContent from "@/components/settings/settings/ikea-settings/IkeaSettings";
 import GoveeSettingsContent from "@/components/settings/settings/govee-settings/GoveeSettings";
@@ -45,8 +45,8 @@ export const allSettings = [
     type: "general"
   },
   {
-    heading: "F1MV Settings",
-    content: <F1MVSettingsContent/>,
+    heading: "MultiViewer Settings",
+    content: <MultiViewerSettingsContent/>,
     description: "Settings related to MultiViewer",
     type: "f1mv"
   },

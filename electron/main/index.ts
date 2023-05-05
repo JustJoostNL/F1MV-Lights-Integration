@@ -72,6 +72,7 @@ async function createWindow() {
   if (process.env.VITE_DEV_SERVER_URL) { // electron-vite-vue#298
     await win.loadURL(url);
     win.webContents.openDevTools();
+    win.setMenuBarVisibility(false)
   } else {
     win.removeMenu();
     await win.loadFile(indexHtml);

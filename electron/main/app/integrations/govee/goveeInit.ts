@@ -8,7 +8,7 @@ export default async function goveeInitialize(){
     goveeVars.goveeInitialized = true;
   } catch (error) {
     goveeVars.goveeInitialized = false;
-    log.error(error);
+    log.error("An error occurred while initializing the Govee integration: " + error);
   }
   goveeVars.govee.on("ready", () => {
     log.info("Govee integration is ready.");

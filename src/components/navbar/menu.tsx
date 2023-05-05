@@ -154,7 +154,7 @@ export default function ThreeDotMenu() {
         <MenuItem onClick={handleOpenF1MV}>
           <img
             src={f1mvLogo}
-            alt="MultiViewer for F1 Logo"
+            alt="MultiViewer Logo"
             style={{
               width: "1.5rem",
               marginRight: "1rem"
@@ -163,7 +163,7 @@ export default function ThreeDotMenu() {
           <Typography
             variant="body2"
             sx={menuItemStyle}>
-            Open MultiViewer for F1
+            Open MultiViewer
             <OpenIcon
               sx={{
                 ml: 1,

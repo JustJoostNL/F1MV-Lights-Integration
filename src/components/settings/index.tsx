@@ -55,7 +55,7 @@ const SettingsPage: React.FC = () => {
           <Accordion sx={{ boxShadow: "none", backgroundColor: "transparent", borderRadius: "10px" }}>
             <AccordionSummary expandIcon={<ExpandMoreIcon />}>
               <div style={{ display: "flex", flexDirection: "column" }}>
-                <Typography variant="h5" sx={{ fontWeight: "bold", color: "white", textAlign: "left", ml: "5px", mr: 2 }}>
+                <Typography variant="h5" sx={{ fontWeight: "bold", color: "white", textAlign: "left", ml: "5px" }}>
                   {heading}
                 </Typography>
                 <Typography variant="h6" component="h6" sx={{ fontSize: "1rem", ml: "5px", color: "grey.400" }}>

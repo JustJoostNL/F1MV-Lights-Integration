@@ -58,19 +58,19 @@ export async function handleIntegrationStates(){
   }
 
   const states = [
-    { name: "ikea", state: integrationStates.ikeaOnline },
-    { name: "govee", state: integrationStates.goveeOnline },
-    { name: "hue", state: integrationStates.hueOnline },
-    { name: "openRGB", state: integrationStates.openRGBOnline },
-    { name: "homeAssistant", state: integrationStates.homeAssistantOnline },
-    { name: "yeelight", state: integrationStates.yeeLightOnline },
-    { name: "streamDeck", state: integrationStates.streamDeckOnline },
-    { name: "nanoLeaf", state: integrationStates.nanoLeafOnline },
-    { name: "WLED", state: integrationStates.WLEDOnline },
-    { name: "F1MV", state: integrationStates.F1MVAPIOnline },
-    { name: "F1TVLiveSession", state: integrationStates.F1LiveSession },
-    { name: "update", state: integrationStates.updateAPIOnline },
-    { name: "webServer", state: integrationStates.webServerOnline }
+    { name: "ikea", state: integrationStates.ikeaOnline, disabled: configVars.ikeaDisable },
+    { name: "govee", state: integrationStates.goveeOnline, disabled: configVars.goveeDisable },
+    { name: "hue", state: integrationStates.hueOnline, disabled: configVars.hueDisable },
+    { name: "openRGB", state: integrationStates.openRGBOnline, disabled: configVars.openRGBDisable },
+    { name: "homeAssistant", state: integrationStates.homeAssistantOnline, disabled: configVars.homeAssistantDisable },
+    { name: "yeelight", state: integrationStates.yeeLightOnline, disabled: configVars.yeeLightDisable },
+    { name: "streamDeck", state: integrationStates.streamDeckOnline, disabled: configVars.streamDeckDisable },
+    { name: "nanoLeaf", state: integrationStates.nanoLeafOnline, disabled: configVars.nanoLeafDisable },
+    { name: "WLED", state: integrationStates.WLEDOnline, disabled: configVars.WLEDDisable },
+    { name: "F1MV", state: integrationStates.F1MVAPIOnline, disabled: false },
+    { name: "F1TVLiveSession", state: integrationStates.F1LiveSession, disabled: false },
+    { name: "update", state: integrationStates.updateAPIOnline, disabled: false },
+    { name: "webServer", state: integrationStates.webServerOnline, disabled: configVars.webServerDisable },
   ];
 
   return states;

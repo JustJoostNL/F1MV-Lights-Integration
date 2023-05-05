@@ -3,7 +3,7 @@ import { Box, TextField, Typography } from "@mui/material";
 import { BlueSwitch, settingBoxSX } from "@/components/settings/allSettings";
 import { getConfig, handleSetSingleSetting } from "@/components/settings/allSettings";
 
-export default function F1MVSettingsContent() {
+export default function MultiViewerSettingsContent() {
   const [settings, setSettings] = useState<any | null>(null);
 
   useEffect(() => {
@@ -42,7 +42,7 @@ export default function F1MVSettingsContent() {
                                 Live Timing URL
               </Typography>
               <Typography variant="body2" component="div" sx={{ color: "grey" }}>
-                                This is the MultiViewer For F1 Live Timing URL.
+                                This is the MultiViewer Live Timing URL.
               </Typography>
             </div>
             <TextField
@@ -59,10 +59,10 @@ export default function F1MVSettingsContent() {
           <Box sx={settingBoxSX}>
             <div>
               <Typography variant="h6" component="div">
-                                Sync with MultiViewer For F1
+                                Sync with MultiViewer
               </Typography>
               <Typography variant="body2" component="div" sx={{ color: "grey" }}>
-                                When disabled, the lights will not sync with the current status of the MultiViewer For F1 Live Timing.
+                                When disabled, the lights will not sync with the current status of MultiViewer Live Timing.
               </Typography>
             </div>
             <BlueSwitch
