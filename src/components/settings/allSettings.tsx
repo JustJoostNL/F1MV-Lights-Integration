@@ -14,7 +14,6 @@ import ElgatoSDSettingsContent from "@/components/settings/settings/elgato-sd-se
 import DiscordSettingsContent from "@/components/settings/settings/discord-settings/DiscordSettings";
 import WebServerSettingsContent from "@/components/settings/settings/webserver-settings/WebServerSettings";
 import AdvancedSettingsContent from "@/components/settings/settings/advanced-settings/AdvancedSettings";
-import {IConfig} from "../../../electron/types/DefaultConfigInterface";
 import React from "react";
 import {RgbColor} from "react-colorful";
 
@@ -129,7 +128,7 @@ export const allSettings = [
 
 
 //config
-let receivedConfig: IConfig;
+let receivedConfig: any;
 
 async function fetchConfig() {
   receivedConfig = await window.f1mvli.config.getAll();
@@ -144,7 +143,7 @@ export async function refreshConfig() {
   await fetchConfig();
 }
 
-export const handleSetSingleSetting = (setting: string, value: boolean | number | string | "" | number[] | string[] | RgbColor, setSettings: React.Dispatch<React.SetStateAction<IConfig>>, settings: IConfig) => {
+export const handleSetSingleSetting = (setting: string, value: boolean | number | string | "" | number[] | string[] | RgbColor, setSettings: React.Dispatch<React.SetStateAction<any>>, settings: any) => {
   if (typeof value === "string" && value.match(/^[0-9]+$/)) {
     value = parseInt(value);
   }
