@@ -1,4 +1,6 @@
-export const configMigrations: any = {
+import {ConfigMigration} from "../../types/ConfigMigrationInterface";
+
+export const configMigrations: ConfigMigration = {
   "1.1.7": userConfig => {
     userConfig.set("version", "1.1.7");
     userConfig.set("Settings.generalSettings.goBackToStatic", true);

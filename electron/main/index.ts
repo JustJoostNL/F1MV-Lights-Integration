@@ -15,7 +15,6 @@ import simulateFlag from "./app/light-controller/simulateFlag";
 import { autoUpdater } from "electron-updater";
 import initUpdater from "./update";
 import log from "electron-log";
-import session = Electron.session;
 import {handleIntegrationStates} from "./app/integrations/integration-states/integrationStates";
 
 Sentry.init({

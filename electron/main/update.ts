@@ -12,6 +12,7 @@ export default function initUpdater(){
   autoUpdater.allowDowngrade = false;
   autoUpdater.autoInstallOnAppQuit = false;
   autoUpdater.channel = <string>configVars.updateChannel;
+  autoUpdater.logger = log;
 
   autoUpdater.on("update-downloaded", (event: UpdateDownloadedEvent) => {
     const dialogOpts = {

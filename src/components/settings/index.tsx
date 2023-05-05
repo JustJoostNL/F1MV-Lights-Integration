@@ -5,11 +5,12 @@ import { allSettings } from "./allSettings";
 import { useHotkeys } from "react-hotkeys-hook";
 import JsonTree from "@/components/json-tree";
 import { ipcRenderer } from "electron";
+import {IConfig} from "../../../electron/types/DefaultConfigInterface";
 
 const SettingsPage: React.FC = () => {
   const [paperWidth, setPaperWidth] = useState<number>(400);
   const [showDebugTree, setShowDebugTree] = useState<boolean>(false);
-  const [config, setConfig] = useState<any | null>(null);
+  const [config, setConfig] = useState<IConfig | null>(null);
 
   const integrationSettings = allSettings.filter((setting) => setting.type === "integration");
   const nonIntegrationSettings = allSettings.filter((setting) => setting.type !== "integration" && setting.type !== "advanced");

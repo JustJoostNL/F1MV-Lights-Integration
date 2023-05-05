@@ -3,7 +3,6 @@ import ReactGA from "react-ga4";
 import NavBar from "@/components/navbar";
 import QuickAccessButtons from "@/components/quick-access-buttons";
 import SimulationMenu from "@/components/simulations";
-import IntegrationStatesButton from "@/components/integration-states/integrationStatesButton";
 import IntegrationStatesTable from "@/components/integration-states";
 import Paper from "@mui/material/Paper";
 

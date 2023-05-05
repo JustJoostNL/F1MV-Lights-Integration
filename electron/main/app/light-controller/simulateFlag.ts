@@ -1,15 +1,16 @@
 import controlAllLights from "./controlAllLights";
 import { configVars } from "../../config/config";
 import log from "electron-log";
+import {customColor} from "../../../types/CustomColorInterface";
 
 export default async function simulateFlag(arg) {
-  const greenColor: any = configVars.greenColor;
-  const yellowColor: any = configVars.yellowColor;
-  const safetyCarColor: any = configVars.safetyCarColor;
-  const redColor: any = configVars.redColor;
-  const vscColor: any = configVars.vscColor;
-  const vscEndingColor: any = configVars.vscEndingColor;
-  const defaultBrightness = configVars.defaultBrightness;
+  const greenColor = configVars.greenColor as customColor;
+  const yellowColor = configVars.yellowColor as customColor;
+  const safetyCarColor = configVars.safetyCarColor as customColor;
+  const redColor = configVars.redColor as customColor;
+  const vscColor = configVars.vscColor as customColor;
+  const vscEndingColor = configVars.vscEndingColor as customColor;
+  const defaultBrightness = configVars.defaultBrightness as number;
 
 
   if (arg === "Green") {

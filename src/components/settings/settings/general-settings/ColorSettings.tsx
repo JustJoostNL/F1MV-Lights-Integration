@@ -41,7 +41,7 @@ const flagDescriptionMaps: IFlagMap = {
 const DEFAULT_FLAG = "green";
 
 export default function ColorSettings() {
-  const [settings, setSettings] = useState<IColorSettings | null>(null);
+  const [settings, setSettings] = useState<any | null>(null);
   const [selectedFlag, setSelectedFlag] = useState<string | null>(DEFAULT_FLAG);
   const flagOptions: IFlagOption[] = Object.keys(flagNameMaps).map((flagKey) => ({
     label: flagNameMaps[flagKey],

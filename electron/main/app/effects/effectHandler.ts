@@ -1,15 +1,17 @@
 import { configVars } from "../../config/config";
 import sleep from "../utils/sleep";
 import controlAllLights from "../light-controller/controlAllLights";
+import { IEffectSettingsConfig } from "../../../types/EffectSettingsInterface";
+import { customColor } from "../../../types/CustomColorInterface";
 
 export default async function effectHandler(flag){
-  const effectSettings = <Array<any>>configVars.effectSettings;
-  const greenColor: any = configVars.greenColor;
-  const yellowColor: any = configVars.yellowColor;
-  const safetyCarColor: any = configVars.safetyCarColor;
-  const redColor: any = configVars.redColor;
-  const vscColor: any = configVars.vscColor;
-  const vscEndingColor: any = configVars.vscEndingColor;
+  const effectSettings = configVars.effectSettings as IEffectSettingsConfig;
+  const greenColor = <customColor>configVars.greenColor;
+  const yellowColor = configVars.yellowColor as customColor;
+  const safetyCarColor = configVars.safetyCarColor as customColor;
+  const redColor = configVars.redColor as customColor;
+  const vscColor = configVars.vscColor as customColor;
+  const vscEndingColor = configVars.vscEndingColor as customColor;
 
   for (let i = 0; i < effectSettings.length; i++) {
     // check if the effect is enabled

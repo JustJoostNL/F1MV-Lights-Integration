@@ -3,9 +3,10 @@ import { configVars } from "../../config/config";
 import { goBackToStatic } from "../vars/vars";
 import goBackToStaticColor from "./goBackToStatic";
 import goveeControl from "../integrations/govee/goveeControl";
+import { IEffectSettingsConfig } from "../../../types/EffectSettingsInterface";
 
 export default async function controlAllLights(r, g, b, brightness, action, flag) {
-  const effectSettings = <Array<any>>configVars.effectSettings;
+  const effectSettings = configVars.effectSettings as IEffectSettingsConfig;
   const hueEnableFade = configVars.hueEnableFade;
   const hueEnableFadeWithEffects = configVars.hueEnableFadeWhenEffect;
 

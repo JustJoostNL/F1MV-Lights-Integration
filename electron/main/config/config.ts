@@ -11,9 +11,7 @@ const userConfig = new Store({
   name: "settings",
   defaults: defaultConfig,
   watch: true,
-  migrations: {
-    configMigrations
-  }
+  migrations: configMigrations
 });
 
 userConfig.onDidAnyChange(() => {

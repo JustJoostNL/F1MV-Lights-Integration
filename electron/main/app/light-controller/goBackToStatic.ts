@@ -1,13 +1,14 @@
 import { configVars } from "../../config/config";
 import { goBackToStatic } from "../vars/vars";
 import controlAllLights from "./controlAllLights";
+import {customColor} from "../../../types/CustomColorInterface";
 
 export default async function goBackToStaticColor(flag){
-  const goBackToStaticEnabledFlags = <Array<any>>configVars.goBackToStaticEnabledFlags;
-  let goBackToStaticDelay = <number>configVars.goBackToStaticDelay;
+  const goBackToStaticEnabledFlags = configVars.goBackToStaticEnabledFlags as string[];
+  let goBackToStaticDelay = configVars.goBackToStaticDelay as number;
   goBackToStaticDelay = goBackToStaticDelay * 1000;
   const goBackToStaticBrightness = configVars.staticBrightness;
-  const staticColor = <any>configVars.staticColor;
+  const staticColor = configVars.staticColor as customColor
 
 
   if (goBackToStaticEnabledFlags.includes(flag)){

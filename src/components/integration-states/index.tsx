@@ -1,56 +1,50 @@
-import React, {useEffect, useState} from 'react';
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
-import {IntegrationState, IntegrationStatesMap} from "@/components/integration-states/types";
-import "./status.css";
-
+import React, { useEffect, useState } from 'react';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+} from '@mui/material';
+import {
+  IntegrationState,
+  IntegrationStatesMap,
+} from '@/components/integration-states/types';
+import './status.css';
 
 const integrationStateMap: IntegrationStatesMap = {
-  ikea: "IKEA",
-  govee: "Govee",
-  hue: "Philips Hue",
-  openRGB: "OpenRGB",
-  homeAssistant: "Home Assistant",
-  yeelight: "Yeelight",
-  streamDeck: "Stream Deck",
-  nanoLeaf: "Nanoleaf",
-  WLED: "WLED",
-  F1MV: "MultiViewer",
-  F1TVLiveSession: "Live Session Check",
-  update: "Update",
-  webServer: "Webserver",
-}
+  ikea: 'IKEA',
+  govee: 'Govee',
+  hue: 'Philips Hue',
+  openRGB: 'OpenRGB',
+  homeAssistant: 'Home Assistant',
+  yeelight: 'Yeelight',
+  streamDeck: 'Stream Deck',
+  nanoLeaf: 'Nanoleaf',
+  WLED: 'WLED',
+  F1MV: 'MultiViewer',
+  F1TVLiveSession: 'Live Session Check',
+  update: 'Update',
+  webServer: 'Webserver',
+};
 
 export default function IntegrationStatesTable() {
-  const [integrationStates, setIntegrationStates] = useState([]);
-  const [config, setConfig] = useState<any | null>(null);
+  const [integrationStates, setIntegrationStates] = useState<IntegrationState[]>([]);
 
   useEffect(() => {
     async function fetchIntegrationStates() {
-      const integrationStates = await window.f1mvli.utils.getStates();
-      setIntegrationStates(integrationStates);
+      const newIntegrationStates = await window.f1mvli.utils.getStates();
+      setIntegrationStates([...newIntegrationStates]);
     }
 
     fetchIntegrationStates();
-    setTimeout(() => {
-      fetchIntegrationStates();
-    }, 5000);
-  }, []);
-
-  useEffect(() => {
-    async function fetchConfig() {
-      const config = await window.f1mvli.config.getAll();
-      setConfig(config);
-    }
-    fetchConfig();
-    setTimeout(() => {
-      fetchConfig();
-    }, 5000);
+    const intervalId = setInterval(fetchIntegrationStates, 5000);
+    return () => clearInterval(intervalId);
   }, []);
 
   return (
-    <TableContainer sx={{
-      maxHeight: 300
-    }}>
+    <TableContainer sx={{ maxHeight: 300 }}>
       <Table stickyHeader>
         <TableHead>
           <TableRow>
@@ -59,22 +53,23 @@ export default function IntegrationStatesTable() {
           </TableRow>
         </TableHead>
         <TableBody>
-          {integrationStates.filter((integrationState: IntegrationState) => {
-            return !integrationState.disabled;
-          }).map((integrationState: IntegrationState) => {
-            return (
+          {integrationStates
+            .filter(
+              (integrationState: IntegrationState) => !integrationState.disabled
+            )
+            .map((integrationState: IntegrationState) => (
               <TableRow key={integrationState.name}>
-                {/* @ts-ignore */}
-                <TableCell>{integrationStateMap[integrationState.name]}</TableCell>
-                <TableCell sx={{ alignItems: "center" }}>
-                  <div className={`status ${integrationState.state ? "success" : "error"}`}>
-                    &nbsp;
+                <TableCell>
+                  {/*@ts-ignore*/}
+                  {integrationStateMap[integrationState.name]}
+                </TableCell>
+                <TableCell sx={{ alignItems: 'center' }}>
+                  <div className={`status ${integrationState.state ? 'success' : 'error'}`}>
+
                   </div>
                 </TableCell>
               </TableRow>
-            );
-          })
-          }
+            ))}
         </TableBody>
       </Table>
     </TableContainer>

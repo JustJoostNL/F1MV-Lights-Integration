@@ -1,4 +1,6 @@
-const config = {
+import { IConfig } from "../../types/DefaultConfigInterface";
+
+const config: IConfig = {
   Settings:
         {
         	generalSettings:
@@ -214,10 +216,6 @@ const config = {
         },
   // do not change this version!
   version: "2.0.0",
-  devConfig:
-        {
-        	autoStartDevTools: false
-        }
 };
 
 export default config;

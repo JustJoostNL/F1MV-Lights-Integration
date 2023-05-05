@@ -3,15 +3,16 @@ import { statuses } from "../vars/vars";
 import { configVars } from "../../config/config";
 import controlAllLights from "../light-controller/controlAllLights";
 import log from "electron-log";
+import {CustomColor} from "../../../types/CustomColorInterface";
 
 async function f1mvLightSync() {
 
-  const greenColor = <any>configVars.greenColor;
-  const yellowColor = <any>configVars.yellowColor;
-  const safetyCarColor = <any>configVars.safetyCarColor;
-  const redColor = <any>configVars.redColor;
-  const vscColor = <any>configVars.vscColor;
-  const vscEndingColor = <any>configVars.vscEndingColor;
+  const greenColor = configVars.greenColor as CustomColor;
+  const yellowColor = configVars.yellowColor as CustomColor;
+  const safetyCarColor = configVars.safetyCarColor as CustomColor;
+  const redColor = configVars.redColor as CustomColor;
+  const vscColor = configVars.vscColor as CustomColor;
+  const vscEndingColor = configVars.vscEndingColor as CustomColor;
 
   await F1MVAPICall();
   if (statuses.TStateCheck !== statuses.TState && statuses.SState !== "Ends" && statuses.SState !== "Finalised") {
