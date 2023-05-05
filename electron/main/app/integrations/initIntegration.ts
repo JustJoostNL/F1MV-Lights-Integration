@@ -1,5 +1,6 @@
-import goveeInitialize from "./govee/goveeInit";
 import { configVars } from "../../config/config";
+import goveeInitialize from "./govee/goveeInit";
+import homeAssistantInitialize from "./home-assistant/homeAssistantInit";
 
 export default async function initAllIntegrations(){
   const ikeaDisabled = configVars.ikeaDisable;
@@ -19,7 +20,7 @@ export default async function initAllIntegrations(){
     { name: "govee", func: goveeInitialize, disabled: goveeDisabled },
     { name: "hue", func: empty, disabled: hueDisabled },
     { name: "openRGB", func: empty, disabled: openRGBDisabled },
-    { name: "homeAssistant", func: empty, disabled: homeAssistantDisabled },
+    { name: "homeAssistant", func: homeAssistantInitialize, disabled: homeAssistantDisabled },
     { name: "streamDeck", func: empty, disabled: streamDeckDisabled },
     { name: "discordRPC", func: empty, disabled: false },
     { name: "webServer", func: empty, disabled: webServerDisabled }

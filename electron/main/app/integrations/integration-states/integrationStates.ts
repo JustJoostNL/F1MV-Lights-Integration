@@ -3,6 +3,7 @@ import {apiURLs, f1mvURLs, goveeVars} from "../../vars/vars";
 import { integrationStates } from "../../vars/vars";
 import log from "electron-log";
 import fetch from "node-fetch";
+import homeAssistantOnlineCheck from "../home-assistant/homeAssistantOnlineCheck";
 
 export async function handleMiscAPIChecks(){
   log.debug("Checking the update, F1 Live Session, and MultiViewer API...");
@@ -47,13 +48,13 @@ export async function handleIntegrationStates(){
   if (!configVars.goveeDisable && goveeVars.goveeInitialized && goveeVars.govee.devicesArray.length > 0) {
     integrationStates.goveeOnline = true;
   }
+  if (!configVars.homeAssistantDisable){
+    await homeAssistantOnlineCheck();
+  }
   if (!configVars.nanoLeafDisable){
     // todo
   }
   if (!configVars.WLEDDisable){
-    // todo
-  }
-  if (!configVars.homeAssistantDisable){
     // todo
   }
 

@@ -160,16 +160,28 @@ app.on("activate", () => {
 // New window example arg: new windows url
 ipcMain.handle("open-win", (_, arg) => {
   const childWindow = new BrowserWindow({
+    title: "F1MV Lights Integration",
+    icon: join(process.env.PUBLIC, "favicon.ico"),
+    width: 1200,
+    height: 700,
     webPreferences: {
       preload,
       nodeIntegration: true,
       contextIsolation: false,
+      zoomFactor: 0.8,
     },
+    resizable: true,
+    maximizable: true,
+    minimizable: false,
+    minWidth: 1075,
+    minHeight: 600,
   });
 
   if (process.env.VITE_DEV_SERVER_URL) {
     childWindow.loadURL(`${url}#${arg}`);
+    childWindow.setMenuBarVisibility(false)
   } else {
+    childWindow.removeMenu()
     childWindow.loadFile(indexHtml, { hash: arg });
   }
 });

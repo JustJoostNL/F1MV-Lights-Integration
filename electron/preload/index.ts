@@ -18,6 +18,7 @@ export const f1mvli = {
   utils: {
     getStates: () => ipcRenderer.invoke("utils:getStates"),
     getWindowSize: () => ipcRenderer.invoke("utils:getWindowSize"),
+    openNewWindow: (url: string) => ipcRenderer.invoke("open-win", url),
     changeWindowTitle : (title: string) => ipcRenderer.invoke("utils:changeWindowTitle", title),
     exitApp: () => ipcRenderer.invoke("utils:exitApp"),
   }
