@@ -3,6 +3,7 @@ import { Box, TextField, Typography } from "@mui/material";
 import { BlueSwitch, getConfig, settingBoxSX, handleSetSingleSetting } from "@/components/settings/allSettings";
 import Divider from "@mui/material/Divider";
 import HassMenu from "@/components/settings/settings/hass-settings/HassMenu";
+import log from "electron-log/renderer";
 
 export default function HassSettingsContent() {
   const [settings, setSettings] = useState<any | null>(null);
@@ -18,7 +19,12 @@ export default function HassSettingsContent() {
 
   const saveConfig = async () => {
     if (!settings) return;
-    await window.f1mvli.config.set("Settings.homeAssistantSettings", settings);
+    //await window.f1mvli.config.set("Settings.homeAssistantSettings", settings);
+    // we set the settings like above, but we make sure it doesn't overwrite the homeAssistantSettings.devices array
+    await window.f1mvli.config.set("Settings.homeAssistantSettings", {
+      ...settings,
+      devices: await window.f1mvli.config.get("Settings.homeAssistantSettings.devices")
+    });
   };
 
   useEffect(() => {
@@ -62,7 +68,7 @@ export default function HassSettingsContent() {
                 <Box sx={settingBoxSX}>
                   <div>
                     <Typography variant="h6" component="div">
-                                            Home Assistant Server IP
+                                            Home Assistant Server Host
                     </Typography>
                     <Typography variant="body2" component="div" sx={{ color: "grey" }}>
                                             This is the hostname or IP of the system Home Assistant is running on.
@@ -71,7 +77,7 @@ export default function HassSettingsContent() {
                   <TextField
                     color="secondary"
                     id="hass-server-ip-input"
-                    label="Home Assistant Server IP"
+                    label="Home Assistant Server Host"
                     variant="outlined"
                     value={settings.host}
                     onChange={(event) => {

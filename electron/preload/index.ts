@@ -17,10 +17,15 @@ export const f1mvli = {
   },
   utils: {
     getStates: () => ipcRenderer.invoke("utils:getStates"),
-    getWindowSize: () => ipcRenderer.invoke("utils:getWindowSize"),
-    openNewWindow: (url: string) => ipcRenderer.invoke("open-win", url),
+    getWindowSizes: () => ipcRenderer.invoke("utils:getWindowSizes"),
+    openNewWindow: (url) => ipcRenderer.invoke("utils:open-win", url),
     changeWindowTitle : (title: string) => ipcRenderer.invoke("utils:changeWindowTitle", title),
     exitApp: () => ipcRenderer.invoke("utils:exitApp"),
+  },
+  integrations: {
+    homeAssistant: {
+      getDevices: () => ipcRenderer.invoke("integrations:homeAssistant:getDevices"),
+    }
   }
 };
 

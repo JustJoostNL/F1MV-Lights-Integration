@@ -19,8 +19,20 @@ export default function HassMenu(){
     setAnchorEl(null);
   };
 
-  const handleSelectHassDevices = () => {
+  const handleSelectHassDevices = async () => {
     setAnchorEl(null);
+    await window.f1mvli.utils.openNewWindow({
+      browserWindowOptions: {
+        title: "F1MV Lights Integration",
+        width: 756,
+        height: 690,
+        resizable: false,
+        maximizable: true,
+        minWidth: 756,
+        minHeight: 690,
+      },
+      url: "/select-hass-devices"
+    })
     ReactGA.event({
       category: "hass_tools_menu",
       action: "select_hass_devices",

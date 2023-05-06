@@ -7,6 +7,7 @@ import About from "@/pages/About";
 import LogViewerPage from "@/pages/LogViewer";
 import LoadingScreen from "@/pages/LoadingScreen";
 import Settings from "@/pages/RealSettings";
+import HassDeviceSelector from "@/pages/device-selectors/hass-device-selector";
 
 const router = createHashRouter([
   {
@@ -36,6 +37,10 @@ const router = createHashRouter([
   {
     path: "/loading-screen",
     element: <LoadingScreen/>
+  },
+  {
+    path: "/select-hass-devices",
+    element: <HassDeviceSelector/>
   }
 ]);
 

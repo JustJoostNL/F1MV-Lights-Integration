@@ -4,6 +4,7 @@ import { goBackToStatic } from "../vars/vars";
 import goBackToStaticColor from "./goBackToStatic";
 import goveeControl from "../integrations/govee/goveeControl";
 import { IEffectSettingsConfig } from "../../../types/EffectSettingsInterface";
+import homeAssistantControl from "../integrations/home-assistant/homeAssistantControl";
 
 export default async function controlAllLights(r, g, b, brightness, action, flag) {
   const effectSettings = configVars.effectSettings as IEffectSettingsConfig;
@@ -28,6 +29,9 @@ export default async function controlAllLights(r, g, b, brightness, action, flag
   // lights come here
   if (!configVars.goveeDisable){
     await goveeControl(r, g, b, brightness, action);
+  }
+  if (!configVars.homeAssistantDisable){
+    await homeAssistantControl(r, g, b, brightness, action);
   }
 
   // -----------

@@ -1,15 +1,16 @@
 import {configVars} from "../../../config/config";
 import {integrationStates} from "../../vars/vars";
 import { headers } from "./homeAssistantShared";
+import fetch from "node-fetch";
 
 export default async function homeAssistantControl(r, g, b, brightness, action) {
-  const homeAssistantDevices: unknown[] | {} = configVars.homeAssistantDevices;
+  const homeAssistantDevices: string[] | {} = configVars.homeAssistantDevices;
 
   if (integrationStates.homeAssistantOnline) {
     brightness = Math.round((brightness / 100) * 254);
     switch (action) {
       case "on":
-        const reqURLOn = "http://" + configVars.homeAssistantHost + ":" + configVars.homeAssistantPort + "/api/services/light/turn_on";
+        const reqURLOn = configVars.homeAssistantHost + ":" + configVars.homeAssistantPort + "/api/services/light/turn_on";
         for (const device in homeAssistantDevices) {
           const postData = {
             "entity_id": homeAssistantDevices[device],
@@ -25,7 +26,7 @@ export default async function homeAssistantControl(r, g, b, brightness, action) 
         }
         break;
       case "off":
-        const reqURLOff = "http://" + configVars.homeAssistantHost + ":" + configVars.homeAssistantPort + "/api/services/light/turn_off";
+        const reqURLOff = configVars.homeAssistantHost + ":" + configVars.homeAssistantPort + "/api/services/light/turn_off";
         for (const device in homeAssistantDevices) {
           const postData = {
             "entity_id": homeAssistantDevices[device]

@@ -20,6 +20,7 @@
     "@emotion/styled": "11.10.8",
     "@mui/icons-material": "5.11.16",
     "@mui/material": "5.12.3",
+    "@mui/x-data-grid": "5.17.26",
     "@sentry/electron": "^4.5.0",
     "electron-log": "^5.0.0-beta.23",
     "electron-store": "^8.1.0",

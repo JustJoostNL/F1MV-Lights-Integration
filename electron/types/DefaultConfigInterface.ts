@@ -58,7 +58,7 @@ export interface IConfig {
       host: string;
       port: number;
       token: string;
-      devices: unknown[];
+      devices: string[];
     };
     nanoLeafSettings: {
       nanoLeafDisable: boolean;
