@@ -1,5 +1,5 @@
 import { configVars } from "../../../config/config";
-import {apiURLs, f1mvURLs, goveeVars} from "../../vars/vars";
+import { apiURLs, f1mvURLs, goveeVars } from "../../vars/vars";
 import { integrationStates } from "../../vars/vars";
 import log from "electron-log";
 import fetch from "node-fetch";
@@ -51,10 +51,10 @@ export async function handleIntegrationStates(){
   if (!configVars.homeAssistantDisable){
     await homeAssistantOnlineCheck();
   }
-  if (!configVars.nanoLeafDisable){
-    // todo
-  }
   if (!configVars.WLEDDisable){
+    integrationStates.WLEDOnline = configVars.WLEDDevices.length > 0;
+  }
+  if (!configVars.nanoLeafDisable){
     // todo
   }
 

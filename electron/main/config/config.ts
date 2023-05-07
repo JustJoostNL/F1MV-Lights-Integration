@@ -4,8 +4,11 @@ import { configMigrations } from "./migrations";
 import log from "electron-log";
 import { configChangedEmitEvent } from "../index";
 import createF1MVURLs from "../app/f1mv/createF1MVURLs";
-import { goveeVars, integrationStates } from "../app/vars/vars";
+import { goveeVars, integrationStates, webServerVars } from "../app/vars/vars";
 import goveeInitialize from "../app/integrations/govee/goveeInit";
+import homeAssistantInitialize from "../app/integrations/home-assistant/homeAssistantInit";
+import webServerInitialize from "../app/integrations/webserver/webServerInit";
+import streamDeckInitialize from "../app/integrations/elgato-streamdeck/streamDeckInit";
 
 const userConfig = new Store({
   name: "settings",
@@ -21,6 +24,7 @@ userConfig.onDidAnyChange(() => {
     "goveeDisable": userConfig.get("Settings.goveeSettings.goveeDisable"),
     "ikeaDisable": userConfig.get("Settings.ikeaSettings.ikeaDisable"),
     "homeAssistantDisable": userConfig.get("Settings.homeAssistantSettings.homeAssistantDisable"),
+    "streamDeckDisable": userConfig.get("Settings.streamDeckSettings.streamDeckDisable"),
     "debugMode": userConfig.get("Settings.advancedSettings.debugMode"),
   };
   const oldVariables = {
@@ -28,6 +32,7 @@ userConfig.onDidAnyChange(() => {
     "goveeDisable": configVars.goveeDisable,
     "ikeaDisable": configVars.ikeaDisable,
     "homeAssistantDisable": configVars.homeAssistantDisable,
+    "streamDeckDisable": configVars.streamDeckDisable,
     "debugMode": configVars.debugMode,
   };
   handleConfigChanges(newVariables, oldVariables);
@@ -103,8 +108,8 @@ export const configVars = {
 
   // OpenRGB settings
   openRGBDisable: userConfig.get("Settings.openRGBSettings.openRGBDisable"),
-  openRGBHost: userConfig.get("Settings.openRGBSettings.openRGBServerIP"),
-  openRGBPort: userConfig.get("Settings.openRGBSettings.openRGBServerPort"),
+  openRGBHost: userConfig.get("Settings.openRGBSettings.openRGBServerIP") as string,
+  openRGBPort: userConfig.get("Settings.openRGBSettings.openRGBServerPort") as number,
 
   // Home Assistant settings
   homeAssistantDisable: userConfig.get("Settings.homeAssistantSettings.homeAssistantDisable"),
@@ -118,8 +123,8 @@ export const configVars = {
   nanoLeafDevices: userConfig.get("Settings.nanoLeafSettings.devices"),
 
   // WLED settings
-  WLEDDisable: userConfig.get("Settings.WLEDSettings.WLEDDisable"),
-  WLEDDevices: userConfig.get("Settings.WLEDSettings.devices"),
+  WLEDDisable: userConfig.get("Settings.WLEDSettings.WLEDDisable") as boolean,
+  WLEDDevices: userConfig.get("Settings.WLEDSettings.devices") as string[],
 
   // YeeLight settings
   yeeLightDisable: userConfig.get("Settings.yeeLightSettings.yeeLightDisable"),
@@ -130,6 +135,7 @@ export const configVars = {
 
   // Discord Settings
   discordRPCDisable: userConfig.get("Settings.discordSettings.discordRPCDisable"),
+  discordRPCAvoidSpoilers: userConfig.get("Settings.discordSettings.avoidSpoilers"),
 
   // Webserver Settings
   webServerDisable: userConfig.get("Settings.webServerSettings.webServerDisable"),
@@ -152,10 +158,10 @@ function handleConfigChanges(newVars, oldVars){
 
   if (oldVars.webServerDisable && !newVars.webServerDisable){
     log.info("Webserver enabled, starting...");
-    // todo: start webserver
+    webServerInitialize();
   } else if (!oldVars.webServerDisable && newVars.webServerDisable) {
     log.info("Webserver disabled, stopping...");
-    // todo: stop webserver
+    webServerVars.webServerHTTPServer.close();
   }
 
   if (oldVars.goveeDisable && !newVars.goveeDisable) {
@@ -175,9 +181,14 @@ function handleConfigChanges(newVars, oldVars){
   }
 
   if (oldVars.homeAssistantDisable && !newVars.homeAssistantDisable) {
-    // todo: init again
-    //homeAssistantInitialize();
+    homeAssistantInitialize();
   }
+
+  if (oldVars.streamDeckDisable && !newVars.streamDeckDisable) {
+    streamDeckInitialize();
+  }
+
+
 
   if (oldVars.debugMode && !newVars.debugMode) {
     log.transports.file.level = "info";
@@ -271,6 +282,7 @@ function loadConfigInVars(){
 
   // Discord Settings
   configVars.discordRPCDisable = userConfig.get("Settings.discordSettings.discordRPCDisable");
+  configVars.discordRPCAvoidSpoilers = userConfig.get("Settings.discordSettings.avoidSpoilers");
 
   // Webserver Settings
   configVars.webServerDisable = userConfig.get("Settings.webServerSettings.webServerDisable");

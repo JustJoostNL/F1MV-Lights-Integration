@@ -1,32 +1,32 @@
 // F1MV URLS
 export const f1mvURLs = {
-  liveTimingURL: "",
-  heartBeatURL: "",
+  liveTimingURL: "" as string,
+  heartBeatURL: "" as string,
 };
 // statuses
 export const statuses = {
-  SState: "",
-  SInfo: "",
-  TState: "",
-  TStateCheck: "",
-  SStateCheck: "",
+  SState: "" as string,
+  SInfo: null,
+  TState: "" as string,
+  TStateCheck: "" as string,
+  SStateCheck: "" as string,
 };
 
 // integration states
 export const integrationStates = {
-  ikeaOnline: false,
-  goveeOnline: false,
-  hueOnline: false,
-  openRGBOnline: false,
-  homeAssistantOnline: false,
-  yeeLightOnline: false,
-  streamDeckOnline: false,
-  nanoLeafOnline: false,
-  WLEDOnline: false,
-  F1MVAPIOnline: false,
-  F1LiveSession: false,
-  updateAPIOnline: false,
-  webServerOnline: false,
+  ikeaOnline: false as boolean,
+  goveeOnline: false as boolean,
+  hueOnline: false as boolean,
+  openRGBOnline: false as boolean,
+  homeAssistantOnline: false as boolean,
+  yeeLightOnline: false as boolean,
+  streamDeckOnline: false as boolean,
+  nanoLeafOnline: false as boolean,
+  WLEDOnline: false as boolean,
+  F1MVAPIOnline: false as boolean,
+  F1LiveSession: false as boolean,
+  updateAPIOnline: false as boolean,
+  webServerOnline: false as boolean,
 };
 
 // API URLS
@@ -42,17 +42,34 @@ export const apiURLs = {
 
 // analytics
 export const analytics = {
-  uniqueID: "",
+  uniqueID: "" as string,
 };
 
 // go back to static
 export const goBackToStatic = {
-  goBackToStaticTimeout: null,
-  goBackToStaticRuns: false,
+  goBackToStaticTimeout: null as NodeJS.Timeout | null,
+  goBackToStaticRuns: false as boolean,
 };
 
 // govee
 export const goveeVars = {
   govee: null,
-  goveeInitialized: false,
+  goveeInitialized: false as boolean,
+};
+
+//openrgb
+export const openRGBVars = {
+  openRGBClient: null,
+};
+
+// webserver
+export const webServerVars = {
+  webServerIOSocket: null,
+  webServerHTTPServer: null,
+};
+
+// streamdeck
+export const streamDeckVars = {
+  theStreamDeck: null,
+  streamDeckKeyCount: null as number | null,
 };

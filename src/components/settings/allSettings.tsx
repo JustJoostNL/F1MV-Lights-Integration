@@ -15,7 +15,7 @@ import DiscordSettingsContent from "@/components/settings/settings/discord-setti
 import WebServerSettingsContent from "@/components/settings/settings/webserver-settings/WebServerSettings";
 import AdvancedSettingsContent from "@/components/settings/settings/advanced-settings/AdvancedSettings";
 import React from "react";
-import {RgbColor} from "react-colorful";
+import { RgbColor } from "react-colorful";
 
 export const BlueSwitch = styled(Switch)(({ theme }) => ({
   "& .MuiSwitch-switchBase.Mui-checked": {
@@ -61,7 +61,7 @@ export const allSettings = [
   {
     heading: "IKEA",
     content: <IkeaSettingsContent/>,
-    description: "Disable Ikea Integration — Ikea Gateway Security Code — Ikea Tools",
+    description: "Disable IKEA Integration — Ikea Gateway Security Code — Ikea Tools",
     type: "integration"
   },
   {

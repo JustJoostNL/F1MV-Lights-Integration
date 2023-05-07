@@ -188,6 +188,7 @@ const config: IConfig = {
                 {
                 	// set this to true if you don't want to use Discord RPC
                 	discordRPCDisable: false,
+                  avoidSpoilers: true,
                 },
 
         	webServerSettings:

@@ -12,7 +12,7 @@ export default async function initApp(){
   await initAllIntegrations();
   await handleStates();
   setInterval(async () => {
-    await handleStates()
+    await handleStates();
   }, 10000);
   await startF1MVLightSync();
 

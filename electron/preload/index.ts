@@ -25,6 +25,13 @@ export const f1mvli = {
   integrations: {
     homeAssistant: {
       getDevices: () => ipcRenderer.invoke("integrations:homeAssistant:getDevices"),
+      checkDeviceSpectrum: (entityId: string) => ipcRenderer.invoke("integrations:homeAssistant:checkDeviceSpectrum", entityId),
+    },
+    openRGB: {
+      reConnect: () => ipcRenderer.invoke("integrations:openRGB:reConnect"),
+    },
+    WLED: {
+      getDevices: () => ipcRenderer.invoke("integrations:WLED:getDevices"),
     }
   }
 };

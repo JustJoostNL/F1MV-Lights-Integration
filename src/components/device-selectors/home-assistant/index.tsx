@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react';
-import {DataGrid, GridColDef, GridSelectionModel} from '@mui/x-data-grid';
+import React, { useEffect, useState } from "react";
+import { DataGrid, GridColDef, GridSelectionModel } from "@mui/x-data-grid";
 import LoadingScreen from "@/pages/LoadingScreen";
-import {Checkbox, Switch} from "@mui/material";
+import { Checkbox, Switch } from "@mui/material";
 import log from "electron-log/renderer";
 
 export function HomeAssistantDeviceSelector() {
@@ -11,14 +11,14 @@ export function HomeAssistantDeviceSelector() {
   // fetch the initial data when the component mounts
   useEffect(() => {
     async function fetchHassData() {
-      const fetchedData = await window.f1mvli.integrations.homeAssistant.getDevices()
+      const fetchedData = await window.f1mvli.integrations.homeAssistant.getDevices();
       setHassData(fetchedData);
-      setSelectionModel(fetchedData.alreadySelectedDevices)
+      setSelectionModel(fetchedData.alreadySelectedDevices);
     }
     fetchHassData();
   }, []);
 
-  // refresh the state every 10 seconds
+  // refresh the state every 2 seconds
   useEffect(() => {
     const intervalId = setInterval(async () => {
       const fetchedData = await window.f1mvli.integrations.homeAssistant.getDevices();
@@ -47,15 +47,15 @@ export function HomeAssistantDeviceSelector() {
   }, []);
 
   const columns: GridColDef[] = [
-    { field: 'name', headerName: 'Name', width: 200 },
-    { field: 'id', headerName: 'ID', width: 200 },
-    { field: 'state', headerName: 'State', width: 100 },
+    { field: "name", headerName: "Name", width: 200 },
+    { field: "id", headerName: "ID", width: 200 },
+    { field: "state", headerName: "State", width: 100 },
   ];
 
   if (!hassData) {
     return (
       <LoadingScreen/>
-    )
+    );
   }
 
   const rows = hassData.devices.map((device: any) => {
@@ -74,7 +74,7 @@ export function HomeAssistantDeviceSelector() {
   };
 
   return (
-    <div style={{ height: 550, width: '80%', alignItems: "center", alignContent: "center", marginLeft: 70 }}>
+    <div style={{ height: 550, width: "80%", alignItems: "center", alignContent: "center", marginLeft: 70 }}>
       <DataGrid
         rows={rows}
         components={{
@@ -85,7 +85,7 @@ export function HomeAssistantDeviceSelector() {
             <Switch color="secondary" ref={ref} {...props} />
           ))
         }}
-        sx={{color: "white"}}
+        sx={{ color: "white" }}
         columns={columns}
         pageSize={8}
         rowsPerPageOptions={[8]}

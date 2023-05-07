@@ -1,7 +1,7 @@
 import controlAllLights from "./controlAllLights";
 import { configVars } from "../../config/config";
 import log from "electron-log";
-import {customColor} from "../../../types/CustomColorInterface";
+import { customColor } from "../../../types/CustomColorInterface";
 
 export default async function simulateFlag(arg) {
   const greenColor = configVars.greenColor as customColor;

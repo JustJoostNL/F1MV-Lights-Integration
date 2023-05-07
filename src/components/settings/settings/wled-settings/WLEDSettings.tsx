@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { Box, Typography } from "@mui/material";
 import { BlueSwitch, settingBoxSX, handleSetSingleSetting, getConfig } from "@/components/settings/allSettings";
 import WLEDMenu from "@/components/settings/settings/wled-settings/WLEDMenu";
-
 export default function WLEDSettingsContent() {
   const [settings, setSettings] = useState<any | null>(null);
 
@@ -17,7 +16,10 @@ export default function WLEDSettingsContent() {
 
   const saveConfig = async () => {
     if (!settings) return;
-    await window.f1mvli.config.set("Settings.WLEDSettings", settings);
+    await window.f1mvli.config.set("Settings.WLEDSettings", {
+      ...settings,
+      devices: await window.f1mvli.config.get("Settings.WLEDSettings.devices")
+    });
   };
 
   useEffect(() => {

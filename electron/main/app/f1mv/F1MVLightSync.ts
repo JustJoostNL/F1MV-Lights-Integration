@@ -3,7 +3,7 @@ import { statuses } from "../vars/vars";
 import { configVars } from "../../config/config";
 import controlAllLights from "../light-controller/controlAllLights";
 import log from "electron-log";
-import {CustomColor} from "../../../types/CustomColorInterface";
+import { CustomColor } from "../../../types/CustomColorInterface";
 
 async function f1mvLightSync() {
 
@@ -19,33 +19,33 @@ async function f1mvLightSync() {
     switch (statuses.TState) {
       case "1":
         log.info("Green flag!");
-        await controlAllLights(greenColor.r, greenColor.g, greenColor.b, configVars.defaultBrightness, "on", "green");
         statuses.TStateCheck = statuses.TState;
+        await controlAllLights(greenColor.r, greenColor.g, greenColor.b, configVars.defaultBrightness, "on", "green");
         break;
       case "2":
         log.info("Yellow flag!");
-        await controlAllLights(yellowColor.r, yellowColor.g, yellowColor.b, configVars.defaultBrightness, "on", "yellow");
         statuses.TStateCheck = statuses.TState;
+        await controlAllLights(yellowColor.r, yellowColor.g, yellowColor.b, configVars.defaultBrightness, "on", "yellow");
         break;
       case "4":
         log.info("Safety car!");
-        await controlAllLights(safetyCarColor.r, safetyCarColor.g, safetyCarColor.b, configVars.defaultBrightness, "on", "safetyCar");
         statuses.TStateCheck = statuses.TState;
+        await controlAllLights(safetyCarColor.r, safetyCarColor.g, safetyCarColor.b, configVars.defaultBrightness, "on", "safetyCar");
         break;
       case "5":
         log.info("Red flag!");
-        await controlAllLights(redColor.r, redColor.g, redColor.b, configVars.defaultBrightness, "on", "red");
         statuses.TStateCheck = statuses.TState;
+        await controlAllLights(redColor.r, redColor.g, redColor.b, configVars.defaultBrightness, "on", "red");
         break;
       case "6":
         log.info("Virtual safety car!");
-        await controlAllLights(vscColor.r, vscColor.g, vscColor.b, configVars.defaultBrightness, "on", "vsc");
         statuses.TStateCheck = statuses.TState;
+        await controlAllLights(vscColor.r, vscColor.g, vscColor.b, configVars.defaultBrightness, "on", "vsc");
         break;
       case "7":
         log.info("VSC Ending!");
-        await controlAllLights(vscEndingColor.r, vscEndingColor.g, vscEndingColor.b, configVars.defaultBrightness, "on", "vscEnding");
         statuses.TStateCheck = statuses.TState;
+        await controlAllLights(vscEndingColor.r, vscEndingColor.g, vscEndingColor.b, configVars.defaultBrightness, "on", "vscEnding");
         break;
     }
   } else if (statuses.SState === "Ends" || statuses.SState === "Finalised") {

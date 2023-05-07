@@ -3,15 +3,16 @@ import Button from "@mui/material/Button";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
-import LightBulbIcon from "@mui/icons-material/Lightbulb";
 import Typography from "@mui/material/Typography";
-import AddIcon from "@mui/icons-material/Add";
 import { font } from "@/index";
 import ReactGA from "react-ga4";
+import Toaster from "@/components/toaster/Toaster";
+import RefreshIcon from "@mui/icons-material/Refresh";
 
 
-export default function WLEDMenu(){
+export default function OpenRGBMenu(){
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+  const [toaster, setToaster] = React.useState<{ message: string, severity: "error" | "warning" | "info", time: number } | null>(null);
   const open = Boolean(anchorEl);
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -19,32 +20,26 @@ export default function WLEDMenu(){
   const handleClose = () => {
     setAnchorEl(null);
   };
-  const handleAddWLEDDevice = async () => {
-    setAnchorEl(null);
-    await window.f1mvli.utils.openNewWindow({
-      browserWindowOptions: {
-        title: "WLED Device Selector — F1MV-Lights-Integration",
-        width: 756,
-        height: 690,
-        resizable: false,
-        maximizable: false,
-        minWidth: 756,
-        minHeight: 690,
-      },
-      url: "/add-wled-device"
-    });
-    ReactGA.event({
-      category: "wled_tools_menu",
-      action: "add_wled_device",
-    });
-  };
-  const handleViewCurrentlyConnectedWLEDDevices = () => {
+  const handleReConnectToOpenRGB = async () => {
     setAnchorEl(null);
     ReactGA.event({
-      category: "wled_tools_menu",
-      action: "view_currently_connected_wled_devices",
+      category: "openrgb_tools_menu",
+      action: "reconnect_to_openrgb",
     });
+    const reConnectionStatus: boolean = await window.f1mvli.integrations.openRGB.reConnect();
+    if (reConnectionStatus) {
+      setToaster({ message: "Successfully (re)connected to OpenRGB!", severity: "info", time: 5000 });
+      setTimeout(() => {
+        setToaster(null);
+      }, 5100);
+    } else {
+      setToaster({ message: "Failed to (re)connect to OpenRGB, please check the logs to see the error!", severity: "warning", time: 5000 });
+      setTimeout(() => {
+        setToaster(null);
+      }, 5100);
+    }
   };
+
 
   const menuItemStyle = {
     fontSize: "1.0rem",
@@ -55,8 +50,8 @@ export default function WLEDMenu(){
   return (
     <div>
       <Button
-        id="wled-menu-button"
-        aria-controls={open ? "wled-menu-button" : undefined}
+        id="openrgb-menu-button"
+        aria-controls={open ? "openrgb-menu-button" : undefined}
         aria-haspopup="true"
         aria-expanded={open ? "true" : undefined}
         variant="contained"
@@ -65,7 +60,7 @@ export default function WLEDMenu(){
         onClick={handleClick}
         endIcon={<KeyboardArrowDownIcon />}
       >
-                WLED Tools
+        OpenRGB Tools
       </Button>
       <Menu
         id="basic-menu"
@@ -76,19 +71,19 @@ export default function WLEDMenu(){
           "aria-labelledby": "basic-button",
         }}
       >
-        <MenuItem onClick={handleAddWLEDDevice}>
-          <LightBulbIcon
+        <MenuItem onClick={handleReConnectToOpenRGB}>
+          <RefreshIcon
             sx={{
               mr: 2
             }}/>
           <Typography
             variant="body2"
             sx={menuItemStyle}>
-                        Manage WLED Devices
+            (Re)connect to OpenRGB
           </Typography>
         </MenuItem>
       </Menu>
+      {toaster && <Toaster message={toaster.message} severity={toaster.severity} time={toaster.time} />}
     </div>
   );
-
 }

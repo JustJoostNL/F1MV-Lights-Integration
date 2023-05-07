@@ -53,6 +53,27 @@ export default function DiscordSettingsContent() {
               }}
             />
           </Box>
+          {!settings.discordRPCDisable && (
+            <>
+              <Box sx={settingBoxSX}>
+                <div>
+                  <Typography variant="h6" component="div">
+                    Avoid spoilers in Discord Rich Presence
+                  </Typography>
+                  <Typography variant="body2" component="div" sx={{ color: "grey" }}>
+                    This will avoid showing spoilers (the current flag) in the Discord Rich Presence integration.
+                  </Typography>
+                </div>
+                <BlueSwitch
+                  id="discord-rpc-spoilers-switch"
+                  checked={settings.avoidSpoilers}
+                  onChange={(event) => {
+                    handleSetSingleSetting("avoidSpoilers", event.target.checked, setSettings, settings);
+                  }}
+                />
+              </Box>
+            </>
+          )}
         </div>
       )}
     </>

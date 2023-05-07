@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from "react";
 import {
   Table,
   TableBody,
@@ -6,27 +6,27 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-} from '@mui/material';
+} from "@mui/material";
 import {
   IntegrationState,
   IntegrationStatesMap,
-} from '@/components/integration-states/types';
-import './status.css';
+} from "@/components/integration-states/types";
+import "./status.css";
 
 const integrationStateMap: IntegrationStatesMap = {
-  ikea: 'IKEA',
-  govee: 'Govee',
-  hue: 'Philips Hue',
-  openRGB: 'OpenRGB',
-  homeAssistant: 'Home Assistant',
-  yeelight: 'Yeelight',
-  streamDeck: 'Stream Deck',
-  nanoLeaf: 'Nanoleaf',
-  WLED: 'WLED',
-  F1MV: 'MultiViewer',
-  F1TVLiveSession: 'Live Session Check',
-  update: 'Update',
-  webServer: 'Webserver',
+  ikea: "IKEA",
+  govee: "Govee",
+  hue: "Philips Hue",
+  openRGB: "OpenRGB",
+  homeAssistant: "Home Assistant",
+  yeelight: "Yeelight",
+  streamDeck: "Stream Deck",
+  nanoLeaf: "Nanoleaf",
+  WLED: "WLED",
+  F1MV: "MultiViewer",
+  F1TVLiveSession: "Live Session Check",
+  update: "Update",
+  webServer: "Webserver",
 };
 
 export default function IntegrationStatesTable() {
@@ -63,8 +63,8 @@ export default function IntegrationStatesTable() {
                   {/*@ts-ignore*/}
                   {integrationStateMap[integrationState.name]}
                 </TableCell>
-                <TableCell sx={{ alignItems: 'center' }}>
-                  <div className={`status ${integrationState.state ? 'success' : 'error'}`}>
+                <TableCell sx={{ alignItems: "center" }}>
+                  <div className={`status ${integrationState.state ? "success" : "error"}`}>
 
                   </div>
                 </TableCell>

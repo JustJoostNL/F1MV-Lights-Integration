@@ -7,6 +7,7 @@ import Typography from "@mui/material/Typography";
 import AddIcon from "@mui/icons-material/Add";
 import { font } from "@/index";
 import ReactGA from "react-ga4";
+import { saveConfig } from "@/components/settings/settings/hass-settings/HassSettings";
 
 
 export default function HassMenu(){
@@ -21,18 +22,19 @@ export default function HassMenu(){
 
   const handleSelectHassDevices = async () => {
     setAnchorEl(null);
+    await saveConfig();
     await window.f1mvli.utils.openNewWindow({
       browserWindowOptions: {
-        title: "F1MV Lights Integration",
+        title: "Home Assistant Device Selector — F1MV-Lights-Integration",
         width: 756,
         height: 690,
         resizable: false,
-        maximizable: true,
+        maximizable: false,
         minWidth: 756,
         minHeight: 690,
       },
       url: "/select-hass-devices"
-    })
+    });
     ReactGA.event({
       category: "hass_tools_menu",
       action: "select_hass_devices",

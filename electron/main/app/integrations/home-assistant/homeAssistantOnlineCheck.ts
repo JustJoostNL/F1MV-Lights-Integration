@@ -1,13 +1,16 @@
-import {configVars} from "../../../config/config";
-import {integrationStates} from "../../vars/vars";
-import {headers} from "./homeAssistantShared";
+import { configVars } from "../../../config/config";
+import { integrationStates } from "../../vars/vars";
 import fetch from "node-fetch";
 
 export default async function homeAssistantOnlineCheck(){
+  const headers = {
+    "Authorization": "Bearer " + configVars.homeAssistantToken,
+    "Content-Type": "application/json"
+  };
   const options = {
-    method: 'GET',
+    method: "GET",
     headers: headers,
-  }
+  };
 
   const url = configVars.homeAssistantHost + ":" + configVars.homeAssistantPort + "/api/";
   try {

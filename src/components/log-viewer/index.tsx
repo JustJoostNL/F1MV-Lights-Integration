@@ -19,9 +19,9 @@ export default function LogViewer() {
 
   useEffect(() => {
     const intervalId = setInterval(async () => {
-      let newLogs = await window.f1mvli.log.getLogs();
+      const newLogs = await window.f1mvli.log.getLogs();
       if (newLogs.length > logs.length) {
-        newLogs.reverse()
+        newLogs.reverse();
         setLogs(newLogs);
       }
     }, 1000);
@@ -39,7 +39,10 @@ export default function LogViewer() {
 
   return (
     <div>
-      <Typography variant="h4" sx={{ mb: 2 }}>Logs</Typography>
+      <Typography variant="h4" sx={{ mb: 2, mt: 4 }}>Logs</Typography>
+      <Typography variant="h4" component="h2" sx={{ fontSize: "1.2rem", mb: 3, color: "grey.400" }}>
+        Logs are ordered from newest to oldest, and are updated every second.
+      </Typography>
       <Box sx={{ width: "100%", height: 500, maxWidth: 1000, bgcolor: "#343434" }}>
         <FixedSizeList
           height={500}

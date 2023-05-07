@@ -5,6 +5,10 @@ import goBackToStaticColor from "./goBackToStatic";
 import goveeControl from "../integrations/govee/goveeControl";
 import { IEffectSettingsConfig } from "../../../types/EffectSettingsInterface";
 import homeAssistantControl from "../integrations/home-assistant/homeAssistantControl";
+import openRGBControl from "../integrations/openrgb/openRGBControl";
+import webServerControl from "../integrations/webserver/webServerControl";
+import streamDeckControl from "../integrations/elgato-streamdeck/streamDeckControl";
+import WLEDControl from "../integrations/wled/WLEDControl";
 
 export default async function controlAllLights(r, g, b, brightness, action, flag) {
   const effectSettings = configVars.effectSettings as IEffectSettingsConfig;
@@ -31,7 +35,19 @@ export default async function controlAllLights(r, g, b, brightness, action, flag
     await goveeControl(r, g, b, brightness, action);
   }
   if (!configVars.homeAssistantDisable){
-    await homeAssistantControl(r, g, b, brightness, action);
+    await homeAssistantControl(r, g, b, brightness, action, flag);
+  }
+  if (!configVars.openRGBDisable){
+    await openRGBControl(r, g, b, brightness, action);
+  }
+  if (!configVars.webServerDisable){
+    await webServerControl(r, g, b, brightness, action);
+  }
+  if (!configVars.streamDeckDisable){
+    await streamDeckControl(r, g, b, brightness, action);
+  }
+  if (!configVars.WLEDDisable){
+    await WLEDControl(r, g, b, brightness, action);
   }
 
   // -----------

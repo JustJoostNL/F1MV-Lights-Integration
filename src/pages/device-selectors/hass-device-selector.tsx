@@ -6,5 +6,5 @@ export default function HassDeviceSelector(){
       <h1>Home Assistant Device Selector</h1>
       <HomeAssistantDeviceSelector/>
     </div>
-  )
+  );
 }

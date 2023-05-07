@@ -8,6 +8,7 @@ import LogViewerPage from "@/pages/LogViewer";
 import LoadingScreen from "@/pages/LoadingScreen";
 import Settings from "@/pages/RealSettings";
 import HassDeviceSelector from "@/pages/device-selectors/hass-device-selector";
+import AddWLEDDevice from "@/pages/device-selectors/add-wled-device";
 
 const router = createHashRouter([
   {
@@ -41,6 +42,10 @@ const router = createHashRouter([
   {
     path: "/select-hass-devices",
     element: <HassDeviceSelector/>
+  },
+  {
+    path: "/add-wled-device",
+    element: <AddWLEDDevice/>
   }
 ]);
 

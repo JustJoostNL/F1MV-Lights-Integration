@@ -1,4 +1,4 @@
-import {ConfigMigration} from "../../types/ConfigMigrationInterface";
+import { ConfigMigration } from "../../types/ConfigMigrationInterface";
 
 export const configMigrations: ConfigMigration = {
   "1.1.7": userConfig => {
@@ -68,5 +68,6 @@ export const configMigrations: ConfigMigration = {
   },
   "2.0.0": userConfig => {
     userConfig.set("version", "2.0.0");
+    userConfig.set("Settings.discordSettings.avoidSpoilers", false);
   }
 };

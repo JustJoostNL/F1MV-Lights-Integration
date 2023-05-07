@@ -3,7 +3,8 @@ import { Box, TextField, Typography } from "@mui/material";
 import { BlueSwitch, getConfig, settingBoxSX, handleSetSingleSetting } from "@/components/settings/allSettings";
 import Divider from "@mui/material/Divider";
 import HassMenu from "@/components/settings/settings/hass-settings/HassMenu";
-import log from "electron-log/renderer";
+
+export let saveConfig: () => Promise<void> = async () => {};
 
 export default function HassSettingsContent() {
   const [settings, setSettings] = useState<any | null>(null);
@@ -17,10 +18,8 @@ export default function HassSettingsContent() {
     fetchConfig();
   }, []);
 
-  const saveConfig = async () => {
+  saveConfig = async () => {
     if (!settings) return;
-    //await window.f1mvli.config.set("Settings.homeAssistantSettings", settings);
-    // we set the settings like above, but we make sure it doesn't overwrite the homeAssistantSettings.devices array
     await window.f1mvli.config.set("Settings.homeAssistantSettings", {
       ...settings,
       devices: await window.f1mvli.config.get("Settings.homeAssistantSettings.devices")

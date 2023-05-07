@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Box, TextField, Typography } from "@mui/material";
 import { BlueSwitch, settingBoxSX, getConfig, handleSetSingleSetting } from "@/components/settings/allSettings";
 import Divider from "@mui/material/Divider";
+import OpenRGBMenu from "@/components/settings/settings/openrgb-settings/OpenRGBMenu";
 
 export default function OpenRGBSettingsContent() {
   const [settings, setSettings] = useState<any | null>(null);
@@ -98,6 +99,15 @@ export default function OpenRGBSettingsContent() {
                     }}
                   />
                 </Box>
+                <>
+                  {!settings.openRGBDisable && (
+                    <Box sx={settingBoxSX}>
+                      <div>
+                        <OpenRGBMenu/>
+                      </div>
+                    </Box>
+                  )}
+                </>
               </>
             )}
           </>

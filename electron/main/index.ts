@@ -1,4 +1,4 @@
-import { app, BrowserWindow, shell, ipcMain } from "electron";
+import { app, BrowserWindow, ipcMain, shell } from "electron";
 import { release } from "node:os";
 import path, { join } from "node:path";
 import {
@@ -15,9 +15,13 @@ import simulateFlag from "./app/light-controller/simulateFlag";
 import { autoUpdater } from "electron-updater";
 import initUpdater from "./update";
 import log from "electron-log";
-import {handleIntegrationStates} from "./app/integrations/integration-states/integrationStates";
+import { handleIntegrationStates } from "./app/integrations/integration-states/integrationStates";
 import homeAssistantGetDevices from "./app/integrations/home-assistant/homeAssistantGetDevices";
-import {f1mvli} from "../preload";
+import { f1mvli } from "../preload";
+import { integrationStates, openRGBVars, streamDeckVars, webServerVars } from "./app/vars/vars";
+import openRGBInitialize from "./app/integrations/openrgb/openRGBInit";
+import homeAssistantCheckDeviceSpectrum from "./app/integrations/home-assistant/homeAssistantCheckDeviceSpectrum";
+import getWLEDDevices from "./app/integrations/wled/getWLEDDevices";
 
 Sentry.init({
   dsn: "https://e64c3ec745124566b849043192e58711@o4504289317879808.ingest.sentry.io/4504289338392576",
@@ -73,7 +77,7 @@ async function createWindow() {
   if (process.env.VITE_DEV_SERVER_URL) { // electron-vite-vue#298
     await win.loadURL(url);
     win.webContents.openDevTools({ mode: "detach" });
-    win.setMenuBarVisibility(false)
+    win.setMenuBarVisibility(false);
   } else {
     win.removeMenu();
     await win.loadFile(indexHtml);
@@ -139,6 +143,15 @@ function onReady() {
 app.on("window-all-closed", () => {
   win = null;
   analyticsHandler("activeUsersClose");
+  if (integrationStates.openRGBOnline && !configVars.openRGBDisable){
+    openRGBVars.openRGBClient.disconnect();
+  }
+  if (integrationStates.webServerOnline && !configVars.webServerDisable){
+    webServerVars.webServerHTTPServer.close();
+  }
+  if (integrationStates.streamDeckOnline && !configVars.streamDeckDisable){
+    streamDeckVars.theStreamDeck.close();
+  }
   if (process.platform !== "darwin") app.quit();
 });
 
@@ -181,11 +194,29 @@ ipcMain.handle("utils:open-win", (_, arg) => {
 
   if (process.env.VITE_DEV_SERVER_URL) {
     childWindow.loadURL(`${url}#${arg.url}`);
-    childWindow.setMenuBarVisibility(false)
+    childWindow.setMenuBarVisibility(false);
   } else {
-    childWindow.removeMenu()
+    childWindow.removeMenu();
     childWindow.loadFile(indexHtml, { hash: arg.url });
   }
+
+  childWindow.webContents.on("did-finish-load", () => {
+    childWindow.webContents.insertCSS(`
+            ::-webkit-scrollbar {
+                width: 10px;
+            }
+            ::-webkit-scrollbar-track {
+                background: #1e1e1e;
+            }
+            ::-webkit-scrollbar-thumb {
+                background: #888;
+            }
+            ::-webkit-scrollbar-thumb:hover {
+                background: #555;
+            }
+        `);
+  });
+
 });
 
 // config
@@ -234,6 +265,15 @@ ipcMain.handle("log:getLogs", () => {
 // integrations
 ipcMain.handle("integrations:homeAssistant:getDevices", () => {
   return homeAssistantGetDevices();
+});
+ipcMain.handle("integrations:WLED:getDevices", () => {
+  return getWLEDDevices();
+});
+ipcMain.handle("integrations:homeAssistant:checkDeviceSpectrum", (_, arg) => {
+  return homeAssistantCheckDeviceSpectrum(arg);
+});
+ipcMain.handle("integrations:openRGB:reConnect", async () => {
+  return await openRGBInitialize();
 });
 
 

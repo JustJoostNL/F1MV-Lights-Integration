@@ -77,6 +77,7 @@ export interface IConfig {
     };
     discordSettings: {
       discordRPCDisable: boolean;
+      avoidSpoilers: boolean;
     };
     webServerSettings: {
       webServerDisable: boolean;

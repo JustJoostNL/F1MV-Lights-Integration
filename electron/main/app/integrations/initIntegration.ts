@@ -1,6 +1,10 @@
 import { configVars } from "../../config/config";
 import goveeInitialize from "./govee/goveeInit";
 import homeAssistantInitialize from "./home-assistant/homeAssistantInit";
+import openRGBInitialize from "./openrgb/openRGBInit";
+import webServerInitialize from "./webserver/webServerInit";
+import streamDeckInitialize from "./elgato-streamdeck/streamDeckInit";
+import discordRPC from "./discord/discordRPC";
 
 export default async function initAllIntegrations(){
   const ikeaDisabled = configVars.ikeaDisable;
@@ -9,6 +13,7 @@ export default async function initAllIntegrations(){
   const openRGBDisabled = configVars.openRGBDisable;
   const homeAssistantDisabled = configVars.homeAssistantDisable;
   const streamDeckDisabled = configVars.streamDeckDisable;
+  const discordRPCDisabled = configVars.discordRPCDisable;
   const webServerDisabled = configVars.webServerDisable;
 
   function empty(){
@@ -19,11 +24,11 @@ export default async function initAllIntegrations(){
     { name: "ikea", func: empty, disabled: ikeaDisabled },
     { name: "govee", func: goveeInitialize, disabled: goveeDisabled },
     { name: "hue", func: empty, disabled: hueDisabled },
-    { name: "openRGB", func: empty, disabled: openRGBDisabled },
+    { name: "openRGB", func: openRGBInitialize, disabled: openRGBDisabled },
     { name: "homeAssistant", func: homeAssistantInitialize, disabled: homeAssistantDisabled },
-    { name: "streamDeck", func: empty, disabled: streamDeckDisabled },
-    { name: "discordRPC", func: empty, disabled: false },
-    { name: "webServer", func: empty, disabled: webServerDisabled }
+    { name: "streamDeck", func: streamDeckInitialize, disabled: streamDeckDisabled },
+    { name: "discordRPC", func: discordRPC, disabled: discordRPCDisabled },
+    { name: "webServer", func: webServerInitialize, disabled: webServerDisabled }
   ];
 
   for (const integration of integrations) {
