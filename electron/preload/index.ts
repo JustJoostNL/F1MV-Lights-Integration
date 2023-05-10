@@ -32,7 +32,10 @@ export const f1mvli = {
     },
     WLED: {
       getDevices: () => ipcRenderer.invoke("integrations:WLED:getDevices"),
-    }
+    },
+    hue: {
+      discoverBridge: (discoverMode: "remote" | "local") => ipcRenderer.invoke("integrations:hue:discoverBridge", discoverMode),
+    },
   }
 };
 

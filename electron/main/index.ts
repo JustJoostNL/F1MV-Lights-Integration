@@ -22,6 +22,7 @@ import { integrationStates, openRGBVars, streamDeckVars, webServerVars } from ".
 import openRGBInitialize from "./app/integrations/openrgb/openRGBInit";
 import homeAssistantCheckDeviceSpectrum from "./app/integrations/home-assistant/homeAssistantCheckDeviceSpectrum";
 import getWLEDDevices from "./app/integrations/wled/getWLEDDevices";
+import discoverHueBridge from "./app/integrations/hue/discoverHueBridge";
 
 Sentry.init({
   dsn: "https://e64c3ec745124566b849043192e58711@o4504289317879808.ingest.sentry.io/4504289338392576",
@@ -274,6 +275,9 @@ ipcMain.handle("integrations:homeAssistant:checkDeviceSpectrum", (_, arg) => {
 });
 ipcMain.handle("integrations:openRGB:reConnect", async () => {
   return await openRGBInitialize();
+});
+ipcMain.handle("integrations:hue:discoverBridge", (_, arg) => {
+  return discoverHueBridge(arg);
 });
 
 

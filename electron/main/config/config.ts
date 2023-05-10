@@ -88,9 +88,9 @@ export const configVars = {
 
   // Hue settings
   hueDisable: userConfig.get("Settings.hueSettings.hueDisable"),
-  hueBridgeIP: userConfig.get("Settings.hueSettings.hueBridgeIP"),
-  hueDevices: userConfig.get("Settings.hueSettings.deviceIDs"),
-  hueEntertainmentZones: userConfig.get("Settings.hueSettings.entertainmentZoneIDs"),
+  hueBridgeIP: userConfig.get("Settings.hueSettings.hueBridgeIP") as string,
+  hueDevices: userConfig.get("Settings.hueSettings.deviceIDs") as unknown[],
+  hueEntertainmentZones: userConfig.get("Settings.hueSettings.entertainmentZoneIDs") as unknown[],
   hueToken: userConfig.get("Settings.hueSettings.token"),
   hueThirdPartyCompatMode: userConfig.get("Settings.hueSettings.hue3rdPartyCompatMode"),
   hueEnableFade: userConfig.get("Settings.hueSettings.enableFade"),

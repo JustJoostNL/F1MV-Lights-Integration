@@ -73,3 +73,12 @@ export const streamDeckVars = {
   theStreamDeck: null,
   streamDeckKeyCount: null as number | null,
 };
+
+// hue
+export const hueVars = {
+  authHueAPI: null,
+  hueClient: null,
+  hueAppName: "F1MV-Lights-Integration" as string,
+  hueDeviceName: "F1MV-Lights-Integration-APP" as string,
+  hueCreatedUser: null,
+}

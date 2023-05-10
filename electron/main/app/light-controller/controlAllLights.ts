@@ -9,6 +9,7 @@ import openRGBControl from "../integrations/openrgb/openRGBControl";
 import webServerControl from "../integrations/webserver/webServerControl";
 import streamDeckControl from "../integrations/elgato-streamdeck/streamDeckControl";
 import WLEDControl from "../integrations/wled/WLEDControl";
+import hueControl from "../integrations/hue/hueControl";
 
 export default async function controlAllLights(r, g, b, brightness, action, flag) {
   const effectSettings = configVars.effectSettings as IEffectSettingsConfig;
@@ -48,6 +49,9 @@ export default async function controlAllLights(r, g, b, brightness, action, flag
   }
   if (!configVars.WLEDDisable){
     await WLEDControl(r, g, b, brightness, action);
+  }
+  if (!configVars.hueDisable){
+    await hueControl(r, g, b, brightness, action)
   }
 
   // -----------
