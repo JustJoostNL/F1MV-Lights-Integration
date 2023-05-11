@@ -1,14 +1,13 @@
 import "../style/App.scss";
 import { createHashRouter, RouterProvider } from "react-router-dom";
 import Main from "@/pages/Main";
-import SettingsLoading from "@/pages/Settings";
 import Home from "@/pages/Home";
 import About from "@/pages/About";
 import LogViewerPage from "@/pages/LogViewer";
 import LoadingScreen from "@/pages/LoadingScreen";
-import Settings from "@/pages/RealSettings";
 import HassDeviceSelector from "@/pages/device-selectors/hass-device-selector";
 import AddWLEDDevice from "@/pages/device-selectors/add-wled-device";
+import Settings from "@/pages/Settings";
 
 const router = createHashRouter([
   {
@@ -25,10 +24,6 @@ const router = createHashRouter([
   },
   {
     path: "/settings",
-    element: <SettingsLoading/>
-  },
-  {
-    path: "/real-settings",
     element: <Settings/>
   },
   {

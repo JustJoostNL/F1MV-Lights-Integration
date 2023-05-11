@@ -1,26 +1,39 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import ReactGA from "react-ga4";
 import { refreshConfig } from "@/components/settings/allSettings";
 import LoadingScreen from "@/pages/LoadingScreen";
+import NavBar from "@/components/navbar";
+import SettingsPage from "@/components/settings";
 
-function SettingsLoading() {
+function Settings() {
   ReactGA.send({ hitType: "pageview", page: "/settings" });
   window.f1mvli.utils.changeWindowTitle("Settings — F1MV-Lights-Integration");
 
-  let settingsLoaded = false;
+  const [settingsLoading, setSettingsLoading] = useState(true);
+  const [settingsLoaded, setSettingsLoaded] = useState(false);
 
-  const loadSettings = async () => {
-    await refreshConfig();
-    settingsLoaded = true;
-  };
+  useEffect(() => {
+    const loadSettings = async () => {
+      await refreshConfig();
+      setSettingsLoading(false);
+      setSettingsLoaded(true);
+    };
+    loadSettings();
+  }, []);
 
-  loadSettings().then(() => {window.location.hash = "/real-settings";});
+  if (settingsLoading) {
+    return <LoadingScreen />;
+  } else if (settingsLoaded) {
+    return (
+      <div>
+        <NavBar showBackButton={true} />
+        <SettingsPage />
+      </div>
+    );
+  }
 
-  // we return the loading screen while we load the settings
-
-  return (
-    <LoadingScreen/>
-  );
+  // if neither condition is true we return null
+  return null;
 }
 
-export default SettingsLoading;
+export default Settings;
