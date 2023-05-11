@@ -6,6 +6,8 @@ import Divider from "@mui/material/Divider";
 import Toaster from "@/components/toaster/Toaster";
 import IkeaMenu from "@/components/settings/settings/ikea-settings/IkeaMenu";
 
+export let saveConfig: () => Promise<void> = async () => {};
+
 export default function IkeaSettingsContent() {
   const [settings, setSettings] = useState<any | null>(null);
   const [ikeaAdvancedSettings, setIkeaAdvancedSettings] = useState(false);
@@ -23,9 +25,12 @@ export default function IkeaSettingsContent() {
     fetchConfig();
   }, []);
 
-  const saveConfig = async () => {
+  saveConfig = async () => {
     if (!settings) return;
-    await window.f1mvli.config.set("Settings.ikeaSettings", settings);
+    await window.f1mvli.config.set("Settings.ikeaSettings", {
+      ...settings,
+      deviceIDs: await window.f1mvli.config.get("Settings.ikeaSettings.deviceIDs")
+    });
   };
 
   useEffect(() => {

@@ -1,31 +1,31 @@
-import {configVars} from "../../../config/config";
-import {hueVars, integrationStates} from "../../vars/vars";
+import { configVars } from "../../../config/config";
+import { hueVars, integrationStates } from "../../vars/vars";
 import getHueSatFromRGB from "../../utils/getHueSatFromRGB";
 import hueLightStateBuilder from "./hueLightStateBuilder";
 
 // hue light state builder arg format:
-  // {
-  //   "on": true,
-  //   "groupMode": false,
-  //   "brightness": 100,
-  //   "hue": 0,
-  //   "sat": 0,
-  //   "rgb": {
-  //     r: 255,
-  //     g: 255,
-  //     b: 255
-  //   },
-  //   "transition": "instant/fade",
-  //   "thirdPartyCompatibility": false,
-  // }
+// {
+//   "on": true,
+//   "groupMode": false,
+//   "brightness": 100,
+//   "hue": 0,
+//   "sat": 0,
+//   "rgb": {
+//     r: 255,
+//     g: 255,
+//     b: 255
+//   },
+//   "transition": "instant/fade",
+//   "thirdPartyCompatibility": false,
+// }
 
 export default async function hueControl(r, g, b, brightness, action){
   if (configVars.hueDisable || !integrationStates.hueOnline) return;
 
   brightness = Math.round((brightness / 100) * 254);
-  const colorTransData = await getHueSatFromRGB(r, g, b)
-  const hueValue = Math.round(colorTransData.hue / 360 * 65535)
-  const satValue = Math.round(colorTransData.sat / 100 * 254)
+  const colorTransData = await getHueSatFromRGB(r, g, b);
+  const hueValue = Math.round(colorTransData.hue / 360 * 65535);
+  const satValue = Math.round(colorTransData.sat / 100 * 254);
 
   switch (action){
     case "on":
@@ -43,8 +43,8 @@ export default async function hueControl(r, g, b, brightness, action){
           sat: satValue,
           transition: configVars.hueEnableFade ? "fade" : "instant",
           thirdPartyCompatibility: configVars.hueThirdPartyCompatMode
-        })
-        await hueVars.authHueAPI.lights.setLightState(device, lightState)
+        });
+        await hueVars.authHueAPI.lights.setLightState(device, lightState);
       }
       for (const entertainmentZone of configVars.hueEntertainmentZones){
         const lightState = await hueLightStateBuilder({
@@ -55,8 +55,8 @@ export default async function hueControl(r, g, b, brightness, action){
           sat: satValue,
           transition: configVars.hueEnableFade ? "fade" : "instant",
           thirdPartyCompatibility: configVars.hueThirdPartyCompatMode
-        })
-        await hueVars.authHueAPI.groups.setGroupState(entertainmentZone, lightState)
+        });
+        await hueVars.authHueAPI.groups.setGroupState(entertainmentZone, lightState);
       }
       break;
     case "off":
@@ -66,8 +66,8 @@ export default async function hueControl(r, g, b, brightness, action){
           groupMode: false,
           transition: configVars.hueEnableFade ? "fade" : "instant",
           thirdPartyCompatibility: configVars.hueThirdPartyCompatMode
-        })
-        await hueVars.authHueAPI.lights.setLightState(device, lightState)
+        });
+        await hueVars.authHueAPI.lights.setLightState(device, lightState);
       }
       for (const entertainmentZone of configVars.hueEntertainmentZones){
         const lightState = await hueLightStateBuilder({
@@ -75,8 +75,8 @@ export default async function hueControl(r, g, b, brightness, action){
           groupMode: true,
           transition: configVars.hueEnableFade ? "fade" : "instant",
           thirdPartyCompatibility: configVars.hueThirdPartyCompatMode
-        })
-        await hueVars.authHueAPI.groups.setGroupState(entertainmentZone, lightState)
+        });
+        await hueVars.authHueAPI.groups.setGroupState(entertainmentZone, lightState);
       }
       break;
   }

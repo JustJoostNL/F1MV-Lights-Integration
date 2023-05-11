@@ -23,6 +23,9 @@ import openRGBInitialize from "./app/integrations/openrgb/openRGBInit";
 import homeAssistantCheckDeviceSpectrum from "./app/integrations/home-assistant/homeAssistantCheckDeviceSpectrum";
 import getWLEDDevices from "./app/integrations/wled/getWLEDDevices";
 import discoverHueBridge from "./app/integrations/hue/discoverHueBridge";
+import discoverIkeaBridge from "./app/integrations/ikea/discoverIkeaBridge";
+import ikeaGetDevices from "./app/integrations/ikea/ikeaGetDevices";
+import ikeaCheckSpectrum from "./app/integrations/ikea/checkIkeaDeviceSpectrum";
 
 Sentry.init({
   dsn: "https://e64c3ec745124566b849043192e58711@o4504289317879808.ingest.sentry.io/4504289338392576",
@@ -113,13 +116,13 @@ function onReady() {
         `);
   });
 
-  if (process.defaultApp) {
-    if (process.argv.length >= 2) {
-      app.setAsDefaultProtocolClient("f1mvli", process.execPath, [path.resolve(process.argv[1])]);
-    }
-  } else {
-    app.setAsDefaultProtocolClient("f1mvli");
-  }
+  // if (process.defaultApp) {
+  //   if (process.argv.length >= 2) {
+  //     app.setAsDefaultProtocolClient("f1mvli", process.execPath, [path.resolve(process.argv[1])]);
+  //   }
+  // } else {
+  //   app.setAsDefaultProtocolClient("f1mvli");
+  // }
 
   log.initialize({ preload: true });
   log.transports.console.level = false;
@@ -264,20 +267,39 @@ ipcMain.handle("log:getLogs", () => {
 });
 
 // integrations
+// home assistant
 ipcMain.handle("integrations:homeAssistant:getDevices", () => {
   return homeAssistantGetDevices();
-});
-ipcMain.handle("integrations:WLED:getDevices", () => {
-  return getWLEDDevices();
 });
 ipcMain.handle("integrations:homeAssistant:checkDeviceSpectrum", (_, arg) => {
   return homeAssistantCheckDeviceSpectrum(arg);
 });
-ipcMain.handle("integrations:openRGB:reConnect", async () => {
-  return await openRGBInitialize();
+// wled
+ipcMain.handle("integrations:WLED:getDevices", () => {
+  return getWLEDDevices();
 });
-ipcMain.handle("integrations:hue:discoverBridge", (_, arg) => {
-  return discoverHueBridge(arg);
+//openrgb
+ipcMain.handle("integrations:openRGB:reConnect", () => {
+  return openRGBInitialize();
+});
+// hue
+ipcMain.handle("integrations:hue:discoverBridge", async (_, arg) => {
+  return await discoverHueBridge(arg);
+});
+// ikea
+ipcMain.handle("integrations:ikea:searchAndConnectToGateway", async () => {
+  if (integrationStates.ikeaOnline){
+    return {
+      success: false,
+      status: "info",
+      message: "The app is already connected to an IKEA gateway!",
+    };
+  } else {
+    return await discoverIkeaBridge();
+  }
+});
+ipcMain.handle("integrations:ikea:getDevices", async () => {
+  return await ikeaGetDevices();
 });
 
 

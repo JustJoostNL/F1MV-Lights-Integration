@@ -6,6 +6,7 @@ import webServerInitialize from "./webserver/webServerInit";
 import streamDeckInitialize from "./elgato-streamdeck/streamDeckInit";
 import discordRPC from "./discord/discordRPC";
 import hueInitialize from "./hue/hueInit";
+import ikeaInitialize from "./ikea/ikeaInit";
 
 export default async function initAllIntegrations(){
   const ikeaDisabled = configVars.ikeaDisable;
@@ -17,12 +18,8 @@ export default async function initAllIntegrations(){
   const discordRPCDisabled = configVars.discordRPCDisable;
   const webServerDisabled = configVars.webServerDisable;
 
-  function empty(){
-    return;
-  }
-
   const integrations = [
-    { name: "ikea", func: empty, disabled: ikeaDisabled },
+    { name: "ikea", func: ikeaInitialize, disabled: ikeaDisabled },
     { name: "govee", func: goveeInitialize, disabled: goveeDisabled },
     { name: "hue", func: hueInitialize, disabled: hueDisabled },
     { name: "openRGB", func: openRGBInitialize, disabled: openRGBDisabled },

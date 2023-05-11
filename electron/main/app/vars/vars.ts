@@ -74,6 +74,14 @@ export const streamDeckVars = {
   streamDeckKeyCount: null as number | null,
 };
 
+// ikea
+export const ikeaVars = {
+  bridgeDiscovered: false as boolean,
+  allIkeaDevices: [],
+  colorDevices: [] as number[],
+  whiteDevices: [] as number[],
+};
+
 // hue
 export const hueVars = {
   authHueAPI: null,
@@ -81,4 +89,4 @@ export const hueVars = {
   hueAppName: "F1MV-Lights-Integration" as string,
   hueDeviceName: "F1MV-Lights-Integration-APP" as string,
   hueCreatedUser: null,
-}
+};

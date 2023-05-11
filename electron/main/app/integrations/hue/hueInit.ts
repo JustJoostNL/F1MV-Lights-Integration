@@ -1,6 +1,6 @@
-import {configVars, handleConfigSet} from "../../../config/config";
+import { configVars, handleConfigSet } from "../../../config/config";
 import log from "electron-log";
-import {hueVars, integrationStates} from "../../vars/vars";
+import { hueVars, integrationStates } from "../../vars/vars";
 const hue = require("node-hue-api").api;
 
 export default async function hueInitialize(){
@@ -16,14 +16,12 @@ export default async function hueInitialize(){
     return;
   }
   try {
-    const hueClient = await hue.createLocal(hueBridgeIP).connect().catch((err: any) => {
-      console.log(err);
-    });
+    const hueClient = await hue.createLocal(hueBridgeIP).connect();
 
     if (!hueToken) {
       log.debug("No Philips Hue token found, generating a new one...");
       const newToken = await hueClient.users.createUser(hueAppName, hueDeviceName);
-      await handleConfigSet(null, "Settings.hueSettings.hueToken", newToken.username)
+      await handleConfigSet(null, "Settings.hueSettings.hueToken", newToken.username);
       token = newToken.username;
       log.debug(`New Philips Hue token generated: ${newToken.username}`);
     } else {

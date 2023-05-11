@@ -10,6 +10,7 @@ import webServerControl from "../integrations/webserver/webServerControl";
 import streamDeckControl from "../integrations/elgato-streamdeck/streamDeckControl";
 import WLEDControl from "../integrations/wled/WLEDControl";
 import hueControl from "../integrations/hue/hueControl";
+import ikeaControl from "../integrations/ikea/ikeaControl";
 
 export default async function controlAllLights(r, g, b, brightness, action, flag) {
   const effectSettings = configVars.effectSettings as IEffectSettingsConfig;
@@ -51,7 +52,10 @@ export default async function controlAllLights(r, g, b, brightness, action, flag
     await WLEDControl(r, g, b, brightness, action);
   }
   if (!configVars.hueDisable){
-    await hueControl(r, g, b, brightness, action)
+    await hueControl(r, g, b, brightness, action);
+  }
+  if (!configVars.ikeaDisable){
+    await ikeaControl(r, g, b, brightness, action, flag);
   }
 
   // -----------

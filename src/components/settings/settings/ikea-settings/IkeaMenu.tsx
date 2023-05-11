@@ -6,14 +6,17 @@ import MenuItem from "@mui/material/MenuItem";
 import SearchIcon from "@mui/icons-material/Search";
 import Typography from "@mui/material/Typography";
 import Divider from "@mui/material/Divider";
-import AddIcon from "@mui/icons-material/Add";
+import LightBulbIcon from "@mui/icons-material/Lightbulb";
 import LinkIcon from "@mui/icons-material/Link";
 import { font } from "@/index";
 import ReactGA from "react-ga4";
+import { saveConfig } from "@/components/settings/settings/ikea-settings/IkeaSettings";
+import Toaster from "@/components/toaster/Toaster";
 
 
 export default function IkeaMenu(){
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+  const [toaster, setToaster] = React.useState<{ message: string, severity: "error" | "warning" | "info" | "success", time: number } | null>(null);
   const open = Boolean(anchorEl);
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -21,14 +24,41 @@ export default function IkeaMenu(){
   const handleClose = () => {
     setAnchorEl(null);
   };
-  const handleSelectIkeaDevices = () => {
+  const handleSelectIkeaDevices = async () => {
     setAnchorEl(null);
+    await saveConfig();
+    await window.f1mvli.utils.openNewWindow({
+      browserWindowOptions: {
+        title: "Ikea Device Selector — F1MV-Lights-Integration",
+        width: 756,
+        height: 690,
+        resizable: false,
+        maximizable: false,
+        minWidth: 756,
+        minHeight: 690,
+      },
+      url: "/select-ikea-devices"
+    });
     ReactGA.event({
       category: "ikea_tools_menu",
       action: "select_ikea_devices",
     });
   };
-  const handleSearchAndConnect = () => {
+  const handleSearchAndConnect = async () => {
+    const response = await window.f1mvli.integrations.ikea.searchAndConnectToGateway();
+    if (response.success){
+      setToaster({ message: "Successfully connected to the IKEA gateway!", severity: "success", time: 5000 });
+      setTimeout(() => {
+        setToaster(null);
+      }, 5100);
+    } else {
+      const message = response.message;
+      const status = response.status;
+      setToaster({ message: message, severity: status, time: 5000 });
+      setTimeout(() => {
+        setToaster(null);
+      }, 5100);
+    }
     setAnchorEl(null);
     ReactGA.event({
       category: "ikea_tools_menu",
@@ -71,23 +101,24 @@ export default function IkeaMenu(){
           <Typography
             variant="body2"
             sx={menuItemStyle}>
-                        Search and connect to Ikea gateway
+            Search and connect to IKEA gateway
           </Typography>
         </MenuItem>
         <Divider />
         <MenuItem
           onClick={handleSelectIkeaDevices}>
-          <AddIcon
+          <LightBulbIcon
             sx={{
               mr: 2
             }}/>
           <Typography
             variant="body2"
             sx={menuItemStyle}>
-                        Select Ikea Devices
+            Manage IKEA Devices
           </Typography>
         </MenuItem>
       </Menu>
+      {toaster && <Toaster message={toaster.message} severity={toaster.severity} time={toaster.time} />}
     </div>
   );
 

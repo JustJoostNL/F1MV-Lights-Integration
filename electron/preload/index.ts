@@ -36,6 +36,10 @@ export const f1mvli = {
     hue: {
       discoverBridge: (discoverMode: "remote" | "local") => ipcRenderer.invoke("integrations:hue:discoverBridge", discoverMode),
     },
+    ikea: {
+      searchAndConnectToGateway: () => ipcRenderer.invoke("integrations:ikea:searchAndConnectToGateway"),
+      getDevices: () => ipcRenderer.invoke("integrations:ikea:getDevices"),
+    },
   }
 };
 

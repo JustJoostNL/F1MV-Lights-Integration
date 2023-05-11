@@ -1,7 +1,7 @@
 const {
   LightState,
   GroupLightState,
-} = require('node-hue-api').v3.lightStates
+} = require("node-hue-api").v3.lightStates;
 
 
 
@@ -22,58 +22,58 @@ export default async function hueLightStateBuilder(data){
   // }
 
   if (data.groupMode){
-    const groupLightState = new GroupLightState()
+    const groupLightState = new GroupLightState();
     if (data.on){
-      groupLightState.on()
+      groupLightState.on();
     } else {
-      groupLightState.off()
+      groupLightState.off();
     }
 
     if (data.brightness){
-      groupLightState.brightness(data.brightness)
+      groupLightState.brightness(data.brightness);
     }
 
     if (data.hue && data.sat){
-      groupLightState.hue(data.hue)
-      groupLightState.saturation(data.sat)
+      groupLightState.hue(data.hue);
+      groupLightState.saturation(data.sat);
     }
 
     if (data.transition){
       if (data.transition === "instant"){
-        groupLightState.transitionInstant()
+        groupLightState.transitionInstant();
       } else if (data.transition === "fade"){
         // we do nothing, since this is default
       }
     }
 
-    return groupLightState
+    return groupLightState;
   } else {
-    const lightState = new LightState()
+    const lightState = new LightState();
     if (data.on){
-      lightState.on()
+      lightState.on();
     } else {
-      lightState.off()
+      lightState.off();
     }
 
     if (data.brightness){
-      lightState.brightness(data.brightness)
+      lightState.brightness(data.brightness);
     }
 
     if (data.r && data.g && data.b){
-      lightState.rgb(data.rgb.r, data.rgb.g, data.rgb.b)
+      lightState.rgb(data.rgb.r, data.rgb.g, data.rgb.b);
     } else if (data.hue && data.sat){
-      lightState.hue(data.hue)
-      lightState.saturation(data.sat)
+      lightState.hue(data.hue);
+      lightState.saturation(data.sat);
     }
 
     if (data.transition){
       if (data.transition === "instant"){
-        lightState.transitionInstant()
+        lightState.transitionInstant();
       } else if (data.transition === "fade"){
         // we do nothing, since this is default
       }
     }
 
-    return lightState
+    return lightState;
   }
 }

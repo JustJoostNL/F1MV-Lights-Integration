@@ -31,6 +31,7 @@
     "electron-updater": "^5.3.0",
     "express": "^4.18.2",
     "govee-lan-control": "^3.0.0",
+    "node-tradfri-client": "^3.2.0",
     "huejay": "^1.9.0",
     "node-fetch": "^2.6.9",
     "node-hue-api": "^5.0.0-beta.16",

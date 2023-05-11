@@ -43,7 +43,7 @@ export interface IConfig {
       securityCode: string;
       identity: string | undefined;
       psk: string | undefined;
-      deviceIDs: string[];
+      deviceIDs: number[];
     };
     goveeSettings: {
       goveeDisable: boolean;
@@ -62,11 +62,11 @@ export interface IConfig {
     };
     nanoLeafSettings: {
       nanoLeafDisable: boolean;
-      devices: unknown[];
+      devices: string[];
     };
     WLEDSettings: {
       WLEDDisable: boolean;
-      devices: unknown[];
+      devices: string[];
     };
     yeeLightSettings: {
       yeeLightDisable: boolean;

@@ -4,11 +4,12 @@ import { configMigrations } from "./migrations";
 import log from "electron-log";
 import { configChangedEmitEvent } from "../index";
 import createF1MVURLs from "../app/f1mv/createF1MVURLs";
-import { goveeVars, integrationStates, webServerVars } from "../app/vars/vars";
+import { goveeVars, ikeaVars, integrationStates, webServerVars } from "../app/vars/vars";
 import goveeInitialize from "../app/integrations/govee/goveeInit";
 import homeAssistantInitialize from "../app/integrations/home-assistant/homeAssistantInit";
 import webServerInitialize from "../app/integrations/webserver/webServerInit";
 import streamDeckInitialize from "../app/integrations/elgato-streamdeck/streamDeckInit";
+import ikeaInitialize from "../app/integrations/ikea/ikeaInit";
 
 const userConfig = new Store({
   name: "settings",
@@ -97,11 +98,11 @@ export const configVars = {
   hueEnableFadeWhenEffect: userConfig.get("Settings.hueSettings.enableFadeWithEffects"),
 
   // IKEA settings
-  ikeaDisable: userConfig.get("Settings.ikeaSettings.ikeaDisable"),
-  ikeaSecurityCode: userConfig.get("Settings.ikeaSettings.securityCode"),
-  ikeaIdentity: userConfig.get("Settings.ikeaSettings.identity"),
-  ikeaPsk: userConfig.get("Settings.ikeaSettings.psk"),
-  ikeaDevices: userConfig.get("Settings.ikeaSettings.deviceIDs"),
+  ikeaDisable: userConfig.get("Settings.ikeaSettings.ikeaDisable") as boolean,
+  ikeaSecurityCode: userConfig.get("Settings.ikeaSettings.securityCode") as string,
+  ikeaIdentity: userConfig.get("Settings.ikeaSettings.identity") as string,
+  ikeaPsk: userConfig.get("Settings.ikeaSettings.psk") as string,
+  ikeaDevices: userConfig.get("Settings.ikeaSettings.deviceIDs") as unknown[],
 
   // Govee settings
   goveeDisable: userConfig.get("Settings.goveeSettings.goveeDisable"),
@@ -172,12 +173,10 @@ function handleConfigChanges(newVars, oldVars){
 
   if (oldVars.ikeaDisable && !newVars.ikeaDisable) {
     integrationStates.ikeaOnline = false;
-    //todo: clear devices + init again
-    //allIkeaDevices = [];
-    //colorDevices = [];
-    //whiteDevices = [];
-
-    //ikeaInitialize();
+    ikeaVars.allIkeaDevices = [];
+    ikeaVars.colorDevices = [];
+    ikeaVars.whiteDevices = [];
+    ikeaInitialize();
   }
 
   if (oldVars.homeAssistantDisable && !newVars.homeAssistantDisable) {

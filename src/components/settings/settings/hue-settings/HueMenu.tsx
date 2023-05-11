@@ -7,14 +7,14 @@ import Menu from "@mui/material/Menu";
 import Typography from "@mui/material/Typography";
 import RefreshIcon from "@mui/icons-material/Refresh";
 import SearchIcon from "@mui/icons-material/Search";
-import AddIcon from "@mui/icons-material/Add";
+import LightBulbIcon from "@mui/icons-material/Lightbulb";
 import { font } from "@/index";
 import ReactGA from "react-ga4";
 import Toaster from "@/components/toaster/Toaster";
 
 export default function HueMenu() {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-  const [toaster, setToaster] = React.useState<{ message: string, severity: "error" | "warning" | "info", time: number } | null>(null);
+  const [toaster, setToaster] = React.useState<{ message: string, severity: "error" | "warning" | "info" | "success", time: number } | null>(null);
   const open = Boolean(anchorEl);
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -31,13 +31,13 @@ export default function HueMenu() {
   }) => {
     const status = data;
     if (status.status === "success"){
-      const ip = status.ip
+      const ip = status.ip;
       setToaster({ message: `Successfully found Hue Bridge at ${ip}`, severity: "info", time: 5000 });
       setTimeout(() => {
         setToaster(null);
       }, 5100);
     } else {
-      const message = status.message
+      const message = status.message;
       setToaster({ message: message, severity: "warning", time: 5000 });
       setTimeout(() => {
         setToaster(null);
@@ -61,21 +61,21 @@ export default function HueMenu() {
   };
   const handleSearchForHueBridgesLocal = async () => {
     setAnchorEl(null);
-    setToaster({ message: `Searching...`, severity: "info", time: 3000 });
+    setToaster({ message: "Searching...", severity: "info", time: 3000 });
     setTimeout(() => {
       setToaster(null);
     }, 3100);
-    const status = await window.f1mvli.integrations.hue.discoverBridge("local")
-    await handleDiscoverData(status)
+    const status = await window.f1mvli.integrations.hue.discoverBridge("local");
+    await handleDiscoverData(status);
     ReactGA.event({
       category: "hue_tools_menu",
       action: "search_for_hue_bridges_local",
     });
-  }
+  };
   const handleSearchForHueBridgesRemote = async () => {
     setAnchorEl(null);
-    const status = await window.f1mvli.integrations.hue.discoverBridge("remote")
-    await handleDiscoverData(status)
+    const status = await window.f1mvli.integrations.hue.discoverBridge("remote");
+    await handleDiscoverData(status);
     ReactGA.event({
       category: "hue_tools_menu",
       action: "search_for_hue_bridges_remote",
@@ -158,26 +158,26 @@ export default function HueMenu() {
         <Divider />
         <MenuItem
           onClick={handleSelectHueDevices}>
-          <AddIcon
+          <LightBulbIcon
             sx={{
               mr: 2
             }}/>
           <Typography
             variant="body2"
             sx={menuItemStyle}>
-                        Select Hue devices
+            Manage Hue devices
           </Typography>
         </MenuItem>
         <MenuItem
           onClick={handleSelectHueEntertainmentZones}>
-          <AddIcon
+          <LightBulbIcon
             sx={{
               mr: 2
             }}/>
           <Typography
             variant="body2"
             sx={menuItemStyle}>
-                        Select Hue entertainment zones
+            Manage Hue entertainment zones
           </Typography>
         </MenuItem>
       </Menu>

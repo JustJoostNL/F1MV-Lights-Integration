@@ -8,6 +8,7 @@ import LoadingScreen from "@/pages/LoadingScreen";
 import HassDeviceSelector from "@/pages/device-selectors/hass-device-selector";
 import AddWLEDDevice from "@/pages/device-selectors/add-wled-device";
 import Settings from "@/pages/Settings";
+import IkeaDeviceSelector from "@/pages/device-selectors/ikea-device-selector";
 
 const router = createHashRouter([
   {
@@ -37,6 +38,10 @@ const router = createHashRouter([
   {
     path: "/select-hass-devices",
     element: <HassDeviceSelector/>
+  },
+  {
+    path: "/select-ikea-devices",
+    element: <IkeaDeviceSelector/>
   },
   {
     path: "/add-wled-device",

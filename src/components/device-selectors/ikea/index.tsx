@@ -3,27 +3,27 @@ import { DataGrid, GridColDef, GridSelectionModel } from "@mui/x-data-grid";
 import LoadingScreen from "@/pages/LoadingScreen";
 import { Checkbox, Switch } from "@mui/material";
 
-export function HomeAssistantDeviceSelector() {
-  const [hassData, setHassData] = useState<any | null>(null);
+export default function IKEADeviceSelector() {
+  const [ikeaData, setIkeaData] = useState<any | null>(null);
   const [selectionModel, setSelectionModel] = useState<any[]>([]);
 
   // fetch the initial data when the component mounts
   useEffect(() => {
-    async function fetchHassData() {
-      const fetchedData = await window.f1mvli.integrations.homeAssistant.getDevices();
-      setHassData(fetchedData);
+    async function fetchIkeaData() {
+      const fetchedData = await window.f1mvli.integrations.ikea.getDevices();
+      setIkeaData(fetchedData);
       setSelectionModel(fetchedData.alreadySelectedDevices);
     }
-    fetchHassData();
+    fetchIkeaData();
   }, []);
 
   // refresh the state every 2 seconds
   useEffect(() => {
     const intervalId = setInterval(async () => {
-      const fetchedData = await window.f1mvli.integrations.homeAssistant.getDevices();
-      setHassData((hassData: any) => {
-        if (hassData) {
-          const existingRows = hassData.devices;
+      const fetchedData = await window.f1mvli.integrations.ikea.getDevices();
+      setIkeaData((ikeaData: any) => {
+        if (ikeaData) {
+          const existingRows = ikeaData.devices;
           const newRows = fetchedData.devices.map((device: any) => {
             const existingRow = existingRows.find((row: any) => row.id === device.id);
             if (existingRow) {
@@ -36,7 +36,7 @@ export function HomeAssistantDeviceSelector() {
           });
           return {
             devices: newRows,
-            alreadySelectedDevices: hassData.alreadySelectedDevices
+            alreadySelectedDevices: ikeaData.alreadySelectedDevices
           };
         }
         return null;
@@ -47,21 +47,23 @@ export function HomeAssistantDeviceSelector() {
 
   const columns: GridColDef[] = [
     { field: "name", headerName: "Name", width: 200 },
-    { field: "id", headerName: "ID", width: 200 },
+    { field: "id", headerName: "ID", width: 100 },
     { field: "state", headerName: "State", width: 100 },
+    { field: "spectrum", headerName: "Spectrum", width: 100 },
   ];
 
-  if (!hassData) {
+  if (!ikeaData) {
     return (
       <LoadingScreen/>
     );
   }
 
-  const rows = hassData.devices.map((device: any) => {
+  const rows = ikeaData.devices.map((device: any) => {
     return {
       id: device.id,
       name: device.name,
-      state: device.state
+      state: device.state,
+      spectrum: device.spectrum
     };
   });
 
@@ -69,11 +71,11 @@ export function HomeAssistantDeviceSelector() {
     setSelectionModel(newSelection);
     const selectedDevices = rows.filter((row: any) => newSelection.includes(row.id));
     const selectedDeviceIds = selectedDevices.map((device: any) => device.id);
-    window.f1mvli.config.set("Settings.homeAssistantSettings.devices", selectedDeviceIds);
+    window.f1mvli.config.set("Settings.ikeaSettings.deviceIDs", selectedDeviceIds);
   };
 
   return (
-    <div style={{ height: 527, width: "80%", alignItems: "center", alignContent: "center", marginLeft: 70 }}>
+    <div style={{ height: 527, width: "120%", marginLeft: -43 }}>
       <DataGrid
         rows={rows}
         components={{

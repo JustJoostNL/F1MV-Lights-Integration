@@ -3,10 +3,8 @@ import Button from "@mui/material/Button";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
-import SearchIcon from "@mui/icons-material/Search";
 import Typography from "@mui/material/Typography";
-import Divider from "@mui/material/Divider";
-import AddIcon from "@mui/icons-material/Add";
+import LightBulbIcon from "@mui/icons-material/Lightbulb";
 import { font } from "@/index";
 import ReactGA from "react-ga4";
 
@@ -55,7 +53,7 @@ export default function NanoleafMenu(){
         onClick={handleClick}
         endIcon={<KeyboardArrowDownIcon />}
       >
-                Nanoleaf Tools
+        Nanoleaf Tools
       </Button>
       <Menu
         id="basic-menu"
@@ -67,26 +65,14 @@ export default function NanoleafMenu(){
         }}
       >
         <MenuItem onClick={handleAddNanoleafDevice}>
-          <AddIcon
+          <LightBulbIcon
             sx={{
               mr: 2
             }}/>
           <Typography
             variant="body2"
             sx={menuItemStyle}>
-                        Add a Nanoleaf Device
-          </Typography>
-        </MenuItem>
-        <Divider />
-        <MenuItem
-          onClick={handleViewCurrentlyConnectedNanoleafDevices}>
-          <SearchIcon sx={{
-            mr: 2
-          }}/>
-          <Typography
-            variant="body2"
-            sx={menuItemStyle}>
-                        View currently connected Nanoleaf devices
+            Manage Nanoleaf devices
           </Typography>
         </MenuItem>
       </Menu>

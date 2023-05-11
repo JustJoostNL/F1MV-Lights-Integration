@@ -12,7 +12,6 @@ export default function Toaster(props:{
     if (reason === "clickaway") {
       return;
     }
-
     setOpen(false);
   };
 

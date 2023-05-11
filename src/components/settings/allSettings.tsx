@@ -140,7 +140,6 @@ export async function getConfig() {
 }
 
 export async function refreshConfig() {
-  console.log("Refreshing config...");
   await fetchConfig();
 }
 

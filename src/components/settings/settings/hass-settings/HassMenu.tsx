@@ -4,7 +4,7 @@ import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import Typography from "@mui/material/Typography";
-import AddIcon from "@mui/icons-material/Add";
+import LightBulbIcon from "@mui/icons-material/Lightbulb";
 import { font } from "@/index";
 import ReactGA from "react-ga4";
 import { saveConfig } from "@/components/settings/settings/hass-settings/HassSettings";
@@ -73,14 +73,14 @@ export default function HassMenu(){
       >
         <MenuItem
           onClick={handleSelectHassDevices}>
-          <AddIcon
+          <LightBulbIcon
             sx={{
               mr: 2
             }}/>
           <Typography
             variant="body2"
             sx={menuItemStyle}>
-                        Select Home Assistant Devices
+            Manage Home Assistant Devices
           </Typography>
         </MenuItem>
       </Menu>
