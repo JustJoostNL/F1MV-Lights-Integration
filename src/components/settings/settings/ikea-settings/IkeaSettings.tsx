@@ -53,10 +53,10 @@ export default function IkeaSettingsContent() {
           <Box sx={settingBoxSX}>
             <div>
               <Typography variant="h6" component="div">
-                                Disable Ikea Integration
+                                Disable IKEA Integration
               </Typography>
               <Typography variant="body2" component="div" sx={{ color: "grey" }}>
-                                This will disable the Ikea integration, enable this if you don't have Ikea devices.
+                                This will disable the IKEA integration, enable this if you don't have IKEA devices.
               </Typography>
             </div>
             <BlueSwitch
@@ -74,10 +74,10 @@ export default function IkeaSettingsContent() {
                 <Box sx={settingBoxSX}>
                   <div>
                     <Typography variant="h6" component="div">
-                                            Ikea gateway security code
+                      IKEA gateway security code
                     </Typography>
                     <Typography variant="body2" component="div" sx={{ color: "grey" }}>
-                                            The security code of your Ikea gateway, you can find this at the back of your gateway.
+                                            The security code of your IKEA gateway, you can find this at the back of your gateway.
                     </Typography>
                   </div>
                   <TextField
@@ -100,12 +100,12 @@ export default function IkeaSettingsContent() {
                 <>
                   <Toaster message={"Ikea advanced settings are now visible!"} severity={"info"} time={3000}/>
                 </>
-                <Alert sx={{ mb: "20px", mr: "650px" }} severity="warning">Please do not change these settings unless you know what you're doing!!</Alert>
                 <Divider sx={{ mb: "20px" }}/>
+                <Alert sx={{ mb: "20px", mr: "650px" }} severity="warning">Please do not change these settings unless you know what you're doing!!</Alert>
                 <Box sx={settingBoxSX}>
                   <div>
                     <Typography variant="h6" component="div">
-                                            Ikea Identity
+                      IKEA Identity
                     </Typography>
                     <Typography variant="body2" component="div" sx={{ color: "grey" }}>
                                             This is the identity the app uses to pair with the gateway, this is/will be generated automatically.
@@ -125,7 +125,7 @@ export default function IkeaSettingsContent() {
                 <Box sx={settingBoxSX}>
                   <div>
                     <Typography variant="h6" component="div">
-                                            Ikea Pre-shared key
+                      IKEA Pre-shared key
                     </Typography>
                     <Typography variant="body2" component="div" sx={{ color: "grey" }}>
                                             This is the pre-shared key the app uses to pair with the gateway, this is/will be generated automatically.

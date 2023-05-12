@@ -30,12 +30,12 @@ export default async function hueLightStateBuilder(data){
     }
 
     if (data.brightness){
-      groupLightState.brightness(data.brightness);
+      groupLightState.bri(data.brightness);
     }
 
     if (data.hue && data.sat){
       groupLightState.hue(data.hue);
-      groupLightState.saturation(data.sat);
+      groupLightState.sat(data.sat);
     }
 
     if (data.transition){
@@ -56,14 +56,14 @@ export default async function hueLightStateBuilder(data){
     }
 
     if (data.brightness){
-      lightState.brightness(data.brightness);
+      lightState.bri(data.brightness);
     }
 
-    if (data.r && data.g && data.b){
+    if (data.rgb && !data.thirdPartyCompatibility){
       lightState.rgb(data.rgb.r, data.rgb.g, data.rgb.b);
     } else if (data.hue && data.sat){
       lightState.hue(data.hue);
-      lightState.saturation(data.sat);
+      lightState.sat(data.sat);
     }
 
     if (data.transition){

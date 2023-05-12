@@ -6,6 +6,8 @@ import { useHotkeys } from "react-hotkeys-hook";
 import Toaster from "@/components/toaster/Toaster";
 import Divider from "@mui/material/Divider";
 
+export let saveConfig: () => Promise<void> = async () => {};
+
 export default function HueSettingsContent() {
   const [settings, setSettings] = useState<any | null>(null);
   const [hueAdvancedSettings, setHueAdvancedSettings] = useState(false);
@@ -18,14 +20,20 @@ export default function HueSettingsContent() {
   useEffect(() => {
     async function fetchConfig() {
       const config = await getConfig();
+      // make sure the disable hue, since it is in beta
+      //config.Settings.hueSettings.hueDisable = true;
       setSettings(config.Settings.hueSettings);
     }
     fetchConfig();
   }, []);
 
-  const saveConfig = async () => {
+  saveConfig = async () => {
     if (!settings) return;
-    await window.f1mvli.config.set("Settings.hueSettings", settings);
+    await window.f1mvli.config.set("Settings.hueSettings", {
+      ...settings,
+      deviceIDs: await window.f1mvli.config.get("Settings.hueSettings.deviceIDs"),
+      entertainmentZoneIDs: await window.f1mvli.config.get("Settings.hueSettings.entertainmentZoneIDs")
+    });
   };
 
   useEffect(() => {
@@ -63,10 +71,14 @@ export default function HueSettingsContent() {
             />
           </Box>
           <>
+            {!settings.hueDisable && (
+              <Divider sx={{ mb: "20px" }}/>
+            )}
+          </>
+          <>
             {hueAdvancedSettings && !settings.hueDisable && (
               <>
                 <>
-                  <Divider sx={{ mb: "20px" }}/>
                   <Toaster message={"Hue advanced settings are now visible!"} severity={"info"} time={3000}/>
                 </>
                 <Alert sx={{ mb: "20px", mr: "650px" }} severity="warning">Please do not change these settings unless you know what you're doing!!</Alert>
@@ -118,27 +130,10 @@ export default function HueSettingsContent() {
                   <Box sx={settingBoxSX}>
                     <div>
                       <Typography variant="h6" component="div">
-                                                Hue 3rd party compatibility mode
+                        Enable fade
                       </Typography>
                       <Typography variant="body2" component="div" sx={{ color: "grey" }}>
-                                                Enable this if the 3rd party devicess connected to your Hue bridge are not working correctly.
-                      </Typography>
-                    </div>
-                    <BlueSwitch
-                      id="hue-3rd-party-compat-mode-switch"
-                      checked={settings.hue3rdPartyCompatMode}
-                      onChange={(event) => {
-                        handleSetSingleSetting("hue3rdPartyCompatMode", event.target.checked, setSettings, settings);
-                      }}
-                    />
-                  </Box>
-                  <Box sx={settingBoxSX}>
-                    <div>
-                      <Typography variant="h6" component="div">
-                                                Enable fade
-                      </Typography>
-                      <Typography variant="body2" component="div" sx={{ color: "grey" }}>
-                                                Enable this if you want your Hue devices to fade to the new color instead of instantly changing.
+                        Enable this if you want your Hue devices to fade to the new color instead of instantly changing.
                       </Typography>
                     </div>
                     <BlueSwitch
@@ -152,10 +147,10 @@ export default function HueSettingsContent() {
                   <Box sx={settingBoxSX}>
                     <div>
                       <Typography variant="h6" component="div">
-												Enable fade for effects
+                        Enable fade for effects
                       </Typography>
                       <Typography variant="body2" component="div" sx={{ color: "grey" }}>
-												Enable this if you want your Hue devices to fade to the new color when an effect is active instead of instantly changing.
+                        Enable this if you want your Hue devices to fade to the new color when an effect is active instead of instantly changing.
                       </Typography>
                     </div>
                     <BlueSwitch
@@ -163,6 +158,24 @@ export default function HueSettingsContent() {
                       checked={settings.enableFadeWithEffects}
                       onChange={(event) => {
                         handleSetSingleSetting("enableFadeWithEffects", event.target.checked, setSettings, settings);
+                      }}
+                    />
+                  </Box>
+                  <Divider sx={{ mb: "20px" }}/>
+                  <Box sx={settingBoxSX}>
+                    <div>
+                      <Typography variant="h6" component="div">
+                                                Hue third-party compatibility mode
+                      </Typography>
+                      <Typography variant="body2" component="div" sx={{ color: "grey" }}>
+                                                Enable this if the third-party devices connected to your Hue bridge are not working correctly.
+                      </Typography>
+                    </div>
+                    <BlueSwitch
+                      id="hue-3rd-party-compat-mode-switch"
+                      checked={settings.hue3rdPartyCompatMode}
+                      onChange={(event) => {
+                        handleSetSingleSetting("hue3rdPartyCompatMode", event.target.checked, setSettings, settings);
                       }}
                     />
                   </Box>

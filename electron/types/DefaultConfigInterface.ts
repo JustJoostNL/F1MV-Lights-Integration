@@ -60,17 +60,9 @@ export interface IConfig {
       token: string;
       devices: string[];
     };
-    nanoLeafSettings: {
-      nanoLeafDisable: boolean;
-      devices: string[];
-    };
     WLEDSettings: {
       WLEDDisable: boolean;
       devices: string[];
-    };
-    yeeLightSettings: {
-      yeeLightDisable: boolean;
-      deviceIPs: string[];
     };
     streamDeckSettings: {
       streamDeckDisable: boolean;

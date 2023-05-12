@@ -54,9 +54,6 @@ export async function handleIntegrationStates(){
   if (!configVars.WLEDDisable){
     integrationStates.WLEDOnline = configVars.WLEDDevices.length > 0;
   }
-  if (!configVars.nanoLeafDisable){
-    // todo
-  }
 
   const states = [
     { name: "ikea", state: integrationStates.ikeaOnline, disabled: configVars.ikeaDisable },
@@ -64,9 +61,7 @@ export async function handleIntegrationStates(){
     { name: "hue", state: integrationStates.hueOnline, disabled: configVars.hueDisable },
     { name: "openRGB", state: integrationStates.openRGBOnline, disabled: configVars.openRGBDisable },
     { name: "homeAssistant", state: integrationStates.homeAssistantOnline, disabled: configVars.homeAssistantDisable },
-    { name: "yeelight", state: integrationStates.yeeLightOnline, disabled: configVars.yeeLightDisable },
     { name: "streamDeck", state: integrationStates.streamDeckOnline, disabled: configVars.streamDeckDisable },
-    { name: "nanoLeaf", state: integrationStates.nanoLeafOnline, disabled: configVars.nanoLeafDisable },
     { name: "WLED", state: integrationStates.WLEDOnline, disabled: configVars.WLEDDisable },
     { name: "F1MV", state: integrationStates.F1MVAPIOnline, disabled: false },
     { name: "F1TVLiveSession", state: integrationStates.F1LiveSession, disabled: false },

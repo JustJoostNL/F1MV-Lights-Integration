@@ -8,17 +8,16 @@ import ReactGA from "react-ga4";
 
 export default function About() {
   ReactGA.send({ hitType: "pageview", page: "/about" });
-  window.f1mvli.utils.changeWindowTitle("About — F1MV-Lights-Integration");
+  window.f1mvli.utils.changeWindowTitle("About — F1MV Lights Integration");
 
   return (
     <div>
-      <title>About -- F1MV-Lights-Integration</title>
       <NavBar showBackButton={true} />
       <Box p={4}>
-        <Typography variant="h4" sx={{ mt: 5 }} gutterBottom>About F1MV-Lights-Integration</Typography>
+        <Typography variant="h4" sx={{ mt: 5 }} gutterBottom>About F1MV Lights Integration</Typography>
 
         <Typography variant="body1" gutterBottom>
-					F1MV-Lights-Integration is the perfect tool for Formula 1 fans who want to add a new level of excitement to their viewing experience. By integrating your smart home lights with Formula 1 sessions, you can immerse yourself in the session like never before.
+					F1MV Lights Integration is the perfect tool for Formula 1 fans who want to add a new level of excitement to their viewing experience. By integrating your smart home lights with Formula 1 sessions, you can immerse yourself in the session like never before.
         </Typography>
 
         <Box mt={4} mb={2}>
@@ -60,7 +59,7 @@ export default function About() {
             <ListItemIcon>
               <CheckCircleOutline color="secondary" />
             </ListItemIcon>
-            <ListItemText primary="Supports a wide range of smart home lights, including Philips Hue, Nanoleaf, Govee, Ikea Tradfri, YeeLight, and OpenRGB-compatible lights" />
+            <ListItemText primary="Supports a wide range of smart home lights, including Philips Hue, Govee, Ikea Tradfri, and any OpenRGB-compatible light (500+)!" />
           </ListItem>
         </List>
 

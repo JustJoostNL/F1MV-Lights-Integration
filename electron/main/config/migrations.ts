@@ -69,5 +69,6 @@ export const configMigrations: ConfigMigration = {
   "2.0.0": userConfig => {
     userConfig.set("version", "2.0.0");
     userConfig.set("Settings.discordSettings.avoidSpoilers", false);
+    userConfig.delete("Settings.yeeLightSettings");
   }
 };

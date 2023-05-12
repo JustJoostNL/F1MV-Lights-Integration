@@ -87,11 +87,9 @@ By integrating your smart home lights with Formula 1 sessions, using [MultiViewe
 [![Home Assistant][home-assistant]][home-assistant-url]
 [![WLED][wled]][wled-url]
 [![Govee][govee]][govee-url]
-[![Nanoleaf][nanoleaf]][nanoleaf-url]
 [![Ikea Tradfri][tradfri]][tradfri-url]
 [![Elgato Stream Deck][streamdeck]][streamdeck-url]
 [![Discord][discord]][discord-url]
-[![YeeLight][yeelight]][yeelight-url]
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -106,23 +104,22 @@ Getting started is very easy. Just follow the steps below. If you have any quest
 
 - You have [MultiViewer](https://multiviewer.app) installed
 
-#### Lights
-- You also need one or multiple lights of the following brands:
-  - [Any Philips Hue light][philips-hue-url]
-  - [Any Nanoleaf that supports Wi-Fi][nanoleaf-url]
-  - [Any Govee light][govee-url]
-  - [Any WLED compatible device][wled-url]
-  - [Any Ikea Tradfri light][tradfri-url]
-  - [Any YeeLight light][yeelight-url]
-  - [Any OpenRGB compatible device][openrgb-devices-url]
-  - [Any light that is available in Home Assistant][home-assistant-url]
+#### Supported Lights
+- [Any OpenRGB compatible device][openrgb-devices-url]
+  - OpenRGB supports 500+ lights, so it's very likely that your light is supported!
+  - You can check the full list of devices that OpenRGB supports [here][openrgb-devices-url].
+- [Any light that is available in Home Assistant][home-assistant-url]
+- [Any Philips Hue light][philips-hue-url]
+- [Any WLED compatible device][wled-url]
+- [Any Govee light][govee-url]
+- [Any Ikea Tradfri light][tradfri-url]
 
 
-- *More brands may come soon!*
+- *More brands may come soon, if you have a suggestion, please open an issue, or let me know on Discord!*
 
 ## Installation and usage
 
-Please go to the [official website](https://lightsintegration.joost.systems) and follow the instructions there.
+Please go to the [official website](https://f1mvli.jstt.me) and follow the instructions there.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -231,14 +228,10 @@ Distributed under the GNU General Public License v3.0. See `LICENSE.md` for more
 [issuesurl]: https://github.com/JustJoostNL/F1MV-Lights-Integration/issues
 [philips-hue]: https://img.shields.io/badge/Philips%20Hue-0002bb?style=for-the-badge&logo=Philips%20Hue&logoColor=white
 [philips-hue-url]: https://www2.meethue.com/en-us
-[nanoleaf]: https://img.shields.io/badge/Nanoleaf-0002gg?style=for-the-badge&logo=Nanoleaf&logoColor=white
-[nanoleaf-url]: https://nanoleaf.me/en-US/
 [tradfri]: https://img.shields.io/badge/IKEA%20Tradfri-00539f.svg?style=for-the-badge&logo=ikea&logoColor=white
 [tradfri-url]: https://www.ikea.com/us/en/cat/smart-lighting-36812/
 [govee]: https://img.shields.io/badge/Govee-000666.svg?style=for-the-badge&logo=govee&logoColor=white
 [govee-url]: https://us.govee.com/
-[yeelight]: https://img.shields.io/badge/Yeelight-ff6c00.svg?style=for-the-badge&logo=yeelight&logoColor=white
-[yeelight-url]: https://www.yeelight.com/
 [openrgb]: https://img.shields.io/badge/OpenRGB-0002bb.svg?style=for-the-badge&logo=openrgb&logoColor=white
 [openrgb-url]: https://openrgb.org/
 [openrgb-devices-url]: https://openrgb.org/devices.html

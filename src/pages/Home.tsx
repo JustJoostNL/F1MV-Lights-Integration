@@ -8,7 +8,7 @@ import Paper from "@mui/material/Paper";
 
 export default function Main() {
   ReactGA.send({ hitType: "pageview", page: "/home" });
-  window.f1mvli.utils.changeWindowTitle("F1MV-Lights-Integration");
+  //window.f1mvli.utils.changeWindowTitle("F1MV Lights Integration");
 
   return (
     <>

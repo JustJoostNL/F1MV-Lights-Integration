@@ -7,7 +7,7 @@ import SettingsPage from "@/components/settings";
 
 function Settings() {
   ReactGA.send({ hitType: "pageview", page: "/settings" });
-  window.f1mvli.utils.changeWindowTitle("Settings — F1MV-Lights-Integration");
+  window.f1mvli.utils.changeWindowTitle("Settings — F1MV Lights Integration");
 
   const [settingsLoading, setSettingsLoading] = useState(true);
   const [settingsLoaded, setSettingsLoaded] = useState(false);

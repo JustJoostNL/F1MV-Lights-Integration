@@ -62,7 +62,7 @@ export default function MultiViewerSettingsContent() {
                                 Sync with MultiViewer
               </Typography>
               <Typography variant="body2" component="div" sx={{ color: "grey" }}>
-                                When disabled, the lights will not sync with the current status of MultiViewer Live Timing.
+                                When disabled, the lights will not sync with the current status of the MultiViewer Live Timing.
               </Typography>
             </div>
             <BlueSwitch

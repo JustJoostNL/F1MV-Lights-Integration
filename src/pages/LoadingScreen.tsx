@@ -24,7 +24,7 @@ export default function LoadingScreen() {
               mt: 2,
             }}
           >
-                        Loading...
+            Loading...
           </Typography>
         </Grid>
       </Grid>

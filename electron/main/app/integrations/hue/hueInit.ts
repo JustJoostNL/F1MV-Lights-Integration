@@ -16,12 +16,12 @@ export default async function hueInitialize(){
     return;
   }
   try {
-    const hueClient = await hue.createLocal(hueBridgeIP).connect();
+    const hueClient = await hue.createInsecureLocal(hueBridgeIP).connect();
 
     if (!hueToken) {
       log.debug("No Philips Hue token found, generating a new one...");
       const newToken = await hueClient.users.createUser(hueAppName, hueDeviceName);
-      await handleConfigSet(null, "Settings.hueSettings.hueToken", newToken.username);
+      await handleConfigSet(null, "Settings.hueSettings.token", newToken.username);
       token = newToken.username;
       log.debug(`New Philips Hue token generated: ${newToken.username}`);
     } else {
@@ -29,7 +29,8 @@ export default async function hueInitialize(){
       token = configVars.hueToken;
     }
 
-    authHueAPI = await hue.createLocal(hueBridgeIP).connect(token);
+    authHueAPI = await hue.createInsecureLocal(hueBridgeIP).connect(token);
+    hueVars.authHueAPI = authHueAPI;
     integrationStates.hueOnline = true;
     const hueLights = await authHueAPI.lights.getAll();
     const hueEntertainmentZones = await authHueAPI.groups.getEntertainment();

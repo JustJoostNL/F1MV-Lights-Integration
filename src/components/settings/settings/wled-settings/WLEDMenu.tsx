@@ -23,7 +23,7 @@ export default function WLEDMenu(){
     setAnchorEl(null);
     await window.f1mvli.utils.openNewWindow({
       browserWindowOptions: {
-        title: "WLED Device Selector — F1MV-Lights-Integration",
+        title: "WLED Device Selector — F1MV Lights Integration",
         width: 756,
         height: 690,
         resizable: false,

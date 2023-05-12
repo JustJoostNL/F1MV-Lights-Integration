@@ -10,6 +10,7 @@ import homeAssistantInitialize from "../app/integrations/home-assistant/homeAssi
 import webServerInitialize from "../app/integrations/webserver/webServerInit";
 import streamDeckInitialize from "../app/integrations/elgato-streamdeck/streamDeckInit";
 import ikeaInitialize from "../app/integrations/ikea/ikeaInit";
+import ikeaCheckSpectrum from "../app/integrations/ikea/checkIkeaDeviceSpectrum";
 
 const userConfig = new Store({
   name: "settings",
@@ -24,6 +25,7 @@ userConfig.onDidAnyChange(() => {
     "webServerDisable": userConfig.get("Settings.webServerSettings.webServerDisable"),
     "goveeDisable": userConfig.get("Settings.goveeSettings.goveeDisable"),
     "ikeaDisable": userConfig.get("Settings.ikeaSettings.ikeaDisable"),
+    "ikeaDevices": userConfig.get("Settings.ikeaSettings.deviceIDs"),
     "homeAssistantDisable": userConfig.get("Settings.homeAssistantSettings.homeAssistantDisable"),
     "streamDeckDisable": userConfig.get("Settings.streamDeckSettings.streamDeckDisable"),
     "debugMode": userConfig.get("Settings.advancedSettings.debugMode"),
@@ -32,6 +34,7 @@ userConfig.onDidAnyChange(() => {
     "webServerDisable": configVars.webServerDisable,
     "goveeDisable": configVars.goveeDisable,
     "ikeaDisable": configVars.ikeaDisable,
+    "ikeaDevices": configVars.ikeaDevices,
     "homeAssistantDisable": configVars.homeAssistantDisable,
     "streamDeckDisable": configVars.streamDeckDisable,
     "debugMode": configVars.debugMode,
@@ -119,17 +122,9 @@ export const configVars = {
   homeAssistantToken: userConfig.get("Settings.homeAssistantSettings.token"),
   homeAssistantDevices: userConfig.get("Settings.homeAssistantSettings.devices"),
 
-  // Nanoleaf settings
-  nanoLeafDisable: userConfig.get("Settings.nanoLeafSettings.nanoLeafDisable"),
-  nanoLeafDevices: userConfig.get("Settings.nanoLeafSettings.devices"),
-
   // WLED settings
   WLEDDisable: userConfig.get("Settings.WLEDSettings.WLEDDisable") as boolean,
   WLEDDevices: userConfig.get("Settings.WLEDSettings.devices") as string[],
-
-  // YeeLight settings
-  yeeLightDisable: userConfig.get("Settings.yeeLightSettings.yeeLightDisable") as boolean,
-  yeeLightDevices: userConfig.get("Settings.yeeLightSettings.deviceIPs") as string[],
 
   // Elgato Stream Deck Settings
   streamDeckDisable: userConfig.get("Settings.streamDeckSettings.streamDeckDisable"),
@@ -153,8 +148,10 @@ export const configVars = {
 function handleConfigChanges(newVars, oldVars){
 
   if (!configVars.ikeaDisable && integrationStates.ikeaOnline){
-    log.debug("Checking all the IKEA devices spectrum's again...");
-    // todo: check ikea spectrum
+    if (oldVars.ikeaDevices.some((id) => !newVars.ikeaDevices.includes(id)) || newVars.ikeaDevices.some((id) => !oldVars.ikeaDevices.includes(id))) {
+      log.debug("Checking all the IKEA devices spectrum's again...");
+      ikeaCheckSpectrum();
+    }
   }
 
   if (oldVars.webServerDisable && !newVars.webServerDisable){
@@ -264,17 +261,9 @@ function loadConfigInVars(){
   configVars.homeAssistantToken = userConfig.get("Settings.homeAssistantSettings.token");
   configVars.homeAssistantDevices = userConfig.get("Settings.homeAssistantSettings.devices");
 
-  // Nanoleaf settings
-  configVars.nanoLeafDisable = userConfig.get("Settings.nanoLeafSettings.nanoLeafDisable");
-  configVars.nanoLeafDevices = userConfig.get("Settings.nanoLeafSettings.devices");
-
   // WLED settings
   configVars.WLEDDisable = userConfig.get("Settings.WLEDSettings.WLEDDisable");
   configVars.WLEDDevices = userConfig.get("Settings.WLEDSettings.devices");
-
-  // YeeLight settings
-  configVars.yeeLightDisable = userConfig.get("Settings.yeeLightSettings.yeeLightDisable");
-  configVars.yeeLightDevices = userConfig.get("Settings.yeeLightSettings.deviceIPs");
 
   // Elgato Stream Deck Settings
   configVars.streamDeckDisable = userConfig.get("Settings.streamDeckSettings.streamDeckDisable");

@@ -24,8 +24,8 @@ export default async function hueControl(r, g, b, brightness, action){
 
   brightness = Math.round((brightness / 100) * 254);
   const colorTransData = await getHueSatFromRGB(r, g, b);
-  const hueValue = Math.round(colorTransData.hue / 360 * 65535);
-  const satValue = Math.round(colorTransData.sat / 100 * 254);
+  const hueValue = Math.round(colorTransData.hue * (65535 / 360));
+  const satValue = Math.round(colorTransData.sat * (254 / 100));
 
   switch (action){
     case "on":

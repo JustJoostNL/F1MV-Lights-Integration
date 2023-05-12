@@ -24,12 +24,12 @@ export default function IkeaMenu(){
   const handleClose = () => {
     setAnchorEl(null);
   };
-  const handleSelectIkeaDevices = async () => {
+  const handleManageIkeaDevices = async () => {
     setAnchorEl(null);
     await saveConfig();
     await window.f1mvli.utils.openNewWindow({
       browserWindowOptions: {
-        title: "Ikea Device Selector — F1MV-Lights-Integration",
+        title: "Ikea Device Selector — F1MV Lights Integration",
         width: 756,
         height: 690,
         resizable: false,
@@ -37,11 +37,11 @@ export default function IkeaMenu(){
         minWidth: 756,
         minHeight: 690,
       },
-      url: "/select-ikea-devices"
+      url: "/manage-ikea-devices"
     });
     ReactGA.event({
       category: "ikea_tools_menu",
-      action: "select_ikea_devices",
+      action: "manage_ikea_devices",
     });
   };
   const handleSearchAndConnect = async () => {
@@ -106,7 +106,7 @@ export default function IkeaMenu(){
         </MenuItem>
         <Divider />
         <MenuItem
-          onClick={handleSelectIkeaDevices}>
+          onClick={handleManageIkeaDevices}>
           <LightBulbIcon
             sx={{
               mr: 2

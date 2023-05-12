@@ -11,6 +11,7 @@ import LightBulbIcon from "@mui/icons-material/Lightbulb";
 import { font } from "@/index";
 import ReactGA from "react-ga4";
 import Toaster from "@/components/toaster/Toaster";
+import { saveConfig } from "@/components/settings/settings/hue-settings/HueSettings";
 
 export default function HueMenu() {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
@@ -45,18 +46,44 @@ export default function HueMenu() {
     }
   };
 
-  const handleSelectHueDevices = () => {
+  const handleManageHueDevices = async () => {
     setAnchorEl(null);
+    await saveConfig();
+    await window.f1mvli.utils.openNewWindow({
+      browserWindowOptions: {
+        title: "Philips Hue Light Selector — F1MV Lights Integration",
+        width: 756,
+        height: 690,
+        resizable: false,
+        maximizable: false,
+        minWidth: 756,
+        minHeight: 690,
+      },
+      url: "/manage-hue-lights"
+    });
     ReactGA.event({
       category: "hue_tools_menu",
-      action: "select_hue_devices",
+      action: "manage_hue_devices",
     });
   };
-  const handleSelectHueEntertainmentZones = () => {
+  const handleManageHueEntertainmentZones = async () => {
     setAnchorEl(null);
+    await saveConfig();
+    await window.f1mvli.utils.openNewWindow({
+      browserWindowOptions: {
+        title: "Philips Hue Entertainment Zone Selector — F1MV Lights Integration",
+        width: 756,
+        height: 690,
+        resizable: false,
+        maximizable: false,
+        minWidth: 756,
+        minHeight: 690,
+      },
+      url: "/manage-hue-entertainment-zones"
+    });
     ReactGA.event({
       category: "hue_tools_menu",
-      action: "select_hue_entertainment_zones",
+      action: "manage_hue_entertainment_zones",
     });
   };
   const handleSearchForHueBridgesLocal = async () => {
@@ -79,13 +106,6 @@ export default function HueMenu() {
     ReactGA.event({
       category: "hue_tools_menu",
       action: "search_for_hue_bridges_remote",
-    });
-  };
-  const handleRefreshHueDevices = () => {
-    setAnchorEl(null);
-    ReactGA.event({
-      category: "hue_tools_menu",
-      action: "refresh_hue_devices",
     });
   };
 
@@ -144,20 +164,8 @@ export default function HueMenu() {
           </Typography>
         </MenuItem>
         <Divider />
-        <MenuItem disabled onClick={handleRefreshHueDevices}>
-          <RefreshIcon
-            sx={{
-              mr: 2
-            }}/>
-          <Typography
-            variant="body2"
-            sx={menuItemStyle}>
-                        Refresh devices from Hue bridge
-          </Typography>
-        </MenuItem>
-        <Divider />
         <MenuItem
-          onClick={handleSelectHueDevices}>
+          onClick={handleManageHueDevices}>
           <LightBulbIcon
             sx={{
               mr: 2
@@ -169,7 +177,7 @@ export default function HueMenu() {
           </Typography>
         </MenuItem>
         <MenuItem
-          onClick={handleSelectHueEntertainmentZones}>
+          onClick={handleManageHueEntertainmentZones}>
           <LightBulbIcon
             sx={{
               mr: 2

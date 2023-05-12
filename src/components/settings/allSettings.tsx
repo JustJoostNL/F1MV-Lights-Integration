@@ -7,9 +7,7 @@ import IkeaSettingsContent from "@/components/settings/settings/ikea-settings/Ik
 import GoveeSettingsContent from "@/components/settings/settings/govee-settings/GoveeSettings";
 import OpenRGBSettingsContent from "@/components/settings/settings/openrgb-settings/OpenRGBSettings";
 import HassSettingsContent from "@/components/settings/settings/hass-settings/HassSettings";
-import NanoleafSettingsContent from "@/components/settings/settings/nanoleaf-settings/NanoleafSettings";
 import WLEDSettingsContent from "@/components/settings/settings/wled-settings/WLEDSettings";
-import YeelightSettingsContent from "@/components/settings/settings/yeelight-settings/YeelightSettings";
 import ElgatoSDSettingsContent from "@/components/settings/settings/elgato-sd-settings/ElgatoSDSettings";
 import DiscordSettingsContent from "@/components/settings/settings/discord-settings/DiscordSettings";
 import WebServerSettingsContent from "@/components/settings/settings/webserver-settings/WebServerSettings";
@@ -26,6 +24,12 @@ export const BlueSwitch = styled(Switch)(({ theme }) => ({
   },
   "& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track": {
     backgroundColor: lightBlue[200],
+  },
+  "& .MuiSwitch-switchBase.Mui-disabled + .MuiSwitch-track": {
+    backgroundColor: alpha(theme.palette.grey[500], 0.5),
+  },
+  "& .MuiSwitch-switchBase.Mui-disabled": {
+    color: theme.palette.grey[500],
   },
 }));
 
@@ -83,21 +87,9 @@ export const allSettings = [
     type: "integration"
   },
   {
-    heading: "Nanoleaf",
-    content: <NanoleafSettingsContent/>,
-    description: "Disable Nanoleaf Integration — Nanoleaf Tools",
-    type: "integration"
-  },
-  {
     heading: "WLED",
     content: <WLEDSettingsContent/>,
     description: "Disable WLED Integration — WLED Tools",
-    type: "integration"
-  },
-  {
-    heading: "YeeLight",
-    content: <YeelightSettingsContent/>,
-    description: "Disable YeeLight Integration — YeeLight Tools",
     type: "integration"
   },
   {
@@ -121,7 +113,7 @@ export const allSettings = [
   {
     heading: "Advanced Settings",
     content: <AdvancedSettingsContent/>,
-    description: "More advanced settings, meant for developers/experts.",
+    description: "More advanced settings, mainly meant for developers/experts.",
     type: "advanced",
   },
 ];

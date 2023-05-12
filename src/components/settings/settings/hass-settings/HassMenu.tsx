@@ -20,12 +20,12 @@ export default function HassMenu(){
     setAnchorEl(null);
   };
 
-  const handleSelectHassDevices = async () => {
+  const handleManageHassDevices = async () => {
     setAnchorEl(null);
     await saveConfig();
     await window.f1mvli.utils.openNewWindow({
       browserWindowOptions: {
-        title: "Home Assistant Device Selector — F1MV-Lights-Integration",
+        title: "Home Assistant Device Selector — F1MV Lights Integration",
         width: 756,
         height: 690,
         resizable: false,
@@ -33,11 +33,11 @@ export default function HassMenu(){
         minWidth: 756,
         minHeight: 690,
       },
-      url: "/select-hass-devices"
+      url: "/manage-hass-devices"
     });
     ReactGA.event({
       category: "hass_tools_menu",
-      action: "select_hass_devices",
+      action: "manage_hass_devices",
     });
   };
 
@@ -72,7 +72,7 @@ export default function HassMenu(){
         }}
       >
         <MenuItem
-          onClick={handleSelectHassDevices}>
+          onClick={handleManageHassDevices}>
           <LightBulbIcon
             sx={{
               mr: 2

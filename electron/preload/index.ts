@@ -33,10 +33,9 @@ export const f1mvli = {
     WLED: {
       getDevices: () => ipcRenderer.invoke("integrations:WLED:getDevices"),
     },
-    yeeLight: {
-      getDevices: () => ipcRenderer.invoke("integrations:yeeLight:getDevices"),
-    },
     hue: {
+      getLights: () => ipcRenderer.invoke("integrations:hue:getLights"),
+      getEntertainmentZones: () => ipcRenderer.invoke("integrations:hue:getEntertainmentZones"),
       discoverBridge: (discoverMode: "remote" | "local") => ipcRenderer.invoke("integrations:hue:discoverBridge", discoverMode),
     },
     ikea: {

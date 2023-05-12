@@ -32,11 +32,11 @@
     "express": "^4.18.2",
     "govee-lan-control": "^3.0.0",
     "node-tradfri-client": "^3.2.0",
-    "huejay": "^1.9.0",
     "node-fetch": "^2.6.9",
     "node-hue-api": "^5.0.0-beta.16",
     "openrgb-sdk": "^0.5.2",
-    "yeelight.io": "^1.1.7",
+    "wled-client": "^0.22.1",
+    "socket.io": "^4.6.1",
     "react": "18.2.0",
     "react-colorful": "^5.6.1",
     "react-dom": "18.2.0",
@@ -44,10 +44,8 @@
     "react-json-tree": "^0.18.0",
     "react-router-dom": "^6.11.0",
     "react-window": "^1.8.9",
-    "socket.io": "^4.6.1",
     "styled-components": "^5.3.10",
-    "typescript": "5.0.4",
-    "wled-client": "^0.22.1"
+    "typescript": "5.0.4"
   },
   "devDependencies": {
     "@types/react": "^18.2.0",

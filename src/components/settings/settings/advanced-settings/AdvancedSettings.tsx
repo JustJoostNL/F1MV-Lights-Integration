@@ -98,7 +98,7 @@ export default function AdvancedSettingsContent() {
                                 Analytics
               </Typography>
               <Typography variant="body2" component="div" sx={{ color: "grey" }}>
-                                This will enable analytics, enable this if you want to help us improve the app, personal data is never collected.
+                When enabled, you help us improve the app by sending anonymous usage data. Please consider keeping this enabled. Personal data is never collected!
               </Typography>
             </div>
             <BlueSwitch

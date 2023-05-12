@@ -17,7 +17,6 @@ import initUpdater from "./update";
 import log from "electron-log";
 import { handleIntegrationStates } from "./app/integrations/integration-states/integrationStates";
 import homeAssistantGetDevices from "./app/integrations/home-assistant/homeAssistantGetDevices";
-import { f1mvli } from "../preload";
 import { integrationStates, openRGBVars, streamDeckVars, webServerVars } from "./app/vars/vars";
 import openRGBInitialize from "./app/integrations/openrgb/openRGBInit";
 import homeAssistantCheckDeviceSpectrum from "./app/integrations/home-assistant/homeAssistantCheckDeviceSpectrum";
@@ -25,12 +24,15 @@ import getWLEDDevices from "./app/integrations/wled/getWLEDDevices";
 import discoverHueBridge from "./app/integrations/hue/discoverHueBridge";
 import discoverIkeaBridge from "./app/integrations/ikea/discoverIkeaBridge";
 import ikeaGetDevices from "./app/integrations/ikea/ikeaGetDevices";
-import ikeaCheckSpectrum from "./app/integrations/ikea/checkIkeaDeviceSpectrum";
-import getYeeLightDevices from "./app/integrations/yeelight/getYeeLightDevices";
+import hueGetDevices from "./app/integrations/hue/hueGetDevices";
+import hueGetEntertainmentZones from "./app/integrations/hue/hueGetEntertainmentZones";
+
 
 Sentry.init({
   dsn: "https://e64c3ec745124566b849043192e58711@o4504289317879808.ingest.sentry.io/4504289338392576",
+  //enabled: process.env.NODE_ENV === "production",
   release: "F1MV-Lights-Integration@" + app.getVersion(),
+  environment: process.env.VITE_DEV_SERVER_URL ? "development" : "production",
   tracesSampleRate: 0.2,
 });
 
@@ -247,7 +249,7 @@ ipcMain.handle("utils:getWindowSizes", () => {
   return windowSizes;
 });
 ipcMain.handle("utils:changeWindowTitle", (_, arg) => {
-  win?.setTitle(arg);
+  win.setTitle(arg);
 });
 ipcMain.handle("utils:exitApp", () => {
   app.quit();
@@ -279,10 +281,6 @@ ipcMain.handle("integrations:homeAssistant:checkDeviceSpectrum", (_, arg) => {
 ipcMain.handle("integrations:WLED:getDevices", () => {
   return getWLEDDevices();
 });
-//yeelight
-ipcMain.handle("integrations:yeeLight:getDevices", () => {
-  return getYeeLightDevices();
-});
 //openrgb
 ipcMain.handle("integrations:openRGB:reConnect", () => {
   return openRGBInitialize();
@@ -290,6 +288,12 @@ ipcMain.handle("integrations:openRGB:reConnect", () => {
 // hue
 ipcMain.handle("integrations:hue:discoverBridge", async (_, arg) => {
   return await discoverHueBridge(arg);
+});
+ipcMain.handle("integrations:hue:getLights", async () => {
+  return await hueGetDevices();
+});
+ipcMain.handle("integrations:hue:getEntertainmentZones", async () => {
+  return await hueGetEntertainmentZones();
 });
 // ikea
 ipcMain.handle("integrations:ikea:searchAndConnectToGateway", async () => {

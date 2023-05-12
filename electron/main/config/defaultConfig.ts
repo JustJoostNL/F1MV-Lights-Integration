@@ -155,27 +155,11 @@ const config: IConfig = {
                 	devices: []
                 },
 
-        	nanoLeafSettings:
-                {
-                	// set this to true if you don't want to use Nanoleaf lights
-                	nanoLeafDisable: true,
-                	devices: []
-                },
-
         	WLEDSettings:
                 {
                 	// set this to true if you don't want to use WLED lights
                 	WLEDDisable: true,
                 	devices: []
-                },
-
-        	yeeLightSettings:
-                {
-                	// set this to true if you don't want to use Yeelight lights
-                	yeeLightDisable: true,
-
-                	// Put the IP address of your Yeelight device(s) here, if you have multiple, separate them with a comma (Eg: "IP_ADDRESS_HERE-1", "IP_ADDRESS_HERE-2").
-                	deviceIPs: [],
                 },
 
         	streamDeckSettings:
