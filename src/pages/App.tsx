@@ -9,6 +9,7 @@ import HassDeviceSelector from "@/pages/device-selectors/hass-device-selector";
 import AddWLEDDevice from "@/pages/device-selectors/add-wled-device";
 import Settings from "@/pages/Settings";
 import IkeaDeviceSelector from "@/pages/device-selectors/ikea-device-selector";
+import AddYeeLightDevice from "@/pages/device-selectors/add-yeelight-device";
 
 const router = createHashRouter([
   {
@@ -46,6 +47,10 @@ const router = createHashRouter([
   {
     path: "/add-wled-device",
     element: <AddWLEDDevice/>
+  },
+  {
+    path: "/add-yeelight-device",
+    element: <AddYeeLightDevice/>
   }
 ]);
 

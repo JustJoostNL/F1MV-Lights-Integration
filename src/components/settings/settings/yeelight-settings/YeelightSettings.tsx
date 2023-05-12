@@ -17,7 +17,10 @@ export default function YeelightSettingsContent() {
 
   const saveConfig = async () => {
     if (!settings) return;
-    await window.f1mvli.config.set("Settings.yeeLightSettings", settings);
+    await window.f1mvli.config.set("Settings.yeeLightSettings", {
+      ...settings,
+      deviceIPs: await window.f1mvli.config.get("Settings.yeeLightSettings.deviceIPs")
+    });
   };
 
   useEffect(() => {

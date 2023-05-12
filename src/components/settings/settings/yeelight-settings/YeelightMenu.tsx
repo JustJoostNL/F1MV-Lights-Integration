@@ -3,10 +3,8 @@ import Button from "@mui/material/Button";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
-import SearchIcon from "@mui/icons-material/Search";
+import LightBulbIcon from "@mui/icons-material/Lightbulb";
 import Typography from "@mui/material/Typography";
-import Divider from "@mui/material/Divider";
-import AddIcon from "@mui/icons-material/Add";
 import { font } from "@/index";
 import ReactGA from "react-ga4";
 
@@ -20,18 +18,23 @@ export default function YeelightMenu(){
   const handleClose = () => {
     setAnchorEl(null);
   };
-  const handleAddYeelightDevice = () => {
+  const handleManageYeeLightDevices = async () => {
     setAnchorEl(null);
+    await window.f1mvli.utils.openNewWindow({
+      browserWindowOptions: {
+        title: "YeeLight Device Selector — F1MV-Lights-Integration",
+        width: 756,
+        height: 690,
+        resizable: false,
+        maximizable: false,
+        minWidth: 756,
+        minHeight: 690,
+      },
+      url: "/add-yeelight-device"
+    });
     ReactGA.event({
       category: "yeelight_tools_menu",
       action: "add_yeelight_device",
-    });
-  };
-  const handleViewCurrentlyConnectedYeelightDevices = () => {
-    setAnchorEl(null);
-    ReactGA.event({
-      category: "yeelight_tools_menu",
-      action: "view_currently_connected_yeelight_devices",
     });
   };
 
@@ -54,7 +57,7 @@ export default function YeelightMenu(){
         onClick={handleClick}
         endIcon={<KeyboardArrowDownIcon />}
       >
-                YeeLight Tools
+        YeeLight Tools
       </Button>
       <Menu
         id="basic-menu"
@@ -65,27 +68,15 @@ export default function YeelightMenu(){
           "aria-labelledby": "basic-button",
         }}
       >
-        <MenuItem onClick={handleAddYeelightDevice}>
-          <AddIcon
+        <MenuItem onClick={handleManageYeeLightDevices}>
+          <LightBulbIcon
             sx={{
               mr: 2
             }}/>
           <Typography
             variant="body2"
             sx={menuItemStyle}>
-                        Add a YeeLight Device
-          </Typography>
-        </MenuItem>
-        <Divider />
-        <MenuItem
-          onClick={handleViewCurrentlyConnectedYeelightDevices}>
-          <SearchIcon sx={{
-            mr: 2
-          }}/>
-          <Typography
-            variant="body2"
-            sx={menuItemStyle}>
-                        View currently connected YeeLight devices
+            Manage YeeLight Devices
           </Typography>
         </MenuItem>
       </Menu>

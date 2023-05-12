@@ -26,6 +26,7 @@ import discoverHueBridge from "./app/integrations/hue/discoverHueBridge";
 import discoverIkeaBridge from "./app/integrations/ikea/discoverIkeaBridge";
 import ikeaGetDevices from "./app/integrations/ikea/ikeaGetDevices";
 import ikeaCheckSpectrum from "./app/integrations/ikea/checkIkeaDeviceSpectrum";
+import getYeeLightDevices from "./app/integrations/yeelight/getYeeLightDevices";
 
 Sentry.init({
   dsn: "https://e64c3ec745124566b849043192e58711@o4504289317879808.ingest.sentry.io/4504289338392576",
@@ -277,6 +278,10 @@ ipcMain.handle("integrations:homeAssistant:checkDeviceSpectrum", (_, arg) => {
 // wled
 ipcMain.handle("integrations:WLED:getDevices", () => {
   return getWLEDDevices();
+});
+//yeelight
+ipcMain.handle("integrations:yeeLight:getDevices", () => {
+  return getYeeLightDevices();
 });
 //openrgb
 ipcMain.handle("integrations:openRGB:reConnect", () => {

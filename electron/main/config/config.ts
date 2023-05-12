@@ -128,8 +128,8 @@ export const configVars = {
   WLEDDevices: userConfig.get("Settings.WLEDSettings.devices") as string[],
 
   // YeeLight settings
-  yeeLightDisable: userConfig.get("Settings.yeeLightSettings.yeeLightDisable"),
-  yeeLightDevices: userConfig.get("Settings.yeeLightSettings.deviceIPs"),
+  yeeLightDisable: userConfig.get("Settings.yeeLightSettings.yeeLightDisable") as boolean,
+  yeeLightDevices: userConfig.get("Settings.yeeLightSettings.deviceIPs") as string[],
 
   // Elgato Stream Deck Settings
   streamDeckDisable: userConfig.get("Settings.streamDeckSettings.streamDeckDisable"),

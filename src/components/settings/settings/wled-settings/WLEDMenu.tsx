@@ -38,13 +38,6 @@ export default function WLEDMenu(){
       action: "add_wled_device",
     });
   };
-  const handleViewCurrentlyConnectedWLEDDevices = () => {
-    setAnchorEl(null);
-    ReactGA.event({
-      category: "wled_tools_menu",
-      action: "view_currently_connected_wled_devices",
-    });
-  };
 
   const menuItemStyle = {
     fontSize: "1.0rem",
@@ -84,7 +77,7 @@ export default function WLEDMenu(){
           <Typography
             variant="body2"
             sx={menuItemStyle}>
-                        Manage WLED Devices
+            Manage WLED Devices
           </Typography>
         </MenuItem>
       </Menu>
