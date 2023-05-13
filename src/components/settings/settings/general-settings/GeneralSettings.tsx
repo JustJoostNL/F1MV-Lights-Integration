@@ -131,7 +131,15 @@ export default function GeneralSettingsContent() {
                   }}
                 />
               </Box>
-              <Box sx={settingBoxSX}>
+              <Box sx={{
+                display: "flex",
+                justifyContent: "space-between",
+                width: "100%",
+                color: "white",
+                textAlign: "left",
+                marginBottom: "20px",
+                marginRight: "500px"
+              }}>
                 <div>
                   <Typography variant="h6" component="div">
 										Go back to static enabled flags

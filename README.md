@@ -164,7 +164,7 @@ Distributed under the GNU General Public License v3.0. See `LICENSE.md` for more
 <!-- ACKNOWLEDGMENTS -->
 ## Acknowledgments
 * [Thanks to @LapsTimeOFF for helping me with the hue integration!](https://github.com/LapsTimeOFF/)
-* [Thanks to MultiViewer1 for the amazing software!](https://multiviewer.app)
+* [Thanks to MultiViewer for the amazing software!](https://multiviewer.app)
 
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>

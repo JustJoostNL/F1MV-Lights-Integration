@@ -72,7 +72,7 @@ async function createWindow() {
       preload,
       nodeIntegration: true,
       contextIsolation: false,
-      zoomFactor: 1,
+      zoomFactor: 0.8,
     },
     resizable: true,
     maximizable: true,
