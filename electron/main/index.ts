@@ -260,8 +260,8 @@ ipcMain.handle("utils:exitApp", () => {
 });
 
 // updater
-ipcMain.handle("updater:checkForUpdate", () => {
-  autoUpdater.checkForUpdates();
+ipcMain.handle("updater:checkForUpdate", async () => {
+  return await autoUpdater.checkForUpdates();
 });
 
 // log
