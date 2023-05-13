@@ -70,5 +70,6 @@ export const configMigrations: ConfigMigration = {
     userConfig.set("version", "2.0.0");
     userConfig.set("Settings.discordSettings.avoidSpoilers", false);
     userConfig.delete("Settings.yeeLightSettings");
+    userConfig.delete("Settings.nanoLeafSettings");
   }
 };
