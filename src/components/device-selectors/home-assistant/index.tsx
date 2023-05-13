@@ -73,7 +73,7 @@ export function HomeAssistantDeviceSelector() {
   };
 
   return (
-    <div style={{ height: 527, width: "80%", alignItems: "center", alignContent: "center", marginLeft: 70 }}>
+    <div style={{ height: 528, width: "80%", alignItems: "center", alignContent: "center", marginLeft: 70 }}>
       <DataGrid
         rows={rows}
         components={{

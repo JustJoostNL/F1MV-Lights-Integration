@@ -9,6 +9,9 @@ import {
   handleConfigSet
 } from "./config/config";
 import initApp from "./app";
+import portfinder from "portfinder";
+import http from "http";
+import handler from "serve-handler";
 import * as Sentry from "@sentry/electron";
 import { analyticsHandler } from "./app/analytics/analytics";
 import simulateFlag from "./app/light-controller/simulateFlag";
@@ -61,6 +64,7 @@ let win: BrowserWindow | null = null;
 const preload = join(__dirname, "../preload/index.js");
 const url = process.env.VITE_DEV_SERVER_URL;
 const indexHtml = join(process.env.DIST, "index.html");
+let availablePort: number;
 
 async function createWindow() {
   win = new BrowserWindow({
@@ -86,8 +90,16 @@ async function createWindow() {
     win.webContents.openDevTools({ mode: "detach" });
     win.setMenuBarVisibility(false);
   } else {
-    win.removeMenu();
-    await win.loadFile(indexHtml);
+    win.setMenuBarVisibility(false);
+    availablePort = await portfinder.getPortPromise({ port: 30303, host: "localhost" });
+    const server = http.createServer((request, response) => {
+      return handler(request, response, {
+        public: process.env.DIST,
+      });
+    });
+    server.listen(availablePort, () => {
+      win?.loadURL(`http://localhost:${availablePort}/index.html`);
+    });
   }
 
   // Make all links open with the browser, not with the application
@@ -118,14 +130,6 @@ function onReady() {
             }
         `);
   });
-
-  // if (process.defaultApp) {
-  //   if (process.argv.length >= 2) {
-  //     app.setAsDefaultProtocolClient("f1mvli", process.execPath, [path.resolve(process.argv[1])]);
-  //   }
-  // } else {
-  //   app.setAsDefaultProtocolClient("f1mvli");
-  // }
 
   log.initialize({ preload: true });
   log.transports.console.level = false;
@@ -190,7 +194,7 @@ ipcMain.handle("utils:open-win", (_, arg) => {
       preload,
       nodeIntegration: true,
       contextIsolation: false,
-      zoomFactor: 1,
+      zoomFactor: 0.8,
     },
     resizable: arg.browserWindowOptions.resizable,
     maximizable: arg.browserWindowOptions.maximizable,
@@ -203,8 +207,8 @@ ipcMain.handle("utils:open-win", (_, arg) => {
     childWindow.loadURL(`${url}#${arg.url}`);
     childWindow.setMenuBarVisibility(false);
   } else {
-    childWindow.removeMenu();
-    childWindow.loadFile(indexHtml, { hash: arg.url });
+    childWindow.setMenuBarVisibility(false);
+    childWindow.loadURL(`http://localhost:${availablePort}/index.html#${arg.url}`);
   }
 
   childWindow.webContents.on("did-finish-load", () => {

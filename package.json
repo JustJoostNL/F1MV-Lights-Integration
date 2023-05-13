@@ -1,6 +1,6 @@
 {
   "name": "F1MV-Lights-Integration",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "main": "dist-electron/main/index.js",
   "description": "The best way to connect your smart home lights to MultiViewer.",
   "author": "JustJoostNL",
@@ -31,12 +31,11 @@
     "electron-updater": "^5.3.0",
     "express": "^4.18.2",
     "govee-lan-control": "^3.0.0",
-    "node-tradfri-client": "^3.2.0",
     "node-fetch": "^2.6.9",
     "node-hue-api": "^5.0.0-beta.16",
+    "node-tradfri-client": "^3.2.0",
     "openrgb-sdk": "^0.5.2",
-    "wled-client": "^0.22.1",
-    "socket.io": "^4.6.1",
+    "portfinder": "^1.0.32",
     "react": "18.2.0",
     "react-colorful": "^5.6.1",
     "react-dom": "18.2.0",
@@ -44,8 +43,11 @@
     "react-json-tree": "^0.18.0",
     "react-router-dom": "^6.11.0",
     "react-window": "^1.8.9",
+    "serve-handler": "^6.1.5",
+    "socket.io": "^4.6.1",
     "styled-components": "^5.3.10",
-    "typescript": "5.0.4"
+    "typescript": "5.0.4",
+    "wled-client": "^0.22.1"
   },
   "devDependencies": {
     "@types/react": "^18.2.0",

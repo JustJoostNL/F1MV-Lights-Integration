@@ -73,7 +73,7 @@ export default function HueEntertainmentZoneSelector(){
   };
 
   return (
-    <div style={{ height: 527, width: "100%", alignItems: "center", alignContent: "center", marginLeft: -0 }}>
+    <div style={{ height: 528, width: "100%", alignItems: "center", alignContent: "center", marginLeft: -0 }}>
       <DataGrid
         rows={rows}
         components={{

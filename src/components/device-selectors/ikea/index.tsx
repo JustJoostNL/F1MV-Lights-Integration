@@ -75,7 +75,7 @@ export default function IKEADeviceSelector() {
   };
 
   return (
-    <div style={{ height: 527, width: "120%", marginLeft: -43 }}>
+    <div style={{ height: 528, width: "120%", marginLeft: -43 }}>
       <DataGrid
         rows={rows}
         components={{

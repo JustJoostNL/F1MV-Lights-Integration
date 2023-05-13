@@ -24,6 +24,8 @@ const Main = () => {
           appVersion: packageJson.version,
           sampleRate: 100,
           siteSpeedSampleRate: 100,
+          // will be custom soon:
+          gtagUrl: "https://www.googletagmanager.com/gtag/js",
         }
       });
     }
