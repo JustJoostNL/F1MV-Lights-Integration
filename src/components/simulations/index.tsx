@@ -99,7 +99,7 @@ export default function SimulationMenu() {
         onClick={handleClick}
         endIcon={<KeyboardArrowDownIcon />}
       >
-                Simulate Flag
+        Simulate Flag
       </Button>
       <Menu
         id="basic-menu"

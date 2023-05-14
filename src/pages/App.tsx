@@ -11,6 +11,7 @@ import Settings from "@/pages/Settings";
 import IkeaDeviceSelector from "@/pages/device-selectors/ikea-device-selector";
 import PhilipsHueLightSelector from "@/pages/device-selectors/hue-light-selector";
 import PhilipsHueZoneSelector from "@/pages/device-selectors/hue-entertainment-zone-selector";
+import EffectEditorPage from "@/pages/EffectEditorPage";
 
 
 const router = createHashRouter([
@@ -58,6 +59,10 @@ const router = createHashRouter([
     path: "/add-wled-device",
     element: <AddWLEDDevice/>
   },
+  {
+    path: "/effect-editor",
+    element: <EffectEditorPage/>
+  }
 ]);
 
 function App() {

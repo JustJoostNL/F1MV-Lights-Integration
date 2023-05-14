@@ -1,5 +1,5 @@
 interface IEffectAction {
-  type: "on" | "delay";
+  type: "on" | "off" | "delay";
   color?: {
     r: number;
     g: number;

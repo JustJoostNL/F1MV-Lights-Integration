@@ -39,7 +39,6 @@ export default function LogViewer() {
 
   return (
     <div>
-      <Typography variant="h4" sx={{ mb: 2, mt: 4 }}>Logs</Typography>
       <Typography variant="h4" component="h2" sx={{ fontSize: "1.2rem", mb: 3, color: "grey.400" }}>
         Logs are sorted from newest to oldest, and are updated every second.
       </Typography>

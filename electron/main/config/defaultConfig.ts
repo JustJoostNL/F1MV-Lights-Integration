@@ -191,11 +191,7 @@ const config: IConfig = {
                 	updateChannel: "latest",
 
                 	//analytics
-                	// if you want to help me improve this project, you can enable analytics
-                	// this will send me some data about how many times the lights have been switched on and off, etc...
-                	// this will not send any personal data
-                	// if you want to disable this, set this to false
-
+                  //when enabled, you help us improve the app by sending anonymous usage data. Please consider keeping this enabled. Personal data is never collected!
                 	analytics: true,
                 }
         },

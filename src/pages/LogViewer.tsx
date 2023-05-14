@@ -9,6 +9,7 @@ export default function LogViewerPage() {
 
   return (
     <div>
+      <h1>Logs</h1>
       <NavBar showBackButton={true} />
       <LogViewer />
     </div>

@@ -6,10 +6,23 @@ import log from "electron-log/renderer";
 import ReactGA from "react-ga4";
 import * as React from "react";
 import Toaster from "@/components/toaster/Toaster";
-import { UpdateCheckResult } from "electron-updater";
+import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
+import MenuItem from "@mui/material/MenuItem";
+import Typography from "@mui/material/Typography";
+import Menu from "@mui/material/Menu";
+import { font } from "@/index";
 
 export default function QuickAccessButtons(){
   const [toaster, setToaster] = React.useState<{ message: string, severity: "error" | "warning" | "info" | "success", time: number } | null>(null);
+  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+
+  const open = Boolean(anchorEl);
+  const handleClick = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
 
   const handleOpenConfig = () => {
     log.info("Opening config file...");
@@ -47,12 +60,70 @@ export default function QuickAccessButtons(){
       action: "open_log_file_button_press",
     });
   };
+  const handleOpenLogViewer = () => {
+    window.location.hash = "#/log-viewer";
+    ReactGA.event({
+      category: "button_press",
+      action: "open_log_viewer_button_press",
+    });
+  };
+
+  const menuItemStyle = {
+    fontSize: "1.0rem",
+    fontFamily: font,
+    width: "100%",
+  };
 
   return (
     <div>
       <Button variant="outlined" color={"secondary"} onClick={handleOpenConfig} startIcon={<OpenInNewIcon />} sx={{ mr: 2, }}>Open Config</Button>
       <Button variant="outlined" color={"secondary"} onClick={handleCheckForUpdates} startIcon={<GetAppIcon />}>Check for Updates</Button>
-      <Button variant="outlined" color={"secondary"} onClick={handleOpenLogFile} startIcon={<DescriptionIcon />} sx={{ ml: 2, }}>Open Log File</Button>
+      <Button
+        sx={{ ml: 2 }}
+        startIcon={<DescriptionIcon/>}
+        id="view-logs-menu"
+        aria-controls={open ? "view-logs-button" : undefined}
+        aria-haspopup="true"
+        aria-expanded={open ? "true" : undefined}
+        variant="outlined"
+        color={"secondary"}
+        disableElevation
+        onClick={handleClick}
+        endIcon={<KeyboardArrowDownIcon />}
+      >
+        View Logs
+      </Button>
+      <Menu
+        id="basic-menu"
+        anchorEl={anchorEl}
+        open={open}
+        onClick={handleClose}
+        MenuListProps={{
+          "aria-labelledby": "basic-button",
+        }}>
+        <MenuItem onClick={handleOpenLogViewer}>
+          <DescriptionIcon
+            sx={{
+              mr: 2,
+            }}/>
+          <Typography
+            variant="body2"
+            sx={menuItemStyle}>
+            Open logs in app
+          </Typography>
+        </MenuItem>
+        <MenuItem onClick={handleOpenLogFile}>
+          <OpenInNewIcon
+            sx={{
+              mr: 2,
+            }}/>
+          <Typography
+            variant="body2"
+            sx={menuItemStyle}>
+            Open logs in editor
+          </Typography>
+        </MenuItem>
+      </Menu>
       {toaster && <Toaster message={toaster.message} severity={toaster.severity} time={toaster.time} />}
     </div>
   );

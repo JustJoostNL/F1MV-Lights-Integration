@@ -7,13 +7,13 @@ let updateFound = false;
 let noUpdateFound = false;
 
 export default function initUpdater(){
-  autoUpdater.forceDevUpdateConfig = false;
+  autoUpdater.forceDevUpdateConfig = true;
   autoUpdater.autoDownload = true;
   autoUpdater.disableWebInstaller = true;
   autoUpdater.allowDowngrade = false;
   autoUpdater.autoInstallOnAppQuit = true;
   autoUpdater.channel = <string>configVars.updateChannel;
-  autoUpdater.logger = log;
+  //autoUpdater.logger = log;
 
   autoUpdater.on("update-downloaded", (event: UpdateDownloadedEvent) => {
     const dialogOpts = {
@@ -47,5 +47,5 @@ export default function initUpdater(){
     if (!updateFound) {
       autoUpdater.checkForUpdates();
     }
-  }, 30000);
+  }, 60000);
 }
