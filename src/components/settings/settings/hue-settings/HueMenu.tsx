@@ -5,7 +5,6 @@ import Divider from "@mui/material/Divider";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import Menu from "@mui/material/Menu";
 import Typography from "@mui/material/Typography";
-import RefreshIcon from "@mui/icons-material/Refresh";
 import SearchIcon from "@mui/icons-material/Search";
 import LightBulbIcon from "@mui/icons-material/Lightbulb";
 import { font } from "@/index";

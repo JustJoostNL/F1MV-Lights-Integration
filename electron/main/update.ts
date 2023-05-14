@@ -7,10 +7,11 @@ let updateFound = false;
 let noUpdateFound = false;
 
 export default function initUpdater(){
-  autoUpdater.autoDownload = false;
-  autoUpdater.disableWebInstaller = false;
+  autoUpdater.forceDevUpdateConfig = false;
+  autoUpdater.autoDownload = true;
+  autoUpdater.disableWebInstaller = true;
   autoUpdater.allowDowngrade = false;
-  autoUpdater.autoInstallOnAppQuit = false;
+  autoUpdater.autoInstallOnAppQuit = true;
   autoUpdater.channel = <string>configVars.updateChannel;
   autoUpdater.logger = log;
 

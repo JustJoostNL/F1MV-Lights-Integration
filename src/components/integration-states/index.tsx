@@ -23,7 +23,7 @@ const integrationStateMap: IntegrationStatesMap = {
   WLED: "WLED",
   F1MV: "MultiViewer",
   F1TVLiveSession: "Live Session Check",
-  update: "Update",
+  update: "Auto Updater",
   webServer: "Webserver",
 };
 

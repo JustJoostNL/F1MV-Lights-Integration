@@ -1,6 +1,6 @@
 import { app, BrowserWindow, ipcMain, shell } from "electron";
 import { release } from "node:os";
-import path, { join } from "node:path";
+import { join } from "node:path";
 import {
   configVars,
   handleConfigGet,
@@ -15,7 +15,7 @@ import handler from "serve-handler";
 import * as Sentry from "@sentry/electron";
 import { analyticsHandler } from "./app/analytics/analytics";
 import simulateFlag from "./app/light-controller/simulateFlag";
-import { autoUpdater } from "electron-updater";
+import { autoUpdater, UpdateCheckResult } from "electron-updater";
 import initUpdater from "./update";
 import log from "electron-log";
 import { handleIntegrationStates } from "./app/integrations/integration-states/integrationStates";
@@ -260,8 +260,25 @@ ipcMain.handle("utils:exitApp", () => {
 });
 
 // updater
-ipcMain.handle("updater:checkForUpdate", async () => {
-  return await autoUpdater.checkForUpdates();
+let updateInfo: UpdateCheckResult = null;
+ipcMain.handle("updater:checkForUpdates", async () => {
+  updateInfo = await autoUpdater.checkForUpdatesAndNotify();
+});
+ipcMain.handle("updater:getUpdateAvailable", async () => {
+  // we remove the dots in the version number to compare them
+  if (updateInfo.updateInfo.version.replace(/\./g, "") > app.getVersion().replace(/\./g, "")) {
+    return {
+      updateAvailable: true,
+      currentVersion: app.getVersion(),
+      newVersion: updateInfo.updateInfo.version,
+    };
+  } else {
+    return {
+      updateAvailable: false,
+      currentVersion: app.getVersion(),
+      newVersion: updateInfo.updateInfo.version,
+    };
+  }
 });
 
 // log

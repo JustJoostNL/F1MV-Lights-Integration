@@ -61,6 +61,7 @@
 
 
   "publish": {
-    "provider": "github"
+    "provider": "github",
+    "updaterCacheDirName": "F1MV-Lights-Integration-update-cache",
   }
 }

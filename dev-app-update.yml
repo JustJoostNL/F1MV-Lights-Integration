@@ -1,0 +1,4 @@
+provider: github
+repo: F1MV-Lights-Integration
+owner: JustJoostNL
+updaterCacheDirName: F1MV-Lights-Integration-update-cache

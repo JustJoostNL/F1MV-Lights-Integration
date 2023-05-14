@@ -9,7 +9,8 @@ export const f1mvli = {
     openInEditor: () => ipcRenderer.invoke("config:open:inEditor"),
   },
   updater: {
-    checkForUpdate: () => ipcRenderer.invoke("updater:checkForUpdate"),
+    checkForUpdates: () => ipcRenderer.invoke("updater:checkForUpdates"),
+    getUpdateAvailable: () => ipcRenderer.invoke("updater:getUpdateAvailable"),
   },
   log: {
     openLogFile: () => ipcRenderer.invoke("log:openLogFile"),
