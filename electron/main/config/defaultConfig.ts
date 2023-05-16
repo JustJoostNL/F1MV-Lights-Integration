@@ -63,7 +63,8 @@ const config: IConfig = {
                 	effectSettings: [
                 		{
                 			name: "VSC Ending Blink Effect",
-                			onFlag: "vscEnding",
+                      id: 0,
+                			trigger: "vscEnding",
                 			enabled: true,
                 			actions: [
                 				{

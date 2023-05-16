@@ -19,7 +19,7 @@ export default async function controlAllLights(r, g, b, brightness, action, flag
 
   for (let i = 0; i < effectSettings.length; i++) {
     if (effectSettings[i].enabled) {
-      if (effectSettings[i].onFlag === flag) {
+      if (effectSettings[i].trigger === flag) {
         const oldHueFadeState = hueEnableFade;
         if (!hueEnableFadeWithEffects) {
           configVars.hueEnableFade = false;

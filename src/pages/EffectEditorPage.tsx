@@ -6,7 +6,7 @@ export default function EffectEditorPage(){
   ReactGA.send({ hitType: "pageview", page: "/effect-editor" });
   return (
     <div>
-      <NavBar showBackButton={true}/>
+      <NavBar showBackButton={true} backButtonLocationHash={"/settings"}/>
       <h1>Effect Editor</h1>
       <EffectEditor/>
     </div>

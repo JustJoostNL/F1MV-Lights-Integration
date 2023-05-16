@@ -3,14 +3,19 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import Menu from "./menu";
 import ReactGA from "react-ga4";
 
-type NavBarProps = {
+interface NavBarProps {
   showBackButton: boolean;
-};
+  backButtonLocationHash?: string;
+}
 
-export default function NavBar({ showBackButton }: NavBarProps) {
+export default function NavBar({ showBackButton, backButtonLocationHash }: NavBarProps) {
 
   const handleBackButton = () => {
-    window.location.hash = "/home";
+    if (backButtonLocationHash) {
+      window.location.hash = backButtonLocationHash;
+    } else {
+      window.location.hash = "/home";
+    }
     ReactGA.event({
       category: "button_press",
       action: "navbar_back_button",

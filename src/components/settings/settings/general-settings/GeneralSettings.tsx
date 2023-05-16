@@ -4,6 +4,7 @@ import { Box, Checkbox, Divider, FormControlLabel, FormGroup, TextField, Typogra
 import { BlueSlider } from "@/components/settings/BlueSlider";
 import { HandleFlagChange } from "@/components/settings/settings/general-settings/HandleFlagChange";
 import ColorSettings from "@/components/settings/settings/general-settings/ColorSettings";
+import Button from "@mui/material/Button";
 
 
 export default function GeneralSettingsContent() {
@@ -19,7 +20,10 @@ export default function GeneralSettingsContent() {
 
   const saveConfig = async () => {
     if (!settings) return;
-    await window.f1mvli.config.set("Settings.generalSettings", settings);
+    await window.f1mvli.config.set("Settings.generalSettings", {
+      ...settings,
+      effectSettings: await window.f1mvli.config.get("Settings.generalSettings.effectSettings"),
+    });
   };
 
   useEffect(() => {
@@ -57,6 +61,7 @@ export default function GeneralSettingsContent() {
               }}
             />
           </Box>
+          <Divider sx={{ mb: "20px" }}/>
           <Box sx={settingBoxSX}>
             <div>
               <Typography variant="h6" component="div">
@@ -230,6 +235,26 @@ export default function GeneralSettingsContent() {
             </>)}
           <Divider sx={{ mb: "20px" }}/>
           <ColorSettings/>
+          <Divider sx={{ mb: "20px" }}/>
+          <Box sx={settingBoxSX}>
+            <div>
+              <Typography variant="h6" component="div">
+                Effect Settings
+              </Typography>
+              <Typography variant="body2" component="div" sx={{ color: "grey" }}>
+                Here you can customize your experience by creating your own effects, using an advanced effect editor.
+              </Typography>
+              <Button
+                sx={{ marginTop: "15px" }}
+                variant="contained"
+                color="secondary"
+                onClick={() => {
+                  window.location.hash = "#/effect-editor";
+                }}
+              >Open Effect Editor
+              </Button>
+            </div>
+          </Box>
         </div>
       )}
     </>

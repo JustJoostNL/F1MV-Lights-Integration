@@ -17,6 +17,7 @@ export const f1mvli = {
     getLogs: () => ipcRenderer.invoke("log:getLogs"),
   },
   utils: {
+    getHighestEffectId: () => ipcRenderer.invoke("utils:getHighestEffectId"),
     getStates: () => ipcRenderer.invoke("utils:getStates"),
     getWindowSizes: () => ipcRenderer.invoke("utils:getWindowSizes"),
     openNewWindow: (url) => ipcRenderer.invoke("utils:open-win", url),

@@ -2,22 +2,22 @@ import { configVars } from "../../config/config";
 import sleep from "../utils/sleep";
 import controlAllLights from "../light-controller/controlAllLights";
 import { IEffectSettingsConfig } from "../../../types/EffectSettingsInterface";
-import { customColor } from "../../../types/CustomColorInterface";
+import { CustomColor } from "../../../types/CustomColorInterface";
 
 export default async function effectHandler(flag){
   const effectSettings = configVars.effectSettings as IEffectSettingsConfig;
-  const greenColor = <customColor>configVars.greenColor;
-  const yellowColor = configVars.yellowColor as customColor;
-  const safetyCarColor = configVars.safetyCarColor as customColor;
-  const redColor = configVars.redColor as customColor;
-  const vscColor = configVars.vscColor as customColor;
-  const vscEndingColor = configVars.vscEndingColor as customColor;
+  const greenColor = <CustomColor>configVars.greenColor;
+  const yellowColor = configVars.yellowColor as CustomColor;
+  const safetyCarColor = configVars.safetyCarColor as CustomColor;
+  const redColor = configVars.redColor as CustomColor;
+  const vscColor = configVars.vscColor as CustomColor;
+  const vscEndingColor = configVars.vscEndingColor as CustomColor;
 
   for (let i = 0; i < effectSettings.length; i++) {
     // check if the effect is enabled
     if (effectSettings[i].enabled) {
       // check if the flag matches the effect
-      if (effectSettings[i].onFlag === flag) {
+      if (effectSettings[i].trigger === flag) {
         // loop through the amount of times the effect should be run
         for (let j = 0; j < effectSettings[i].amount; j++) {
           // loop through the actions

@@ -29,6 +29,7 @@ import discoverIkeaBridge from "./app/integrations/ikea/discoverIkeaBridge";
 import ikeaGetDevices from "./app/integrations/ikea/ikeaGetDevices";
 import hueGetDevices from "./app/integrations/hue/hueGetDevices";
 import hueGetEntertainmentZones from "./app/integrations/hue/hueGetEntertainmentZones";
+import { IEffectSetting } from "../types/EffectSettingsInterface";
 
 
 Sentry.init({
@@ -240,6 +241,16 @@ export function configChangedEmitEvent(){
 }
 
 // utils
+ipcMain.handle("utils:getHighestEffectId", () => {
+  let highestId = 0;
+  const allEffects = configVars.effectSettings as IEffectSetting[];
+  allEffects.forEach((effect) => {
+    if (effect.id > highestId){
+      highestId = effect.id;
+    }
+  });
+  return highestId;
+});
 ipcMain.handle("utils:getStates", () => {
   return handleIntegrationStates();
 });

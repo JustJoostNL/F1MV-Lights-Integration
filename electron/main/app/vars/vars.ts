@@ -85,6 +85,6 @@ export const hueVars = {
   authHueAPI: null,
   hueClient: null,
   hueAppName: "F1MV-Lights-Integration" as string,
-  hueDeviceName: "F1MV-Lights-Integration-APP" as string,
+  hueDeviceName: "DeviceType" as string,
   hueCreatedUser: null,
 };

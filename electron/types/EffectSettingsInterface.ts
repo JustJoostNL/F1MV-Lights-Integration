@@ -11,7 +11,8 @@ interface IEffectAction {
 
 export interface IEffectSetting {
   name: string;
-  onFlag: string;
+  trigger: string;
+  id: number;
   enabled: boolean;
   actions: IEffectAction[];
   amount: number;

@@ -1,59 +1,50 @@
-import { IAddEffectDialogProps } from "@/components/effect-editor/types";
-import React, { useEffect, useState } from "react";
+import { IEffectEditProps } from "@/components/effect-editor/types";
+import React, { useState } from "react";
 import {
-  Button,
+  Autocomplete, Button,
   Dialog, DialogActions,
   DialogContent,
   DialogTitle,
   FormControl,
-  FormControlLabel,
-  Switch,
-  TextField,
-  Autocomplete, Typography
+  FormControlLabel, Switch,
+  TextField, Typography
 } from "@mui/material";
 import { flagNameMaps } from "@/components/effect-editor/EffectEditor";
 import AddEffectAction from "@/components/effect-editor/AddEffectAction";
 import Divider from "@mui/material/Divider";
 
-export default function AddEffectDialog({ open, onClose, onSubmit }: IAddEffectDialogProps) {
-  const [effectName, setEffectName] = useState("");
-  const [selectedTrigger, setSelectedTrigger] = useState("");
-  const [enabled, setEnabled] = useState(false);
-  const [actions, setActions] = useState<any>([]);
-  const [amount, setAmount] = useState<number>(1);
-  const [highestEffectId, setHighestEffectId] = useState(0);
-
-  useEffect(() => {
-    async function fetchHighestEffectId() {
-      const highestId = await window.f1mvli.utils.getHighestEffectId();
-      setHighestEffectId(highestId);
-    }
-    fetchHighestEffectId();
-  }, []);
+export default function EditEffectDialog({ open, onClose, onSubmit, effect }: IEffectEditProps) {
+  if (!effect) {
+    return null;
+  }
+  const [effectName, setEffectName] = useState(effect.name);
+  const [selectedTrigger, setSelectedTrigger] = useState(effect.trigger);
+  const [enabled, setEnabled] = useState(effect.enabled);
+  const [actions, setActions] = useState<any>(effect.actions);
+  const [amount, setAmount] = useState<number>(effect.amount);
 
   const handleAddAction = () => {
     setActions([...actions, { type: "on", color: { r: 255, g: 255, b: 255 }, brightness: 100 }]);
   };
 
   const handleSubmit = () => {
-    const newEffect = {
+    const editedEffect = {
       name: effectName,
-      id: highestEffectId + 1,
+      id: effect.id,
       trigger: selectedTrigger,
       enabled: enabled,
       actions: actions,
       amount: amount,
     };
-    onSubmit(newEffect);
+    onSubmit(editedEffect);
   };
 
   return (
     <div>
       <Dialog open={open} onClose={onClose}>
-        <DialogTitle>Create Effect</DialogTitle>
+        <DialogTitle>Edit Effect</DialogTitle>
         <DialogContent>
           <TextField
-            autoFocus
             margin="dense"
             label="Effect Name"
             type="text"
@@ -71,6 +62,7 @@ export default function AddEffectDialog({ open, onClose, onSubmit }: IAddEffectD
               fullWidth
               color="secondary"
               options={Object.keys(flagNameMaps)}
+              value={selectedTrigger}
               getOptionLabel={(key) => flagNameMaps[key as keyof typeof flagNameMaps]}
               onChange={(event, newValue) => {
                 setSelectedTrigger(newValue as string);
@@ -84,14 +76,14 @@ export default function AddEffectDialog({ open, onClose, onSubmit }: IAddEffectD
           {actions.map((action: any, index: number) => (
             <React.Fragment key={index}>
               <Typography variant="body2" component="div" sx={{ color: "grey" }}>
-                Action {index + 1}
+                  Action {index + 1}
               </Typography>
               <AddEffectAction index={index} action={action} actions={actions} setActions={setActions} />
             </React.Fragment>
           ))}
           <Divider sx={{ mt: 2, mb: 2 }} />
           <Button variant="outlined" color="secondary" onClick={handleAddAction} sx={{ mb: 2 }}>
-            Add Action
+              Add Action
           </Button>
           <Divider sx={{ mb: 2 }} />
           <Typography variant="body2" component="div" sx={{ color: "grey", mb: -0.5, mt: 1 }}>
@@ -99,7 +91,7 @@ export default function AddEffectDialog({ open, onClose, onSubmit }: IAddEffectD
           </Typography>
           <TextField
             sx={{
-              width: "30%",
+              width: "40%",
               mr: 35,
             }}
             margin="normal"
@@ -116,7 +108,7 @@ export default function AddEffectDialog({ open, onClose, onSubmit }: IAddEffectD
         <DialogActions>
           <Button color={"secondary"} onClick={onClose}>Cancel</Button>
           <Button color={"secondary"} onClick={handleSubmit} variant="contained">
-            Create
+            Save
           </Button>
         </DialogActions>
       </Dialog>

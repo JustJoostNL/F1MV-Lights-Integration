@@ -4,16 +4,22 @@ import { ColorPicker } from "@/components/effect-editor/ColorPicker";
 import DeleteIcon from "@mui/icons-material/Delete";
 import React, { useEffect, useState } from "react";
 import { BlueSlider } from "@/components/settings/BlueSlider";
+import { RgbColorPicker } from "react-colorful";
 
 export default function AddEffectAction({ index, action, actions, setActions }: IAddEffectActionProps) {
   const [theColor, setTheColor] = useState(action.color);
-  useEffect(() => {
-    setTheColor(action.color); // Update theColor state when action.color changes
-  }, [action.color]);
-  console.log(theColor);
   const handleTypeChange = (value: any) => {
     const newActions = [...actions];
     newActions[index] = { ...newActions[index], type: value };
+    // if the type is switched to delay from on/off, remove the color and brightness
+    if (value === "delay") {
+      delete newActions[index].color;
+      delete newActions[index].brightness;
+    }
+    if (value === "on" || value === "off") {
+      newActions[index].color = { r: 255, g: 255, b: 255 };
+      newActions[index].brightness = 100;
+    }
     setActions(newActions);
   };
 
@@ -65,7 +71,7 @@ export default function AddEffectAction({ index, action, actions, setActions }: 
 
   return (
     <div style={{ display: "flex", flexDirection: "column", marginBottom: 2 }}>
-      <Divider sx={{ mt: 2, mb: 2 }} />
+      <Divider sx={{ mt: 1, mb: 2 }} />
       <div style={{ display: "flex", flexDirection: "row", alignItems: "center" }}>
         <FormControl sx={{ mr: 2 }}>
           <Autocomplete
@@ -94,10 +100,9 @@ export default function AddEffectAction({ index, action, actions, setActions }: 
       {(action.type === "on") &&
         <div style={{ display: "flex", flexDirection: "column", marginTop: "10px" }}>
           <div style={{ display: "flex", flexDirection: "row", alignItems: "center" }}>
-            <ColorPicker
-              color={theColor}
-              onChange={(color) => handleColorChange(color)}
-              sx={{ marginLeft: 2, marginBottom: 4, marginTop: 20 }} />
+            <div style={{ marginLeft: 2, marginBottom: 4, marginTop: 20 }}>
+              <RgbColorPicker color={theColor} onChange={handleColorChange} />
+            </div>
             <div style={{ marginLeft: 100, marginTop: 20, display: "flex", flexDirection: "column" }}>
               <TextField
                 sx={{ m: 1, width: 120 }}
@@ -146,7 +151,7 @@ export default function AddEffectAction({ index, action, actions, setActions }: 
           type="number"
           label="Delay (ms)"
           value={action.delay}
-          onChange={(e) => handleDelayChange(e.target.value)}
+          onChange={(e) => handleDelayChange(parseInt(e.target.value))}
         />
       }
     </div>

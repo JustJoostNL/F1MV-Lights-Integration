@@ -12,11 +12,11 @@ export default async function hueInitialize(){
   let authHueAPI = hueVars.authHueAPI;
 
   if (!hueBridgeIP || hueBridgeIP === "") {
-    log.info("Philips Hue Bridge IP is not set, please use the discover button in the config to find your bridge.");
+    log.info("Philips Hue Bridge IP is not set, please use the discover button in the settings to find your bridge.");
     return;
   }
   try {
-    const hueClient = await hue.createInsecureLocal(hueBridgeIP).connect();
+    const hueClient = await hue.createLocal(hueBridgeIP).connect();
 
     if (!hueToken) {
       log.debug("No Philips Hue token found, generating a new one...");
@@ -29,7 +29,7 @@ export default async function hueInitialize(){
       token = configVars.hueToken;
     }
 
-    authHueAPI = await hue.createInsecureLocal(hueBridgeIP).connect(token);
+    authHueAPI = await hue.createLocal(hueBridgeIP).connect(token);
     hueVars.authHueAPI = authHueAPI;
     integrationStates.hueOnline = true;
     const hueLights = await authHueAPI.lights.getAll();

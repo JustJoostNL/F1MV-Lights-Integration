@@ -1,17 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import LoadingScreen from "@/pages/LoadingScreen";
-import {
-  Checkbox,
-  Switch,
-  Button,
-} from "@mui/material";
+import { Checkbox, Switch, Button } from "@mui/material";
 import { Edit } from "@mui/icons-material";
 import DeleteIcon from "@mui/icons-material/Delete";
-import {
-  IFlagMap
-} from "@/components/effect-editor/types";
+import { IFlagMap } from "@/components/effect-editor/types";
 import AddEffectDialog from "@/components/effect-editor/AddEffectDialog";
+import EditEffectDialog from "@/components/effect-editor/EditEffectDialog";
 
 export const flagNameMaps: IFlagMap = {
   green: "Green",
@@ -23,9 +18,11 @@ export const flagNameMaps: IFlagMap = {
   staticColor: "Static Color",
 };
 
-export default function EffectEditor(){
+export default function EffectEditor() {
   const [effects, setEffects] = useState<any>([]);
   const [addDialogOpen, setAddDialogOpen] = useState(false);
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [selectedEffect, setSelectedEffect] = useState<any>(null);
 
   useEffect(() => {
     async function fetchEffects() {
@@ -35,13 +32,37 @@ export default function EffectEditor(){
     fetchEffects();
   }, []);
 
-  const handleEdit = (row: any) => () => {
-    console.log(row);
+  const handleEdit = (row: any) => {
+    const id = row.id;
+    const effect = effects.find((effect: any) => effect.id === id);
+    console.log("found effect", effect);
+    setSelectedEffect({
+      ...effect,
+      id: id,
+    });
+    setEditDialogOpen(true);
+  };
+  const handleCloseEditDialog = () => {
+    setEditDialogOpen(false);
+    setSelectedEffect(null);
+    setSelectedEffect(undefined);
+  };
+
+  const handleEditDialogSubmit = (editedEffect: any) => {
+    setEditDialogOpen(false);
+    const newEffects = effects.map((effect: any) => {
+      if (effect.id === editedEffect.id) {
+        return editedEffect;
+      }
+      return effect;
+    });
+    setEffects(newEffects);
+    window.f1mvli.config.set("Settings.generalSettings.effectSettings", newEffects);
   };
 
   const handleDelete = (row: any) => () => {
-    const name = row.name;
-    const newEffects = effects.filter((effect: any) => effect.name !== name);
+    const id = row.id;
+    const newEffects = effects.filter((effect: any) => effect.id !== id);
     setEffects(newEffects);
     window.f1mvli.config.set("Settings.generalSettings.effectSettings", newEffects);
   };
@@ -56,10 +77,7 @@ export default function EffectEditor(){
 
   const handleAddDialogSubmit = (newEffect: any) => {
     setAddDialogOpen(false);
-    console.log(newEffect);
-    console.log(effects);
     const newEffects = [...effects, newEffect];
-    console.log(newEffects);
     setEffects(newEffects);
     window.f1mvli.config.set("Settings.generalSettings.effectSettings", newEffects);
   };
@@ -67,7 +85,7 @@ export default function EffectEditor(){
   const columns: GridColDef[] = [
     { field: "name", headerName: "Name", width: 200 },
     { field: "enabled", headerName: "Enabled", width: 100 },
-    { field: "onFlag", headerName: "Trigger", width: 200 },
+    { field: "trigger", headerName: "Trigger", width: 200 },
     { field: "actions", headerName: "Actions", width: 100 },
     { field: "amount", headerName: "Repeat Amount", width: 130 },
     {
@@ -76,42 +94,31 @@ export default function EffectEditor(){
       width: 100,
       renderCell: (params) => (
         <>
-          <div style={{ cursor: "pointer" }} onClick={handleEdit(params.row)}>
-            <Edit
-              sx={{
-                mr: 2.5,
-              }}
-            />
+          <div style={{ cursor: "pointer" }} onClick={() => handleEdit(params.row)}>
+            <Edit sx={{ mr: 2.5 }} />
           </div>
           <div style={{ cursor: "pointer" }} onClick={handleDelete(params.row)}>
-            <DeleteIcon/>
+            <DeleteIcon />
           </div>
         </>
       ),
     },
   ];
 
-  if (!effects){
-    return (
-      <LoadingScreen/>
-    );
+  if (!effects) {
+    return <LoadingScreen />;
   }
 
-  let idCounter = 0;
-
   const rows = effects.map((effect: any) => {
-    idCounter++;
-    console.log(idCounter);
-    console.log(effect);
-    const flagName = flagNameMaps[effect.onFlag];
+    const flagName = flagNameMaps[effect.trigger];
     return {
-      id: idCounter,
       name: effect.name,
+      id: effect.id,
       enabled: effect.enabled ? "Yes" : "No",
-      onFlag: flagName,
+      trigger: flagName,
       actions: effect.actions.length,
       amount: effect.amount,
-      edit: "Edit"
+      edit: "Edit",
     };
   });
 
@@ -125,14 +132,9 @@ export default function EffectEditor(){
       <DataGrid
         rows={rows}
         components={{
-          BaseCheckbox: React.forwardRef((props, ref) => (
-            <Checkbox color="secondary" ref={ref} {...props} />
-          )),
-          BaseSwitch: React.forwardRef((props, ref) => (
-            <Switch color="secondary" ref={ref} {...props} />
-          ))
+          BaseCheckbox: React.forwardRef((props, ref) => <Checkbox color="secondary" ref={ref} {...props} />),
+          BaseSwitch: React.forwardRef((props, ref) => <Switch color="secondary" ref={ref} {...props} />),
         }}
-        sx={{ color: "white" }}
         columns={columns}
         pageSize={8}
         rowsPerPageOptions={[8]}
@@ -141,12 +143,10 @@ export default function EffectEditor(){
         disableColumnMenu
         checkboxSelection={false}
         disableSelectionOnClick
+        style={{ width: "100%" }}
       />
-      <AddEffectDialog
-        open={addDialogOpen}
-        onClose={handleCloseAddDialog}
-        onSubmit={handleAddDialogSubmit}
-      />
+      <AddEffectDialog open={addDialogOpen} onClose={handleCloseAddDialog} onSubmit={handleAddDialogSubmit} />
+      <EditEffectDialog open={editDialogOpen} onClose={handleCloseEditDialog} onSubmit={handleEditDialogSubmit} effect={selectedEffect} />
     </div>
   );
 }
