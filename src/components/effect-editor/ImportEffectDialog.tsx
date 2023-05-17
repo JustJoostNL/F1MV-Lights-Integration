@@ -31,7 +31,7 @@ export default function ImportEffectDialog({ open, onClose, onSubmit }: IImportE
           onChange={(e) => setToken(e.target.value)}
         />
         <Typography variant="body2" component="div" sx={{ color: "grey", mb: -0.5, mt: 1 }}>
-          Warning: This overwrites all existing effects when the export all button is used.
+          Warning: This overwrites all existing effects when the "export all" button is used.
         </Typography>
       </DialogContent>
       <DialogActions>

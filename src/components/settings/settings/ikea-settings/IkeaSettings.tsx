@@ -101,7 +101,7 @@ export default function IkeaSettingsContent() {
                   <Toaster message={"Ikea advanced settings are now visible!"} severity={"info"} time={3000}/>
                 </>
                 <Divider sx={{ mb: "20px" }}/>
-                <Alert sx={{ mb: "20px", mr: "650px" }} severity="warning">Please do not change these settings unless you know what you're doing!!</Alert>
+                <Alert sx={{ mb: "20px", mr: "600px" }} severity="warning">Please do not change these settings unless you know what you're doing!!</Alert>
                 <Box sx={settingBoxSX}>
                   <div>
                     <Typography variant="h6" component="div">

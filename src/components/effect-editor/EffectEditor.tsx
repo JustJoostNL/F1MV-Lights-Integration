@@ -11,7 +11,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import FileUploadIcon from "@mui/icons-material/FileUpload";
 import FileDownloadIcon from "@mui/icons-material/FileDownload";
 import AddIcon from "@mui/icons-material/Add";
-import ShareIcon from "@mui/icons-material/Reply";
+import ShareIcon from "@mui/icons-material/Share";
 import { IFlagMap } from "@/components/effect-editor/types";
 import AddEffectDialog from "@/components/effect-editor/AddEffectDialog";
 import EditEffectDialog from "@/components/effect-editor/EditEffectDialog";
