@@ -30,6 +30,7 @@ import ikeaGetDevices from "./app/integrations/ikea/ikeaGetDevices";
 import hueGetDevices from "./app/integrations/hue/hueGetDevices";
 import hueGetEntertainmentZones from "./app/integrations/hue/hueGetEntertainmentZones";
 import { IEffectSetting } from "../types/EffectSettingsInterface";
+import hueInitialize from "./app/integrations/hue/hueInit";
 
 
 Sentry.init({
@@ -320,6 +321,9 @@ ipcMain.handle("integrations:openRGB:reConnect", () => {
 // hue
 ipcMain.handle("integrations:hue:discoverBridge", async (_, arg) => {
   return await discoverHueBridge(arg);
+});
+ipcMain.handle("integrations:hue:connectToBridge", async () => {
+  return await hueInitialize();
 });
 ipcMain.handle("integrations:hue:getLights", async () => {
   return await hueGetDevices();

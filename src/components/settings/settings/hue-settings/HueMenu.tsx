@@ -11,6 +11,7 @@ import { font } from "@/index";
 import ReactGA from "react-ga4";
 import Toaster from "@/components/toaster/Toaster";
 import { saveConfig } from "@/components/settings/settings/hue-settings/HueSettings";
+import LinkIcon from "@mui/icons-material/Link";
 
 export default function HueMenu() {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
@@ -32,7 +33,7 @@ export default function HueMenu() {
     const status = data;
     if (status.status === "success"){
       const ip = status.ip;
-      setToaster({ message: `Successfully found Hue Bridge at ${ip}`, severity: "info", time: 5000 });
+      setToaster({ message: `Successfully found Hue Bridge at ${ip}. Please use the "Connect to Hue bridge" button now`, severity: "success", time: 8000 });
       setTimeout(() => {
         setToaster(null);
       }, 5100);
@@ -43,6 +44,19 @@ export default function HueMenu() {
         setToaster(null);
       }, 5100);
     }
+  };
+
+  const handleConnectData = async (data: {
+    status: string
+    message: string
+  }) => {
+    const status = data.status;
+    const message = data.message;
+    const severity = status === "success" ? "success" : "warning";
+    setToaster({ message: message, severity: severity, time: 5000 });
+    setTimeout(() => {
+      setToaster(null);
+    }, 5100);
   };
 
   const handleManageHueDevices = async () => {
@@ -108,6 +122,16 @@ export default function HueMenu() {
     });
   };
 
+  const handleConnectToHueBridge = async () => {
+    setAnchorEl(null);
+    const data = await window.f1mvli.integrations.hue.connectToBridge();
+    await handleConnectData(data);
+    ReactGA.event({
+      category: "hue_tools_menu",
+      action: "connect_to_hue_bridge",
+    });
+  };
+
 
 
   const menuItemStyle = {
@@ -160,6 +184,18 @@ export default function HueMenu() {
             variant="body2"
             sx={menuItemStyle}>
                         Search for Hue bridges (remote discovery)
+          </Typography>
+        </MenuItem>
+        <Divider />
+        <MenuItem onClick={handleConnectToHueBridge}>
+          <LinkIcon
+            sx={{
+              mr: 2
+            }}/>
+          <Typography
+            variant="body2"
+            sx={menuItemStyle}>
+            Connect to Hue bridge (use this after discovery)
           </Typography>
         </MenuItem>
         <Divider />

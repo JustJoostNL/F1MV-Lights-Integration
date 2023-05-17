@@ -35,7 +35,6 @@ export default function EffectEditor() {
   const handleEdit = (row: any) => {
     const id = row.id;
     const effect = effects.find((effect: any) => effect.id === id);
-    console.log("found effect", effect);
     setSelectedEffect({
       ...effect,
       id: id,

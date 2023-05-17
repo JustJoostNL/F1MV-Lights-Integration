@@ -39,6 +39,7 @@ export const f1mvli = {
       getLights: () => ipcRenderer.invoke("integrations:hue:getLights"),
       getEntertainmentZones: () => ipcRenderer.invoke("integrations:hue:getEntertainmentZones"),
       discoverBridge: (discoverMode: "remote" | "local") => ipcRenderer.invoke("integrations:hue:discoverBridge", discoverMode),
+      connectToBridge: () => ipcRenderer.invoke("integrations:hue:connectToBridge"),
     },
     ikea: {
       searchAndConnectToGateway: () => ipcRenderer.invoke("integrations:ikea:searchAndConnectToGateway"),

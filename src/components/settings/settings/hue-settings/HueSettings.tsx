@@ -11,6 +11,8 @@ export let saveConfig: () => Promise<void> = async () => {};
 export default function HueSettingsContent() {
   const [settings, setSettings] = useState<any | null>(null);
   const [hueAdvancedSettings, setHueAdvancedSettings] = useState(false);
+  const [hueBridgeIPIsChanged, setHueBridgeIPIsChanged] = useState(false);
+  const [hueTokenIsChanged, setHueTokenIsChanged] = useState(false);
 
   useHotkeys("shift+a+1", () => {
     setHueAdvancedSettings(!hueAdvancedSettings);
@@ -20,8 +22,6 @@ export default function HueSettingsContent() {
   useEffect(() => {
     async function fetchConfig() {
       const config = await getConfig();
-      // make sure the disable hue, since it is in beta
-      //config.Settings.hueSettings.hueDisable = true;
       setSettings(config.Settings.hueSettings);
     }
     fetchConfig();
@@ -32,7 +32,9 @@ export default function HueSettingsContent() {
     await window.f1mvli.config.set("Settings.hueSettings", {
       ...settings,
       deviceIDs: await window.f1mvli.config.get("Settings.hueSettings.deviceIDs"),
-      entertainmentZoneIDs: await window.f1mvli.config.get("Settings.hueSettings.entertainmentZoneIDs")
+      entertainmentZoneIDs: await window.f1mvli.config.get("Settings.hueSettings.entertainmentZoneIDs"),
+      hueBridgeIP: hueBridgeIPIsChanged ? settings.hueBridgeIP : await window.f1mvli.config.get("Settings.hueSettings.hueBridgeIP"),
+      token: hueTokenIsChanged ? settings.token : await window.f1mvli.config.get("Settings.hueSettings.token")
     });
   };
 
@@ -98,6 +100,7 @@ export default function HueSettingsContent() {
                     variant="outlined"
                     value={settings.hueBridgeIP}
                     onChange={(event) => {
+                      setHueBridgeIPIsChanged(true);
                       handleSetSingleSetting("hueBridgeIP", event.target.value, setSettings, settings);
                     }}
                   />
@@ -105,10 +108,10 @@ export default function HueSettingsContent() {
                 <Box sx={settingBoxSX}>
                   <div>
                     <Typography variant="h6" component="div">
-                                            Hue bridge token
+                      Hue bridge token
                     </Typography>
                     <Typography variant="body2" component="div" sx={{ color: "grey" }}>
-                                            If you know your Hue bridge token, you can enter it here. If you don't know it, leave this blank, and it will be automatically generated.
+                      If you know your Hue bridge token, you can enter it here. If you don't know it, leave this blank, and it will be automatically generated.
                     </Typography>
                   </div>
                   <TextField
@@ -118,6 +121,7 @@ export default function HueSettingsContent() {
                     variant="outlined"
                     value={settings.token}
                     onChange={(event) => {
+                      setHueTokenIsChanged(true);
                       handleSetSingleSetting("token", event.target.value, setSettings, settings);
                     }}
                   />

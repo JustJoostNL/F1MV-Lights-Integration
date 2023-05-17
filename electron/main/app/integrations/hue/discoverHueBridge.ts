@@ -16,7 +16,6 @@ export default async function discoverHueBridge(discoverMode: "remote" | "local"
           };
         } else {
           await handleConfigSet(null, "Settings.hueSettings.hueBridgeIP", remoteBridges[0].ipaddress);
-          await hueInitialize();
           return {
             status: "success",
             ip: remoteBridges[0].ipaddress
@@ -32,7 +31,6 @@ export default async function discoverHueBridge(discoverMode: "remote" | "local"
           };
         } else {
           await handleConfigSet(null, "Settings.hueSettings.hueBridgeIP", localBridges[0].ipaddress);
-          await hueInitialize();
           return {
             status: "success",
             ip: localBridges[0].ipaddress
