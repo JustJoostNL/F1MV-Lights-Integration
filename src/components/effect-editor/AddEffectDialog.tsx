@@ -24,6 +24,14 @@ export default function AddEffectDialog({ open, onClose, onSubmit }: IAddEffectD
   const [highestEffectId, setHighestEffectId] = useState(0);
 
   useEffect(() => {
+    setEffectName("");
+    setSelectedTrigger("");
+    setEnabled(false);
+    setActions([]);
+    setAmount(1);
+  }, [open]);
+
+  useEffect(() => {
     async function fetchHighestEffectId() {
       const highestId = await window.f1mvli.utils.getHighestEffectId();
       setHighestEffectId(highestId);

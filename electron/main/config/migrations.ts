@@ -76,8 +76,8 @@ export const configMigrations: ConfigMigration = {
     userConfig.set("version", "2.0.1");
     userConfig.set("Settings.advancedSettings.analytics", true);
   },
-  "2.0.2": userConfig => {
-    userConfig.set("version", "2.0.2");
+  "2.1.0": userConfig => {
+    userConfig.set("version", "2.1.0");
     userConfig.set("Settings.generalSettings.effectSettings", [
       {
         name: "VSC Ending Blink Effect",

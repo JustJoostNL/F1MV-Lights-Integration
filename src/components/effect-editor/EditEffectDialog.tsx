@@ -1,5 +1,5 @@
 import { IEffectEditProps } from "@/components/effect-editor/types";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Autocomplete, Button,
   Dialog, DialogActions,

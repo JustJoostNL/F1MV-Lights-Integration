@@ -4,6 +4,12 @@ export interface IAddEffectDialogProps {
   onSubmit: (newEffect: any) => void;
 }
 
+export interface IImportEffectsDialogProps {
+  open: boolean;
+  onClose: () => void;
+  onSubmit: (importedEffects: any) => void;
+}
+
 export interface IEffectEditProps {
   open: boolean;
   onClose: () => void;
