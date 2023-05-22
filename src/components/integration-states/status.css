@@ -3,12 +3,12 @@ body {
 }
 
 .status.success {
-    animation: pulse-success 5s infinite;
+/*    animation: pulse-success 5s infinite;*/
     background-color: #78fc65;
 }
 
 .status.error {
-    animation: pulse-error 5s infinite;
+/*    animation: pulse-error 5s infinite;*/
     background-color: var(--red);
 }
 
