@@ -5,12 +5,12 @@ import Home from "@/pages/Home";
 import About from "@/pages/About";
 import LogViewerPage from "@/pages/LogViewer";
 import LoadingScreen from "@/pages/LoadingScreen";
-import HassDeviceSelector from "@/pages/device-selectors/hass-device-selector";
-import AddWLEDDevice from "@/pages/device-selectors/add-wled-device";
+import HassDeviceSelector from "@/pages/device-selectors/HassDeviceSelector";
+import AddWLEDDevice from "@/pages/device-selectors/AddWLEDDevice";
 import Settings from "@/pages/Settings";
-import IkeaDeviceSelector from "@/pages/device-selectors/ikea-device-selector";
-import PhilipsHueLightSelector from "@/pages/device-selectors/hue-light-selector";
-import PhilipsHueZoneSelector from "@/pages/device-selectors/hue-entertainment-zone-selector";
+import IkeaDeviceSelector from "@/pages/device-selectors/IKEADeviceSelector";
+import PhilipsHueLightSelector from "@/pages/device-selectors/HueLightSelector";
+import PhilipsHueZoneSelector from "@/pages/device-selectors/HueEntertainmentZoneSelector";
 import EffectEditorPage from "@/pages/EffectEditorPage";
 
 

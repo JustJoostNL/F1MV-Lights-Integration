@@ -20,7 +20,7 @@ const userConfig = new Store({
 });
 
 userConfig.onDidAnyChange(() => {
-  log.info("Config changed, reloading from config...");
+  log.debug("Config changed, reloading from config...");
   const newVariables = {
     "webServerDisable": userConfig.get("Settings.webServerSettings.webServerDisable"),
     "goveeDisable": userConfig.get("Settings.goveeSettings.goveeDisable"),

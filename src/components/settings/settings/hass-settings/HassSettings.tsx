@@ -67,10 +67,10 @@ export default function HassSettingsContent() {
                 <Box sx={settingBoxSX}>
                   <div>
                     <Typography variant="h6" component="div">
-                                            Home Assistant Server Host
+                      Home Assistant Server Host
                     </Typography>
                     <Typography variant="body2" component="div" sx={{ color: "grey" }}>
-                                            This is the hostname or IP of the system Home Assistant is running on.
+                      This is the hostname or IP of the system Home Assistant is running on. <b>Don't forget to add http:// or https://</b>
                     </Typography>
                   </div>
                   <TextField
@@ -87,10 +87,10 @@ export default function HassSettingsContent() {
                 <Box sx={settingBoxSX}>
                   <div>
                     <Typography variant="h6" component="div">
-                                            Home Assistant Server Port
+                      Home Assistant Server Port
                     </Typography>
                     <Typography variant="body2" component="div" sx={{ color: "grey" }}>
-                                            This is the port of the Home Assistant server. (default is 8123)
+                      This is the port of the Home Assistant server. (default is 8123)
                     </Typography>
                   </div>
                   <TextField
@@ -107,10 +107,10 @@ export default function HassSettingsContent() {
                 <Box sx={settingBoxSX}>
                   <div>
                     <Typography variant="h6" component="div">
-                                            Home Assistant Long-Lived Access Token
+                      Home Assistant Long-Lived Access Token
                     </Typography>
                     <Typography variant="body2" component="div" sx={{ color: "grey" }}>
-                                            This is the long-lived access token you can create in your Home Assistant profile.
+                      This is the long-lived access token you can create in your Home Assistant profile.
                     </Typography>
                   </div>
                   <TextField
