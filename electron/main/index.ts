@@ -1,6 +1,6 @@
-import { app, BrowserWindow, ipcMain, shell } from "electron";
+import {app, BrowserWindow, dialog, ipcMain, shell} from "electron";
 import { release } from "node:os";
-import { join } from "node:path";
+import path, { join } from "node:path";
 import {
   configVars,
   handleConfigGet,
@@ -31,6 +31,7 @@ import hueGetDevices from "./app/integrations/hue/hueGetDevices";
 import hueGetEntertainmentZones from "./app/integrations/hue/hueGetEntertainmentZones";
 import { IEffectSetting } from "../types/EffectSettingsInterface";
 import hueInitialize from "./app/integrations/hue/hueInit";
+import deepLinkPathToRoute from "./app/deeplinking/handleDeepLinking";
 
 
 Sentry.init({
@@ -104,6 +105,35 @@ async function createWindow() {
     });
   }
 
+  // handle deep-linking
+  app.on("open-url", (event, url) => {
+    event.preventDefault();
+    if (win) {
+      win.show();
+      win.focus();
+      const deepLinkPath = deepLinkPathToRoute(url);
+      if (process.env.VITE_DEV_SERVER_URL) {
+        win.loadURL(`${url}#${deepLinkPath}`);
+      } else {
+        win.loadURL(`http://localhost:${availablePort}/index.html#${deepLinkPath}`);
+      }
+    }
+  });
+
+  // handle deep-linking for windows
+  app.on("second-instance", async (event, commandLine) => {
+    if (win) {
+      win.show();
+      win.focus();
+      const deepLinkPath = await deepLinkPathToRoute(commandLine[commandLine.length - 1]);
+      if (process.env.VITE_DEV_SERVER_URL) {
+        await win.loadURL(`${url}#${deepLinkPath}`);
+      } else {
+        await win.loadURL(`http://localhost:${availablePort}/index.html#${deepLinkPath}`);
+      }
+    }
+  });
+
   // Make all links open with the browser, not with the application
   win.webContents.setWindowOpenHandler(({ url }) => {
     if (url.startsWith("https:" || "http:")) shell.openExternal(url);
@@ -114,6 +144,15 @@ async function createWindow() {
 app.whenReady().then(onReady);
 
 function onReady() {
+  // handle deep-link protocol
+  if (process.defaultApp) {
+    if (process.argv.length >= 2) {
+      app.setAsDefaultProtocolClient("f1mvli", process.execPath, [path.resolve(process.argv[1])]);
+    }
+  } else {
+    app.setAsDefaultProtocolClient("f1mvli");
+  }
+
   createWindow();
 
   win.webContents.on("did-finish-load", () => {

@@ -3,12 +3,12 @@ import { analyticsHandler } from "./analytics/analytics";
 import startF1MVLightSync from "./f1mv/F1MVLightSync";
 import initAllIntegrations from "./integrations/initIntegration";
 import { handleIntegrationStates, handleMiscAPIChecks } from "./integrations/integration-states/integrationStates";
-import createDeepLinks from "./deeplinking/createDeepLinks";
+import handleDeepLinking from "./deeplinking/handleDeepLinking";
 import log from "electron-log";
 
 export default async function initApp(){
   await createF1MVURLs();
-  await createDeepLinks();
+  await handleDeepLinking();
   await analyticsHandler("getUniqueID");
   await analyticsHandler("activeUsersInit");
   await initAllIntegrations();

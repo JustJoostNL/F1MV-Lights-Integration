@@ -39,10 +39,10 @@ export default function MultiViewerSettingsContent() {
           <Box sx={settingBoxSX}>
             <div>
               <Typography variant="h6" component="div">
-                                Live Timing URL
+                Live Timing URL
               </Typography>
               <Typography variant="body2" component="div" sx={{ color: "grey" }}>
-                                This is the MultiViewer Live Timing URL.
+                This is the MultiViewer Live Timing URL. <b>Don't forget to add http://</b>
               </Typography>
             </div>
             <TextField
