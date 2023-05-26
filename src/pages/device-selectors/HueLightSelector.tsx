@@ -1,6 +1,6 @@
 import HueLightSelector from "@/components/device-selectors/hue/lights";
 import ReactGA from "react-ga4";
-import {useEffect, useState} from "react";
+import { useEffect, useState } from "react";
 
 export default function PhilipsHueLightSelector(){
   const [hueOnline, setHueOnline] = useState<boolean | null>(null);

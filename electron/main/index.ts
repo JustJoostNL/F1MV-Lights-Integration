@@ -1,4 +1,4 @@
-import {app, BrowserWindow, dialog, ipcMain, shell} from "electron";
+import { app, BrowserWindow, dialog, ipcMain, shell } from "electron";
 import { release } from "node:os";
 import path, { join } from "node:path";
 import {
@@ -40,6 +40,47 @@ Sentry.init({
   release: "F1MV-Lights-Integration@" + app.getVersion(),
   environment: process.env.VITE_DEV_SERVER_URL ? "development" : "production",
   tracesSampleRate: 0.2,
+});
+
+// handle deep-link protocol
+if (process.defaultApp) {
+  if (process.argv.length >= 2) {
+    app.setAsDefaultProtocolClient("f1mvli", process.execPath, [path.resolve(process.argv[1])]);
+  }
+} else {
+  app.setAsDefaultProtocolClient("f1mvli");
+}
+
+// handle deep-linking for mac/linux
+app.on("open-url", async (event, url) => {
+  event.preventDefault();
+  if (win) {
+    win.show();
+    win.focus();
+    const deepLinkPath = await deepLinkPathToRoute(url);
+    if (deepLinkPath === "no_path_found") return;
+    if (process.env.VITE_DEV_SERVER_URL) {
+      await win.loadURL(`${url}#${deepLinkPath}`);
+    } else {
+      await win.loadURL(`http://localhost:${availablePort}/index.html#${deepLinkPath}`);
+    }
+  }
+});
+
+// handle deep-linking for windows
+app.on("second-instance", async (event, commandLine) => {
+  if (win) {
+    if (win.isMinimized()) win.restore();
+    win.show();
+    win.focus();
+    const deepLinkPath = await deepLinkPathToRoute(commandLine[commandLine.length - 1]);
+    if (deepLinkPath === "no_path_found") return;
+    if (process.env.VITE_DEV_SERVER_URL) {
+      await win.loadURL(`${url}#${deepLinkPath}`);
+    } else {
+      await win.loadURL(`http://localhost:${availablePort}/index.html#${deepLinkPath}`);
+    }
+  }
 });
 
 process.env.DIST_ELECTRON = join(__dirname, "../");
@@ -105,35 +146,6 @@ async function createWindow() {
     });
   }
 
-  // handle deep-linking
-  app.on("open-url", (event, url) => {
-    event.preventDefault();
-    if (win) {
-      win.show();
-      win.focus();
-      const deepLinkPath = deepLinkPathToRoute(url);
-      if (process.env.VITE_DEV_SERVER_URL) {
-        win.loadURL(`${url}#${deepLinkPath}`);
-      } else {
-        win.loadURL(`http://localhost:${availablePort}/index.html#${deepLinkPath}`);
-      }
-    }
-  });
-
-  // handle deep-linking for windows
-  app.on("second-instance", async (event, commandLine) => {
-    if (win) {
-      win.show();
-      win.focus();
-      const deepLinkPath = await deepLinkPathToRoute(commandLine[commandLine.length - 1]);
-      if (process.env.VITE_DEV_SERVER_URL) {
-        await win.loadURL(`${url}#${deepLinkPath}`);
-      } else {
-        await win.loadURL(`http://localhost:${availablePort}/index.html#${deepLinkPath}`);
-      }
-    }
-  });
-
   // Make all links open with the browser, not with the application
   win.webContents.setWindowOpenHandler(({ url }) => {
     if (url.startsWith("https:" || "http:")) shell.openExternal(url);
@@ -144,15 +156,6 @@ async function createWindow() {
 app.whenReady().then(onReady);
 
 function onReady() {
-  // handle deep-link protocol
-  if (process.defaultApp) {
-    if (process.argv.length >= 2) {
-      app.setAsDefaultProtocolClient("f1mvli", process.execPath, [path.resolve(process.argv[1])]);
-    }
-  } else {
-    app.setAsDefaultProtocolClient("f1mvli");
-  }
-
   createWindow();
 
   win.webContents.on("did-finish-load", () => {
@@ -207,14 +210,6 @@ app.on("window-all-closed", () => {
   if (process.platform !== "darwin") app.quit();
 });
 
-app.on("second-instance", () => {
-  if (win) {
-    // Focus on the main window if the user tried to open another
-    if (win.isMinimized()) win.restore();
-    win.focus();
-  }
-});
-
 app.on("activate", () => {
   const allWindows = BrowserWindow.getAllWindows();
   if (allWindows.length) {
@@ -224,7 +219,6 @@ app.on("activate", () => {
   }
 });
 
-// New window example arg: new windows url
 ipcMain.handle("utils:open-win", (_, arg) => {
   const childWindow = new BrowserWindow({
     title: arg.browserWindowOptions.title,

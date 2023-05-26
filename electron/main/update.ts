@@ -8,7 +8,7 @@ let noUpdateFound = false;
 
 export default function initUpdater(){
   autoUpdater.forceDevUpdateConfig = true;
-  autoUpdater.autoDownload = true;
+  autoUpdater.autoDownload = false;
   autoUpdater.disableWebInstaller = true;
   autoUpdater.allowDowngrade = false;
   autoUpdater.autoInstallOnAppQuit = true;
@@ -16,6 +16,7 @@ export default function initUpdater(){
   //autoUpdater.logger = log;
 
   autoUpdater.on("update-downloaded", (event: UpdateDownloadedEvent) => {
+    //if (process.platform === "darwin") return;
     const dialogOpts = {
       type: "info",
       buttons: ["Restart", "Later"],
@@ -30,8 +31,12 @@ export default function initUpdater(){
   });
 
   autoUpdater.on("update-available", () => {
+    //if (process.platform === "darwin") return;
     updateFound = true;
     log.info("There is an update available. Downloading now... You will be notified when the update is ready to install.");
+    autoUpdater.downloadUpdate().catch((err) => {
+      log.error("An error occurred while downloading the update: " + err);
+    });
   });
   autoUpdater.on("update-not-available", () => {
     if(!noUpdateFound){

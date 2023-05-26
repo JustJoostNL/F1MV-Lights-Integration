@@ -1,6 +1,6 @@
 import IKEADeviceSelector from "@/components/device-selectors/ikea";
 import ReactGA from "react-ga4";
-import {useEffect, useState} from "react";
+import { useEffect, useState } from "react";
 
 export default function IkeaDeviceSelector(){
   const [ikeaOnline, setIkeaOnline] = useState<boolean | null>(null);

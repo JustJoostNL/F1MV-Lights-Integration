@@ -45,8 +45,8 @@ export async function handleMiscAPIChecks(){
 }
 
 export async function handleIntegrationStates(){
-  if (!configVars.goveeDisable && goveeVars.goveeInitialized && goveeVars.govee.devicesArray.length > 0) {
-    integrationStates.goveeOnline = true;
+  if (!configVars.goveeDisable && goveeVars.goveeInitialized) {
+    integrationStates.goveeOnline = goveeVars.govee.devicesArray.length > 0;
   }
   if (!configVars.homeAssistantDisable){
     await homeAssistantOnlineCheck();

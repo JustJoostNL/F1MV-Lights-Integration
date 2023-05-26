@@ -43,6 +43,11 @@
 
 
   "linux": {
+    mimeTypes: ["x-scheme-handler/f1mvli"],
+    desktop: {
+      exec: "f1mvli %u",
+    },
+    category: "Utility",
     "target": [
       "AppImage"
     ],

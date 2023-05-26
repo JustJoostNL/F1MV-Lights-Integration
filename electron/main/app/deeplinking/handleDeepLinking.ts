@@ -4,5 +4,7 @@ export default async function deepLinkPathToRoute(deepLinkPath: string) {
       return "/settings";
     case "f1mvli://open/page/about":
       return "/about";
+    default:
+      return "no_path_found";
   }
 }

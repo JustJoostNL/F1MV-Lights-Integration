@@ -1,6 +1,6 @@
 import { HomeAssistantDeviceSelector } from "@/components/device-selectors/home-assistant";
 import ReactGA from "react-ga4";
-import {useEffect, useState} from "react";
+import { useEffect, useState } from "react";
 
 export default function HassDeviceSelector(){
   const [hassOnline, setHassOnline] = useState<boolean | null>(null);
