@@ -14,8 +14,14 @@ export default async function discordRPC(){
   async function setActivity() {
     if (!statuses.SInfo) {
       statuses.SInfo = {
-        Name: "If you see this, your special! PEANUTS!!!",
+        Name: "peanuts",
+        Meeting: {
+          Name: "peanuts",
+        }
       };
+    }
+    if (!statuses.TState) {
+      statuses.TState = "peanuts";
     }
 
     if (!RPC) return;

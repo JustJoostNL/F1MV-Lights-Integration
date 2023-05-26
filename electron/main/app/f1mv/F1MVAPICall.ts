@@ -19,11 +19,12 @@ export async function F1MVAPICall(){
         })
       });
       if (response.status === 200) {
+        errorCheck = false;
         const responseData = await response.json();
+        if (!responseData.data.liveTimingState) return;
         statuses.SState = responseData.data.liveTimingState.SessionStatus.Status;
         statuses.SInfo = responseData.data.liveTimingState.SessionInfo;
         statuses.TState = responseData.data.liveTimingState.TrackStatus.Status;
-        errorCheck = false;
       }
     } catch (e) {
       if (!errorCheck) {

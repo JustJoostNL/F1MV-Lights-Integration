@@ -25,7 +25,8 @@
     category: "public.app-category.utilities",
     minimumSystemVersion: "10.12.0",
     "target": [
-      "dmg"
+      "dmg",
+      "zip"
     ]
   },
 
