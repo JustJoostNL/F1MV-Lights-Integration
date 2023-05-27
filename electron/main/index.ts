@@ -31,7 +31,7 @@ import hueGetDevices from "./app/integrations/hue/hueGetDevices";
 import hueGetEntertainmentZones from "./app/integrations/hue/hueGetEntertainmentZones";
 import { IEffectSetting } from "../types/EffectSettingsInterface";
 import hueInitialize from "./app/integrations/hue/hueInit";
-import deepLinkPathToRoute from "./app/deeplinking/handleDeepLinking";
+import { handleDeepLinking } from "./app/deeplinking/handleDeepLinking";
 
 
 Sentry.init({
@@ -51,19 +51,49 @@ if (process.defaultApp) {
   app.setAsDefaultProtocolClient("f1mvli");
 }
 
+async function doDeepLinking(data){
+  if (data.action === "open_page") {
+    process.env.VITE_DEV_SERVER_URL ? await win.loadURL(`${url}#${data.page}`) : await win.loadURL(`http://localhost:${availablePort}/index.html#${data.page}`);
+  }
+  if (data.action === "patch_config") {
+    const configKey = data.configPatch.key.slice(1).trim();
+    const keyWithoutQuotes = configKey.slice(1, -1);
+    let configValue = data.configPatch.value.slice(0, -1).trim();
+    const dialogResponse = await dialog.showMessageBox(win, {
+      type: "info",
+      buttons: ["Apply config changes", "Cancel"],
+      title: "Do you want to apply config changes?",
+      message: "Do you want to apply config changes?",
+      detail:
+`
+Config patch:
+{
+  ${configKey}: ${configValue}
+}
+`,
+    });
+    if (dialogResponse.response === 0) {
+      if (configValue === "true") {
+        configValue = true;
+      } else if (configValue === "false") {
+        configValue = false;
+      }
+      else if (configValue.match(/\d+/g)) {
+        configValue = parseInt(configValue);
+      }
+      await handleConfigSet(null, keyWithoutQuotes, configValue);
+    }
+  }
+}
+
 // handle deep-linking for mac/linux
 app.on("open-url", async (event, url) => {
   event.preventDefault();
   if (win) {
     win.show();
     win.focus();
-    const deepLinkPath = await deepLinkPathToRoute(url);
-    if (deepLinkPath === "no_path_found") return;
-    if (process.env.VITE_DEV_SERVER_URL) {
-      await win.loadURL(`${url}#${deepLinkPath}`);
-    } else {
-      await win.loadURL(`http://localhost:${availablePort}/index.html#${deepLinkPath}`);
-    }
+    const data = await handleDeepLinking(url);
+    await doDeepLinking(data);
   }
 });
 
@@ -73,13 +103,9 @@ app.on("second-instance", async (event, commandLine) => {
     if (win.isMinimized()) win.restore();
     win.show();
     win.focus();
-    const deepLinkPath = await deepLinkPathToRoute(commandLine[commandLine.length - 1]);
-    if (deepLinkPath === "no_path_found") return;
-    if (process.env.VITE_DEV_SERVER_URL) {
-      await win.loadURL(`${url}#${deepLinkPath}`);
-    } else {
-      await win.loadURL(`http://localhost:${availablePort}/index.html#${deepLinkPath}`);
-    }
+    const url = commandLine[commandLine.length - 1];
+    const data = await handleDeepLinking(url);
+    await doDeepLinking(data);
   }
 });
 

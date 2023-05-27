@@ -2,7 +2,7 @@
     "name": "F1MV Lights Integration",
     "description": "The best way to connect your smart home lights to MultiViewer.",
     "author": "JustJoostNL",
-    "image": "https://github.com/JustJoostNL/F1MV-Lights-Integration/blob/master/icons/icon-bannerversion.png?raw=true",
+    "image": "https://github.com/JustJoostNL/F1MV-Lights-Integration/blob/master/icons/banner_6912x3456.png?raw=true",
     "endWith": {
         "win32": {
             "x64": ".exe"

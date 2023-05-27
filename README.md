@@ -8,7 +8,7 @@
 [![GNU GPL 3.0 License][license-shield]][license-url]
 
 <div align="center">
-<img src="icons/f1mvli-logo_500x500.png" alt="The F1MV Lights Integration logo" align="center" width="256" height="256"/>
+<img src="icons/logo_1024x1024_rounded.png" alt="The F1MV Lights Integration logo" align="center" width="256" height="256"/>
 <h3 align="center">F1MV Lights Integration</h3>
   <p align="center">
     The best way to connect your smart home lights to MultiViewer.
@@ -183,7 +183,7 @@ Distributed under the GNU General Public License v3.0. See `LICENSE.md` for more
 [issues-url]: https://github.com/JustJoostNL/F1MV-Lights-Integration/issues
 [license-shield]: https://img.shields.io/github/license/JustJoostNL/F1MV-Lights-Integration.svg?style=for-the-badge
 [license-url]: https://github.com/JustJoostNL/F1MV-Lights-Integration/blob/main/LICENSE.MD
-[product-screenshot]: https://i.ibb.co/df5WVkN/icon.png
+[product-screenshot]: https://github.com/JustJoostNL/F1MV-Lights-Integration/blob/master/icons/logo_256x256_rounded.png?raw=true
 [typescript]: https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white
 [typescript-url]: https://www.typescriptlang.org/
 [react]: https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB
