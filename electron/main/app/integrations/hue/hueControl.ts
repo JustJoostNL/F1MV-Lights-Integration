@@ -24,7 +24,8 @@ export default async function hueControl(r, g, b, brightness, action){
 
   brightness = Math.round((brightness / 100) * 254);
   const colorTransData = await getHueSatFromRGB(r, g, b);
-  const hueValue = Math.round(colorTransData.hue * (65535 / 360));
+  let hueValue = Math.round(colorTransData.hue * (65535 / 360));
+  if (hueValue === 0) hueValue = 1;
   const satValue = Math.round(colorTransData.sat * (254 / 100));
 
   switch (action){
@@ -39,8 +40,8 @@ export default async function hueControl(r, g, b, brightness, action){
             g: g,
             b: b
           },
-          hue: hueValue,
-          sat: satValue,
+          hue: configVars.hueThirdPartyCompatMode ? hueValue : undefined,
+          sat: configVars.hueThirdPartyCompatMode ? satValue : undefined,
           transition: configVars.hueEnableFade ? "fade" : "instant",
           thirdPartyCompatibility: configVars.hueThirdPartyCompatMode
         });
@@ -80,5 +81,4 @@ export default async function hueControl(r, g, b, brightness, action){
       }
       break;
   }
-
 }

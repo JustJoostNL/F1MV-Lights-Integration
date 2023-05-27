@@ -61,7 +61,7 @@ export default async function hueLightStateBuilder(data){
 
     if (data.rgb && !data.thirdPartyCompatibility){
       lightState.rgb(data.rgb.r, data.rgb.g, data.rgb.b);
-    } else if (data.hue && data.sat){
+    } else if (data.hue && data.sat && data.thirdPartyCompatibility){
       lightState.hue(data.hue);
       lightState.sat(data.sat);
     }
