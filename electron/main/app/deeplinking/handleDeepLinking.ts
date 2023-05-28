@@ -24,7 +24,6 @@ export async function handleDeepLinking(deepLinkPath: string) {
 
 async function getConfigPatch(deepLinkPath: string) {
   // example path: f1mvli://app/config/patch?config=%7B%22Settings.generalSettings.autoTurnOffLights%22%3Afalse%7D
-  // decode
   const config = decodeURIComponent(deepLinkPath.split("?config=")[1]);
   const key = config.split(":")[0];
   const value = config.split(":")[1];

@@ -1,4 +1,5 @@
 import { ipcRenderer } from "electron";
+import { Titlebar } from "custom-electron-titlebar";
 
 export const f1mvli = {
   config: {

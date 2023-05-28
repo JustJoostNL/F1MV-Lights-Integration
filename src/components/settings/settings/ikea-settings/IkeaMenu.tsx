@@ -45,6 +45,7 @@ export default function IkeaMenu(){
     });
   };
   const handleSearchAndConnect = async () => {
+    setAnchorEl(null);
     const response = await window.f1mvli.integrations.ikea.searchAndConnectToGateway();
     if (response.success){
       setToaster({ message: "Successfully connected to the IKEA gateway!", severity: "success", time: 5000 });
@@ -59,7 +60,6 @@ export default function IkeaMenu(){
         setToaster(null);
       }, 5100);
     }
-    setAnchorEl(null);
     ReactGA.event({
       category: "ikea_tools_menu",
       action: "search_and_connect_to_gateway",

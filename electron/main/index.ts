@@ -33,6 +33,8 @@ import { IEffectSetting } from "../types/EffectSettingsInterface";
 import hueInitialize from "./app/integrations/hue/hueInit";
 import { handleDeepLinking } from "./app/deeplinking/handleDeepLinking";
 
+let urlLoadedInWindow = false;
+
 
 Sentry.init({
   dsn: "https://e64c3ec745124566b849043192e58711@o4504289317879808.ingest.sentry.io/4504289338392576",
@@ -86,7 +88,7 @@ Config patch:
   }
 }
 
-// handle deep-linking for mac/linux
+// handle deep-linking for mac
 app.on("open-url", async (event, url) => {
   event.preventDefault();
   if (win) {
@@ -97,7 +99,7 @@ app.on("open-url", async (event, url) => {
   }
 });
 
-// handle deep-linking for windows
+// handle deep-linking for windows/linux
 app.on("second-instance", async (event, commandLine) => {
   if (win) {
     if (win.isMinimized()) win.restore();
@@ -106,6 +108,22 @@ app.on("second-instance", async (event, commandLine) => {
     const url = commandLine[commandLine.length - 1];
     const data = await handleDeepLinking(url);
     await doDeepLinking(data);
+  }
+});
+
+// handle deep-linking for when the app is closed
+app.on("ready", async () => {
+  const url = process.argv[process.argv.length - 1];
+  log.debug(process.argv);
+  log.debug("url: " + url);
+  if (url.startsWith("f1mvli://")) {
+    const urlLoadedInWindowIntervalCheck = setInterval(async () => {
+      if (urlLoadedInWindow) {
+        clearInterval(urlLoadedInWindowIntervalCheck);
+        const data = await handleDeepLinking(url);
+        await doDeepLinking(data);
+      }
+    }, 100);
   }
 });
 
@@ -133,7 +151,6 @@ let win: BrowserWindow | null = null;
 // Here, you can also use other preload
 const preload = join(__dirname, "../preload/index.js");
 const url = process.env.VITE_DEV_SERVER_URL;
-const indexHtml = join(process.env.DIST, "index.html");
 let availablePort: number;
 
 async function createWindow() {
@@ -157,6 +174,9 @@ async function createWindow() {
 
   if (process.env.VITE_DEV_SERVER_URL) { // electron-vite-vue#298
     await win.loadURL(url);
+    setTimeout(() => {
+      urlLoadedInWindow = true;
+    }, 500);
     win.webContents.openDevTools({ mode: "detach" });
     win.setMenuBarVisibility(false);
   } else {
@@ -169,6 +189,9 @@ async function createWindow() {
     });
     server.listen(availablePort, () => {
       win?.loadURL(`http://localhost:${availablePort}/index.html`);
+      setTimeout(() => {
+        urlLoadedInWindow = true;
+      }, 500);
     });
   }
 
@@ -288,7 +311,6 @@ ipcMain.handle("utils:open-win", (_, arg) => {
             }
         `);
   });
-
 });
 
 // config

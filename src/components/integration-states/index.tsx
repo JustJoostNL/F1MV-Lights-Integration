@@ -22,7 +22,7 @@ const integrationStateMap: IntegrationStatesMap = {
   streamDeck: "Stream Deck",
   WLED: "WLED",
   F1MV: "MultiViewer",
-  F1TVLiveSession: "F1 Live Session Found",
+  F1TVLiveSession: "F1TV Live Session Found",
   update: "Auto Updater",
   webServer: "Webserver",
 };
