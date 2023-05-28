@@ -1,11 +1,11 @@
 import { ipcRenderer } from "electron";
-import { Titlebar } from "custom-electron-titlebar";
 
 export const f1mvli = {
   config: {
     set: (key: string, value) => ipcRenderer.invoke("config:set", key, value),
     get: (key: string) => ipcRenderer.invoke("config:get", key),
     getAll: () => ipcRenderer.invoke("config:get:all"),
+    resetToDefault: () => ipcRenderer.invoke("config:resetToDefault"),
     delete: (key: string) => ipcRenderer.invoke("config:delete", key),
     openInEditor: () => ipcRenderer.invoke("config:open:inEditor"),
   },
@@ -23,6 +23,7 @@ export const f1mvli = {
     getWindowSizes: () => ipcRenderer.invoke("utils:getWindowSizes"),
     openNewWindow: (url) => ipcRenderer.invoke("utils:open-win", url),
     changeWindowTitle : (title: string) => ipcRenderer.invoke("utils:changeWindowTitle", title),
+    relaunchApp: () => ipcRenderer.invoke("utils:relaunchApp"),
     exitApp: () => ipcRenderer.invoke("utils:exitApp"),
   },
   integrations: {

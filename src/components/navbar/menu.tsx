@@ -105,7 +105,7 @@ export default function ThreeDotMenu() {
           <Typography
             variant="body2"
             sx={menuItemStyle}>
-                        Home
+            Home
           </Typography>
         </MenuItem>
         <Divider />
@@ -117,7 +117,7 @@ export default function ThreeDotMenu() {
           <Typography
             variant="body2"
             sx={menuItemStyle}>
-                        Settings
+            Settings
           </Typography>
         </MenuItem>
         <MenuItem
@@ -129,7 +129,7 @@ export default function ThreeDotMenu() {
           <Typography
             variant="body2"
             sx={menuItemStyle}>
-                        About
+            About
           </Typography>
         </MenuItem>
         <Divider />
@@ -142,7 +142,7 @@ export default function ThreeDotMenu() {
           <Typography
             variant="body2"
             sx={menuItemStyle}>
-						Donate <OpenIcon
+            Donate <OpenIcon
               sx={{
                 ml: 1,
                 color: "grey.500",
@@ -197,7 +197,7 @@ export default function ThreeDotMenu() {
             width: "100%",
             padding: "0.5rem"
           }}>
-              Current version: {currentAppVersion}
+          Current version: {currentAppVersion}
         </Typography>
       </Menu>
     </div>

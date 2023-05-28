@@ -5,8 +5,8 @@ import {
   configVars,
   handleConfigGet,
   handleConfigGetAll,
-  handleConfigOpenInEditor,
-  handleConfigSet
+  handleConfigOpenInEditor, handleConfigResetToDefault,
+  handleConfigSet, loadConfigInVars
 } from "./config/config";
 import initApp from "./app";
 import portfinder from "portfinder";
@@ -114,8 +114,6 @@ app.on("second-instance", async (event, commandLine) => {
 // handle deep-linking for when the app is closed
 app.on("ready", async () => {
   const url = process.argv[process.argv.length - 1];
-  log.debug(process.argv);
-  log.debug("url: " + url);
   if (url.startsWith("f1mvli://")) {
     const urlLoadedInWindowIntervalCheck = setInterval(async () => {
       if (urlLoadedInWindow) {
@@ -317,6 +315,22 @@ ipcMain.handle("utils:open-win", (_, arg) => {
 ipcMain.handle("config:set", handleConfigSet);
 ipcMain.handle("config:get", handleConfigGet);
 ipcMain.handle("config:get:all", handleConfigGetAll);
+ipcMain.handle("config:resetToDefault", async () => {
+  const dialogResponse = await dialog.showMessageBox(win, {
+    type: "warning",
+    buttons: ["Reset", "Cancel"],
+    title: "Reset settings",
+    message: "Are you sure you want to reset all your settings?",
+    detail: "This will reset all your settings to the defaults, including your effects. \n\nResetting your settings may help to resolve issues.",
+  });
+  if (dialogResponse.response === 0) {
+    await handleConfigResetToDefault();
+    log.info("All settings reset to the defaults.");
+    return true;
+  } else {
+    return false;
+  }
+});
 ipcMain.handle("config:open:inEditor", handleConfigOpenInEditor);
 export function configChangedEmitEvent(){
   win?.webContents.send("config:didAnyChange");
@@ -347,6 +361,10 @@ ipcMain.handle("utils:getWindowSizes", () => {
 });
 ipcMain.handle("utils:changeWindowTitle", (_, arg) => {
   win.setTitle(arg);
+});
+ipcMain.handle("utils:relaunchApp", () => {
+  app.relaunch();
+  app.exit();
 });
 ipcMain.handle("utils:exitApp", () => {
   app.quit();

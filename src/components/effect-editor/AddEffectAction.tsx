@@ -1,8 +1,7 @@
 import { IActionOptions, IAddEffectActionProps } from "@/components/effect-editor/types";
 import { Autocomplete, FormControl, IconButton, Typography, TextField, Divider } from "@mui/material";
-import { ColorPicker } from "@/components/effect-editor/ColorPicker";
 import DeleteIcon from "@mui/icons-material/Delete";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { BlueSlider } from "@/components/settings/BlueSlider";
 import { RgbColorPicker } from "react-colorful";
 

@@ -29,7 +29,7 @@ export async function F1MVAPICall(){
     } catch (e) {
       if (!errorCheck) {
         errorCheck = true;
-        log.warn("F1MV API call failed! Error: " + e.message);
+        log.warn("MultiViewer API call failed! Error: " + e.message);
       }
     }
   }

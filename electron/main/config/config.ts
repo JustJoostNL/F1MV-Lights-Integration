@@ -56,6 +56,12 @@ export const handleConfigGetAll = async () => {
   return userConfig.store;
 };
 
+export const handleConfigResetToDefault = async () => {
+  await userConfig.reset("Settings");
+  await loadConfigInVars();
+  return true;
+};
+
 export const handleConfigOpenInEditor = () => {
   userConfig.openInEditor();
 };
@@ -200,7 +206,7 @@ function handleConfigChanges(newVars, oldVars){
 
 }
 
-function loadConfigInVars(){
+export function loadConfigInVars(){
   // general settings
   configVars.autoTurnOffLights = userConfig.get("Settings.generalSettings.autoTurnOffLights");
   configVars.defaultBrightness = userConfig.get("Settings.generalSettings.defaultBrightness");

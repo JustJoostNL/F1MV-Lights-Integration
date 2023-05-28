@@ -24,6 +24,12 @@ const Main = () => {
       }
     });
 
+    // await window.f1mvli.updater.checkForUpdates();
+    // const updateInfo = await window.f1mvli.updater.getUpdateAvailable();
+    // if (updateInfo.updateAvailable) {
+    //   window.location.hash = "/update";
+    // }
+
     //await new Promise((resolve) => setTimeout(resolve, 1000));
   };
 

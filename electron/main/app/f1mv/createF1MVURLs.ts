@@ -3,6 +3,7 @@ import { f1mvURLs } from "../vars/vars";
 
 export default async function createF1MVURLs(){
   let f1mvRawURL = configVars.F1MVURL as string;
+  if (!f1mvRawURL) return;
   if (f1mvRawURL.endsWith("/")){
     f1mvRawURL = f1mvRawURL.slice(0, -1);
   }

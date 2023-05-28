@@ -4,6 +4,7 @@ import { refreshConfig } from "@/components/settings/allSettings";
 import LoadingScreen from "@/pages/LoadingScreen";
 import NavBar from "@/components/navbar";
 import SettingsPage from "@/components/settings";
+import { Button, Typography } from "@mui/material";
 
 function Settings() {
   ReactGA.send({ hitType: "pageview", page: "/settings" });
@@ -11,6 +12,11 @@ function Settings() {
 
   const [settingsLoading, setSettingsLoading] = useState(true);
   const [settingsLoaded, setSettingsLoaded] = useState(false);
+
+  const handleResetConfigToDefault = async () => {
+    await window.f1mvli.config.resetToDefault();
+    window.location.reload();
+  };
 
   useEffect(() => {
     const loadSettings = async () => {
@@ -28,6 +34,10 @@ function Settings() {
       <div>
         <NavBar showBackButton={true} />
         <SettingsPage />
+        <Button color={"secondary"} variant={"contained"} onClick={handleResetConfigToDefault}>Reset settings to default</Button>
+        <Typography sx={{ mt: 2, color: "grey" }} variant={"body2"}>
+          Please try to reset your settings to the defaults if you are experiencing any issues with the app.
+        </Typography>
       </div>
     );
   }

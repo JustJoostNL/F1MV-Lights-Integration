@@ -38,6 +38,10 @@ export async function deepLinkPathToRoute(deepLinkPath: string) {
       return "/settings";
     case "f1mvli://open/page/about":
       return "/about";
+    case "f1mvli://open/page/home":
+      return "/home";
+    case "f1mvli://open/page/logs":
+      return "/log-viewer";
     default:
       return "no_path_found";
   }

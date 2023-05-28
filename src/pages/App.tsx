@@ -12,6 +12,7 @@ import IkeaDeviceSelector from "@/pages/device-selectors/IKEADeviceSelector";
 import PhilipsHueLightSelector from "@/pages/device-selectors/HueLightSelector";
 import PhilipsHueZoneSelector from "@/pages/device-selectors/HueEntertainmentZoneSelector";
 import EffectEditorPage from "@/pages/EffectEditorPage";
+import UpdateScreen from "@/pages/Update";
 
 
 const router = createHashRouter([
@@ -30,6 +31,10 @@ const router = createHashRouter([
   {
     path: "/settings",
     element: <Settings/>
+  },
+  {
+    path: "/update",
+    element: <UpdateScreen/>
   },
   {
     path: "/log-viewer",

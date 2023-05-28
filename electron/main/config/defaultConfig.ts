@@ -197,7 +197,7 @@ const config: IConfig = {
                 }
         },
   // do not change this version!
-  version: "2.1.0",
+  version: "2.1.2",
 };
 
 export default config;

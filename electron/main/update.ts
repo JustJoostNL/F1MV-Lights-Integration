@@ -25,6 +25,7 @@ export default function initUpdater(){
       detail: "A new version has been downloaded. Restart the application to apply the updates.",
     };
 
+    // @ts-ignore
     dialog.showMessageBox(dialogOpts).then((returnValue) => {
       if (returnValue.response === 0) autoUpdater.quitAndInstall();
     });
