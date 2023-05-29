@@ -3,8 +3,12 @@ import log from "electron-log/renderer";
 import ReactGA from "react-ga4";
 import packageJson from "../../package.json";
 
+export const updateVars = {
+  updateFound: false,
+  userSkipsUpdate: false,
+};
+
 const Main = () => {
-  let updateFound = false;
 
   const initApp = async () => {
     if (process.env.VITE_DEV_SERVER_URL) {
@@ -28,7 +32,7 @@ const Main = () => {
     //await window.f1mvli.updater.checkForUpdates();
     const updateInfo = await window.f1mvli.updater.getUpdateAvailable();
     if (updateInfo.updateAvailable) {
-      updateFound = true;
+      updateVars.updateFound = true;
       window.location.hash = "/update";
     }
 
@@ -36,7 +40,9 @@ const Main = () => {
   };
 
   initApp().then(() => {
-    if (!updateFound) window.location.hash = "/home";
+    if (!updateVars.updateFound || updateVars.userSkipsUpdate) {
+      window.location.hash = "/home";
+    }
   });
 
   return (

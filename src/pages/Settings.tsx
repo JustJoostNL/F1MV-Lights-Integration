@@ -14,8 +14,8 @@ function Settings() {
   const [settingsLoaded, setSettingsLoaded] = useState(false);
 
   const handleResetConfigToDefault = async () => {
-    await window.f1mvli.config.resetToDefault();
-    window.location.reload();
+    const resetRes = await window.f1mvli.config.resetToDefault();
+    if (resetRes) window.location.reload();
   };
 
   useEffect(() => {

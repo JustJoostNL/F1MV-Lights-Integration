@@ -1,6 +1,5 @@
 import { autoUpdater, UpdateDownloadedEvent } from "electron-updater";
 import { configVars } from "./config/config";
-import { dialog } from "electron";
 import log from "electron-log";
 
 let updateFound = false;
@@ -18,18 +17,14 @@ export default function initUpdater(win: Electron.BrowserWindow){
 
   autoUpdater.on("update-downloaded", (event: UpdateDownloadedEvent) => {
     win.webContents.send("update-downloaded");
-    //autoUpdater.quitAndInstall(false, true)
+    autoUpdater.quitAndInstall(false, true);
   });
 
   autoUpdater.on("update-available", () => {
     updateFound = true;
     win.webContents.send("update-available");
     log.info("There is an update available. Downloading now... You will be notified when the update is ready to install.");
-    try {
-      autoUpdater.downloadUpdate()
-    } catch (e) {
-      log.error("An error occurred while downloading the update: " + e);
-    }
+    downloadUpdate();
   });
   autoUpdater.on("update-not-available", () => {
     if(!noUpdateFound){
@@ -51,4 +46,16 @@ export default function initUpdater(win: Electron.BrowserWindow){
       }
     }
   }, 60000);
+
+  function downloadUpdate(){
+    try {
+      autoUpdater.downloadUpdate().catch((e) => {
+        win.webContents.send("update-error");
+        log.error("An error occurred while downloading the update: " + e);
+      });
+    } catch (e) {
+      win.webContents.send("update-error");
+      log.error("An error occurred while downloading the update: " + e);
+    }
+  }
 }
