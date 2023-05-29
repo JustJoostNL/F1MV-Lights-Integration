@@ -1,40 +1,50 @@
-import { CircularProgress, Container, Grid } from "@mui/material";
-import Typography from "@mui/material/Typography";
+import { Button, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
+import {ipcRenderer} from "electron";
+import WarningIcon from "@mui/icons-material/Warning";
+import LoadingScreen from "@/pages/LoadingScreen";
 
 export default function UpdateScreen(){
-  const [platform, setPlatform] = useState<string>("");
+  const [updateDownloaded, setUpdateDownloaded] = useState(false);
+  const [updateError, setUpdateError] = useState(false);
 
   useEffect(() => {
-    setPlatform(process.platform);
-  }, []);
+    ipcRenderer.on("update-downloaded", handleUpdateDownloaded)
+    ipcRenderer.on("update-error", handleUpdateError)
+    return () => {
+      ipcRenderer.off("update-downloaded", handleUpdateDownloaded)
+    }
+  }, [])
+
+  const handleUpdateDownloaded = () => {
+    setUpdateDownloaded(true);
+  }
+  const handleUpdateError = () => {
+    console.log("Update error")
+    setUpdateError(true);
+  }
+
+  const handleSkipUpdate = () => {
+    console.log("Skipping update")
+  }
 
   return (
-    <Container>
-      <Grid
-        container
-        spacing={0}
-        direction="column"
-        alignItems="center"
-        justifyContent="center"
-        style={{ minHeight: "100vh" }}
-      >
-        <Grid item xs={3}>
-          <CircularProgress
-            thickness={5}
-            color={"secondary"}
-            sx={{ ml: 2 }}
-          />
-          <Typography
-            sx={{
-              color: "text.primary",
-              mt: 2,
-            }}
-          >
-            Updating...
-          </Typography>
-        </Grid>
-      </Grid>
-    </Container>
-  );
+    <div>
+      {!updateError ? (
+        <>
+          <LoadingScreen customText={updateDownloaded ? "Installing update..." : "Downloading update..."} />
+          {!updateDownloaded && (
+            <Button sx={{mr: 2}} color="secondary" variant="outlined" onClick={handleSkipUpdate}>Skip update</Button>
+          )}
+        </>
+      ) : (
+        <>
+          <WarningIcon />
+          <Typography>Failed to automatically update, please download the latest version manually.</Typography>
+          <Button color="secondary" variant="outlined">Continue with outdated version</Button>
+          <Button color="secondary" variant="contained">Download update manually</Button>
+        </>
+      )}
+    </div>
+  )
 }

@@ -238,7 +238,7 @@ function onReady() {
   }
 
   log.info("App starting...");
-  initUpdater();
+  initUpdater(win);
   initApp();
 }
 
@@ -376,7 +376,7 @@ ipcMain.handle("updater:checkForUpdates", async () => {
   updateInfo = await autoUpdater.checkForUpdatesAndNotify();
 });
 ipcMain.handle("updater:getUpdateAvailable", async () => {
-  // we remove the dots in the version number to compare them
+  if (!updateInfo) updateInfo = await autoUpdater.checkForUpdatesAndNotify();
   if (updateInfo.updateInfo.version.replace(/\./g, "") > app.getVersion().replace(/\./g, "")) {
     return {
       updateAvailable: true,

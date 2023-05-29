@@ -1,7 +1,11 @@
 import { CircularProgress, Container, Grid } from "@mui/material";
 import Typography from "@mui/material/Typography";
 
-export default function LoadingScreen() {
+interface ILoadingScreenProps {
+  customText?: string;
+}
+
+export default function LoadingScreen({ customText }: ILoadingScreenProps) {
   return (
     <Container>
       <Grid
@@ -10,13 +14,12 @@ export default function LoadingScreen() {
         direction="column"
         alignItems="center"
         justifyContent="center"
-        style={{ minHeight: "100vh" }}
+        style={{ minHeight: "20vh" }}
       >
         <Grid item xs={3}>
           <CircularProgress
             thickness={5}
             color={"secondary"}
-            sx={{ ml: 2 }}
           />
           <Typography
             sx={{
@@ -24,7 +27,7 @@ export default function LoadingScreen() {
               mt: 2,
             }}
           >
-            Loading...
+            {customText ? customText : "Loading..."}
           </Typography>
         </Grid>
       </Grid>
