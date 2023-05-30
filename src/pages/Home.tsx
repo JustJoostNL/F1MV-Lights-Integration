@@ -8,6 +8,7 @@ import IntegrationStatesTable from "@/components/integration-states";
 import Paper from "@mui/material/Paper";
 import { SyntheticEvent, useEffect, useState } from "react";
 import { handleDownloadUpdateManually } from "@/pages/Update";
+import { shell } from "electron";
 
 export default function Main() {
   const [updateAvailable, setUpdateAvailable] = useState(false);
@@ -21,9 +22,13 @@ export default function Main() {
     setUpdateAvailableSnackBarOpen(false);
   };
 
+  const handleOpenReleaseNotes = () => {
+    shell.openExternal("https://github.com/JustJoostNL/F1MV-Lights-Integration/releases/latest");
+  };
+
   const downloadUpdateAction = (
     <>
-      <Button sx={{ mr: 2 }} color="secondary" variant="text" size="small">
+      <Button onClick={handleOpenReleaseNotes} sx={{ mr: 2 }} color="secondary" variant="text" size="small">
         Release Notes
       </Button>
       <Button onClick={handleDownloadUpdateManually} color="secondary" variant="contained" size="small">
