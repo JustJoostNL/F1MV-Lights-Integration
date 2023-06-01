@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import ReactGA from "react-ga4";
 import {
   TextField,
   ListItem,
@@ -11,8 +11,9 @@ import { FixedSizeList, ListChildComponentProps } from "react-window";
 import Button from "@mui/material/Button";
 import log from "electron-log/renderer";
 import DeleteIcon from "@mui/icons-material/Delete";
+import { useEffect, useState } from "react";
 
-export default function WLEDDeviceAddFlow() {
+export default function ManageWLEDDevices() {
   const [devices, setDevices] = useState<string[]>([]);
   const [ipInput, setIpInput] = useState<string>("");
   const [alreadySelectedDevices, setAlreadySelectedDevices] = useState<string[]>(["loadingINTERNAL"]);
@@ -51,8 +52,11 @@ export default function WLEDDeviceAddFlow() {
     setAlreadySelectedDevices(newSelectedDevices);
   };
 
+  ReactGA.send({ hitType: "pageview", page: "/manage-wled-devices" });
+
   return (
-    <div style={{ marginTop: "20px" }}>
+    <div>
+      <h1>Manage WLED Devices</h1>
       <TextField
         id="wled-device-ip-input"
         label="WLED Device IP"

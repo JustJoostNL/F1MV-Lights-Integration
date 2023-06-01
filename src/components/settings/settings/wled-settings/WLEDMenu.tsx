@@ -5,7 +5,6 @@ import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import LightBulbIcon from "@mui/icons-material/Lightbulb";
 import Typography from "@mui/material/Typography";
-import AddIcon from "@mui/icons-material/Add";
 import { font } from "@/index";
 import ReactGA from "react-ga4";
 
@@ -31,7 +30,7 @@ export default function WLEDMenu(){
         minWidth: 756,
         minHeight: 690,
       },
-      url: "/add-wled-device"
+      url: "/manage-wled-devices"
     });
     ReactGA.event({
       category: "wled_tools_menu",

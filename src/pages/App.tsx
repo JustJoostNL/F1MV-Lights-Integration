@@ -6,7 +6,7 @@ import About from "@/pages/About";
 import LogViewerPage from "@/pages/LogViewer";
 import LoadingScreen from "@/pages/LoadingScreen";
 import HassDeviceSelector from "@/pages/device-selectors/HassDeviceSelector";
-import AddWLEDDevice from "@/pages/device-selectors/AddWLEDDevice";
+import ManageWLEDDevices from "@/pages/device-selectors/ManageWLEDDevices";
 import Settings from "@/pages/Settings";
 import IkeaDeviceSelector from "@/pages/device-selectors/IKEADeviceSelector";
 import PhilipsHueLightSelector from "@/pages/device-selectors/HueLightSelector";
@@ -61,8 +61,8 @@ const router = createHashRouter([
     element: <IkeaDeviceSelector/>
   },
   {
-    path: "/add-wled-device",
-    element: <AddWLEDDevice/>
+    path: "/manage-wled-devices",
+    element: <ManageWLEDDevices/>
   },
   {
     path: "/effect-editor",
