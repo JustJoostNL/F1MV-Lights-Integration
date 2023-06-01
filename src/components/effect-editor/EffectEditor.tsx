@@ -12,6 +12,7 @@ import FileUploadIcon from "@mui/icons-material/FileUpload";
 import FileDownloadIcon from "@mui/icons-material/FileDownload";
 import AddIcon from "@mui/icons-material/Add";
 import ShareIcon from "@mui/icons-material/Share";
+import {IconButton} from "@mui/material";
 import { IFlagMap } from "@/components/effect-editor/types";
 import AddEffectDialog from "@/components/effect-editor/AddEffectDialog";
 import EditEffectDialog from "@/components/effect-editor/EditEffectDialog";
@@ -26,7 +27,7 @@ export const flagNameMaps: IFlagMap = {
   safetyCar: "Safety Car",
   vsc: "Virtual Safety Car",
   vscEnding: "Virtual Safety Car Ending",
-  staticColor: "Static Color",
+  static: "Static Color",
 };
 
 export default function EffectEditor() {
@@ -117,7 +118,8 @@ export default function EffectEditor() {
         setToaster(null);
       }, 3100);
       return;
-    } else {
+      // @ts-ignore
+    } else if (decoded.effectSettings) {
       // @ts-ignore
       const newEffects = decoded.effectSettings;
       setEffects(newEffects);
@@ -162,15 +164,15 @@ export default function EffectEditor() {
       width: 120,
       renderCell: (params) => (
         <>
-          <div style={{ cursor: "pointer" }} onClick={() => handleEdit(params.row)}>
-            <Edit sx={{ mr: 1.5 }} />
-          </div>
-          <div style={{ cursor: "pointer" }} onClick={() => handleExportSingleEffect(params.row)}>
-            <ShareIcon sx={{ mr: 1.5 }} />
-          </div>
-          <div style={{ cursor: "pointer" }} onClick={handleDelete(params.row)}>
+          <IconButton size={"small"} onClick={() => handleEdit(params.row)}>
+            <Edit />
+          </IconButton>
+          <IconButton size={"small"} onClick={() => handleExportSingleEffect(params.row)}>
+            <ShareIcon />
+          </IconButton>
+          <IconButton size={"small"} onClick={handleDelete(params.row)}>
             <DeleteIcon />
-          </div>
+          </IconButton>
         </>
       ),
     },
