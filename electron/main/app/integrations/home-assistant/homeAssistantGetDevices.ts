@@ -1,5 +1,6 @@
 import { configVars } from "../../../config/config";
 import fetch from "node-fetch";
+import log from "electron-log";
 
 export default async function homeAssistantGetDevices(){
   const url = configVars.homeAssistantHost + ":" + configVars.homeAssistantPort + "/api/states";
@@ -9,10 +10,15 @@ export default async function homeAssistantGetDevices(){
   };
 
   let stateData;
-  const res = await fetch(url, {
-    method: "GET",
-    headers: headers
-  });
+  let res;
+  try {
+    res = await fetch(url, {
+      method: "GET",
+      headers: headers
+    });
+  } catch (error) {
+    log.error(`An error occurred while getting Home Assistant devices: ${error}`);
+  }
   stateData = await res.json();
 
   const deviceList = [];

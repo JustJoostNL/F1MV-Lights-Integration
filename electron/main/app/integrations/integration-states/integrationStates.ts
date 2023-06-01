@@ -18,15 +18,19 @@ export async function handleMiscAPIChecks(){
       log.debug("Update API is offline.");
     });
 
-  await fetch(apiURLs.liveSessionCheckURL).then((res) => res.json()).then((data) => {
-    if (data.liveSessionFound){
-      integrationStates.F1LiveSession = true;
-      log.debug(data.message);
-    } else {
-      integrationStates.F1LiveSession = false;
-      log.debug(data.message);
-    }
-  });
+  try {
+    await fetch(apiURLs.liveSessionCheckURL).then((res) => res.json()).then((data) => {
+      if (data.liveSessionFound) {
+        integrationStates.F1LiveSession = true;
+        log.debug(data.message);
+      } else {
+        integrationStates.F1LiveSession = false;
+        log.debug(data.message);
+      }
+    });
+  } catch (error) {
+    log.error("Error checking for F1TV Live Session: " + error.message);
+  }
 
   try {
     await fetch(f1mvURLs.heartBeatURL).then((res) => res.json()).then((data) => {

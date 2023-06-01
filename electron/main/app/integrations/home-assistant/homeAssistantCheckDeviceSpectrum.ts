@@ -1,4 +1,5 @@
 import { configVars } from "../../../config/config";
+import log from "electron-log";
 
 export default async function homeAssistantCheckDeviceSpectrum(entityId: string){
   const headers = {
@@ -11,7 +12,12 @@ export default async function homeAssistantCheckDeviceSpectrum(entityId: string)
     method: "GET",
     headers: headers
   };
-  const response = await fetch(reqURL, options);
+  let response;
+  try {
+    response = await fetch(reqURL, options);
+  } catch (error) {
+    log.error(`An error occurred while checking if Home Assistant device ${entityId} supports spectrum: ${error}`);
+  }
   const data = await response.json();
   // if device doesn't have supported_color_modes, return false
   if(!data.attributes.supported_color_modes) return false;
