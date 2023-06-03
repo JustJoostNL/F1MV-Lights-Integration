@@ -12,7 +12,20 @@ Sentry.init({
   //enabled: process.env.NODE_ENV === "production",
   release: "F1MV-Lights-Integration@" + packageJson.version,
   environment: process.env.VITE_DEV_SERVER_URL ? "development" : "production",
-  tracesSampleRate: 0.2,
+  integrations: [
+    new Sentry.BrowserTracing({
+      traceFetch: true,
+      tracePropagationTargets: ["localhost", "api.jstt.me"],
+    }),
+    new Sentry.Replay({
+      maskAllText: false,
+      maskAllInputs: false,
+      blockAllMedia: false,
+    })
+  ],
+  replaysSessionSampleRate: 0.2,
+  replaysOnErrorSampleRate: 1.0,
+  tracesSampleRate: 1.0,
 });
 
 export const font = "-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, sans-serif";

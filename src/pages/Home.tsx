@@ -17,7 +17,7 @@ export default function Main() {
   ReactGA.send({ hitType: "pageview", page: "/home" });
   window.f1mvli.utils.changeWindowTitle("F1MV Lights Integration");
 
-  setTimeout(() => {
+  setInterval(() => {
     ReactGA.event({
       category: "app",
       action: "user_still_active",
