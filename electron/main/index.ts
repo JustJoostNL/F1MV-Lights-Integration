@@ -6,7 +6,7 @@ import {
   handleConfigGet,
   handleConfigGetAll,
   handleConfigOpenInEditor, handleConfigResetToDefault,
-  handleConfigSet, loadConfigInVars
+  handleConfigSet
 } from "./config/config";
 import initApp from "./app";
 import portfinder from "portfinder";
@@ -286,8 +286,8 @@ ipcMain.handle("utils:open-win", (_, arg) => {
   });
 
   if (process.env.VITE_DEV_SERVER_URL) {
-    childWindow.loadURL(`${url}#${arg.url}`);
     childWindow.setMenuBarVisibility(false);
+    childWindow.loadURL(`${url}#${arg.url}`);
   } else {
     childWindow.setMenuBarVisibility(false);
     childWindow.loadURL(`http://localhost:${availablePort}/index.html#${arg.url}`);

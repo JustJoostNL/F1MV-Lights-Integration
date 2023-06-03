@@ -28,8 +28,6 @@ const Main = () => {
         siteSpeedSampleRate: 100,
       }
     });
-
-    //await window.f1mvli.updater.checkForUpdates();
     const updateInfo = await window.f1mvli.updater.getUpdateAvailable();
     if (updateInfo.updateAvailable) {
       updateVars.updateFound = true;

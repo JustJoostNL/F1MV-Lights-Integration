@@ -9,10 +9,9 @@ import HassDeviceSelector from "@/pages/device-selectors/HassDeviceSelector";
 import ManageWLEDDevices from "@/pages/device-selectors/ManageWLEDDevices";
 import Settings from "@/pages/Settings";
 import IkeaDeviceSelector from "@/pages/device-selectors/IKEADeviceSelector";
-import PhilipsHueLightSelector from "@/pages/device-selectors/HueLightSelector";
-import PhilipsHueZoneSelector from "@/pages/device-selectors/HueEntertainmentZoneSelector";
 import EffectEditorPage from "@/pages/EffectEditorPage";
 import UpdateScreen from "@/pages/Update";
+import PhilipsHueSelector from "@/pages/device-selectors/PhilipsHueSelector";
 
 
 const router = createHashRouter([
@@ -46,11 +45,11 @@ const router = createHashRouter([
   },
   {
     path: "/manage-hue-lights",
-    element: <PhilipsHueLightSelector/>
+    element: <PhilipsHueSelector type={"light"}/>
   },
   {
     path: "/manage-hue-entertainment-zones",
-    element: <PhilipsHueZoneSelector/>
+    element: <PhilipsHueSelector type={"zone"}/>
   },
   {
     path: "/manage-hass-devices",

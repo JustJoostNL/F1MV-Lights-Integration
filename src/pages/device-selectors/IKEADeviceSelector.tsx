@@ -1,10 +1,20 @@
 import IKEADeviceSelector from "@/components/device-selectors/ikea";
 import ReactGA from "react-ga4";
 import { useEffect, useState } from "react";
+import packageJson from "../../../package.json";
 
 export default function IkeaDeviceSelector(){
   const [ikeaOnline, setIkeaOnline] = useState<boolean | null>(null);
-  ReactGA.send({ hitType: "pageview", page: "/manage-ikea-devices" });
+  ReactGA.initialize("G-BMW3JWS0RJ", {
+    gaOptions: {
+      appName: "F1MV-Lights-Integration",
+      appId: "com.justjoostnl.f1mv.lights.integration",
+      appInstallerId: "com.justjoostnl.f1mv.lights.integration",
+      appVersion: packageJson.version,
+      sampleRate: 100,
+      siteSpeedSampleRate: 100,
+    }
+  });
 
   useEffect(() => {
     async function getIkeaOnline() {
@@ -18,6 +28,7 @@ export default function IkeaDeviceSelector(){
 
   switch (ikeaOnline) {
     case true:
+      ReactGA.send({ hitType: "pageview", page: "/manage-ikea-devices" });
       return (
         <div>
           <h1>IKEA Device Selector</h1>

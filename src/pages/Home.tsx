@@ -17,6 +17,13 @@ export default function Main() {
   ReactGA.send({ hitType: "pageview", page: "/home" });
   window.f1mvli.utils.changeWindowTitle("F1MV Lights Integration");
 
+  setTimeout(() => {
+    ReactGA.event({
+      category: "app",
+      action: "user_still_active",
+    });
+  }, 60000); // every minute send a user still active event
+
   const handleUpdateAvailableSnackBarClose = (event: Event | SyntheticEvent<any, Event>, reason?: SnackbarCloseReason) => {
     if (reason === "clickaway") return;
     setUpdateAvailableSnackBarOpen(false);

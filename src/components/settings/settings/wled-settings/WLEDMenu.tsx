@@ -57,7 +57,7 @@ export default function WLEDMenu(){
         onClick={handleClick}
         endIcon={<KeyboardArrowDownIcon />}
       >
-                WLED Tools
+        WLED Tools
       </Button>
       <Menu
         id="basic-menu"

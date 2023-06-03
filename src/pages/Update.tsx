@@ -15,7 +15,11 @@ export const handleDownloadUpdateManually = () => {
       shell.openExternal("https://api.jstt.me/api/v2/downloads/releases/f1mvli/latest/win");
       break;
     case "darwin":
-      shell.openExternal("https://api.jstt.me/api/v2/downloads/releases/f1mvli/latest/mac");
+      if (process.arch === "arm64") {
+        shell.openExternal("https://api.jstt.me/api/v2/downloads/releases/f1mvli/latest/mac-arm");
+      } else {
+        shell.openExternal("https://api.jstt.me/api/v2/downloads/releases/f1mvli/latest/mac");
+      }
       break;
     case "linux":
       shell.openExternal("https://api.jstt.me/api/v2/downloads/releases/f1mvli/latest/linux");
