@@ -11,6 +11,7 @@ import streamDeckControl from "../integrations/elgato-streamdeck/streamDeckContr
 import WLEDControl from "../integrations/wled/WLEDControl";
 import hueControl from "../integrations/hue/hueControl";
 import ikeaControl from "../integrations/ikea/ikeaControl";
+import MQTTControl from "../integrations/mqtt/MQTTControl";
 
 export default async function controlAllLights(r, g, b, brightness, action, flag) {
   const effectSettings = configVars.effectSettings as IEffectSettingsConfig;
@@ -50,6 +51,9 @@ export default async function controlAllLights(r, g, b, brightness, action, flag
   }
   if (!configVars.WLEDDisable){
     await WLEDControl(r, g, b, brightness, action);
+  }
+  if (!configVars.MQTTDisable){
+    await MQTTControl(r, g, b, brightness, action, flag);
   }
   if (!configVars.hueDisable){
     await hueControl(r, g, b, brightness, action);

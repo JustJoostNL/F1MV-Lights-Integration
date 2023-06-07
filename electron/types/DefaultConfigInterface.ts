@@ -64,6 +64,13 @@ export interface IConfig {
       WLEDDisable: boolean;
       devices: string[];
     };
+    MQTTSettings: {
+      MQTTDisable: boolean;
+      host: string;
+      port: number;
+      username: string | undefined;
+      password: string | undefined;
+    },
     streamDeckSettings: {
       streamDeckDisable: boolean;
     };

@@ -115,6 +115,15 @@ export const configMigrations: ConfigMigration = {
         amount: 5
       }
     ]);
-
-  }
+  },
+  "2.2.0": userConfig => {
+    userConfig.set("version", "2.2.0");
+    userConfig.set("Settings.MQTTSettings", {
+      MQTTDisable: true,
+      host: "",
+      port: 1883,
+      username: undefined,
+      password: undefined,
+    });
+  },
 };

@@ -21,6 +21,7 @@ export const integrationStates = {
   homeAssistantOnline: false as boolean,
   streamDeckOnline: false as boolean,
   WLEDOnline: false as boolean,
+  MQTTOnline: false as boolean,
   F1MVAPIOnline: false as boolean,
   F1LiveSession: false as boolean,
   updateAPIOnline: false as boolean,
@@ -87,4 +88,9 @@ export const hueVars = {
   hueAppName: "F1MV-Lights-Integration" as string,
   hueDeviceName: "DeviceType" as string,
   hueCreatedUser: null,
+};
+
+// mqtt
+export const MQTTVars = {
+  client: null,
 };

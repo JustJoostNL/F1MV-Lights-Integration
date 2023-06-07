@@ -14,6 +14,7 @@ import WebServerSettingsContent from "@/components/settings/settings/webserver-s
 import AdvancedSettingsContent from "@/components/settings/settings/advanced-settings/AdvancedSettings";
 import React from "react";
 import { RgbColor } from "react-colorful";
+import MQTTSettingsContent from "@/components/settings/settings/mqtt-settings/MQTTSettings";
 
 export const BlueSwitch = styled(Switch)(({ theme }) => ({
   "& .MuiSwitch-switchBase.Mui-checked": {
@@ -90,6 +91,12 @@ export const allSettings = [
     heading: "WLED",
     content: <WLEDSettingsContent/>,
     description: "Disable WLED Integration — WLED Tools",
+    type: "integration"
+  },
+  {
+    heading: "MQTT",
+    content: <MQTTSettingsContent/>,
+    description: "Disable MQTT Integration — MQTT Hostname — MQTT Port — MQTT Username — MQTT Password",
     type: "integration"
   },
   {

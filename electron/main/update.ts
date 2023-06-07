@@ -6,7 +6,7 @@ let updateFound = false;
 let noUpdateFound = false;
 
 export default function initUpdater(win: Electron.BrowserWindow){
-  autoUpdater.forceDevUpdateConfig = true;
+  autoUpdater.forceDevUpdateConfig = false;
   autoUpdater.autoDownload = false;
   autoUpdater.disableWebInstaller = true;
   autoUpdater.allowDowngrade = false;

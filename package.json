@@ -1,6 +1,6 @@
 {
   "name": "F1MV-Lights-Integration",
-  "version": "2.1.5",
+  "version": "2.2.0",
   "main": "dist-electron/main/index.js",
   "description": "The best way to connect your smart home lights to MultiViewer.",
   "author": "JustJoostNL",
@@ -29,6 +29,7 @@
     "express": "^4.18.2",
     "govee-lan-control": "^3.0.0",
     "jsonwebtoken": "^9.0.0",
+    "mqtt": "^4.3.7",
     "node-fetch": "^2.6.11",
     "node-hue-api": "^5.0.0-beta.16",
     "node-tradfri-client": "^3.2.0",

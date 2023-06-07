@@ -4,13 +4,14 @@ import { configMigrations } from "./migrations";
 import log from "electron-log";
 import { configChangedEmitEvent } from "../index";
 import createF1MVURLs from "../app/f1mv/createF1MVURLs";
-import { goveeVars, ikeaVars, integrationStates, webServerVars } from "../app/vars/vars";
+import { goveeVars, ikeaVars, integrationStates, MQTTVars, webServerVars } from "../app/vars/vars";
 import goveeInitialize from "../app/integrations/govee/goveeInit";
 import homeAssistantInitialize from "../app/integrations/home-assistant/homeAssistantInit";
 import webServerInitialize from "../app/integrations/webserver/webServerInit";
 import streamDeckInitialize from "../app/integrations/elgato-streamdeck/streamDeckInit";
 import ikeaInitialize from "../app/integrations/ikea/ikeaInit";
 import ikeaCheckSpectrum from "../app/integrations/ikea/checkIkeaDeviceSpectrum";
+import MQTTInitialize from "../app/integrations/mqtt/MQTTInit";
 
 const userConfig = new Store({
   name: "settings",
@@ -27,6 +28,11 @@ userConfig.onDidAnyChange(() => {
     "ikeaDisable": userConfig.get("Settings.ikeaSettings.ikeaDisable"),
     "ikeaDevices": userConfig.get("Settings.ikeaSettings.deviceIDs"),
     "homeAssistantDisable": userConfig.get("Settings.homeAssistantSettings.homeAssistantDisable"),
+    "MQTTDisable": userConfig.get("Settings.MQTTSettings.MQTTDisable"),
+    "MQTTHost": userConfig.get("Settings.MQTTSettings.host"),
+    "MQTTPort": userConfig.get("Settings.MQTTSettings.port"),
+    "MQTTUsername": userConfig.get("Settings.MQTTSettings.username"),
+    "MQTTPassword": userConfig.get("Settings.MQTTSettings.password"),
     "streamDeckDisable": userConfig.get("Settings.streamDeckSettings.streamDeckDisable"),
     "debugMode": userConfig.get("Settings.advancedSettings.debugMode"),
   };
@@ -36,6 +42,11 @@ userConfig.onDidAnyChange(() => {
     "ikeaDisable": configVars.ikeaDisable,
     "ikeaDevices": configVars.ikeaDevices,
     "homeAssistantDisable": configVars.homeAssistantDisable,
+    "MQTTDisable": configVars.MQTTDisable,
+    "MQTTHost": configVars.MQTTHost,
+    "MQTTPort": configVars.MQTTPort,
+    "MQTTUsername": configVars.MQTTUsername,
+    "MQTTPassword": configVars.MQTTPassword,
     "streamDeckDisable": configVars.streamDeckDisable,
     "debugMode": configVars.debugMode,
   };
@@ -132,6 +143,13 @@ export const configVars = {
   WLEDDisable: userConfig.get("Settings.WLEDSettings.WLEDDisable") as boolean,
   WLEDDevices: userConfig.get("Settings.WLEDSettings.devices") as string[],
 
+  // MQTT Settings
+  MQTTDisable: userConfig.get("Settings.MQTTSettings.MQTTDisable") as boolean,
+  MQTTHost: userConfig.get("Settings.MQTTSettings.host") as string,
+  MQTTPort: userConfig.get("Settings.MQTTSettings.port") as number,
+  MQTTUsername: userConfig.get("Settings.MQTTSettings.username") as string | undefined,
+  MQTTPassword: userConfig.get("Settings.MQTTSettings.password") as string | undefined,
+
   // Elgato Stream Deck Settings
   streamDeckDisable: userConfig.get("Settings.streamDeckSettings.streamDeckDisable"),
 
@@ -190,6 +208,30 @@ function handleConfigChanges(newVars, oldVars){
     streamDeckInitialize();
   }
 
+  if (oldVars.MQTTDisable && !newVars.MQTTDisable) {
+    MQTTInitialize();
+  }
+
+  if (!oldVars.MQTTDisable && newVars.MQTTDisable) {
+    try {
+      MQTTVars.client.publish("F1MV-Lights-Integration/appState", JSON.stringify({
+        appIsActive: false,
+      }));
+      MQTTVars.client.end();
+    } catch (e) {
+      log.error("Error while setting appIsActive to false, and closing the MQTT client: " + e.message);
+    }
+  }
+  // if (oldVars.MQTTUsername !== newVars.MQTTUsername || oldVars.MQTTPassword !== newVars.MQTTPassword || oldVars.MQTTHost !== newVars.MQTTHost || oldVars.MQTTPort !== newVars.MQTTPort) {
+  //   if (!newVars.MQTTDisable) {
+  //     try {
+  //       MQTTVars.client.end();
+  //     } catch (e) {
+  //       log.error("Error while closing MQTT client: " + e.message);
+  //     }
+  //     MQTTInitialize();
+  //   }
+  // }
 
 
   if (oldVars.debugMode && !newVars.debugMode) {
@@ -270,6 +312,13 @@ export function loadConfigInVars(){
   // WLED settings
   configVars.WLEDDisable = userConfig.get("Settings.WLEDSettings.WLEDDisable");
   configVars.WLEDDevices = userConfig.get("Settings.WLEDSettings.devices");
+
+  // MQTT settings
+  configVars.MQTTDisable = userConfig.get("Settings.MQTTSettings.MQTTDisable");
+  configVars.MQTTHost = userConfig.get("Settings.MQTTSettings.host");
+  configVars.MQTTPort = userConfig.get("Settings.MQTTSettings.port");
+  configVars.MQTTUsername = userConfig.get("Settings.MQTTSettings.username");
+  configVars.MQTTPassword = userConfig.get("Settings.MQTTSettings.password");
 
   // Elgato Stream Deck Settings
   configVars.streamDeckDisable = userConfig.get("Settings.streamDeckSettings.streamDeckDisable");

@@ -77,7 +77,7 @@ const SettingsPage: React.FC = () => {
 								Integration Settings
               </Typography>
               <Typography variant="h6" component="h6" sx={{ fontSize: "1rem", ml: "5px", color: "grey.400" }}>
-              Philips Hue — IKEA — Govee — OpenRGB — Home Assistant — WLED — Stream Deck — Discord — Webserver
+              Philips Hue — IKEA — Govee — OpenRGB — Home Assistant — WLED — MQTT — Stream Deck — Discord — Webserver
               </Typography>
             </div>
           </AccordionSummary>

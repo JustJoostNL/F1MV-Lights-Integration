@@ -21,6 +21,7 @@ const integrationStateMap: IntegrationStatesMap = {
   homeAssistant: "Home Assistant",
   streamDeck: "Stream Deck",
   WLED: "WLED",
+  MQTT: "MQTT",
   F1MV: "MultiViewer",
   F1TVLiveSession: "F1TV Live Session Found",
   update: "Auto Updater",

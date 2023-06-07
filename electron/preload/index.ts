@@ -12,6 +12,7 @@ export const f1mvli = {
   updater: {
     checkForUpdates: () => ipcRenderer.invoke("updater:checkForUpdates"),
     getUpdateAvailable: () => ipcRenderer.invoke("updater:getUpdateAvailable"),
+    getForceDevUpdate: () => ipcRenderer.invoke("updater:getForceDevUpdate"),
   },
   log: {
     openLogFile: () => ipcRenderer.invoke("log:openLogFile"),
@@ -36,6 +37,9 @@ export const f1mvli = {
     },
     WLED: {
       getDevices: () => ipcRenderer.invoke("integrations:WLED:getDevices"),
+    },
+    mqtt: {
+      reConnect: () => ipcRenderer.invoke("integrations:mqtt:reConnect"),
     },
     hue: {
       getLights: () => ipcRenderer.invoke("integrations:hue:getLights"),

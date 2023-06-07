@@ -20,7 +20,7 @@ import initUpdater from "./update";
 import log from "electron-log";
 import { handleIntegrationStates } from "./app/integrations/integration-states/integrationStates";
 import homeAssistantGetDevices from "./app/integrations/home-assistant/homeAssistantGetDevices";
-import { integrationStates, openRGBVars, streamDeckVars, webServerVars } from "./app/vars/vars";
+import { integrationStates, MQTTVars, openRGBVars, streamDeckVars, webServerVars } from "./app/vars/vars";
 import openRGBInitialize from "./app/integrations/openrgb/openRGBInit";
 import homeAssistantCheckDeviceSpectrum from "./app/integrations/home-assistant/homeAssistantCheckDeviceSpectrum";
 import getWLEDDevices from "./app/integrations/wled/getWLEDDevices";
@@ -32,6 +32,8 @@ import hueGetEntertainmentZones from "./app/integrations/hue/hueGetEntertainment
 import { IEffectSetting } from "../types/EffectSettingsInterface";
 import hueInitialize from "./app/integrations/hue/hueInit";
 import { handleDeepLinking } from "./app/deeplinking/handleDeepLinking";
+import MQTTInitialize from "./app/integrations/mqtt/MQTTInit";
+import sleep from "./app/utils/sleep";
 
 let urlLoadedInWindow = false;
 
@@ -160,6 +162,7 @@ async function createWindow() {
     height: 700,
     webPreferences: {
       preload,
+      backgroundThrottling: false,
       nodeIntegration: true,
       contextIsolation: false,
       zoomFactor: 0.8,
@@ -246,14 +249,24 @@ function onReady() {
 app.on("window-all-closed", () => {
   win = null;
   analyticsHandler("activeUsersClose");
-  if (integrationStates.openRGBOnline && !configVars.openRGBDisable){
+  if (integrationStates.openRGBOnline && !configVars.openRGBDisable) {
     openRGBVars.openRGBClient.disconnect();
   }
-  if (integrationStates.webServerOnline && !configVars.webServerDisable){
+  if (integrationStates.webServerOnline && !configVars.webServerDisable) {
     webServerVars.webServerHTTPServer.close();
   }
-  if (integrationStates.streamDeckOnline && !configVars.streamDeckDisable){
+  if (integrationStates.streamDeckOnline && !configVars.streamDeckDisable) {
     streamDeckVars.theStreamDeck.close();
+  }
+  if (integrationStates.MQTTOnline && !configVars.MQTTDisable) {
+    try {
+      MQTTVars.client.publish("F1MV-Lights-Integration/appState", JSON.stringify({
+        appIsActive: false,
+      }));
+      MQTTVars.client.end();
+    } catch (error) {
+      log.error("Failed to publish appState false message, and closing the MQTT connection." + error.message);
+    }
   }
   if (process.platform !== "darwin") app.quit();
 });
@@ -275,6 +288,7 @@ ipcMain.handle("utils:open-win", (_, arg) => {
     height: arg.browserWindowOptions.height,
     webPreferences: {
       preload,
+      backgroundThrottling: false,
       nodeIntegration: true,
       contextIsolation: false,
       zoomFactor: 0.8,
@@ -378,6 +392,13 @@ ipcMain.handle("updater:checkForUpdates", async () => {
 });
 ipcMain.handle("updater:getUpdateAvailable", async () => {
   if (!updateInfo) updateInfo = await autoUpdater.checkForUpdatesAndNotify();
+  if (!updateInfo && !autoUpdater.forceDevUpdateConfig) {
+    return {
+      updateAvailable: false,
+      currentVersion: app.getVersion(),
+      newVersion: app.getVersion(),
+    };
+  }
   if (updateInfo.updateInfo.version.replace(/\./g, "") > app.getVersion().replace(/\./g, "")) {
     return {
       updateAvailable: true,
@@ -391,6 +412,10 @@ ipcMain.handle("updater:getUpdateAvailable", async () => {
       newVersion: updateInfo.updateInfo.version,
     };
   }
+});
+
+ipcMain.handle("updater:getForceDevUpdate", () => {
+  return autoUpdater.forceDevUpdateConfig;
 });
 
 // log
@@ -413,6 +438,13 @@ ipcMain.handle("integrations:homeAssistant:checkDeviceSpectrum", (_, arg) => {
 // wled
 ipcMain.handle("integrations:WLED:getDevices", () => {
   return getWLEDDevices();
+});
+// mqtt
+ipcMain.handle("integrations:mqtt:reConnect", async () => {
+  if (integrationStates.MQTTOnline) MQTTVars.client.end();
+  await MQTTInitialize();
+  await sleep(1000);
+  return integrationStates.MQTTOnline;
 });
 //openrgb
 ipcMain.handle("integrations:openRGB:reConnect", () => {

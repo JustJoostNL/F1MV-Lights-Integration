@@ -13,6 +13,7 @@ export type IntegrationStatesMap = {
   homeAssistant: string,
   streamDeck: string,
   WLED: string,
+  MQTT: string,
   F1MV: string,
   F1TVLiveSession: string,
   update: string,

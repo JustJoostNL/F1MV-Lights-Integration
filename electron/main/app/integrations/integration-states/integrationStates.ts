@@ -67,6 +67,7 @@ export async function handleIntegrationStates(){
     { name: "homeAssistant", state: integrationStates.homeAssistantOnline, disabled: configVars.homeAssistantDisable },
     { name: "streamDeck", state: integrationStates.streamDeckOnline, disabled: configVars.streamDeckDisable },
     { name: "WLED", state: integrationStates.WLEDOnline, disabled: configVars.WLEDDisable },
+    { name: "MQTT", state: integrationStates.MQTTOnline, disabled: configVars.MQTTDisable },
     { name: "F1MV", state: integrationStates.F1MVAPIOnline, disabled: false },
     { name: "F1TVLiveSession", state: integrationStates.F1LiveSession, disabled: false },
     { name: "update", state: integrationStates.updateAPIOnline, disabled: false },

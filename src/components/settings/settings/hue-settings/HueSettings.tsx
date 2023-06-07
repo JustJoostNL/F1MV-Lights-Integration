@@ -58,10 +58,10 @@ export default function HueSettingsContent() {
           <Box sx={settingBoxSX}>
             <div>
               <Typography variant="h6" component="div">
-                                Disable Philips Hue Integration
+                Disable Philips Hue Integration
               </Typography>
               <Typography variant="body2" component="div" sx={{ color: "grey" }}>
-                                This will disable the Philips Hue integration, enable this if you don't have Hue devices.
+                This will disable the Philips Hue integration, enable this if you don't have Hue devices.
               </Typography>
             </div>
             <BlueSwitch
