@@ -5,6 +5,7 @@ const hue = require("node-hue-api").api;
 
 export default async function hueInitialize(){
   let errorCheck = false;
+  let hueClient;
   const hueBridgeIP = configVars.hueBridgeIP;
   const hueToken = configVars.hueToken;
   let token;
@@ -21,7 +22,16 @@ export default async function hueInitialize(){
     };
   }
 
-  const hueClient = await hue.createLocal(hueBridgeIP).connect();
+  try {
+    hueClient = await hue.createLocal(hueBridgeIP).connect();
+  } catch (e) {
+    log.error(`An error occurred while trying to create a local connection to the Philips Hue bridge: ${e.message}`);
+    errorCheck = true;
+    return {
+      status: "error",
+      message: `An error occurred while trying to create a local connection to the Philips Hue bridge: ${e.message}`
+    };
+  }
 
   if (!hueToken) {
     log.debug("No Philips Hue token found, generating a new one...");
@@ -50,11 +60,26 @@ export default async function hueInitialize(){
     token = configVars.hueToken;
   }
 
-  authHueAPI = await hue.createLocal(hueBridgeIP).connect(token);
+  try {
+    authHueAPI = await hue.createLocal(hueBridgeIP).connect(token);
+  } catch (e) {
+    log.error(`An error occurred while trying to create a local connection to the Philips Hue bridge: ${e.message}`);
+    errorCheck = true;
+    return {
+      status: "error",
+      message: `An error occurred while trying to create a local connection to the Philips Hue bridge: ${e.message}`
+    };
+  }
   hueVars.authHueAPI = authHueAPI;
   integrationStates.hueOnline = true;
-  const hueLights = await authHueAPI.lights.getAll();
-  const hueEntertainmentZones = await authHueAPI.groups.getEntertainment();
+  let hueLights;
+  let hueEntertainmentZones;
+  try {
+    hueLights = await authHueAPI.lights.getAll();
+    hueEntertainmentZones = await authHueAPI.groups.getEntertainment();
+  } catch (e) {
+    log.error(`An error occurred while getting the Hue devices: ${e}`);
+  }
 
   if (!hueLights){
     log.warn("No Philips Hue lights found, please check your settings.");

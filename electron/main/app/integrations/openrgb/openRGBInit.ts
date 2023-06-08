@@ -14,6 +14,13 @@ export default async function openRGBInitialize(){
     }
     openRGBVars.openRGBClient = new Client("F1MV Lights Integration", configVars.openRGBPort, configVars.openRGBHost);
     await openRGBVars.openRGBClient.connect();
+    openRGBVars.openRGBClient.on("connect", () => {
+      integrationStates.openRGBOnline = true;
+    });
+    openRGBVars.openRGBClient.on("disconnect", () => {
+      integrationStates.openRGBOnline = false;
+      log.error("Disconnected from OpenRGB, please make sure that the OpenRGB SDK server is running and that the hostname/ip + port are correct!");
+    });
     log.debug("Connected to OpenRGB.");
     integrationStates.openRGBOnline = true;
     return true;

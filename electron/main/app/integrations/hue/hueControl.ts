@@ -2,6 +2,7 @@ import { configVars } from "../../../config/config";
 import { hueVars, integrationStates } from "../../vars/vars";
 import getHueSatFromRGB from "../../utils/getHueSatFromRGB";
 import hueLightStateBuilder from "./hueLightStateBuilder";
+import log from "electron-log";
 
 // hue light state builder arg format:
 // {
@@ -45,7 +46,11 @@ export default async function hueControl(r, g, b, brightness, action){
           transition: configVars.hueEnableFade ? "fade" : "instant",
           thirdPartyCompatibility: configVars.hueThirdPartyCompatMode
         });
-        await hueVars.authHueAPI.lights.setLightState(device, lightState);
+        try {
+          await hueVars.authHueAPI.lights.setLightState(device, lightState);
+        } catch (e){
+          log.error(`Failed to set light state for Hue device ${device}: ${e}`);
+        }
       }
       for (const entertainmentZone of configVars.hueEntertainmentZones){
         const lightState = await hueLightStateBuilder({
@@ -57,7 +62,11 @@ export default async function hueControl(r, g, b, brightness, action){
           transition: configVars.hueEnableFade ? "fade" : "instant",
           thirdPartyCompatibility: configVars.hueThirdPartyCompatMode
         });
-        await hueVars.authHueAPI.groups.setGroupState(entertainmentZone, lightState);
+        try {
+          await hueVars.authHueAPI.groups.setGroupState(entertainmentZone, lightState);
+        } catch (e){
+          log.error(`Failed to set light state for Hue entertainment zone ${entertainmentZone}: ${e}`);
+        }
       }
       break;
     case "off":
@@ -68,7 +77,11 @@ export default async function hueControl(r, g, b, brightness, action){
           transition: configVars.hueEnableFade ? "fade" : "instant",
           thirdPartyCompatibility: configVars.hueThirdPartyCompatMode
         });
-        await hueVars.authHueAPI.lights.setLightState(device, lightState);
+        try {
+          await hueVars.authHueAPI.lights.setLightState(device, lightState);
+        } catch (e){
+          log.error(`Failed to set light state for Hue device ${device}: ${e}`);
+        }
       }
       for (const entertainmentZone of configVars.hueEntertainmentZones){
         const lightState = await hueLightStateBuilder({
@@ -77,7 +90,11 @@ export default async function hueControl(r, g, b, brightness, action){
           transition: configVars.hueEnableFade ? "fade" : "instant",
           thirdPartyCompatibility: configVars.hueThirdPartyCompatMode
         });
-        await hueVars.authHueAPI.groups.setGroupState(entertainmentZone, lightState);
+        try {
+          await hueVars.authHueAPI.groups.setGroupState(entertainmentZone, lightState);
+        } catch (e){
+          log.error(`Failed to set light state for Hue entertainment zone ${entertainmentZone}: ${e}`);
+        }
       }
       break;
   }

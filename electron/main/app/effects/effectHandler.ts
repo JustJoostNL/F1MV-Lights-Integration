@@ -6,7 +6,7 @@ import { CustomColor } from "../../../types/CustomColorInterface";
 
 export default async function effectHandler(flag){
   const effectSettings = configVars.effectSettings as IEffectSettingsConfig;
-  const greenColor = <CustomColor>configVars.greenColor;
+  const greenColor = configVars.greenColor as CustomColor;
   const yellowColor = configVars.yellowColor as CustomColor;
   const safetyCarColor = configVars.safetyCarColor as CustomColor;
   const redColor = configVars.redColor as CustomColor;

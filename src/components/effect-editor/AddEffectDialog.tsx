@@ -1,15 +1,17 @@
 import { IAddEffectDialogProps } from "@/components/effect-editor/types";
 import React, { useEffect, useState } from "react";
 import {
+  Autocomplete,
   Button,
-  Dialog, DialogActions,
+  Dialog,
+  DialogActions,
   DialogContent,
   DialogTitle,
   FormControl,
   FormControlLabel,
   Switch,
   TextField,
-  Autocomplete, Typography
+  Typography
 } from "@mui/material";
 import { flagNameMaps } from "@/components/effect-editor/EffectEditor";
 import AddEffectAction from "@/components/effect-editor/AddEffectAction";
@@ -37,7 +39,7 @@ export default function AddEffectDialog({ open, onClose, onSubmit }: IAddEffectD
       setHighestEffectId(highestId);
     }
     fetchHighestEffectId();
-  }, []);
+  }, [open]);
 
   const handleAddAction = () => {
     setActions([...actions, { type: "on", color: { r: 255, g: 255, b: 255 }, brightness: 100 }]);
@@ -123,7 +125,7 @@ export default function AddEffectDialog({ open, onClose, onSubmit }: IAddEffectD
         </DialogContent>
         <DialogActions>
           <Button color={"secondary"} onClick={onClose}>Cancel</Button>
-          <Button color={"secondary"} onClick={handleSubmit} variant="contained">
+          <Button disabled={!effectName || !selectedTrigger} color={"secondary"} onClick={handleSubmit} variant="contained">
             Create
           </Button>
         </DialogActions>

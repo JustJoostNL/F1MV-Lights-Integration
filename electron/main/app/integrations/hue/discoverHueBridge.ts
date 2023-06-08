@@ -1,5 +1,4 @@
 import { handleConfigSet } from "../../../config/config";
-import hueInitialize from "./hueInit";
 
 const hue = require("node-hue-api").discovery;
 

@@ -1,11 +1,17 @@
 import { configVars } from "../../../config/config";
 import { hueVars } from "../../vars/vars";
+import log from "electron-log";
 
 export default async function hueGetEntertainmentZones(){
   const authHueAPI = hueVars.authHueAPI;
   let hueData = {};
+  let hueEntertainmentZones = [];
   const entertainmentZoneList = [];
-  const hueEntertainmentZones = await authHueAPI.groups.getAll();
+  try {
+    hueEntertainmentZones = await authHueAPI.groups.getAll();
+  } catch (e) {
+    log.error(`An error occurred while getting the Hue entertainment zones: ${e}`);
+  }
   if (!hueEntertainmentZones){
     return;
   }
