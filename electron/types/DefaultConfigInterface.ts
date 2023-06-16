@@ -24,7 +24,7 @@ export interface IConfig {
       };
       effectSettings: IEffectSetting[];
     };
-    MultiViewerForF1Settings: {
+    MultiViewerSettings: {
       liveTimingURL: string;
       f1mvCheck: boolean;
     };

@@ -27,18 +27,8 @@ export default function GeneralSettingsContent() {
   };
 
   useEffect(() => {
-    const handleUnload = async () => {
-      await saveConfig();
-    };
-
-    window.addEventListener("unload", handleUnload);
-
-    return () => {
-      window.removeEventListener("unload", handleUnload);
-      saveConfig();
-    };
-  }, [saveConfig]);
-
+    saveConfig();
+  }, [settings]);
 
   return (
     <>
@@ -234,7 +224,7 @@ export default function GeneralSettingsContent() {
               </Box>
             </>)}
           <Divider sx={{ mb: "20px" }}/>
-          <ColorSettings/>
+          <ColorSettings settings={settings} setSettings={setSettings}/>
           <Divider sx={{ mb: "20px" }}/>
           <Box sx={settingBoxSX}>
             <div>

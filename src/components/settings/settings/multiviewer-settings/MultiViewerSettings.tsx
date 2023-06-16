@@ -9,28 +9,19 @@ export default function MultiViewerSettingsContent() {
   useEffect(() => {
     async function fetchConfig() {
       const config = await getConfig();
-      setSettings(config.Settings.MultiViewerForF1Settings);
+      setSettings(config.Settings.MultiViewerSettings);
     }
     fetchConfig();
   }, []);
 
   const saveConfig = async () => {
     if (!settings) return;
-    await window.f1mvli.config.set("Settings.MultiViewerForF1Settings", settings);
+    await window.f1mvli.config.set("Settings.MultiViewerSettings", settings);
   };
 
   useEffect(() => {
-    const handleUnload = async () => {
-      await saveConfig();
-    };
-
-    window.addEventListener("unload", handleUnload);
-
-    return () => {
-      window.removeEventListener("unload", handleUnload);
-      saveConfig();
-    };
-  }, [saveConfig]);
+    saveConfig();
+  }, [settings]);
 
   return (
     <>

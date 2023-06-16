@@ -3,6 +3,7 @@ import sleep from "../utils/sleep";
 import controlAllLights from "../light-controller/controlAllLights";
 import { IEffectSettingsConfig } from "../../../types/EffectSettingsInterface";
 import { CustomColor } from "../../../types/CustomColorInterface";
+import { statuses } from "../vars/vars";
 
 export default async function effectHandler(flag){
   const effectSettings = configVars.effectSettings as IEffectSettingsConfig;
@@ -62,6 +63,27 @@ export default async function effectHandler(flag){
                 const sleepDelay = effectSettings[i].actions[k].delay;
                 await sleep(sleepDelay);
                 break;
+              case "go_back_to_current_status":
+                switch (statuses.TState) {
+                  case "1":
+                    await controlAllLights(greenColor.r, greenColor.g, greenColor.b, configVars.defaultBrightness, "on", "green");
+                    break;
+                  case "2":
+                    await controlAllLights(yellowColor.r, yellowColor.g, yellowColor.b, configVars.defaultBrightness, "on", "yellow");
+                    break;
+                  case "4":
+                    await controlAllLights(safetyCarColor.r, safetyCarColor.g, safetyCarColor.b, configVars.defaultBrightness, "on", "safetyCar");
+                    break;
+                  case "5":
+                    await controlAllLights(redColor.r, redColor.g, redColor.b, configVars.defaultBrightness, "on", "red");
+                    break;
+                  case "6":
+                    await controlAllLights(vscColor.r, vscColor.g, vscColor.b, configVars.defaultBrightness, "on", "vsc");
+                    break;
+                  case "7":
+                    await controlAllLights(vscEndingColor.r, vscEndingColor.g, vscEndingColor.b, configVars.defaultBrightness, "on", "vscEnding");
+                    break;
+                }
             }
           }
         }

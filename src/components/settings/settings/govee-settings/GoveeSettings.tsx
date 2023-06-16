@@ -20,17 +20,8 @@ export default function GoveeSettingsContent() {
   };
 
   useEffect(() => {
-    const handleUnload = async () => {
-      await saveConfig();
-    };
-
-    window.addEventListener("unload", handleUnload);
-
-    return () => {
-      window.removeEventListener("unload", handleUnload);
-      saveConfig();
-    };
-  }, [saveConfig]);
+    saveConfig();
+  }, [settings]);
 
   return (
     <>
@@ -39,10 +30,10 @@ export default function GoveeSettingsContent() {
           <Box sx={settingBoxSX}>
             <div>
               <Typography variant="h6" component="div">
-                                Disable Govee Integration
+                Disable Govee Integration
               </Typography>
               <Typography variant="body2" component="div" sx={{ color: "grey" }}>
-                                This will disable the Govee integration, enable this if you don't have Govee devices.
+                This will disable the Govee integration, enable this if you don't have Govee devices.
               </Typography>
             </div>
             <BlueSwitch

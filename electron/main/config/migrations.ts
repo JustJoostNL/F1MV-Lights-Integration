@@ -125,5 +125,9 @@ export const configMigrations: ConfigMigration = {
       username: undefined,
       password: undefined,
     });
+    userConfig.set("Settings.MultiViewerSettings", {
+      ...userConfig.get("Settings.MultiViewerForF1Settings"),
+    });
+    userConfig.delete("Settings.MultiViewerForF1Settings");
   },
 };

@@ -1,7 +1,7 @@
 import { configVars } from "../../config/config";
-import { f1mvURLs } from "../vars/vars";
+import { MultiViewerURLs } from "../vars/vars";
 
-export default async function createF1MVURLs(){
+export default async function createMultiViewerURLs(){
   let f1mvRawURL = configVars.F1MVURL as string;
   if (!f1mvRawURL) return;
   if (f1mvRawURL.endsWith("/")){
@@ -10,6 +10,6 @@ export default async function createF1MVURLs(){
   if (f1mvRawURL === "http://localhost:10101"){
     f1mvRawURL = "http://127.0.0.1:10101";
   }
-  f1mvURLs.liveTimingURL = f1mvRawURL + "/api/graphql";
-  f1mvURLs.heartBeatURL = f1mvRawURL + "/api/v1/live-timing/Heartbeat";
+  MultiViewerURLs.liveTimingURL = f1mvRawURL + "/api/graphql";
+  MultiViewerURLs.heartBeatURL = f1mvRawURL + "/api/v1/live-timing/Heartbeat";
 }

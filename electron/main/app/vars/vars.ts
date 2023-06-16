@@ -1,5 +1,7 @@
 // F1MV URLS
-export const f1mvURLs = {
+import { ITimingDataLinesObject, ITimingStatsLinesObject } from "../multiviewer/types";
+
+export const MultiViewerURLs = {
   liveTimingURL: "" as string,
   heartBeatURL: "" as string,
 };
@@ -8,6 +10,8 @@ export const statuses = {
   SState: "" as string,
   SInfo: null,
   TState: "" as string,
+  TStats: null as ITimingStatsLinesObject | null,
+  TData: null as ITimingDataLinesObject,
   TStateCheck: "" as string,
   SStateCheck: "" as string,
 };

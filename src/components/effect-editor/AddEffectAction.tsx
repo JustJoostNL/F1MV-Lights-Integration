@@ -11,7 +11,7 @@ export default function AddEffectAction({ index, action, actions, setActions }: 
     const newActions = [...actions];
     newActions[index] = { ...newActions[index], type: value };
     // if the type is switched to delay from on/off, remove the color and brightness
-    if (value === "delay") {
+    if (value === "delay" || value === "go_back_to_current_status") {
       delete newActions[index].color;
       delete newActions[index].brightness;
     }
@@ -65,6 +65,7 @@ export default function AddEffectAction({ index, action, actions, setActions }: 
   const actionOptions: IActionOptions = {
     on: "On",
     off: "Off",
+    go_back_to_current_status: "Go back to current status",
     delay: "Delay",
   };
 
@@ -74,7 +75,7 @@ export default function AddEffectAction({ index, action, actions, setActions }: 
       <div style={{ display: "flex", flexDirection: "row", alignItems: "center" }}>
         <FormControl sx={{ mr: 2 }}>
           <Autocomplete
-            sx={{ width: 130 }}
+            sx={{ width: 270 }}
             autoComplete={true}
             autoSelect={true}
             clearIcon={false}

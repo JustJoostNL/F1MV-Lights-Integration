@@ -1,8 +1,10 @@
 import React from "react";
 import NavBar from "@/components/navbar";
-import { Box, Typography, List, ListItem, ListItemIcon, ListItemText } from "@mui/material";
+import { Box, Typography, List, ListItem, ListItemIcon, ListItemText, Button } from "@mui/material";
 import { CheckCircleOutline } from "@mui/icons-material";
+import DonateIcon from "@mui/icons-material/SavingsRounded";
 import ReactGA from "react-ga4";
+import { shell } from "electron";
 
 
 
@@ -10,6 +12,15 @@ export default function About() {
   ReactGA.send({ hitType: "pageview", page: "/about" });
   window.f1mvli.utils.changeWindowTitle("About — F1MV Lights Integration");
 
+  const handleOpenDonate = () => {
+    shell.openExternal("https://donate.jstt.me");
+    ReactGA.event({
+      category: "button_press",
+      action: "donate_button_click",
+    });
+  };
+
+  // @ts-ignore
   return (
     <div>
       <NavBar showBackButton={true} />
@@ -67,14 +78,20 @@ export default function About() {
           <Typography variant="h5">Donate</Typography>
         </Box>
         <Typography variant="body1" gutterBottom>
-					If you want to support the development of this app, you can donate via Buy Me A Coffee. You can donate by clicking the button below, all donations are heavily appreciated!
+          If you like my work, and want to support me, please consider donating or becoming a member. Thank you!
         </Typography>
         <Box mt={2} mb={2}>
-          <a href="https://www.buymeacoffee.com/justjoostnl" target="_blank" rel="noreferrer">
-            <img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" style={{ height: "60px", width: "217px" }} />
-          </a>
-          <Typography variant={"body2"} sx={{ mt: 1 }}>
-						Donation are completely voluntary and are not required to use the app. Donations are used to support the development of new features.
+          <Button
+            size={"large"}
+            variant="outlined"
+            color="success"
+            startIcon={<DonateIcon />}
+            onClick={handleOpenDonate}
+          >
+            Donate
+          </Button>
+          <Typography variant={"body2"} sx={{ mt: 2 }}>
+						Donations are completely voluntary and are not required to use the app, but they are greatly appreciated!
           </Typography>
         </Box>
 

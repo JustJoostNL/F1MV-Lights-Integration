@@ -17,6 +17,7 @@ import { green, red } from "@mui/material/colors";
 import { shell } from "electron";
 import { font } from "@/index";
 import ReactGA from "react-ga4";
+import DescriptionIcon from "@mui/icons-material/Description";
 
 export default function ThreeDotMenu() {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
@@ -59,10 +60,19 @@ export default function ThreeDotMenu() {
 
   const handleOpenDonate = () => {
     setAnchorEl(null);
-    shell.openExternal("https://buymeacoffee.com/justjoostnl");
+    shell.openExternal("https://donate.jstt.me");
     ReactGA.event({
       category: "button_press",
       action: "donate_button_click",
+    });
+  };
+
+  const handleOpenDocs = () => {
+    setAnchorEl(null);
+    shell.openExternal("https://f1mvli.jstt.me");
+    ReactGA.event({
+      category: "button_press",
+      action: "docs_button_click",
     });
   };
 
@@ -130,6 +140,23 @@ export default function ThreeDotMenu() {
             variant="body2"
             sx={menuItemStyle}>
             About
+          </Typography>
+        </MenuItem>
+        <Divider />
+        <MenuItem onClick={handleOpenDocs}>
+          <DescriptionIcon
+            sx={{
+              mr: 2
+            }}/>
+          <Typography
+            variant="body2"
+            sx={menuItemStyle}>
+            Documentation <OpenIcon
+              sx={{
+                ml: 1,
+                color: "grey.500",
+                fontSize: "0.9rem"
+              }} />
           </Typography>
         </MenuItem>
         <Divider />

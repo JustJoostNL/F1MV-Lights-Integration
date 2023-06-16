@@ -32,17 +32,8 @@ export default function AdvancedSettingsContent() {
   };
 
   useEffect(() => {
-    const handleUnload = async () => {
-      await saveConfig();
-    };
-
-    window.addEventListener("unload", handleUnload);
-
-    return () => {
-      window.removeEventListener("unload", handleUnload);
-      saveConfig();
-    };
-  }, [saveConfig]);
+    saveConfig();
+  }, [settings]);
 
   return (
     <>

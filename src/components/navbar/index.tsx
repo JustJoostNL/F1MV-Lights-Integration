@@ -2,12 +2,10 @@ import { Box, AppBar, Toolbar, Typography, IconButton } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import Menu from "./menu";
 import ReactGA from "react-ga4";
-
 interface NavBarProps {
   showBackButton: boolean;
   backButtonLocationHash?: string;
 }
-
 export default function NavBar({ showBackButton, backButtonLocationHash }: NavBarProps) {
 
   const handleBackButton = () => {

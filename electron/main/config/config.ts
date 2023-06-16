@@ -3,7 +3,7 @@ import defaultConfig from "./defaultConfig";
 import { configMigrations } from "./migrations";
 import log from "electron-log";
 import { configChangedEmitEvent } from "../index";
-import createF1MVURLs from "../app/f1mv/createF1MVURLs";
+import createMultiViewerURLs from "../app/multiviewer/createMultiViewerURLs";
 import { goveeVars, ikeaVars, integrationStates, MQTTVars, webServerVars } from "../app/vars/vars";
 import goveeInitialize from "../app/integrations/govee/goveeInit";
 import homeAssistantInitialize from "../app/integrations/home-assistant/homeAssistantInit";
@@ -52,7 +52,7 @@ userConfig.onDidAnyChange(() => {
   };
   handleConfigChanges(newVariables, oldVariables);
   loadConfigInVars();
-  createF1MVURLs();
+  createMultiViewerURLs();
   configChangedEmitEvent();
 });
 
@@ -104,8 +104,8 @@ export const configVars = {
   effectSettings: userConfig.get("Settings.generalSettings.effectSettings"),
 
   // F1MV settings
-  F1MVURL: userConfig.get("Settings.MultiViewerForF1Settings.liveTimingURL"),
-  f1mvSync: userConfig.get("Settings.MultiViewerForF1Settings.f1mvCheck"),
+  F1MVURL: userConfig.get("Settings.MultiViewerSettings.liveTimingURL"),
+  f1mvSync: userConfig.get("Settings.MultiViewerSettings.f1mvCheck"),
 
   // Hue settings
   hueDisable: userConfig.get("Settings.hueSettings.hueDisable"),
@@ -222,16 +222,6 @@ function handleConfigChanges(newVars, oldVars){
       log.error("Error while setting appIsActive to false, and closing the MQTT client: " + e.message);
     }
   }
-  // if (oldVars.MQTTUsername !== newVars.MQTTUsername || oldVars.MQTTPassword !== newVars.MQTTPassword || oldVars.MQTTHost !== newVars.MQTTHost || oldVars.MQTTPort !== newVars.MQTTPort) {
-  //   if (!newVars.MQTTDisable) {
-  //     try {
-  //       MQTTVars.client.end();
-  //     } catch (e) {
-  //       log.error("Error while closing MQTT client: " + e.message);
-  //     }
-  //     MQTTInitialize();
-  //   }
-  // }
 
 
   if (oldVars.debugMode && !newVars.debugMode) {
@@ -275,8 +265,8 @@ export function loadConfigInVars(){
   configVars.effectSettings = userConfig.get("Settings.generalSettings.effectSettings");
 
   // F1MV settings
-  configVars.F1MVURL = userConfig.get("Settings.MultiViewerForF1Settings.liveTimingURL");
-  configVars.f1mvSync = userConfig.get("Settings.MultiViewerForF1Settings.f1mvCheck");
+  configVars.F1MVURL = userConfig.get("Settings.MultiViewerSettings.liveTimingURL");
+  configVars.f1mvSync = userConfig.get("Settings.MultiViewerSettings.f1mvCheck");
 
   // Hue settings
   configVars.hueDisable = userConfig.get("Settings.hueSettings.hueDisable");

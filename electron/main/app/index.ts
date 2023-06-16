@@ -1,12 +1,12 @@
-import createF1MVURLs from "./f1mv/createF1MVURLs";
+import createMultiViewerURLs from "./multiviewer/createMultiViewerURLs";
 import { analyticsHandler } from "./analytics/analytics";
-import startF1MVLightSync from "./f1mv/F1MVLightSync";
+import startMultiViewerSync from "./multiviewer/MultiViewerLightSync";
 import initAllIntegrations from "./integrations/initIntegration";
 import { handleIntegrationStates, handleMiscAPIChecks } from "./integrations/integration-states/integrationStates";
 import log from "electron-log";
 
 export default async function initApp(){
-  await createF1MVURLs();
+  await createMultiViewerURLs();
   await analyticsHandler("getUniqueID");
   await analyticsHandler("activeUsersInit");
   await initAllIntegrations();
@@ -14,7 +14,7 @@ export default async function initApp(){
   setInterval(async () => {
     await handleStates();
   }, 10000);
-  await startF1MVLightSync();
+  await startMultiViewerSync();
 
   log.info("App started successfully.");
 }

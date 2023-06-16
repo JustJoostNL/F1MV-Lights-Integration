@@ -1,5 +1,5 @@
 import { configVars } from "../../../config/config";
-import { apiURLs, f1mvURLs, goveeVars } from "../../vars/vars";
+import { apiURLs, MultiViewerURLs, goveeVars } from "../../vars/vars";
 import { integrationStates } from "../../vars/vars";
 import log from "electron-log";
 import fetch from "node-fetch";
@@ -33,7 +33,7 @@ export async function handleMiscAPIChecks(){
   }
 
   try {
-    await fetch(f1mvURLs.heartBeatURL).then((res) => res.json()).then((data) => {
+    await fetch(MultiViewerURLs.heartBeatURL).then((res) => res.json()).then((data) => {
       if (data.error !== "No data found, do you have live timing running?"){
         integrationStates.F1MVAPIOnline = true;
         log.debug("MultiViewer API is online.");

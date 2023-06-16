@@ -66,46 +66,35 @@ const config: IConfig = {
 								},
 						  effectSettings: [
 						    {
-						      name: "VSC Ending Blink Effect",
+						      name: "Fastest Lap",
 						      id: 0,
-						      trigger: "vscEnding",
+						      trigger: "fastestLap",
 						      enabled: true,
 						      actions: [
 						        {
 						          type: "on",
 						          color:
 												{
-												  r: 0,
-												  g: 255,
-												  b: 0
+												  r: 91,
+												  g: 0,
+												  b: 166
 												},
 						          brightness: 100,
 						        },
 						        {
 						          type: "delay",
-						          delay: 500,
+						          delay: 1000,
 						        },
 						        {
-						          type: "on",
-						          color:
-												{
-												  r: 255,
-												  g: 150,
-												  b: 0
-												},
-						          brightness: 100,
+						          type: "go_back_to_current_status",
 						        },
-						        {
-						          type: "delay",
-						          delay: 500,
-						        }
 						      ],
-						      amount: 5
+						      amount: 1
 						    }
 						  ]
 						},
 
-        	MultiViewerForF1Settings:
+        	MultiViewerSettings:
 						{
 						  liveTimingURL: "http://localhost:10101",
 						  f1mvCheck: true,

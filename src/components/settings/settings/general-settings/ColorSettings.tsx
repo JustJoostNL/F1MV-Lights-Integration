@@ -3,12 +3,7 @@ import { RgbColorPicker } from "react-colorful";
 import Typography from "@mui/material/Typography";
 import { AutocompleteChangeReason, Box } from "@mui/material";
 import { Autocomplete, TextField } from "@mui/material";
-import { getConfig, settingBoxSX, handleSetSingleSetting } from "@/components/settings/allSettings";
-
-interface IColorSettings {
-  [key: string]: string;
-}
-
+import { settingBoxSX, handleSetSingleSetting } from "@/components/settings/allSettings";
 interface IFlagOption {
   label: string;
   value: string;
@@ -40,8 +35,8 @@ const flagDescriptionMaps: IFlagMap = {
 
 const DEFAULT_FLAG = "green";
 
-export default function ColorSettings() {
-  const [settings, setSettings] = useState<any | null>(null);
+export default function ColorSettings({ settings, setSettings }: { settings: any, setSettings: React.Dispatch<React.SetStateAction<any>>}) {
+  const [colorSettings, setColorSettings] = useState<any | null>(null);
   const [selectedFlag, setSelectedFlag] = useState<string | null>(DEFAULT_FLAG);
   const flagOptions: IFlagOption[] = Object.keys(flagNameMaps).map((flagKey) => ({
     label: flagNameMaps[flagKey],
@@ -49,30 +44,14 @@ export default function ColorSettings() {
   }));
 
   useEffect(() => {
-    async function fetchConfig() {
-      const config = await getConfig();
-      setSettings(config.Settings.generalSettings.colorSettings);
-    }
-    fetchConfig();
+    if (!settings) return;
+    setColorSettings(settings.colorSettings);
   }, []);
 
-  const saveConfig = async () => {
-    if (!settings) return;
-    await window.f1mvli.config.set("Settings.generalSettings.colorSettings", settings);
-  };
-
   useEffect(() => {
-    const handleUnload = async () => {
-      await saveConfig();
-    };
-
-    window.addEventListener("unload", handleUnload);
-
-    return () => {
-      window.removeEventListener("unload", handleUnload);
-      saveConfig();
-    };
-  }, [saveConfig]);
+    if (!settings) return;
+    setSettings({ ...settings, colorSettings });
+  }, [colorSettings]);
 
   const handleFlagChange = (event: AutocompleteChangeReason, option: IFlagOption | null) => {
     if (option) {
@@ -82,7 +61,7 @@ export default function ColorSettings() {
 
   return (
     <>
-      {settings && (
+      {settings && colorSettings && (
         <div>
           <div>
             <Box sx={settingBoxSX}>
@@ -129,9 +108,9 @@ export default function ColorSettings() {
                       type: "number",
                     }}
                     //@ts-ignore
-                    value={settings[selectedFlag].r}
+                    value={colorSettings[selectedFlag].r}
                     //@ts-ignore
-                    onChange={(e) => handleSetSingleSetting(selectedFlag, { ...settings[selectedFlag], r: parseInt(e.target.value) }, setSettings, settings)}
+                    onChange={(e) => handleSetSingleSetting(selectedFlag, { ...colorSettings[selectedFlag], r: parseInt(e.target.value) }, setColorSettings, colorSettings)}
                     style={{ marginRight: "16px", width: "30%" }}
                   />
                   <TextField
@@ -145,9 +124,9 @@ export default function ColorSettings() {
                       type: "number",
                     }}
                     //@ts-ignore
-                    value={settings[selectedFlag].g}
+                    value={colorSettings[selectedFlag].g}
                     //@ts-ignore
-                    onChange={(e) => handleSetSingleSetting(selectedFlag, { ...settings[selectedFlag], g: parseInt(e.target.value) }, setSettings, settings)}
+                    onChange={(e) => handleSetSingleSetting(selectedFlag, { ...colorSettings[selectedFlag], g: parseInt(e.target.value) }, setColorSettings, colorSettings)}
                     style={{ marginRight: "16px", width: "30%" }}
                   />
                   <TextField
@@ -161,9 +140,9 @@ export default function ColorSettings() {
                       type: "number",
                     }}
                     //@ts-ignore
-                    value={settings[selectedFlag].b}
+                    value={colorSettings[selectedFlag].b}
                     //@ts-ignore
-                    onChange={(e) => handleSetSingleSetting(selectedFlag, { ...settings[selectedFlag], b: parseInt(e.target.value) }, setSettings, settings)}
+                    onChange={(e) => handleSetSingleSetting(selectedFlag, { ...colorSettings[selectedFlag], b: parseInt(e.target.value) }, setColorSettings, colorSettings)}
                     style={{ width: "30%" }}
                   />
                 </div>
@@ -171,8 +150,8 @@ export default function ColorSettings() {
               <div style={{ display: "flex", alignItems: "center", marginTop: "16px", justifyContent: "center" }}>
                 <RgbColorPicker
                   //@ts-ignore
-                  color={settings[selectedFlag]}
-                  onChange={(color) => handleSetSingleSetting(selectedFlag, color, setSettings, settings)}
+                  color={colorSettings[selectedFlag]}
+                  onChange={(color) => handleSetSingleSetting(selectedFlag, color, setColorSettings, colorSettings)}
                 />
               </div>
             </Box>

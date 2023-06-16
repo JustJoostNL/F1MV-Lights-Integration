@@ -27,7 +27,7 @@ export const flagNameMaps: IFlagMap = {
   safetyCar: "Safety Car",
   vsc: "Virtual Safety Car",
   vscEnding: "Virtual Safety Car Ending",
-  static: "Static Color",
+  fastestLap: "Fastest Lap",
 };
 
 export default function EffectEditor() {

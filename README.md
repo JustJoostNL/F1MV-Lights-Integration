@@ -87,7 +87,8 @@ By integrating your smart home lights with Formula 1 sessions, using [MultiViewe
 [![Home Assistant][home-assistant]][home-assistant-url]
 [![WLED][wled]][wled-url]
 [![Govee][govee]][govee-url]
-[![Ikea Tradfri][tradfri]][tradfri-url]
+[![MQTT][mqtt]][mqtt-url]
+[![IKEA Tradfri][tradfri]][tradfri-url]
 [![Elgato Stream Deck][streamdeck]][streamdeck-url]
 [![Discord][discord]][discord-url]
 
@@ -232,6 +233,8 @@ Distributed under the GNU General Public License v3.0. See `LICENSE.md` for more
 [tradfri-url]: https://www.ikea.com/us/en/cat/smart-lighting-36812/
 [govee]: https://img.shields.io/badge/Govee-000666.svg?style=for-the-badge&logo=govee&logoColor=white
 [govee-url]: https://us.govee.com/
+[MQTT]: https://img.shields.io/badge/MQTT-0002bb.svg?style=for-the-badge&logo=mqtt&logoColor=white
+[MQTT-url]: https://mqtt.org/
 [openrgb]: https://img.shields.io/badge/OpenRGB-0002bb.svg?style=for-the-badge&logo=openrgb&logoColor=white
 [openrgb-url]: https://openrgb.org/
 [openrgb-devices-url]: https://openrgb.org/devices.html

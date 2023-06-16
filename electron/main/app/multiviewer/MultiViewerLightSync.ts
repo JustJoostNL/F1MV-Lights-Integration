@@ -1,12 +1,19 @@
-import { F1MVAPICall } from "./F1MVAPICall";
+import { MultiViewerAPICall } from "./MultiViewerAPICall";
 import { statuses } from "../vars/vars";
 import { configVars } from "../../config/config";
 import controlAllLights from "../light-controller/controlAllLights";
 import log from "electron-log";
 import { CustomColor } from "../../../types/CustomColorInterface";
+import {
+  ITimingDataLinesObject,
+  ITimingStatsLinesObject
+} from "./types";
+import effectHandler from "../effects/effectHandler";
 
-async function f1mvLightSync() {
+let currentFastestLapTime = "";
+let currentFastestLapLap = 0;
 
+async function MultiViewerLightSync() {
   const greenColor = configVars.greenColor as CustomColor;
   const yellowColor = configVars.yellowColor as CustomColor;
   const safetyCarColor = configVars.safetyCarColor as CustomColor;
@@ -14,7 +21,7 @@ async function f1mvLightSync() {
   const vscColor = configVars.vscColor as CustomColor;
   const vscEndingColor = configVars.vscEndingColor as CustomColor;
 
-  await F1MVAPICall();
+  await MultiViewerAPICall();
   if (statuses.TStateCheck !== statuses.TState && statuses.SState !== "Ends" && statuses.SState !== "Finalised") {
     switch (statuses.TState) {
       case "1":
@@ -59,10 +66,38 @@ async function f1mvLightSync() {
   }
 }
 
-export default async function startF1MVLightSync() {
+async function checkForNewFastestLap(TimingStats: ITimingStatsLinesObject, TimingData: ITimingDataLinesObject){
+  if (!TimingData || !TimingStats) return;
+  for (const [driver, { Retired, Stopped }] of Object.entries(TimingData)) {
+    const { PersonalBestLapTime } = TimingStats[driver];
+
+    if (Retired || Stopped) {
+      continue;
+    }
+
+    const { Position, Value, Lap } = PersonalBestLapTime;
+
+    if (Position !== 1) {
+      continue;
+    }
+    if (Value === currentFastestLapTime) {
+      continue;
+    }
+    if (Lap <= currentFastestLapLap) {
+      continue;
+    }
+
+    currentFastestLapTime = Value;
+    currentFastestLapLap = Lap;
+    await effectHandler("fastestLap");
+  }
+}
+
+export default async function startMultiViewerSync() {
   setInterval(function () {
     if (configVars.f1mvSync) {
-      f1mvLightSync();
+      MultiViewerLightSync();
+      checkForNewFastestLap(statuses.TStats, statuses.TData);
     }
   }, 300);
 }
