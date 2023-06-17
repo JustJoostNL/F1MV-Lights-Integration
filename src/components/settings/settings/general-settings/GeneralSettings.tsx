@@ -23,6 +23,7 @@ export default function GeneralSettingsContent() {
     await window.f1mvli.config.set("Settings.generalSettings", {
       ...settings,
       effectSettings: await window.f1mvli.config.get("Settings.generalSettings.effectSettings"),
+      colorSettings: settings.colorSettings ?? await window.f1mvli.config.get("Settings.generalSettings.colorSettings"),
     });
   };
 

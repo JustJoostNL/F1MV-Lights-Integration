@@ -103,7 +103,16 @@ export default function EffectEditor() {
   };
   const handleImportDialogSubmit = async (token: string) => {
     setImportDialogOpen(false);
-    const decoded = jwt.verify(token, "f1mvli");
+    let decoded;
+    try {
+      decoded = jwt.verify(token, "f1mvli");
+    } catch (err) {
+      setToaster({ message: "Invalid token!", severity: "error", time: 3000 });
+      setTimeout(() => {
+        setToaster(null);
+      }, 3100);
+      return;
+    }
     // @ts-ignore
     if (decoded.singleEffect) {
       // @ts-ignore

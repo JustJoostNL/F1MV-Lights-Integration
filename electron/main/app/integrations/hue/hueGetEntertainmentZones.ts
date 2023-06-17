@@ -15,7 +15,7 @@ export default async function hueGetEntertainmentZones(){
   if (!hueEntertainmentZones){
     return;
   }
-  const alreadySelectedZones = configVars.hueDevices;
+  const alreadySelectedZones = configVars.hueEntertainmentZones;
 
   for (const zone of hueEntertainmentZones){
     const name = zone.name;

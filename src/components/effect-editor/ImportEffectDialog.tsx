@@ -8,11 +8,11 @@ import {
   DialogActions,
   Typography
 } from "@mui/material";
-import React, { useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function ImportEffectDialog({ open, onClose, onSubmit }: IImportEffectsDialogProps){
   const [token, setToken] = useState("");
-  React.useEffect(() => {
+  useEffect(() => {
     setToken("");
   }, [open]);
 
@@ -36,7 +36,7 @@ export default function ImportEffectDialog({ open, onClose, onSubmit }: IImportE
       </DialogContent>
       <DialogActions>
         <Button color={"secondary"} onClick={onClose}>Cancel</Button>
-        <Button variant={"contained"} color={"secondary"} onClick={() => onSubmit(token)}>Import</Button>
+        <Button disabled={!token} variant={"contained"} color={"secondary"} onClick={() => onSubmit(token)}>Import</Button>
       </DialogActions>
     </Dialog>
   );

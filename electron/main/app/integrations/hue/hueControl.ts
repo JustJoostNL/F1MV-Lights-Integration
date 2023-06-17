@@ -1,6 +1,5 @@
 import { configVars } from "../../../config/config";
 import { hueVars, integrationStates } from "../../vars/vars";
-import getHueSatFromRGB from "../../utils/getHueSatFromRGB";
 import hueLightStateBuilder from "./hueLightStateBuilder";
 import log from "electron-log";
 
@@ -9,8 +8,8 @@ import log from "electron-log";
 //   "on": true,
 //   "groupMode": false,
 //   "brightness": 100,
-//   "hue": 0,
-//   "sat": 0,
+//   "x": 0,
+//   "y": 0,
 //   "rgb": {
 //     r: 255,
 //     g: 255,
@@ -24,10 +23,10 @@ export default async function hueControl(r, g, b, brightness, action){
   if (configVars.hueDisable || !integrationStates.hueOnline) return;
 
   brightness = Math.round((brightness / 100) * 254);
-  const colorTransData = await getHueSatFromRGB(r, g, b);
-  let hueValue = Math.round(colorTransData.hue * (65535 / 360));
-  if (hueValue === 0) hueValue = 1;
-  const satValue = Math.round(colorTransData.sat * (254 / 100));
+  const converter = require('@q42philips/hue-color-converter');
+  const colorTransData = converter.calculateXY(r, g, b);
+  const XValue = colorTransData[0];
+  const YValue = colorTransData[1];
 
   switch (action){
     case "on":
@@ -41,8 +40,8 @@ export default async function hueControl(r, g, b, brightness, action){
             g: g,
             b: b
           },
-          hue: configVars.hueThirdPartyCompatMode ? hueValue : undefined,
-          sat: configVars.hueThirdPartyCompatMode ? satValue : undefined,
+          x: configVars.hueThirdPartyCompatMode ? XValue : undefined,
+          y: configVars.hueThirdPartyCompatMode ? YValue : undefined,
           transition: configVars.hueEnableFade ? "fade" : "instant",
           thirdPartyCompatibility: configVars.hueThirdPartyCompatMode
         });
@@ -57,8 +56,8 @@ export default async function hueControl(r, g, b, brightness, action){
           on: true,
           groupMode: true,
           brightness: brightness,
-          hue: hueValue,
-          sat: satValue,
+          x: XValue,
+          y: YValue,
           transition: configVars.hueEnableFade ? "fade" : "instant",
           thirdPartyCompatibility: configVars.hueThirdPartyCompatMode
         });

@@ -10,8 +10,8 @@ export default async function hueLightStateBuilder(data){
   //   "on": true,
   //   "groupMode": false,
   //   "brightness": 100,
-  //   "hue": 0,
-  //   "sat": 0,
+  //   "x": 0,
+  //   "y": 0,
   //   "rgb": {
   //     r: 255,
   //     g: 255,
@@ -33,9 +33,8 @@ export default async function hueLightStateBuilder(data){
       groupLightState.bri(data.brightness);
     }
 
-    if (data.hue && data.sat){
-      groupLightState.hue(data.hue);
-      groupLightState.sat(data.sat);
+    if (data.x && data.y){
+      groupLightState.xy(data.x, data.y);
     }
 
     if (data.transition){
@@ -61,9 +60,8 @@ export default async function hueLightStateBuilder(data){
 
     if (data.rgb && !data.thirdPartyCompatibility){
       lightState.rgb(data.rgb.r, data.rgb.g, data.rgb.b);
-    } else if (data.hue && data.sat && data.thirdPartyCompatibility){
-      lightState.hue(data.hue);
-      lightState.sat(data.sat);
+    } else if (data.x && data.y && data.thirdPartyCompatibility){
+      lightState.xy(data.x, data.y);
     }
 
     if (data.transition){

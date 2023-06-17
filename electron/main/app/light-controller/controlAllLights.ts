@@ -32,8 +32,7 @@ export default async function controlAllLights(r, g, b, brightness, action, flag
       }
     }
   }
-  // control other lights:
-  // lights come here
+
   if (!configVars.goveeDisable){
     await goveeControl(r, g, b, brightness, action);
   }

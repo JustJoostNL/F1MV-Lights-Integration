@@ -1,6 +1,6 @@
 {
   "name": "F1MV-Lights-Integration",
-  "version": "2.2.0",
+  "version": "2.2.1",
   "main": "dist-electron/main/index.js",
   "description": "The best way to connect your smart home lights to MultiViewer.",
   "author": "JustJoostNL",
@@ -20,6 +20,7 @@
     "@mui/icons-material": "5.11.16",
     "@mui/material": "5.13.2",
     "@mui/x-data-grid": "5.17.26",
+    "@q42philips/hue-color-converter": "^1.0.0",
     "@sentry/electron": "^4.5.0",
     "colortranslator": "^1.10.2",
     "discord-rpc": "github:JustJoostNL/DiscordRPC",
