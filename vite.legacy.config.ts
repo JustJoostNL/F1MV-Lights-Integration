@@ -1,32 +1,32 @@
-import { rmSync } from 'node:fs'
+import { rmSync } from "node:fs";
 //@ts-ignore
-import path from 'node:path'
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
-import electron from 'vite-electron-plugin'
-import { customStart, loadViteEnv } from 'vite-electron-plugin/plugin'
-import preload from 'vite-plugin-electron'
-import renderer from 'vite-plugin-electron-renderer'
+import path from "node:path";
+import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react";
+import electron from "vite-electron-plugin";
+import { customStart, loadViteEnv } from "vite-electron-plugin/plugin";
+import preload from "vite-plugin-electron";
+import renderer from "vite-plugin-electron-renderer";
 
-let preloadHasReady = false
+let preloadHasReady = false;
 
 // https://vitejs.dev/config/
 export default defineConfig(({ command }) => {
-  rmSync('dist-electron', { recursive: true, force: true })
+  rmSync("dist-electron", { recursive: true, force: true });
 
-  const sourcemap = command === 'serve' || !!process.env.VSCODE_DEBUG
+  const sourcemap = command === "serve" || !!process.env.VSCODE_DEBUG;
 
   return {
     resolve: {
       alias: {
-        '@': path.join(__dirname, 'src')
+        "@": path.join(__dirname, "src")
       },
     },
     plugins: [
       react(),
       electron({
         include: [
-          'electron/main'
+          "electron/main"
         ],
         transformOptions: {
           sourcemap,
@@ -35,12 +35,12 @@ export default defineConfig(({ command }) => {
           customStart(args => {
             if (process.env.VSCODE_DEBUG) {
               // Start Electron via VSCode
-              console.log(/* For `.vscode/.debug.script.mjs` */'[startup] Electron App')
+              console.log(/* For `.vscode/.debug.script.mjs` */"[startup] Electron App");
             } else {
               if (preloadHasReady) {
-                args?.startup()
+                args?.startup();
               } else {
-                console.log('[startup] waiting for preload')
+                console.log("[startup] waiting for preload");
               }
             }
           }),
@@ -51,20 +51,20 @@ export default defineConfig(({ command }) => {
       // Preload scripts
       preload({
         entry: [
-          'electron/preload/index.ts'
+          "electron/preload/index.ts"
         ],
         vite: {
           build: {
             minify: false,
-            outDir: 'dist-electron/preload',
+            outDir: "dist-electron/preload",
           },
         },
         onstart(args) {
           if (preloadHasReady) {
-            args.reload()
+            args.reload();
           } else {
-            preloadHasReady = true
-            args.startup()
+            preloadHasReady = true;
+            args.startup();
           }
         },
       }),
@@ -75,5 +75,5 @@ export default defineConfig(({ command }) => {
       }),
     ],
     clearScreen: false,
-  }
-})
+  };
+});
