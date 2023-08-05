@@ -9,9 +9,12 @@ import FlagIcon from "@mui/icons-material/Flag";
 import MinorCrashIcon from "@mui/icons-material/MinorCrash";
 import DirectionsCar from "@mui/icons-material/DirectionsCar";
 import NoCrash from "@mui/icons-material/NoCrash";
+import SquareIcon from "@mui/icons-material/Square";
+import TimerIcon from "@mui/icons-material/Timer";
 import FlashOff from "@mui/icons-material/FlashOff";
 import { ipcRenderer } from "electron";
 import ReactGA from "react-ga4";
+import { Tooltip } from "@mui/material";
 
 export default function SimulationMenu() {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
@@ -71,6 +74,22 @@ export default function SimulationMenu() {
     });
     handleClose();
   };
+  const handleFastestLap = () => {
+    ipcRenderer.send("flagSim", "fastestLap");
+    ReactGA.event({
+      category: "flag_simulation",
+      action: "fastest_lap_sim",
+    });
+    handleClose();
+  };
+  const handleStaticColor = () => {
+    ipcRenderer.send("flagSim", "staticColor");
+    ReactGA.event({
+      category: "flag_simulation",
+      action: "static_color_sim",
+    });
+    handleClose();
+  };
   const handleAllOff = () => {
     ipcRenderer.send("flagSim", "alloff");
     ReactGA.event({
@@ -99,7 +118,7 @@ export default function SimulationMenu() {
         onClick={handleClick}
         endIcon={<KeyboardArrowDownIcon />}
       >
-        Simulate Flag
+        Simulate Event
       </Button>
       <Menu
         id="basic-menu"
@@ -180,6 +199,32 @@ export default function SimulationMenu() {
             variant="body2"
             sx={menuItemStyle}>
                         Virtual Safety Car Ending
+          </Typography>
+        </MenuItem>
+        <Tooltip title={"This will only work when you have a fastest lap effect created and enabled."}>
+          <MenuItem onClick={handleFastestLap}>
+            <TimerIcon
+              sx={{
+                mr: 2,
+                color: "#e801fe"
+              }}/>
+            <Typography
+              variant="body2"
+              sx={menuItemStyle}>
+              Fastest Lap
+            </Typography>
+          </MenuItem>
+        </Tooltip>
+        <MenuItem onClick={handleStaticColor}>
+          <SquareIcon
+            sx={{
+              mr: 2,
+              borderRadius: 10,
+            }}/>
+          <Typography
+            variant="body2"
+            sx={menuItemStyle}>
+            Static Color
           </Typography>
         </MenuItem>
         <MenuItem onClick={handleAllOff}>

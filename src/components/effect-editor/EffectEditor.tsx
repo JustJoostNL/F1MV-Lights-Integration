@@ -55,6 +55,11 @@ export default function EffectEditor() {
     });
     setEditDialogOpen(true);
   };
+
+  const handleTestEffect = (effect: any) => {
+
+  };
+
   const handleCloseEditDialog = () => {
     setEditDialogOpen(false);
     setSelectedEffect(null);

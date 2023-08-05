@@ -86,7 +86,7 @@ export default function Main() {
             F1MV Lights Integration
           </Typography>
           <Typography variant="h4" component="h2" sx={{ fontSize: "1.2rem", mb: 3, color: "grey.400" }}>
-            The best way to connect your smart home lights MultiViewer.
+            The best way to connect your smart home lights to MultiViewer.
           </Typography>
         </Box>
         <Box sx={{ display: "flex", flexDirection: "column", gap: 4 }}>

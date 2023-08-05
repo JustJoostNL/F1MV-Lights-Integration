@@ -2,6 +2,22 @@ import controlAllLights from "./controlAllLights";
 import { configVars } from "../../config/config";
 import log from "electron-log";
 import { CustomColor } from "../../../types/CustomColorInterface";
+import effectHandler from "../effects/effectHandler";
+
+interface IFlagMap {
+  [key: string]: string;
+}
+
+const flagNameMaps: IFlagMap = {
+  green: "Green",
+  yellow: "Yellow",
+  red: "Red",
+  safetyCar: "Safety Car",
+  vsc: "Virtual Safety Car",
+  vscEnding: "Virtual Safety Car Ending",
+  staticColor: "Static Color",
+  fastestLap: "Fastest Lap"
+};
 
 export default async function simulateFlag(arg) {
   const greenColor = configVars.greenColor as CustomColor;
@@ -10,6 +26,7 @@ export default async function simulateFlag(arg) {
   const redColor = configVars.redColor as CustomColor;
   const vscColor = configVars.vscColor as CustomColor;
   const vscEndingColor = configVars.vscEndingColor as CustomColor;
+  const staticColor = configVars.staticColor as CustomColor;
   const defaultBrightness = configVars.defaultBrightness as number;
 
 
@@ -31,15 +48,14 @@ export default async function simulateFlag(arg) {
   if (arg === "vscEnding") {
     await controlAllLights(vscEndingColor.r, vscEndingColor.g, vscEndingColor.b, defaultBrightness, "on", "vscEnding");
   }
+  if (arg === "staticColor") {
+    await controlAllLights(staticColor.r, staticColor.g, staticColor.b, defaultBrightness, "on", "staticColor");
+  }
+  if (arg === "fastestLap") {
+    await effectHandler("fastestLap");
+  }
   if (arg === "alloff") {
     await controlAllLights(0, 0, 0, 0, "off", "alloff");
   }
-  if (arg === "alloff") {
-    log.info("Turned off all lights!");
-  } else if (arg !== "vscEnding") {
-    log.info("Simulated " + arg + "!");
-  }
-  if (arg === "vscEnding") {
-    log.info("Simulated VSC Ending!");
-  }
+  log.info("Simulated " + flagNameMaps[arg] + "!");
 }
