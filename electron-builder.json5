@@ -6,7 +6,7 @@
   generateUpdatesFilesForAllChannels: true,
   "asar": true,
 
-  afterSign: "build/notarize.ts",
+  afterSign: "build/notarize.js",
 
   "directories": {
     "output": "out"
