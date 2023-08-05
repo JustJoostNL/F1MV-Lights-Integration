@@ -1,6 +1,6 @@
 const { notarize } = require("@electron/notarize");
 
-module.exports = async (context) => {
+module.exports = async (context: any) => {
   if (process.platform !== "darwin") return;
 
   console.log("Aftersign hook triggered, starting to notarize app...");
