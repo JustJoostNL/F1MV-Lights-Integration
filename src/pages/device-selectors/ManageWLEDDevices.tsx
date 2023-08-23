@@ -12,7 +12,6 @@ import Button from "@mui/material/Button";
 import log from "electron-log/renderer";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { useEffect, useState } from "react";
-import {isIPv4} from 'is-ip';
 
 export default function ManageWLEDDevices() {
   const [devices, setDevices] = useState<string[]>([]);
@@ -53,19 +52,25 @@ export default function ManageWLEDDevices() {
     setAlreadySelectedDevices(newSelectedDevices);
   };
 
+  const isIPv4 = (ip: string) => {
+    const regex = /^(\d{1,3}\.){3}\d{1,3}$/gm;
+    return regex.test(ip);
+  };
+
   ReactGA.send({ hitType: "pageview", page: "/manage-wled-devices" });
 
   return (
     <div>
       <h1>Manage WLED Devices</h1>
       <TextField
+        error={!isIPv4(ipInput) && ipInput !== ""}
         id="wled-device-ip-input"
         label="WLED Device IP"
         color="secondary"
         variant="outlined"
         value={ipInput}
         onChange={(event) => setIpInput(event.target.value)}
-        helperText={isIPv4(ipInput) ? '✔ This looks fine.' : 'Please use the IPv4 format xxx.xxx.xxx.xxx'}
+        helperText={isIPv4(ipInput) ? "✔ This looks fine." : "Please use the IPv4 format xxx.xxx.xxx.xxx"}
       />
       <Button
         sx={{ ml: "15px", mt: "10px" }}
