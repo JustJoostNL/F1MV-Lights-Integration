@@ -12,6 +12,7 @@ import Button from "@mui/material/Button";
 import log from "electron-log/renderer";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { useEffect, useState } from "react";
+import {isIPv4} from 'is-ip';
 
 export default function ManageWLEDDevices() {
   const [devices, setDevices] = useState<string[]>([]);
@@ -64,6 +65,7 @@ export default function ManageWLEDDevices() {
         variant="outlined"
         value={ipInput}
         onChange={(event) => setIpInput(event.target.value)}
+        helperText={isIPv4(ipInput) ? '✔ This looks fine.' : 'Please use the IPv4 format xxx.xxx.xxx.xxx'}
       />
       <Button
         sx={{ ml: "15px", mt: "10px" }}
