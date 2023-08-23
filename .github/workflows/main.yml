@@ -25,6 +25,7 @@ jobs:
       - name: Build/release Electron app
         uses: Yan-Jobs/action-electron-builder@v1.7.0
         env:
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
           APPLE_ID: ${{ secrets.APPLE_ID }}
           APPLE_ID_PASS: ${{ secrets.APPLE_ID_PASS }}
           CSC_LINK: ${{ secrets.CSC_LINK }}
