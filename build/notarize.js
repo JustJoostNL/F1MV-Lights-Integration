@@ -29,6 +29,9 @@ module.exports = async (context) => {
       teamId: process.env.APPLE_TEAM_ID,
       appleId: process.env.APPLE_ID,
       appleIdPassword: process.env.APPLE_ID_PASS,
+      // appleApiKey: process.env.APPLE_API_KEY,
+      // appleApiKeyId: process.env.APPLE_API_KEY_ID,
+      // appleApiIssuer: process.env.APPLE_API_ISSUER,
     });
   } catch (error) {
     console.error(error);
