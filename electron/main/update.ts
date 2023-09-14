@@ -15,8 +15,6 @@ export default function initUpdater(win: Electron.BrowserWindow){
   autoUpdater.channel = configVars.updateChannel as string;
   //autoUpdater.logger = log;
 
-  const isMacOS = process.platform === "darwin";
-
   autoUpdater.on("update-downloaded", (event: UpdateDownloadedEvent) => {
     win.webContents.send("update-downloaded");
     autoUpdater.quitAndInstall(false, true);
@@ -25,7 +23,6 @@ export default function initUpdater(win: Electron.BrowserWindow){
   autoUpdater.on("update-available", () => {
     updateFound = true;
     win.webContents.send("update-available");
-    if (isMacOS) return;
     log.info("There is an update available. Downloading now... You will be notified when the update is ready to install.");
     downloadUpdate();
   });

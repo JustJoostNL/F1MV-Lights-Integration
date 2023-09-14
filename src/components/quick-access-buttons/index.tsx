@@ -16,11 +16,6 @@ import { useEffect, useState } from "react";
 export default function QuickAccessButtons(){
   const [toaster, setToaster] = React.useState<{ message: string, severity: "error" | "warning" | "info" | "success", time: number } | null>(null);
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-  const [isMac, setIsMac] = useState(false);
-
-  useEffect(() => {
-    setIsMac(process.platform === "darwin");
-  }, []);
 
   const open = Boolean(anchorEl);
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
@@ -42,12 +37,7 @@ export default function QuickAccessButtons(){
     await window.f1mvli.updater.checkForUpdates();
     const updateInfo = await window.f1mvli.updater.getUpdateAvailable();
     if (updateInfo.updateAvailable) {
-      let message = "";
-      if (isMac) {
-        message = `Update available! You currently have version ${updateInfo.currentVersion} installed, version ${updateInfo.newVersion} is available.`;
-      } else {
-        message = `Update available! Downloading version ${updateInfo.newVersion}... You will be notified when the update is ready to install.`;
-      }
+      const message = `Update available! Downloading version ${updateInfo.newVersion}... You will be notified when the update is ready to install.`;
       setToaster({ message: message, severity: "success", time: 5000 });
       setTimeout(() => {
         setToaster(null);

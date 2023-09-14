@@ -36,11 +36,6 @@ export default function UpdateScreen(){
   const [showJSONTree, setShowJSONTree] = useState(false);
   const [updateDownloaded, setUpdateDownloaded] = useState(false);
   const [updateError, setUpdateError] = useState(false);
-  const [isMac, setIsMac] = useState(false);
-
-  useEffect(() => {
-    setIsMac(process.platform === "darwin");
-  }, []);
 
   useHotkeys("d", () => {
     setShowJSONTree(!showJSONTree);
@@ -62,49 +57,35 @@ export default function UpdateScreen(){
     setUpdateError(true);
   };
 
-  if (isMac) {
-    return (
-      <div>
-        <WarningAmberRoundedIcon sx={{
-          mb: 3,
-          fontSize: 30,
-          color: orange[500],
-        }} />
-        <Typography sx={{ mb: 1.5 }}>There is a new version available, but, auto updates are not supported on macOS. Please download the latest version manually.</Typography>
-        <Button sx={{ mr: 3, mt: 4 }} onClick={handleContinueWithOutdatedVersion} color="secondary" variant="text">Continue with outdated version</Button>
-        <Button sx={{ mt: 4, mr: 3 }} onClick={handleDownloadUpdateManually} color="secondary" variant="contained">Download update <ArrowForwardIcon sx={{ ml: 1 }} /></Button>
-      </div>
-    );
-  } else {
-    return (
-      <div>
-        {!updateError ? (
-          <>
-            <LoadingScreen customText={updateDownloaded ? "Installing update..." : "Downloading update..."} />
-          </>
-        ) : (
-          <>
-            <WarningAmberRoundedIcon sx={{
-              mb: 3,
-              fontSize: 30,
-              color: orange[500],
-            }} />
-            <Typography sx={{ mb: 1.5 }}>Failed to automatically update, please download the latest version manually.</Typography>
-            <Button sx={{ mr: 3, mt: 4 }} onClick={handleContinueWithOutdatedVersion} color="secondary" variant="text">Continue with outdated version</Button>
-            <Button sx={{ mt: 4, mr: 3 }} onClick={handleDownloadUpdateManually} color="secondary" variant="contained">Download update <ArrowForwardIcon sx={{ ml: 1 }} /></Button>
-          </>
-        )}
-        {showJSONTree && (
-          <div style={{ marginTop: 50 }}>
-            <JsonTree data={{
-              updateVars: updateVars,
-              updateDownloaded: updateDownloaded,
-              updateError: updateError,
-              showJSONTree: showJSONTree,
-            }} />
-          </div>
-        )}
-      </div>
-    );
-  }
+  
+  return (
+    <div>
+      {!updateError ? (
+        <>
+          <LoadingScreen customText={updateDownloaded ? "Installing update..." : "Downloading update..."} />
+        </>
+      ) : (
+        <>
+          <WarningAmberRoundedIcon sx={{
+            mb: 3,
+            fontSize: 30,
+            color: orange[500],
+          }} />
+          <Typography sx={{ mb: 1.5 }}>Failed to automatically update, please download the latest version manually.</Typography>
+          <Button sx={{ mr: 3, mt: 4 }} onClick={handleContinueWithOutdatedVersion} color="secondary" variant="text">Continue with outdated version</Button>
+          <Button sx={{ mt: 4, mr: 3 }} onClick={handleDownloadUpdateManually} color="secondary" variant="contained">Download update <ArrowForwardIcon sx={{ ml: 1 }} /></Button>
+        </>
+      )}
+      {showJSONTree && (
+        <div style={{ marginTop: 50 }}>
+          <JsonTree data={{
+            updateVars: updateVars,
+            updateDownloaded: updateDownloaded,
+            updateError: updateError,
+            showJSONTree: showJSONTree,
+          }} />
+        </div>
+      )}
+    </div>
+  );
 }
