@@ -10,6 +10,7 @@ export interface IConfig {
       goBackToStaticDelay: number;
       staticBrightness: number;
       hideLogs: boolean;
+      startMultiViewerWhenAppStarts: boolean;
       colorSettings: {
         staticColor: {
           r: number;

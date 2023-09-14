@@ -130,4 +130,8 @@ export const configMigrations: ConfigMigration = {
     });
     userConfig.delete("Settings.MultiViewerForF1Settings");
   },
+  "2.2.2": userConfig => {
+    userConfig.set("version", "2.2.2");
+    userConfig.set("Settings.generalSettings.startMultiViewerWhenAppStarts", false);
+  }
 };

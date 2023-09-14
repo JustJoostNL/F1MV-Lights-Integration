@@ -52,6 +52,23 @@ export default function GeneralSettingsContent() {
               }}
             />
           </Box>
+          <Box sx={settingBoxSX}>
+            <div>
+              <Typography variant="h6" component="div">
+                Start MultiViewer automatically when F1MV Lights Integration starts
+              </Typography>
+              <Typography variant="body2" component="div" sx={{ color: "grey" }}>
+                This will automatically start MultiViewer when F1MV Lights Integration starts.
+              </Typography>
+            </div>
+            <BlueSwitch
+              id="auto-start-multiviewer-switch"
+              checked={settings.startMultiViewerWhenAppStarts}
+              onChange={(event) => {
+                handleSetSingleSetting("startMultiViewerWhenAppStarts", event.target.checked, setSettings, settings);
+              }}
+            />
+          </Box>
           <Divider sx={{ mb: "20px" }}/>
           <Box sx={settingBoxSX}>
             <div>
@@ -242,7 +259,8 @@ export default function GeneralSettingsContent() {
                 onClick={() => {
                   window.location.hash = "#/effect-editor";
                 }}
-              >Open Effect Editor
+              >
+                Open Effect Editor
               </Button>
             </div>
           </Box>

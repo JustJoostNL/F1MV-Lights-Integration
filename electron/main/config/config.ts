@@ -80,6 +80,7 @@ export const handleConfigOpenInEditor = () => {
 export const configVars = {
   // general settings
   autoTurnOffLights: userConfig.get("Settings.generalSettings.autoTurnOffLights"),
+  startMultiViewerWhenAppStarts: userConfig.get("Settings.generalSettings.startMultiViewerWhenAppStarts"),
   defaultBrightness: userConfig.get("Settings.generalSettings.defaultBrightness"),
 
   // go back to static settings
@@ -241,6 +242,7 @@ function handleConfigChanges(newVars, oldVars){
 export function loadConfigInVars(){
   // general settings
   configVars.autoTurnOffLights = userConfig.get("Settings.generalSettings.autoTurnOffLights");
+  configVars.startMultiViewerWhenAppStarts = userConfig.get("Settings.generalSettings.startMultiViewerWhenAppStarts");
   configVars.defaultBrightness = userConfig.get("Settings.generalSettings.defaultBrightness");
 
   // go back to static settings

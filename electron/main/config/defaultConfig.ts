@@ -18,6 +18,8 @@ const config: IConfig = {
 
 						  hideLogs: true,
 
+						  startMultiViewerWhenAppStarts: false,
+
 						  colorSettings:
 								{
 								  staticColor:

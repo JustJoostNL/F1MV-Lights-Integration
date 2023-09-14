@@ -12,14 +12,15 @@ const flagNameMaps: IFlagMap = {
   green: "Green",
   yellow: "Yellow",
   red: "Red",
-  safetyCar: "Safety Car",
+  sc: "Safety Car",
   vsc: "Virtual Safety Car",
-  vscEnding: "Virtual Safety Car Ending",
-  staticColor: "Static Color",
-  fastestLap: "Fastest Lap"
+  vscending: "Virtual Safety Car Ending",
+  staticcolor: "Static Color",
+  fastestlap: "Fastest Lap",
+  alloff: "All Off",
 };
 
-export default async function simulateFlag(arg) {
+export default async function simulateFlag(arg: string) {
   const greenColor = configVars.greenColor as CustomColor;
   const yellowColor = configVars.yellowColor as CustomColor;
   const safetyCarColor = configVars.safetyCarColor as CustomColor;
@@ -57,5 +58,5 @@ export default async function simulateFlag(arg) {
   if (arg === "alloff") {
     await controlAllLights(0, 0, 0, 0, "off", "alloff");
   }
-  log.info("Simulated " + flagNameMaps[arg] + "!");
+  log.info("Simulated " + flagNameMaps[arg.toLowerCase()] + "!");
 }
