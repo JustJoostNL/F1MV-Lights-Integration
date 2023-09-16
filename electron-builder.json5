@@ -6,7 +6,7 @@
   generateUpdatesFilesForAllChannels: true,
   "asar": true,
 
-  //afterSign: "build/notarize.js",
+  afterSign: "build/notarize.js",
 
   "directories": {
     "output": "out"
@@ -24,13 +24,12 @@
 
 
   "mac": {
-    //hardenedRuntime: true,
-    //gatekeeperAssess: false,
-    //notarize: false, // notarization is already done in afterSign
-    //entitlements: "build/entitlements.mac.plist",
-    //entitlementsInherit: "build/entitlements.mac.plist",
+    hardenedRuntime: true,
+    gatekeeperAssess: false,
+    notarize: false, // notarization is already done in afterSign
+    // entitlements: "build/entitlements.mac.plist",
+    // entitlementsInherit: "build/entitlements.mac.plist",
     category: "public.app-category.utilities",
-    minimumSystemVersion: "10.12.0",
     "target": [
       "dmg",
       "zip"
