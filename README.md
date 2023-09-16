@@ -8,7 +8,7 @@
 [![GNU GPL 3.0 License][license-shield]][license-url]
 
 <div align="center">
-<img src="icons/logo_1024x1024_rounded.png" alt="The F1MV Lights Integration logo" align="center" width="256" height="256"/>
+<img src="icons/logo_1024x1024-rounded.png" alt="The F1MV Lights Integration logo" align="center" width="256" height="256"/>
 <h3 align="center">F1MV Lights Integration</h3>
   <p align="center">
     The best way to connect your smart home lights to MultiViewer.
