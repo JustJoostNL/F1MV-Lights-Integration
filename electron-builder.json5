@@ -26,6 +26,7 @@
   "mac": {
     hardenedRuntime: true,
     gatekeeperAssess: false,
+    notarize: false, // notarization is already done in afterSign
     entitlements: "build/entitlements.mac.plist",
     entitlementsInherit: "build/entitlements.mac.plist",
     category: "public.app-category.utilities",
