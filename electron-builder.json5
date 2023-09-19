@@ -46,7 +46,7 @@
         ]
       }
     ],
-    "verifyUpdateCodeSignature": false,
+    // "verifyUpdateCodeSignature": false,
   },
 
 
