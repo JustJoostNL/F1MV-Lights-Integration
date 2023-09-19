@@ -29,10 +29,9 @@ jobs:
           APPLE_ID: ${{ secrets.APPLE_ID }}
           APPLE_ID_PASS: ${{ secrets.APPLE_ID_PASS }}
           APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_ID_PASS }}
-          CSC_LINK: ${{ secrets.CSC_LINK }}
-          CSC_KEY_PASSWORD: ${{ secrets.CSC_KEY_PASSWORD }}
-          # we don't have a Windows code signing certificate yet so when platform is windows, we set CSC_IDENTITY_AUTO_DISCOVERY to false
-          CSC_IDENTITY_AUTO_DISCOVERY: ${{ matrix.os != 'windows-latest' }}
+          # we don't have a Windows code signing certificate yet so when platform is windows, we don't want the CSC_LINK and CSC_KEY_PASSWORD env vars to be set
+          CSC_LINK: ${{ matrix.os == 'windows-latest' && secrets.CSC_LINK }}
+          CSC_KEY_PASSWORD: ${{ matrix.os == 'windows-latest' && secrets.CSC_KEY_PASSWORD }}
         with:
           # GitHub token, automatically provided to the action
           # (No need to define this secret in the repo settings)
