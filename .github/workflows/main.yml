@@ -25,13 +25,12 @@ jobs:
       - name: Build/release Electron app
         uses: Yan-Jobs/action-electron-builder@v1.7.0
         env:
-          # we don't have a Windows code signing certificate yet so when platform is windows we don't specify any code signing options
-          APPLE_TEAM_ID: ${{ matrix.os == 'macos-12' && secrets.APPLE_TEAM_ID }}
-          APPLE_ID: ${{ matrix.os == 'macos-12' && secrets.APPLE_ID }}
-          APPLE_ID_PASS: ${{ matrix.os == 'macos-12' && secrets.APPLE_ID_PASS }}
-          APPLE_APP_SPECIFIC_PASSWORD: ${{ matrix.os == 'macos-12' && secrets.APPLE_ID_PASS }}
-          CSC_LINK: ${{ matrix.os == 'macos-12' && secrets.CSC_LINK }}
-          CSC_KEY_PASSWORD: ${{ matrix.os == 'macos-12' && secrets.CSC_KEY_PASSWORD }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_ID_PASS: ${{ secrets.APPLE_ID_PASS }}
+          APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_ID_PASS }}
+          CSC_LINK: ${{ secrets.CSC_LINK }}
+          CSC_KEY_PASSWORD: ${{ secrets.CSC_KEY_PASSWORD }}
         with:
           # GitHub token, automatically provided to the action
           # (No need to define this secret in the repo settings)
