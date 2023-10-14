@@ -12,17 +12,17 @@ import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 export const handleDownloadUpdateManually = () => {
   switch (process.platform) {
     case "win32":
-      shell.openExternal("https://api.jstt.me/api/v2/downloads/releases/f1mvli/latest/win");
+      shell.openExternal("https://api.jstt.me/api/v2/f1mvli/download/latest/win");
       break;
     case "darwin":
       if (process.arch === "arm64") {
-        shell.openExternal("https://api.jstt.me/api/v2/downloads/releases/f1mvli/latest/mac-arm");
+        shell.openExternal("https://api.jstt.me/api/v2/f1mvli/download/latest/mac-arm");
       } else {
-        shell.openExternal("https://api.jstt.me/api/v2/downloads/releases/f1mvli/latest/mac");
+        shell.openExternal("https://api.jstt.me/api/v2/f1mvli/download/latest/mac");
       }
       break;
     case "linux":
-      shell.openExternal("https://api.jstt.me/api/v2/downloads/releases/f1mvli/latest/linux");
+      shell.openExternal("https://api.jstt.me/api/v2/f1mvli/download/latest/linux");
       break;
   }
 };
