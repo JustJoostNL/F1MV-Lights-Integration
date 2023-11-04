@@ -1,20 +1,17 @@
 {
-  "extends": "@electron-toolkit/tsconfig/tsconfig.node.json",
+  "extends": "@electron-toolkit/tsconfig/tsconfig.web.json",
   "compilerOptions": {
     "composite": true,
     "module": "CommonJS",
     "target": "ES2022",
     "moduleResolution": "node",
-    "strict": false,
+    "useUnknownInCatchVariables": false,
+    "strict": true,
+    "isolatedModules": false
   },
   "include": [
-    "vite.config.ts",
     "package.json",
-    "src/main/**/*",
+    "src/renderer/**/*",
     "src/shared/**/*",
-    "src/preloard/**/*",
   ],
-  "exclude": [
-    "node_modules"
-  ]
 }
