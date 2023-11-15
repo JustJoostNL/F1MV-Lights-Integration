@@ -24,7 +24,9 @@ Sentry.init({
 // handle deep-link protocol
 if (process.defaultApp) {
   if (process.argv.length >= 2) {
-    app.setAsDefaultProtocolClient("f1mvli", process.execPath, [path.resolve(process.argv[1])]);
+    app.setAsDefaultProtocolClient("f1mvli", process.execPath, [
+      path.resolve(process.argv[1]),
+    ]);
   }
 } else {
   app.setAsDefaultProtocolClient("f1mvli");
@@ -63,7 +65,6 @@ process.env.PUBLIC = process.env.VITE_DEV_SERVER_URL
   ? join(process.env.DIST_ELECTRON, "../public")
   : process.env.DIST;
 
-
 // Remove electron security warnings
 // process.env['ELECTRON_DISABLE_SECURITY_WARNINGS'] = 'true'
 
@@ -91,13 +92,17 @@ async function createWindow() {
     minHeight: 550,
   });
 
-  if (process.env.VITE_DEV_SERVER_URL) { // electron-vite-vue#298
+  if (process.env.VITE_DEV_SERVER_URL) {
+    // electron-vite-vue#298
     await win.loadURL(url);
     win.webContents.openDevTools({ mode: "detach" });
     win.setMenuBarVisibility(false);
   } else {
     win.setMenuBarVisibility(false);
-    availablePort = await portfinder.getPortPromise({ port: 30303, host: "localhost" });
+    availablePort = await portfinder.getPortPromise({
+      port: 30303,
+      host: "localhost",
+    });
     const server = http.createServer((request, response) => {
       return handler(request, response, {
         public: process.env.DIST,
@@ -106,14 +111,12 @@ async function createWindow() {
     server.listen(availablePort, () => {
       win?.loadURL(`http://localhost:${availablePort}/index.html`);
     });
-
   }
 
   win.webContents.setWindowOpenHandler(({ url }) => {
     if (url.startsWith("https:" || "http:")) shell.openExternal(url);
     return { action: "deny" };
   });
-
 }
 
 let _configIPCCleanup: () => void;
@@ -140,7 +143,7 @@ function onReady() {
         ::-webkit-scrollbar-thumb:hover {
             background: #555;
         }
-      `
+      `,
     );
   });
 

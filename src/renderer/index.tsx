@@ -25,35 +25,34 @@ Sentry.init({
       maskAllText: false,
       maskAllInputs: false,
       blockAllMedia: false,
-    })
+    }),
   ],
   replaysSessionSampleRate: 0.2,
   replaysOnErrorSampleRate: 1.0,
   tracesSampleRate: 1.0,
 });
 
-export const font = "-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, sans-serif";
+export const font =
+  "-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, sans-serif";
 
 const router = createHashRouter([
   {
     path: "/",
-    element: <Main/>
+    element: <Main />,
   },
   {
     path: "/home",
-    element: <HomePage/>
+    element: <HomePage />,
   },
 ]);
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   <React.StrictMode>
     <ConfigProvider>
-      <SnackbarProvider
-        autoHideDuration={3000}
-      >
+      <SnackbarProvider autoHideDuration={3000}>
         <ThemeProvider theme={theme}>
           <CssBaseline />
-          <RouterProvider router={router}/>
+          <RouterProvider router={router} />
         </ThemeProvider>
       </SnackbarProvider>
     </ConfigProvider>

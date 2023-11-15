@@ -1,11 +1,21 @@
-import { accessSync, constants, mkdirSync, readFileSync, writeFileSync } from "fs";
+import {
+  accessSync,
+  constants,
+  mkdirSync,
+  readFileSync,
+  writeFileSync,
+} from "fs";
 import { access, mkdir, readFile, writeFile } from "fs/promises";
 import path from "path";
 import { app, ipcMain, shell } from "electron";
 import { IConfig } from "../../shared/config/IConfig";
 import { defaultConfig } from "../../shared/config/defaultConfig";
 
-const configPath = path.join(app.getPath("appData"), app.getName(), "config.json");
+const configPath = path.join(
+  app.getPath("appData"),
+  app.getName(),
+  "config.json",
+);
 let globalConfig = { ...defaultConfig, ...readConfigSync() };
 
 /**
@@ -15,7 +25,9 @@ let globalConfig = { ...defaultConfig, ...readConfigSync() };
  */
 function removeDefaults(config: Record<string, any>) {
   return Object.fromEntries(
-    Object.entries(config).filter(([key, value]) => defaultConfig[key] !== value)
+    Object.entries(config).filter(
+      ([key, value]) => defaultConfig[key] !== value,
+    ),
   );
 }
 
@@ -121,5 +133,5 @@ export {
   setConfigSync,
   handleConfigGet,
   handleConfigSet,
-  registerConfigIPCHandlers
+  registerConfigIPCHandlers,
 };

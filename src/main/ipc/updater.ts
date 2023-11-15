@@ -17,12 +17,16 @@ const handleGetUpdateAvailable = async (): Promise<UpdateResult> => {
       newVersion: app.getVersion(),
     };
   }
-  if (!updateInfo) return {
-    updateAvailable: false,
-    currentVersion: app.getVersion(),
-    newVersion: app.getVersion(),
-  };
-  if (updateInfo.updateInfo.version.replace(/\./g, "") > app.getVersion().replace(/\./g, "")) {
+  if (!updateInfo)
+    return {
+      updateAvailable: false,
+      currentVersion: app.getVersion(),
+      newVersion: app.getVersion(),
+    };
+  if (
+    updateInfo.updateInfo.version.replace(/\./g, "") >
+    app.getVersion().replace(/\./g, "")
+  ) {
     return {
       updateAvailable: true,
       currentVersion: app.getVersion(),
@@ -41,7 +45,6 @@ const handleGetForceDevUpdate = () => {
   return autoUpdater.forceDevUpdateConfig;
 };
 
-
 function registerUpdaterIPCHandlers() {
   ipcMain.handle("f1mvli:updater:checkForUpdates", handleCheckForUpdates);
   ipcMain.handle("f1mvli:updater:getUpdateAvailable", handleGetUpdateAvailable);
@@ -54,6 +57,4 @@ function registerUpdaterIPCHandlers() {
   };
 }
 
-export {
-  registerUpdaterIPCHandlers,
-};
+export { registerUpdaterIPCHandlers };

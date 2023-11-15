@@ -2,8 +2,6 @@ import { join } from "node:path";
 import { BrowserWindow, app, ipcMain } from "electron";
 import { availablePort, preload, url } from "../index";
 
-
-
 const handleGetIntegrationStates = () => {
   //todo: implement
   return "";
@@ -32,7 +30,10 @@ const handleExitApp = () => {
   app.quit();
 };
 
-const handleOpenWindow = (_: any, arg: { url: string; browserWindowOptions: any }) => {
+const handleOpenWindow = (
+  _: any,
+  arg: { url: string; browserWindowOptions: any },
+) => {
   const childWindow = new BrowserWindow({
     title: arg.browserWindowOptions.title,
     icon: join(process.env.PUBLIC, "favicon.ico"),
@@ -56,7 +57,9 @@ const handleOpenWindow = (_: any, arg: { url: string; browserWindowOptions: any 
     childWindow.loadURL(`${url}#${arg.url}`);
   } else {
     childWindow.setMenuBarVisibility(false);
-    childWindow.loadURL(`http://localhost:${availablePort}/index.html#${arg.url}`);
+    childWindow.loadURL(
+      `http://localhost:${availablePort}/index.html#${arg.url}`,
+    );
   }
 
   childWindow.webContents.on("did-finish-load", () => {
@@ -74,14 +77,16 @@ const handleOpenWindow = (_: any, arg: { url: string; browserWindowOptions: any 
         ::-webkit-scrollbar-thumb:hover {
             background: #555;
         }
-      `
+      `,
     );
   });
 };
 
-
 function registerUtilsIPCHandlers() {
-  ipcMain.handle("f1mvli:utils:getIntegrationStates", handleGetIntegrationStates);
+  ipcMain.handle(
+    "f1mvli:utils:getIntegrationStates",
+    handleGetIntegrationStates,
+  );
   ipcMain.handle("f1mvli:utils:getWindowSizes", handleGetWindowSizes);
   ipcMain.handle("f1mvli:utils:changeWindowTitle", handleChangeWindowTitle);
   ipcMain.handle("f1mvli:utils:openNewWindow", handleOpenWindow);
@@ -97,6 +102,4 @@ function registerUtilsIPCHandlers() {
   };
 }
 
-export {
-  registerUtilsIPCHandlers,
-};
+export { registerUtilsIPCHandlers };

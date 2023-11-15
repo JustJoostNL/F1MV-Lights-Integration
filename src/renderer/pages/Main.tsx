@@ -11,7 +11,6 @@ export const updateInformation = {
 };
 
 export const Main = () => {
-
   const initApp = async () => {
     if (process.env.VITE_DEV_SERVER_URL) {
       log.transports.console.level = "debug";
@@ -28,7 +27,7 @@ export const Main = () => {
         appVersion: packageJson.version,
         sampleRate: 100,
         siteSpeedSampleRate: 100,
-      }
+      },
     });
     const updateInfo = await window.f1mvli.updater.getUpdateAvailable();
     if (updateInfo.updateAvailable) {
@@ -45,7 +44,5 @@ export const Main = () => {
     }
   });
 
-  return (
-    <Loader />
-  );
+  return <Loader />;
 };

@@ -50,30 +50,30 @@ export const theme = createTheme({
         root: ({ theme }) => ({
           "&:last-child": {
             paddingBottom: theme.spacing(2),
-          }
-        })
-      }
+          },
+        }),
+      },
     },
     MuiCssBaseline: {
       styleOverrides: {
         body: {
           backgroundColor: "#212121",
-        }
-      }
+        },
+      },
     },
     MuiAppBar: {
       styleOverrides: {
         root: {
           backgroundColor: "#242424",
-        }
-      }
+        },
+      },
     },
     MuiTooltip: {
       styleOverrides: {
         tooltip: {
           fontSize: "14px",
-        }
-      }
+        },
+      },
     },
   },
   palette: {
@@ -83,6 +83,6 @@ export const theme = createTheme({
     },
     secondary: {
       main: lightBlue[500],
-    }
+    },
   },
 });

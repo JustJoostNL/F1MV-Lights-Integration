@@ -3,7 +3,6 @@ import { AppBar, Toolbar, Typography, IconButton } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { ThreeDotMenu } from "./menu";
 
-
 interface NavBarProps {
   showBackButton: boolean;
   backButtonLocationHash?: string;
@@ -11,9 +10,8 @@ interface NavBarProps {
 
 export function Navbar({
   showBackButton,
-  backButtonLocationHash
+  backButtonLocationHash,
 }: NavBarProps) {
-
   const handleBackButton = () => {
     if (backButtonLocationHash) {
       window.location.hash = backButtonLocationHash;
@@ -36,7 +34,11 @@ export function Navbar({
             <ArrowBackIcon />
           </IconButton>
         )}
-        <Typography variant="h6" component="div" sx={{ flexGrow: 1, textAlign: "left", fontSize: "2rem" }}>
+        <Typography
+          variant="h6"
+          component="div"
+          sx={{ flexGrow: 1, textAlign: "left", fontSize: "2rem" }}
+        >
           F1MV Lights Integration
         </Typography>
         <ThreeDotMenu />

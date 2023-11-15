@@ -1,13 +1,10 @@
 import { IConfig } from "./IConfig";
 
-
 export const defaultConfig: IConfig = {
   autoTurnOffLightsWhenSessionEnds: true,
   defaultBrightness: 100,
   goBackToStatic: true,
-  goBackToStaticEnabledFlags: [
-    "green",
-  ],
+  goBackToStaticEnabledFlags: ["green"],
   goBackToStaticDelay: 10,
   staticBrightness: 70,
   hideLogs: true,

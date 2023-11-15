@@ -9,7 +9,8 @@ import { UpdateResult } from "../../shared/updater/UpdateResult";
 import { UpdateMonitor } from "../components/layouts/UpdateMonitor";
 
 export function HomePage() {
-  const [updateInformation, setUpdateInformation] = useState<UpdateResult | null>(null);
+  const [updateInformation, setUpdateInformation] =
+    useState<UpdateResult | null>(null);
   window.f1mvli.utils.changeWindowTitle("F1MV Lights Integration");
 
   useEffect(() => {
@@ -20,16 +21,23 @@ export function HomePage() {
     getUpdateInfo();
   }, []);
 
-
   return (
     <>
       <Navbar showBackButton={false} />
       <Container sx={{ flexGrow: 1, textAlign: "center", my: 10 }}>
         <Box sx={{ mb: 4 }}>
-          <Typography variant="h3" component="h1" sx={{ fontSize: "3rem", mb: 2 }}>
+          <Typography
+            variant="h3"
+            component="h1"
+            sx={{ fontSize: "3rem", mb: 2 }}
+          >
             F1MV Lights Integration
           </Typography>
-          <Typography variant="h4" component="h2" sx={{ fontSize: "1.2rem", mb: 3, color: "grey.400" }}>
+          <Typography
+            variant="h4"
+            component="h2"
+            sx={{ fontSize: "1.2rem", mb: 3, color: "grey.400" }}
+          >
             The best way to connect your smart home lights to MultiViewer.
           </Typography>
         </Box>
@@ -43,7 +51,7 @@ export function HomePage() {
             mt: 3,
             display: "flex",
             justifyContent: "center",
-            alignItems: "center"
+            alignItems: "center",
           }}
         >
           <IntegrationStatesTable />

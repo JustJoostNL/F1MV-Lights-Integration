@@ -7,10 +7,7 @@ import {
   TableHead,
   TableRow,
 } from "@mui/material";
-import {
-   IntegrationState,
-   IntegrationStatesMap
-} from "./types";
+import { IntegrationState, IntegrationStatesMap } from "./types";
 import "./status.css";
 
 const integrationStateMap: IntegrationStatesMap = {
@@ -29,11 +26,14 @@ const integrationStateMap: IntegrationStatesMap = {
 };
 
 export function IntegrationStatesTable() {
-  const [integrationStates, setIntegrationStates] = useState<IntegrationState[]>([]);
+  const [integrationStates, setIntegrationStates] = useState<
+    IntegrationState[]
+  >([]);
 
   useEffect(() => {
     async function fetchIntegrationStates() {
-      const newIntegrationStates = await window.f1mvli.utils.getIntegrationStates();
+      const newIntegrationStates =
+        await window.f1mvli.utils.getIntegrationStates();
       setIntegrationStates([...newIntegrationStates]);
     }
 
@@ -54,7 +54,8 @@ export function IntegrationStatesTable() {
         <TableBody>
           {integrationStates
             .filter(
-              (integrationState: IntegrationState) => !integrationState.disabled
+              (integrationState: IntegrationState) =>
+                !integrationState.disabled,
             )
             .map((integrationState: IntegrationState) => (
               <TableRow key={integrationState.name}>
@@ -63,9 +64,11 @@ export function IntegrationStatesTable() {
                   {integrationStateMap[integrationState.name]}
                 </TableCell>
                 <TableCell sx={{ alignItems: "center" }}>
-                  <div className={`status ${integrationState.state ? "success" : "error"}`}>
-
-                  </div>
+                  <div
+                    className={`status ${
+                      integrationState.state ? "success" : "error"
+                    }`}
+                  ></div>
                 </TableCell>
               </TableRow>
             ))}

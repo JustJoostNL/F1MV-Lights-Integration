@@ -1,7 +1,6 @@
 import React from "react";
 import { CircularProgress, Container, Grid, Typography } from "@mui/material";
 
-
 interface ILoaderProps {
   customText?: string;
 }
@@ -18,10 +17,7 @@ export const Loader = ({ customText }: ILoaderProps) => {
         style={{ minHeight: "20vh" }}
       >
         <Grid item xs={3}>
-          <CircularProgress
-            thickness={5}
-            color="secondary"
-          />
+          <CircularProgress thickness={5} color="secondary" />
           <Typography
             sx={{
               color: "text.primary",

@@ -1,4 +1,4 @@
-import * as React from "react";
+import React, { useState } from "react";
 import Button from "@mui/material/Button";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import Menu from "@mui/material/Menu";
@@ -13,10 +13,11 @@ import TimerIcon from "@mui/icons-material/Timer";
 import FlashOff from "@mui/icons-material/FlashOff";
 import { ipcRenderer } from "electron";
 import { Tooltip } from "@mui/material";
+
 import { font } from "../..";
 
 export function SimulationMenu() {
-  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -95,13 +96,10 @@ export function SimulationMenu() {
           <FlagIcon
             sx={{
               mr: 2,
-              color: "green"
+              color: "green",
             }}
           />
-          <Typography
-            variant="body2"
-            sx={menuItemStyle}
-          >
+          <Typography variant="body2" sx={menuItemStyle}>
             Green Flag
           </Typography>
         </MenuItem>
@@ -109,13 +107,10 @@ export function SimulationMenu() {
           <FlagIcon
             sx={{
               mr: 2,
-              color: "yellow"
+              color: "yellow",
             }}
           />
-          <Typography
-            variant="body2"
-            sx={menuItemStyle}
-          >
+          <Typography variant="body2" sx={menuItemStyle}>
             Yellow Flag
           </Typography>
         </MenuItem>
@@ -123,13 +118,10 @@ export function SimulationMenu() {
           <FlagIcon
             sx={{
               mr: 2,
-              color: "red"
+              color: "red",
             }}
           />
-          <Typography
-            variant="body2"
-            sx={menuItemStyle}
-          >
+          <Typography variant="body2" sx={menuItemStyle}>
             Red Flag
           </Typography>
         </MenuItem>
@@ -137,13 +129,10 @@ export function SimulationMenu() {
           <MinorCrashIcon
             sx={{
               mr: 2,
-              color: "yellow"
+              color: "yellow",
             }}
           />
-          <Typography
-            variant="body2"
-            sx={menuItemStyle}
-          >
+          <Typography variant="body2" sx={menuItemStyle}>
             Safety Car
           </Typography>
         </MenuItem>
@@ -151,13 +140,10 @@ export function SimulationMenu() {
           <DirectionsCar
             sx={{
               mr: 2,
-              color: "yellow"
+              color: "yellow",
             }}
           />
-          <Typography
-            variant="body2"
-            sx={menuItemStyle}
-          >
+          <Typography variant="body2" sx={menuItemStyle}>
             Virtual Safety Car
           </Typography>
         </MenuItem>
@@ -165,13 +151,10 @@ export function SimulationMenu() {
           <NoCrash
             sx={{
               mr: 2,
-              color: "yellow"
+              color: "yellow",
             }}
           />
-          <Typography
-            variant="body2"
-            sx={menuItemStyle}
-          >
+          <Typography variant="body2" sx={menuItemStyle}>
             Virtual Safety Car Ending
           </Typography>
         </MenuItem>
@@ -180,13 +163,10 @@ export function SimulationMenu() {
             <TimerIcon
               sx={{
                 mr: 2,
-                color: "#e801fe"
-              }}/
-            >
-            <Typography
-              variant="body2"
-              sx={menuItemStyle}
-            >
+                color: "#e801fe",
+              }}
+            />
+            <Typography variant="body2" sx={menuItemStyle}>
               Fastest Lap
             </Typography>
           </MenuItem>
@@ -198,23 +178,17 @@ export function SimulationMenu() {
               borderRadius: 10,
             }}
           />
-          <Typography
-            variant="body2"
-            sx={menuItemStyle}
-          >
+          <Typography variant="body2" sx={menuItemStyle}>
             Static Color
           </Typography>
         </MenuItem>
         <MenuItem onClick={handleAllOff}>
           <FlashOff
             sx={{
-              mr: 2
+              mr: 2,
             }}
           />
-          <Typography
-            variant="body2"
-            sx={menuItemStyle}
-          >
+          <Typography variant="body2" sx={menuItemStyle}>
             All lights off
           </Typography>
         </MenuItem>

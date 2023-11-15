@@ -1,4 +1,4 @@
-import * as React from "react";
+import React, { useState } from "react";
 import { IconButton } from "@mui/material";
 import Menu from "@mui/material/Menu";
 import Divider from "@mui/material/Divider";
@@ -14,13 +14,14 @@ import Typography from "@mui/material/Typography";
 import { green, red } from "@mui/material/colors";
 import { shell } from "electron";
 import DescriptionIcon from "@mui/icons-material/Description";
+
 import packageJson from "../../../../package.json";
 //@ts-ignore
 import multiviewerLogo from "../../assets/multiviewer-logo.png";
 import { font } from "../..";
 
 export function ThreeDotMenu() {
-  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
@@ -92,13 +93,10 @@ export function ThreeDotMenu() {
         <MenuItem onClick={handleOpenHome}>
           <HomeIcon
             sx={{
-              mr: 2
+              mr: 2,
             }}
           />
-          <Typography
-            variant="body2"
-            sx={menuItemStyle}
-          >
+          <Typography variant="body2" sx={menuItemStyle}>
             Home
           </Typography>
         </MenuItem>
@@ -106,27 +104,20 @@ export function ThreeDotMenu() {
         <MenuItem onClick={handleOpenSettings}>
           <SettingsIcon
             sx={{
-              mr: 2
+              mr: 2,
             }}
           />
-          <Typography
-            variant="body2"
-            sx={menuItemStyle}
-          >
+          <Typography variant="body2" sx={menuItemStyle}>
             Settings
           </Typography>
         </MenuItem>
-        <MenuItem
-          onClick={handleOpenAbout}>
+        <MenuItem onClick={handleOpenAbout}>
           <InfoIcon
             sx={{
-              mr: 2
+              mr: 2,
             }}
           />
-          <Typography
-            variant="body2"
-            sx={menuItemStyle}
-          >
+          <Typography variant="body2" sx={menuItemStyle}>
             About
           </Typography>
         </MenuItem>
@@ -134,19 +125,16 @@ export function ThreeDotMenu() {
         <MenuItem onClick={handleOpenDocs}>
           <DescriptionIcon
             sx={{
-              mr: 2
+              mr: 2,
             }}
           />
-          <Typography
-            variant="body2"
-            sx={menuItemStyle}
-          >
+          <Typography variant="body2" sx={menuItemStyle}>
             Documentation
             <OpenIcon
               sx={{
                 ml: 1,
                 color: "grey.500",
-                fontSize: "0.9rem"
+                fontSize: "0.9rem",
               }}
             />
           </Typography>
@@ -156,19 +144,16 @@ export function ThreeDotMenu() {
           <DonateIcon
             sx={{
               mr: 2,
-              color: green[500]
+              color: green[500],
             }}
           />
-          <Typography
-            variant="body2"
-            sx={menuItemStyle}
-          >
+          <Typography variant="body2" sx={menuItemStyle}>
             Donate
             <OpenIcon
               sx={{
                 ml: 1,
                 color: "grey.500",
-                fontSize: "0.9rem"
+                fontSize: "0.9rem",
               }}
             />
           </Typography>
@@ -180,19 +165,16 @@ export function ThreeDotMenu() {
             alt="MultiViewer Logo"
             style={{
               width: "1.5rem",
-              marginRight: "1rem"
+              marginRight: "1rem",
             }}
           />
-          <Typography
-            variant="body2"
-            sx={menuItemStyle}
-          >
+          <Typography variant="body2" sx={menuItemStyle}>
             Open MultiViewer
             <OpenIcon
               sx={{
                 ml: 1,
                 color: "grey.500",
-                fontSize: "0.9rem"
+                fontSize: "0.9rem",
               }}
             />
           </Typography>
@@ -202,13 +184,10 @@ export function ThreeDotMenu() {
           <ExitIcon
             sx={{
               mr: 2,
-              color: red[500]
+              color: red[500],
             }}
           />
-          <Typography
-            variant="body2"
-            sx={menuItemStyle}
-          >
+          <Typography variant="body2" sx={menuItemStyle}>
             Exit
           </Typography>
         </MenuItem>
@@ -222,7 +201,7 @@ export function ThreeDotMenu() {
             fontFamily: font,
             ml: 1,
             width: "100%",
-            padding: "0.5rem"
+            padding: "0.5rem",
           }}
         >
           Current version: {currentAppVersion}

@@ -1,7 +1,6 @@
 import { shell, ipcMain } from "electron";
 import log from "electron-log";
 
-
 const handleOpenLogfile = () => {
   shell.openPath(log.transports.file.getFile().path);
 };
@@ -20,6 +19,4 @@ function registerLoggerIPCHandlers() {
   };
 }
 
-export {
-  registerLoggerIPCHandlers,
-};
+export { registerLoggerIPCHandlers };

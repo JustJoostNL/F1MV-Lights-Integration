@@ -18,9 +18,12 @@ export function useConfig() {
     await window.f1mvli.config.set(config);
   }, []);
 
-  const updateConfig = useCallback(async (config: Partial<IConfig>) => {
-    await window.f1mvli.config.set({ ...currentConfig, ...config });
-  }, [currentConfig]);
+  const updateConfig = useCallback(
+    async (config: Partial<IConfig>) => {
+      await window.f1mvli.config.set({ ...currentConfig, ...config });
+    },
+    [currentConfig],
+  );
 
   return {
     config: currentConfig,
@@ -33,7 +36,6 @@ export function ConfigProvider({ children }: { children: ReactNode }) {
   const [config, setConfig] = useState<IConfig>(defaultConfig);
 
   useEffect(() => {
-
     const onChange = (event, config: IConfig) => {
       setConfig({ ...defaultConfig, ...config });
     };
@@ -52,10 +54,6 @@ export function ConfigProvider({ children }: { children: ReactNode }) {
   }, []);
 
   return (
-    <ConfigContext.Provider
-      value={config}
-    >
-      {children}
-    </ConfigContext.Provider>
+    <ConfigContext.Provider value={config}>{children}</ConfigContext.Provider>
   );
 }

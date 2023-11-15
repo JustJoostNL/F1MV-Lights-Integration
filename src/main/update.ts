@@ -4,7 +4,7 @@ import log from "electron-log";
 let updateFound = false;
 let noUpdateFound = false;
 
-export function initUpdater(win: Electron.BrowserWindow){
+export function initUpdater(win: Electron.BrowserWindow) {
   autoUpdater.forceDevUpdateConfig = false;
   autoUpdater.autoDownload = false;
   autoUpdater.disableWebInstaller = true;
@@ -22,11 +22,13 @@ export function initUpdater(win: Electron.BrowserWindow){
   autoUpdater.on("update-available", () => {
     updateFound = true;
     win.webContents.send("update-available");
-    log.info("There is an update available. Downloading now... You will be notified when the update is ready to install.");
+    log.info(
+      "There is an update available. Downloading now... You will be notified when the update is ready to install.",
+    );
     downloadUpdate();
   });
   autoUpdater.on("update-not-available", () => {
-    if(!noUpdateFound){
+    if (!noUpdateFound) {
       noUpdateFound = true;
       log.info("There are no updates available.");
     }
@@ -46,7 +48,7 @@ export function initUpdater(win: Electron.BrowserWindow){
     }
   }, 60000);
 
-  function downloadUpdate(){
+  function downloadUpdate() {
     try {
       autoUpdater.downloadUpdate().catch((e) => {
         win.webContents.send("update-error");
