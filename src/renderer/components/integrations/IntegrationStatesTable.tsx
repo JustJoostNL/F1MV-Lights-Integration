@@ -60,7 +60,6 @@ export function IntegrationStatesTable() {
             .map((integrationState: IntegrationState) => (
               <TableRow key={integrationState.name}>
                 <TableCell>
-                  {/*@ts-ignore*/}
                   {integrationStateMap[integrationState.name]}
                 </TableCell>
                 <TableCell sx={{ alignItems: "center" }}>

@@ -3,31 +3,30 @@ import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 import GetAppIcon from "@mui/icons-material/GetApp";
 import DescriptionIcon from "@mui/icons-material/Description";
 import log from "electron-log/renderer";
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import MenuItem from "@mui/material/MenuItem";
 import Typography from "@mui/material/Typography";
 import Menu from "@mui/material/Menu";
 import { enqueueSnackbar } from "notistack";
-
 import { font } from "../..";
 
 export function QuickAccessButtons() {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-
   const open = Boolean(anchorEl);
-  const handleClick = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorEl(event.currentTarget);
-  };
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
 
-  const handleOpenConfig = () => {
+  const handleClick = useCallback((event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+  }, []);
+  const handleClose = useCallback(() => {
+    setAnchorEl(null);
+  }, []);
+
+  const handleOpenConfig = useCallback(() => {
     log.info("Opening config file...");
     window.f1mvli.config.open();
-  };
-  const handleCheckForUpdates = async () => {
+  }, []);
+  const handleCheckForUpdates = useCallback(async () => {
     await window.f1mvli.updater.checkForUpdates();
     const updateInfo = await window.f1mvli.updater.getUpdateAvailable();
     if (updateInfo.updateAvailable) {
@@ -35,14 +34,14 @@ export function QuickAccessButtons() {
     } else {
       enqueueSnackbar("No update available.", { variant: "success" });
     }
-  };
-  const handleOpenLogFile = () => {
+  }, []);
+  const handleOpenLogFile = useCallback(() => {
     log.info("Opening log file...");
     window.f1mvli.logger.openLogFile();
-  };
-  const handleOpenLogViewer = () => {
+  }, []);
+  const handleOpenLogViewer = useCallback(() => {
     window.location.hash = "#/log-viewer";
-  };
+  }, []);
 
   const menuItemStyle = {
     fontSize: "1.0rem",
@@ -63,6 +62,7 @@ export function QuickAccessButtons() {
           Open Config
         </Button>
       </Tooltip>
+
       <Button
         variant="outlined"
         color="secondary"
@@ -71,6 +71,7 @@ export function QuickAccessButtons() {
       >
         Check for Updates
       </Button>
+
       <Button
         sx={{ ml: 2 }}
         startIcon={<DescriptionIcon />}
@@ -85,6 +86,7 @@ export function QuickAccessButtons() {
       >
         View Logs
       </Button>
+
       <Menu
         anchorEl={anchorEl}
         open={open}
@@ -103,6 +105,7 @@ export function QuickAccessButtons() {
             Open logs in app
           </Typography>
         </MenuItem>
+
         <MenuItem onClick={handleOpenLogFile}>
           <OpenInNewIcon
             sx={{

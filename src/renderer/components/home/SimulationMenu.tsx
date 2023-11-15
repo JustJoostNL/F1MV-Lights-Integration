@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import Button from "@mui/material/Button";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import Menu from "@mui/material/Menu";
@@ -13,55 +13,30 @@ import TimerIcon from "@mui/icons-material/Timer";
 import FlashOff from "@mui/icons-material/FlashOff";
 import { ipcRenderer } from "electron";
 import { Tooltip } from "@mui/material";
-
 import { font } from "../..";
 
 export function SimulationMenu() {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
-  const handleClick = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorEl(event.currentTarget);
-  };
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
 
-  const handleGreenFlag = () => {
-    ipcRenderer.send("flagSim", "Green");
-    handleClose();
-  };
-  const handleYellowFlag = () => {
-    ipcRenderer.send("flagSim", "Yellow");
-    handleClose();
-  };
-  const handleRedFlag = () => {
-    ipcRenderer.send("flagSim", "Red");
-    handleClose();
-  };
-  const handleSafetyCar = () => {
-    ipcRenderer.send("flagSim", "SC");
-    handleClose();
-  };
-  const handleVirtualSafetyCar = () => {
-    ipcRenderer.send("flagSim", "VSC");
-    handleClose();
-  };
-  const handleVirtualSafetyCarEnding = () => {
-    ipcRenderer.send("flagSim", "vscEnding");
-    handleClose();
-  };
-  const handleFastestLap = () => {
-    ipcRenderer.send("flagSim", "fastestLap");
-    handleClose();
-  };
-  const handleStaticColor = () => {
-    ipcRenderer.send("flagSim", "staticColor");
-    handleClose();
-  };
-  const handleAllOff = () => {
-    ipcRenderer.send("flagSim", "alloff");
-    handleClose();
-  };
+  const handleClick = useCallback(
+    (event: React.MouseEvent<HTMLElement>) => {
+      setAnchorEl(event.currentTarget);
+    },
+    [setAnchorEl],
+  );
+
+  const handleClose = useCallback(() => {
+    setAnchorEl(null);
+  }, []);
+
+  const handleOnSimulateEvent = useCallback(
+    (event: string, arg: string) => {
+      ipcRenderer.send(event, arg);
+      handleClose();
+    },
+    [handleClose],
+  );
 
   const menuItemStyle = {
     fontSize: "1.0rem",
@@ -83,6 +58,7 @@ export function SimulationMenu() {
       >
         Simulate Event
       </Button>
+
       <Menu
         id="basic-menu"
         anchorEl={anchorEl}
@@ -92,7 +68,7 @@ export function SimulationMenu() {
           "aria-labelledby": "basic-button",
         }}
       >
-        <MenuItem onClick={handleGreenFlag}>
+        <MenuItem onClick={() => handleOnSimulateEvent("flagSim", "Green")}>
           <FlagIcon
             sx={{
               mr: 2,
@@ -103,7 +79,8 @@ export function SimulationMenu() {
             Green Flag
           </Typography>
         </MenuItem>
-        <MenuItem onClick={handleYellowFlag}>
+
+        <MenuItem onClick={() => handleOnSimulateEvent("flagSim", "Yellow")}>
           <FlagIcon
             sx={{
               mr: 2,
@@ -114,7 +91,8 @@ export function SimulationMenu() {
             Yellow Flag
           </Typography>
         </MenuItem>
-        <MenuItem onClick={handleRedFlag}>
+
+        <MenuItem onClick={() => handleOnSimulateEvent("flagSim", "Red")}>
           <FlagIcon
             sx={{
               mr: 2,
@@ -125,7 +103,8 @@ export function SimulationMenu() {
             Red Flag
           </Typography>
         </MenuItem>
-        <MenuItem onClick={handleSafetyCar}>
+
+        <MenuItem onClick={() => handleOnSimulateEvent("flagSim", "SC")}>
           <MinorCrashIcon
             sx={{
               mr: 2,
@@ -136,7 +115,8 @@ export function SimulationMenu() {
             Safety Car
           </Typography>
         </MenuItem>
-        <MenuItem onClick={handleVirtualSafetyCar}>
+
+        <MenuItem onClick={() => handleOnSimulateEvent("flagSim", "VSC")}>
           <DirectionsCar
             sx={{
               mr: 2,
@@ -147,7 +127,8 @@ export function SimulationMenu() {
             Virtual Safety Car
           </Typography>
         </MenuItem>
-        <MenuItem onClick={handleVirtualSafetyCarEnding}>
+
+        <MenuItem onClick={() => handleOnSimulateEvent("flagSim", "vscEnding")}>
           <NoCrash
             sx={{
               mr: 2,
@@ -158,8 +139,11 @@ export function SimulationMenu() {
             Virtual Safety Car Ending
           </Typography>
         </MenuItem>
+
         <Tooltip title="This will only work when you have a fastest lap effect created and enabled.">
-          <MenuItem onClick={handleFastestLap}>
+          <MenuItem
+            onClick={() => handleOnSimulateEvent("flagSim", "fastestLap")}
+          >
             <TimerIcon
               sx={{
                 mr: 2,
@@ -171,7 +155,9 @@ export function SimulationMenu() {
             </Typography>
           </MenuItem>
         </Tooltip>
-        <MenuItem onClick={handleStaticColor}>
+        <MenuItem
+          onClick={() => handleOnSimulateEvent("flagSim", "staticColor")}
+        >
           <SquareIcon
             sx={{
               mr: 2,
@@ -182,7 +168,8 @@ export function SimulationMenu() {
             Static Color
           </Typography>
         </MenuItem>
-        <MenuItem onClick={handleAllOff}>
+
+        <MenuItem onClick={() => handleOnSimulateEvent("flagSim", "alloff")}>
           <FlashOff
             sx={{
               mr: 2,

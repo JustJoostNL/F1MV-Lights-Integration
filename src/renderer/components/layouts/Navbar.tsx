@@ -1,29 +1,21 @@
-import React from "react";
+import React, { useCallback } from "react";
 import { AppBar, Toolbar, Typography, IconButton } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import { ThreeDotMenu } from "./menu";
+import { ThreeDotMenu } from "./NavbarMenu";
 
 interface NavBarProps {
-  showBackButton: boolean;
-  backButtonLocationHash?: string;
+  hideBackButton?: boolean;
 }
 
-export function Navbar({
-  showBackButton,
-  backButtonLocationHash,
-}: NavBarProps) {
-  const handleBackButton = () => {
-    if (backButtonLocationHash) {
-      window.location.hash = backButtonLocationHash;
-    } else {
-      window.location.hash = "/home";
-    }
-  };
+export function Navbar({ hideBackButton = false }: NavBarProps) {
+  const handleBackButton = useCallback(() => {
+    window.history.back();
+  }, []);
 
   return (
     <AppBar position="fixed">
       <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
-        {showBackButton && (
+        {!hideBackButton && (
           <IconButton
             edge="start"
             color="inherit"

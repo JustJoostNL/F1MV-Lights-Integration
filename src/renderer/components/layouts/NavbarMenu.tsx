@@ -1,20 +1,20 @@
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import { IconButton } from "@mui/material";
 import Menu from "@mui/material/Menu";
 import Divider from "@mui/material/Divider";
-import MoreVertIcon from "@mui/icons-material/MoreVert";
-import SettingsIcon from "@mui/icons-material/Settings";
-import HomeIcon from "@mui/icons-material/Home";
-import InfoIcon from "@mui/icons-material/Info";
-import OpenIcon from "@mui/icons-material/OpenInNew";
+import {
+  MoreVert,
+  Settings,
+  Home,
+  OpenInNew,
+  SavingsRounded,
+  ExitToApp,
+  Description,
+} from "@mui/icons-material";
 import MenuItem from "@mui/material/MenuItem";
-import DonateIcon from "@mui/icons-material/SavingsRounded";
-import ExitIcon from "@mui/icons-material/ExitToApp";
 import Typography from "@mui/material/Typography";
 import { green, red } from "@mui/material/colors";
 import { shell } from "electron";
-import DescriptionIcon from "@mui/icons-material/Description";
-
 import packageJson from "../../../../package.json";
 //@ts-ignore
 import multiviewerLogo from "../../assets/multiviewer-logo.png";
@@ -23,43 +23,28 @@ import { font } from "../..";
 export function ThreeDotMenu() {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
-  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-    setAnchorEl(event.currentTarget);
-  };
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
-  const handleOpenSettings = () => {
-    setAnchorEl(null);
-    window.location.hash = "/settings";
-  };
-  const handleOpenHome = () => {
-    setAnchorEl(null);
-    window.location.hash = "/home";
-  };
-  const handleOpenAbout = () => {
-    setAnchorEl(null);
-    window.location.hash = "/about";
-  };
-  const handleOpenMultiViewer = () => {
-    setAnchorEl(null);
-    shell.openExternal("multiviewer://");
-  };
 
-  const handleExitApp = () => {
+  const handleClick = useCallback((event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+  }, []);
+  const handleClose = useCallback(() => {
+    setAnchorEl(null);
+  }, []);
+
+  const handleNavigateTo = useCallback((path: string) => {
+    setAnchorEl(null);
+    window.location.hash = path;
+  }, []);
+
+  const handleExitApp = useCallback(() => {
     setAnchorEl(null);
     window.f1mvli.utils.exitApp();
-  };
+  }, []);
 
-  const handleOpenDonate = () => {
+  const handleOpenExtUrl = useCallback((url: string) => {
     setAnchorEl(null);
-    shell.openExternal("https://donate.jstt.me");
-  };
-
-  const handleOpenDocs = () => {
-    setAnchorEl(null);
-    shell.openExternal("https://f1mvli.jstt.me");
-  };
+    shell.openExternal(url);
+  }, []);
 
   // get the version from package.json
   const currentAppVersion = "v" + packageJson.version;
@@ -80,7 +65,7 @@ export function ThreeDotMenu() {
         aria-haspopup="true"
         onClick={handleClick}
       >
-        <MoreVertIcon />
+        <MoreVert />
       </IconButton>
       <Menu
         anchorEl={anchorEl}
@@ -90,8 +75,8 @@ export function ThreeDotMenu() {
           "aria-labelledby": "basic-button",
         }}
       >
-        <MenuItem onClick={handleOpenHome}>
-          <HomeIcon
+        <MenuItem onClick={() => handleNavigateTo("/home")}>
+          <Home
             sx={{
               mr: 2,
             }}
@@ -101,8 +86,8 @@ export function ThreeDotMenu() {
           </Typography>
         </MenuItem>
         <Divider />
-        <MenuItem onClick={handleOpenSettings}>
-          <SettingsIcon
+        <MenuItem onClick={() => handleNavigateTo("/settings")}>
+          <Settings
             sx={{
               mr: 2,
             }}
@@ -111,26 +96,16 @@ export function ThreeDotMenu() {
             Settings
           </Typography>
         </MenuItem>
-        <MenuItem onClick={handleOpenAbout}>
-          <InfoIcon
-            sx={{
-              mr: 2,
-            }}
-          />
-          <Typography variant="body2" sx={menuItemStyle}>
-            About
-          </Typography>
-        </MenuItem>
         <Divider />
-        <MenuItem onClick={handleOpenDocs}>
-          <DescriptionIcon
+        <MenuItem onClick={() => handleOpenExtUrl("https://f1mvli.jstt.me")}>
+          <Description
             sx={{
               mr: 2,
             }}
           />
           <Typography variant="body2" sx={menuItemStyle}>
             Documentation
-            <OpenIcon
+            <OpenInNew
               sx={{
                 ml: 1,
                 color: "grey.500",
@@ -140,8 +115,8 @@ export function ThreeDotMenu() {
           </Typography>
         </MenuItem>
         <Divider />
-        <MenuItem onClick={handleOpenDonate}>
-          <DonateIcon
+        <MenuItem onClick={() => handleOpenExtUrl("https://donate.jstt.me")}>
+          <SavingsRounded
             sx={{
               mr: 2,
               color: green[500],
@@ -149,7 +124,7 @@ export function ThreeDotMenu() {
           />
           <Typography variant="body2" sx={menuItemStyle}>
             Donate
-            <OpenIcon
+            <OpenInNew
               sx={{
                 ml: 1,
                 color: "grey.500",
@@ -159,7 +134,7 @@ export function ThreeDotMenu() {
           </Typography>
         </MenuItem>
         <Divider />
-        <MenuItem onClick={handleOpenMultiViewer}>
+        <MenuItem onClick={() => handleOpenExtUrl("multiviewer://")}>
           <img
             src={multiviewerLogo}
             alt="MultiViewer Logo"
@@ -170,7 +145,7 @@ export function ThreeDotMenu() {
           />
           <Typography variant="body2" sx={menuItemStyle}>
             Open MultiViewer
-            <OpenIcon
+            <OpenInNew
               sx={{
                 ml: 1,
                 color: "grey.500",
@@ -181,7 +156,7 @@ export function ThreeDotMenu() {
         </MenuItem>
         <Divider />
         <MenuItem onClick={handleExitApp}>
-          <ExitIcon
+          <ExitToApp
             sx={{
               mr: 2,
               color: red[500],
