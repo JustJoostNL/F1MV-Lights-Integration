@@ -81,6 +81,7 @@ function getConfigSync() {
 
 async function setConfig(config: IConfig) {
   const configJSON = JSON.stringify(removeDefaults(config));
+  console.log(configJSON);
   ipcMain.emit("f1mvli:config:change", config);
   await mkdir(path.dirname(configPath), { recursive: true });
   await writeFile(configPath, configJSON);

@@ -17,7 +17,7 @@ export const Loader = ({ customText }: ILoaderProps) => {
         style={{ minHeight: "20vh" }}
       >
         <Grid item xs={3}>
-          <CircularProgress thickness={5} color="secondary" />
+          <CircularProgress thickness={5} />
           <Typography
             sx={{
               color: "text.primary",

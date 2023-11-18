@@ -19,7 +19,7 @@
   ],
   "overrides": [
     {
-      "files": ["src/app/**/*.ts", "src/app/**/*.tsx"],
+      "files": ["vite.config.ts"],
       "rules": {
         "import/no-default-export": "off"
       }

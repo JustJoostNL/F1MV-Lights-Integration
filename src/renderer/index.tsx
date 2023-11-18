@@ -1,15 +1,17 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import { CssBaseline, ThemeProvider } from "@mui/material";
+import { CssBaseline, Grow, ThemeProvider } from "@mui/material";
 import * as Sentry from "@sentry/electron/renderer";
 import { SnackbarProvider } from "notistack";
-import { createHashRouter, RouterProvider } from "react-router-dom";
+import { HashRouter, Route, Routes } from "react-router-dom";
 import packageJson from "../../package.json";
 import { Main } from "./pages/Main";
 import { HomePage } from "./pages/Home";
 import { theme } from "./lib/theme";
 import { ConfigProvider } from "./hooks/useConfig";
-import "./style/app.css";
+import { MinimalScrollbars } from "./components/shared/MinimalScrollbars";
+import { BaseStyle } from "./components/shared/BaseStyle";
+import { Settingspage } from "./pages/Settings";
 
 Sentry.init({
   dsn: "https://e64c3ec745124566b849043192e58711@o4504289317879808.ingest.sentry.io/4504289338392576",
@@ -32,27 +34,33 @@ Sentry.init({
   tracesSampleRate: 1.0,
 });
 
-export const font =
-  "-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, sans-serif";
+const root = ReactDOM.createRoot(
+  document.getElementById("root") as HTMLElement,
+);
 
-const router = createHashRouter([
-  {
-    path: "/",
-    element: <Main />,
-  },
-  {
-    path: "/home",
-    element: <HomePage />,
-  },
-]);
-
-ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
+root.render(
   <React.StrictMode>
     <ConfigProvider>
-      <SnackbarProvider autoHideDuration={3000}>
+      <SnackbarProvider
+        autoHideDuration={3000}
+        anchorOrigin={{
+          vertical: "bottom",
+          horizontal: "left",
+        }}
+        maxSnack={1}
+        TransitionComponent={Grow}
+      >
         <ThemeProvider theme={theme}>
+          {window.f1mvli.platform !== "darwin" && <MinimalScrollbars />}
+          <BaseStyle />
           <CssBaseline />
-          <RouterProvider router={router} />
+          <HashRouter>
+            <Routes>
+              <Route path="/" element={<Main />} />
+              <Route path="/home" element={<HomePage />} />
+              <Route path="/settings" element={<Settingspage />} />
+            </Routes>
+          </HashRouter>
         </ThemeProvider>
       </SnackbarProvider>
     </ConfigProvider>

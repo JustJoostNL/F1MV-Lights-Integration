@@ -6,11 +6,12 @@ import log from "electron-log";
 import portfinder from "portfinder";
 import handler from "serve-handler";
 import * as Sentry from "@sentry/electron";
-import { initUpdater } from "./update";
-import { registerConfigIPCHandlers } from "./ipc/config";
+import { autoUpdater } from "electron-updater";
+import { globalConfig, registerConfigIPCHandlers } from "./ipc/config";
 import { registerUpdaterIPCHandlers } from "./ipc/updater";
 import { registerUtilsIPCHandlers } from "./ipc/utils";
 import { registerLoggerIPCHandlers } from "./ipc/logger";
+import { registerAppInfoIPCHandlers } from "./ipc/appInfo";
 
 Sentry.init({
   dsn: "https://e64c3ec745124566b849043192e58711@o4504289317879808.ingest.sentry.io/4504289338392576",
@@ -77,8 +78,8 @@ async function createWindow() {
   win = new BrowserWindow({
     title: "F1MV Lights Integration",
     icon: join(process.env.PUBLIC, "favicon.ico"),
-    width: 1200,
-    height: 700,
+    width: 1100,
+    height: 800,
     webPreferences: {
       preload,
       backgroundThrottling: false,
@@ -88,8 +89,8 @@ async function createWindow() {
     resizable: true,
     maximizable: true,
     minimizable: false,
-    minWidth: 1120,
-    minHeight: 550,
+    minWidth: 900,
+    minHeight: 750,
   });
 
   if (process.env.VITE_DEV_SERVER_URL) {
@@ -117,67 +118,51 @@ async function createWindow() {
     if (url.startsWith("https:" || "http:")) shell.openExternal(url);
     return { action: "deny" };
   });
+  win.webContents.on("will-navigate", (event: Electron.Event, url: string) => {
+    if (url.startsWith("https:" || "http:") && !url.includes("localhost")) {
+      event.preventDefault();
+      shell.openExternal(url);
+    }
+  });
 }
 
 let _configIPCCleanup: () => void;
 let _updaterIPCCleanup: () => void;
 let _utilsIPCCleanup: () => void;
 let _loggerIPCCleanup: () => void;
+let _appInfoIPCCleanup: () => void;
 
 app.whenReady().then(onReady);
 
 function onReady() {
   createWindow();
-  win?.webContents.on("did-finish-load", () => {
-    win?.webContents.insertCSS(
-      `
-        ::-webkit-scrollbar {
-            width: 10px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #1e1e1e;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #888;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #555;
-        }
-      `,
-    );
-  });
 
-  log.initialize({ preload: true });
-  log.transports.console.level = false;
-  if (process.env.VITE_DEV_SERVER_URL) {
-    // todo: replace for debug mode
-    if (win) {
-      log.transports.console.level = "debug";
-    } else {
-      log.transports.console.level = "info";
-    }
-  }
-  // todo: replace for debug mode
-  if (win) {
-    log.transports.file.level = "debug";
-  } else {
-    log.transports.file.level = "info";
-  }
-
-  log.info("App starting...");
-  if (win) initUpdater(win);
   _configIPCCleanup = registerConfigIPCHandlers();
   _updaterIPCCleanup = registerUpdaterIPCHandlers();
   _utilsIPCCleanup = registerUtilsIPCHandlers();
   _loggerIPCCleanup = registerLoggerIPCHandlers();
-  //initApp()
+  _appInfoIPCCleanup = registerAppInfoIPCHandlers();
+  autoUpdater.forceDevUpdateConfig = true;
+  autoUpdater.autoDownload = false;
+  autoUpdater.disableWebInstaller = true;
+  autoUpdater.allowDowngrade = false;
+  autoUpdater.autoInstallOnAppQuit = true;
+  autoUpdater.autoRunAppAfterInstall = true;
+  autoUpdater.channel = globalConfig.updateChannel;
+
+  log.initialize({ preload: true });
+  log.transports.console.level = false;
+  if (process.env.VITE_DEV_SERVER_URL) {
+    log.transports.console.level = globalConfig.debugMode ? "debug" : "info";
+  }
+  log.transports.file.level = globalConfig.debugMode ? "debug" : "info";
+  log.info("App starting...");
 }
 
 app.on("window-all-closed", () => {
   win = null;
-  //analyticsHandler("activeUsersClose");
 
-  // todo: add deconnections for integrations
+  //todo: add cleanup for integrations + analytics
 
   if (process.platform !== "darwin") app.quit();
 });

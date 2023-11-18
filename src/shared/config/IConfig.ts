@@ -7,7 +7,7 @@ export interface IConfig {
   staticBrightness: number;
   hideLogs: boolean;
   startMultiViewerWhenAppStarts: boolean;
-  colorSettings: {
+  colors: {
     staticColor: {
       r: number;
       g: number;
@@ -44,7 +44,7 @@ export interface IConfig {
       b: number;
     };
   };
-  effectSettings: {
+  effects: {
     name: string;
     id: number;
     trigger: string;
@@ -68,7 +68,7 @@ export interface IConfig {
   philipsHueDeviceIDs: string[];
   philipsHueEntertainmentZoneIDs: string[];
   philipsHueToken: string | undefined;
-  philipsHue3rdPartyCompatiblityMode: boolean;
+  philipsHueThirdPartyCompatiblityMode: boolean;
   philipsHueEnableFade: boolean;
   philipsHueEnableFadeWithEffects: boolean;
   ikeaEnabled: boolean;
@@ -77,9 +77,9 @@ export interface IConfig {
   ikeaPreSharedKey: string | undefined;
   ikeaDeviceIDs: string[];
   goveeEnabled: boolean;
-  openRGBEnabled: boolean;
-  openRGBServerIP: string;
-  openRGBServerPort: number;
+  openrgbEnabled: boolean;
+  openrgbServerIp: string;
+  openrgbServerPort: number;
   homeAssistantEnabled: boolean;
   homeAssistantHost: string;
   homeAssistantPort: number;
@@ -92,13 +92,12 @@ export interface IConfig {
   mqttPort: number;
   mqttUsername: string;
   mqttPassword: string;
-  streamDeckEnabled: boolean;
+  streamdeckEnabled: boolean;
   discordRPCEnabled: boolean;
   discordRPCAvoidSpoilers: boolean;
-  webServerEnabled: boolean;
-  webServerPort: number;
+  webserverEnabled: boolean;
+  webserverPort: number;
   debugMode: boolean;
   updateChannel: string;
   analytics: boolean;
-  version: string;
 }

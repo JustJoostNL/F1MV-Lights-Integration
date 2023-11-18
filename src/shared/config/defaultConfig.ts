@@ -9,7 +9,7 @@ export const defaultConfig: IConfig = {
   staticBrightness: 70,
   hideLogs: true,
   startMultiViewerWhenAppStarts: false,
-  colorSettings: {
+  colors: {
     staticColor: {
       r: 255,
       g: 255,
@@ -46,10 +46,10 @@ export const defaultConfig: IConfig = {
       b: 0,
     },
   },
-  effectSettings: [
+  effects: [
     {
-      name: "Fastest Lap",
       id: 0,
+      name: "Fastest Lap",
       trigger: "fastestLap",
       enabled: true,
       actions: [
@@ -80,7 +80,7 @@ export const defaultConfig: IConfig = {
   philipsHueDeviceIDs: [],
   philipsHueEntertainmentZoneIDs: [],
   philipsHueToken: undefined,
-  philipsHue3rdPartyCompatiblityMode: false,
+  philipsHueThirdPartyCompatiblityMode: false,
   philipsHueEnableFade: false,
   philipsHueEnableFadeWithEffects: false,
   ikeaEnabled: false,
@@ -89,9 +89,9 @@ export const defaultConfig: IConfig = {
   ikeaPreSharedKey: undefined,
   ikeaDeviceIDs: [],
   goveeEnabled: false,
-  openRGBEnabled: false,
-  openRGBServerIP: "localhost",
-  openRGBServerPort: 6742,
+  openrgbEnabled: false,
+  openrgbServerIp: "localhost",
+  openrgbServerPort: 6742,
   homeAssistantEnabled: false,
   homeAssistantHost: "",
   homeAssistantPort: 8123,
@@ -104,13 +104,12 @@ export const defaultConfig: IConfig = {
   mqttPort: 1883,
   mqttUsername: "",
   mqttPassword: "",
-  streamDeckEnabled: false,
+  streamdeckEnabled: false,
   discordRPCEnabled: false,
   discordRPCAvoidSpoilers: true,
-  webServerEnabled: false,
-  webServerPort: 20202,
+  webserverEnabled: false,
+  webserverPort: 20202,
   debugMode: false,
   updateChannel: "latest",
   analytics: true,
-  version: "3.0.0",
 };

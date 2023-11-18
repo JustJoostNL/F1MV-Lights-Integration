@@ -1,23 +1,23 @@
 import React, { useCallback, useState } from "react";
 import Button from "@mui/material/Button";
-import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
-import Typography from "@mui/material/Typography";
-import FlagIcon from "@mui/icons-material/Flag";
-import MinorCrashIcon from "@mui/icons-material/MinorCrash";
-import DirectionsCar from "@mui/icons-material/DirectionsCar";
-import NoCrash from "@mui/icons-material/NoCrash";
-import SquareIcon from "@mui/icons-material/Square";
-import TimerIcon from "@mui/icons-material/Timer";
-import FlashOff from "@mui/icons-material/FlashOff";
+import {
+  Flag,
+  MinorCrash,
+  DirectionsCar,
+  Square,
+  Timer,
+  FlashOff,
+  NoCrash,
+} from "@mui/icons-material";
 import { ipcRenderer } from "electron";
-import { Tooltip } from "@mui/material";
-import { font } from "../..";
+import { ListItemIcon, Tooltip } from "@mui/material";
+import { green } from "@mui/material/colors";
+import KeyboardArrowDown from "@mui/icons-material/KeyboardArrowDown";
 
 export function SimulationMenu() {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const open = Boolean(anchorEl);
 
   const handleClick = useCallback(
     (event: React.MouseEvent<HTMLElement>) => {
@@ -38,23 +38,13 @@ export function SimulationMenu() {
     [handleClose],
   );
 
-  const menuItemStyle = {
-    fontSize: "1.0rem",
-    fontFamily: font,
-    width: "100%",
-  };
-
   return (
     <div>
       <Button
-        aria-controls={open ? "sim-menu-button" : undefined}
-        aria-haspopup="true"
-        aria-expanded={open ? "true" : undefined}
         variant="contained"
-        color="secondary"
         disableElevation
         onClick={handleClick}
-        endIcon={<KeyboardArrowDownIcon />}
+        endIcon={<KeyboardArrowDown />}
       >
         Simulate Event
       </Button>
@@ -62,122 +52,79 @@ export function SimulationMenu() {
       <Menu
         id="basic-menu"
         anchorEl={anchorEl}
-        open={open}
+        open={Boolean(anchorEl)}
         onClick={handleClose}
-        MenuListProps={{
-          "aria-labelledby": "basic-button",
-        }}
       >
         <MenuItem onClick={() => handleOnSimulateEvent("flagSim", "Green")}>
-          <FlagIcon
-            sx={{
-              mr: 2,
-              color: "green",
-            }}
-          />
-          <Typography variant="body2" sx={menuItemStyle}>
-            Green Flag
-          </Typography>
+          <ListItemIcon>
+            <Flag sx={{ color: green[500] }} />
+          </ListItemIcon>
+          Green Flag
         </MenuItem>
 
         <MenuItem onClick={() => handleOnSimulateEvent("flagSim", "Yellow")}>
-          <FlagIcon
-            sx={{
-              mr: 2,
-              color: "yellow",
-            }}
-          />
-          <Typography variant="body2" sx={menuItemStyle}>
-            Yellow Flag
-          </Typography>
+          <ListItemIcon>
+            <Flag sx={{ color: "yellow" }} />
+          </ListItemIcon>
+          Yellow Flag
         </MenuItem>
 
         <MenuItem onClick={() => handleOnSimulateEvent("flagSim", "Red")}>
-          <FlagIcon
-            sx={{
-              mr: 2,
-              color: "red",
-            }}
-          />
-          <Typography variant="body2" sx={menuItemStyle}>
-            Red Flag
-          </Typography>
+          <ListItemIcon>
+            <Flag sx={{ color: "red" }} />
+          </ListItemIcon>
+          Red Flag
         </MenuItem>
 
         <MenuItem onClick={() => handleOnSimulateEvent("flagSim", "SC")}>
-          <MinorCrashIcon
-            sx={{
-              mr: 2,
-              color: "yellow",
-            }}
-          />
-          <Typography variant="body2" sx={menuItemStyle}>
-            Safety Car
-          </Typography>
+          <ListItemIcon>
+            <MinorCrash sx={{ color: "yellow" }} />
+          </ListItemIcon>
+          Safety Car
         </MenuItem>
 
         <MenuItem onClick={() => handleOnSimulateEvent("flagSim", "VSC")}>
-          <DirectionsCar
-            sx={{
-              mr: 2,
-              color: "yellow",
-            }}
-          />
-          <Typography variant="body2" sx={menuItemStyle}>
-            Virtual Safety Car
-          </Typography>
+          <ListItemIcon>
+            <DirectionsCar sx={{ color: "yellow" }} />
+          </ListItemIcon>
+          Virtual Safety Car
         </MenuItem>
 
         <MenuItem onClick={() => handleOnSimulateEvent("flagSim", "vscEnding")}>
-          <NoCrash
-            sx={{
-              mr: 2,
-              color: "yellow",
-            }}
-          />
-          <Typography variant="body2" sx={menuItemStyle}>
-            Virtual Safety Car Ending
-          </Typography>
+          <ListItemIcon>
+            <NoCrash sx={{ color: "yellow" }} />
+          </ListItemIcon>
+          VSC Ending
         </MenuItem>
 
-        <Tooltip title="This will only work when you have a fastest lap effect created and enabled.">
+        <Tooltip
+          arrow
+          title="This will only work when you have a fastest lap effect created and enabled."
+        >
           <MenuItem
             onClick={() => handleOnSimulateEvent("flagSim", "fastestLap")}
           >
-            <TimerIcon
-              sx={{
-                mr: 2,
-                color: "#e801fe",
-              }}
-            />
-            <Typography variant="body2" sx={menuItemStyle}>
-              Fastest Lap
-            </Typography>
+            <ListItemIcon>
+              <Timer sx={{ color: "#e801fe" }} />
+            </ListItemIcon>
+            Fastest Lap
           </MenuItem>
         </Tooltip>
+
         <MenuItem
           onClick={() => handleOnSimulateEvent("flagSim", "staticColor")}
         >
-          <SquareIcon
-            sx={{
-              mr: 2,
-              borderRadius: 10,
-            }}
-          />
-          <Typography variant="body2" sx={menuItemStyle}>
-            Static Color
-          </Typography>
+          <ListItemIcon>
+            <Square sx={{ borderRadius: 10 }} />
+          </ListItemIcon>
+          Static Color
         </MenuItem>
 
         <MenuItem onClick={() => handleOnSimulateEvent("flagSim", "alloff")}>
-          <FlashOff
-            sx={{
-              mr: 2,
-            }}
-          />
-          <Typography variant="body2" sx={menuItemStyle}>
-            All lights off
-          </Typography>
+          <ListItemIcon>
+            <FlashOff />
+          </ListItemIcon>
+          Turn off all lights
         </MenuItem>
       </Menu>
     </div>

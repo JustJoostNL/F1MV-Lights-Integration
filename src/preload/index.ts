@@ -1,6 +1,6 @@
 import { ipcRenderer } from "electron";
+import { UpdateCheckResult } from "electron-updater";
 import { IConfig } from "../shared/config/IConfig";
-import { UpdateResult } from "../shared/updater/UpdateResult";
 
 export const f1mvli = {
   config: {
@@ -13,32 +13,34 @@ export const f1mvli = {
     open: (): Promise<void> => ipcRenderer.invoke("f1mvli:config:open"),
   },
   updater: {
-    checkForUpdates: (): Promise<void> =>
+    checkForUpdates: (): Promise<UpdateCheckResult> =>
       ipcRenderer.invoke("f1mvli:updater:checkForUpdates"),
-    getUpdateAvailable: (): Promise<UpdateResult> =>
+    getUpdateAvailable: (): Promise<boolean> =>
       ipcRenderer.invoke("f1mvli:updater:getUpdateAvailable"),
-    getForceDevUpdate: (): Promise<boolean> =>
-      ipcRenderer.invoke("f1mvli:updater:getForceDevUpdate"),
+    quitAndInstall: (): Promise<void> =>
+      ipcRenderer.invoke("f1mvli:updater:quitAndInstall"),
   },
   logger: {
     openLogFile: (): Promise<void> => ipcRenderer.invoke("f1mvli:log:open"),
     getLogs: (): Promise<string[]> => ipcRenderer.invoke("f1mvli:log:get"),
+  },
+  appInfo: {
+    getAppVersion: (): Promise<string> =>
+      ipcRenderer.invoke("f1mvli:appInfo:getAppVersion"),
   },
   utils: {
     getIntegrationStates: () =>
       ipcRenderer.invoke("f1mvli:utils:getIntegrationStates"),
     getWindowSizes: (): Promise<number[][]> =>
       ipcRenderer.invoke("f1mvli:utils:getWindowSizes"),
-    openNewWindow: (url: string): Promise<void> =>
-      ipcRenderer.invoke("f1mvli:utils:openNewWindow", url),
-    changeWindowTitle: (title: string): Promise<void> =>
-      ipcRenderer.invoke("f1mvli:utils:changeWindowTitle", title),
     relaunchApp: (): Promise<void> =>
       ipcRenderer.invoke("f1mvli:utils:relaunchApp"),
     exitApp: (): Promise<void> => ipcRenderer.invoke("f1mvli:utils:exitApp"),
   },
-  integrations: {
-    homeAssistant: {
+  platform: process.platform,
+  arch: process.arch,
+  integrationApi: {
+    homeassistant: {
       getDevices: () =>
         ipcRenderer.invoke("integrations:homeAssistant:getDevices"),
       checkDeviceSpectrum: (entityId: string) =>
@@ -47,14 +49,14 @@ export const f1mvli = {
           entityId,
         ),
     },
-    openRGB: {
-      reConnect: () => ipcRenderer.invoke("integrations:openRGB:reConnect"),
+    openrgb: {
+      reConnect: () => ipcRenderer.invoke("integrations:openrgb:reConnect"),
     },
-    WLED: {
-      getDevices: () => ipcRenderer.invoke("integrations:WLED:getDevices"),
+    wled: {
+      getDevices: () => ipcRenderer.invoke("integrations:wled:getDevices"),
     },
     mqtt: {
-      reConnect: () => ipcRenderer.invoke("integrations:mqtt:reConnect"),
+      reconnect: () => ipcRenderer.invoke("integrations:mqtt:reconnect"),
     },
     hue: {
       getLights: () => ipcRenderer.invoke("integrations:hue:getLights"),

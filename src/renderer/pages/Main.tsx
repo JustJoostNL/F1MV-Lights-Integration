@@ -2,10 +2,9 @@ import React from "react";
 import log from "electron-log/renderer";
 import ReactGA from "react-ga4";
 import packageJson from "../../../package.json";
-import "../style/index.css";
 import { Loader } from "../components/shared/Loader";
 
-export const updateInformation = {
+const updateInformation = {
   updateFound: false,
   userSkipsUpdate: false,
 };
@@ -29,13 +28,13 @@ export const Main = () => {
         siteSpeedSampleRate: 100,
       },
     });
-    const updateInfo = await window.f1mvli.updater.getUpdateAvailable();
-    if (updateInfo.updateAvailable) {
+    const updateAvailable = await window.f1mvli.updater.getUpdateAvailable();
+    if (updateAvailable) {
       updateInformation.updateFound = true;
       window.location.hash = "/update";
     }
 
-    //await new Promise((resolve) => setTimeout(resolve, 2000));
+    await new Promise((resolve) => setTimeout(resolve, 2000));
   };
 
   initApp().then(() => {

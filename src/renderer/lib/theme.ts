@@ -1,11 +1,9 @@
 import { createTheme } from "@mui/material";
-import { lightBlue } from "@mui/material/colors";
 
 export const theme = createTheme({
   typography: {
     fontFamily:
-      // eslint-disable-next-line prettier/prettier
-      "-apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, Helvetica, Arial, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", sans-serif",
+      "-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, sans-serif",
     body1: {
       fontSize: "14px",
       letterSpacing: "-0.05px",
@@ -55,20 +53,6 @@ export const theme = createTheme({
         }),
       },
     },
-    MuiCssBaseline: {
-      styleOverrides: {
-        body: {
-          backgroundColor: "#212121",
-        },
-      },
-    },
-    MuiAppBar: {
-      styleOverrides: {
-        root: {
-          backgroundColor: "#242424",
-        },
-      },
-    },
     MuiTooltip: {
       styleOverrides: {
         tooltip: {
@@ -79,11 +63,8 @@ export const theme = createTheme({
   },
   palette: {
     mode: "dark",
-    primary: {
-      main: "#212121",
-    },
     secondary: {
-      main: lightBlue[500],
+      main: "#e10600",
     },
   },
 });
