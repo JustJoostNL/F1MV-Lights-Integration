@@ -2,28 +2,28 @@ export interface IConfig {
   autoTurnOffLightsWhenSessionEnds: boolean;
   defaultBrightness: number;
   goBackToStatic: boolean;
-  goBackToStaticEnabledFlags: string[];
+  goBackToStaticEnabledEvents: string[];
   goBackToStaticDelay: number;
   staticBrightness: number;
   hideLogs: boolean;
   startMultiViewerWhenAppStarts: boolean;
-  colors: {
-    staticColor: {
+  eventColors: {
+    static: {
       r: number;
       g: number;
       b: number;
     };
-    green: {
+    greenFlag: {
       r: number;
       g: number;
       b: number;
     };
-    yellow: {
+    yellowFlag: {
       r: number;
       g: number;
       b: number;
     };
-    red: {
+    redFlag: {
       r: number;
       g: number;
       b: number;
@@ -33,12 +33,12 @@ export interface IConfig {
       g: number;
       b: number;
     };
-    vsc: {
+    virtualSafetyCar: {
       r: number;
       g: number;
       b: number;
     };
-    vscEnding: {
+    virtualSafetyCarEnding: {
       r: number;
       g: number;
       b: number;

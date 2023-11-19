@@ -15,7 +15,7 @@ export function Navbar() {
     window.history.back();
   }, []);
 
-  const hideBackButton = window.location.pathname !== "/home";
+  const showBackButton = window.location.hash !== "#/home";
 
   return (
     <>
@@ -28,7 +28,7 @@ export function Navbar() {
         position="sticky"
       >
         <Toolbar>
-          {!hideBackButton && (
+          {showBackButton && (
             <IconButton edge="start" color="inherit" onClick={handleBackButton}>
               <ArrowBackIcon />
             </IconButton>
@@ -36,7 +36,11 @@ export function Navbar() {
           <Typography
             variant="h6"
             component="div"
-            sx={{ flexGrow: 1, fontSize: "2rem" }}
+            sx={{
+              flexGrow: 1,
+              fontSize: "2rem",
+              ml: showBackButton ? 1 : undefined,
+            }}
           >
             F1MV Lights Integration
           </Typography>

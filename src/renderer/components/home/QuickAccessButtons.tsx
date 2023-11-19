@@ -1,4 +1,4 @@
-import { Button, Link, ListItemIcon, Tooltip } from "@mui/material";
+import { Box, Button, Link, ListItemIcon } from "@mui/material";
 import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 import GetAppIcon from "@mui/icons-material/GetApp";
 import DescriptionIcon from "@mui/icons-material/Description";
@@ -8,6 +8,7 @@ import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import MenuItem from "@mui/material/MenuItem";
 import Menu from "@mui/material/Menu";
 import { enqueueSnackbar } from "notistack";
+import { SimulationMenu } from "./SimulationMenu";
 
 export function QuickAccessButtons() {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -19,12 +20,6 @@ export function QuickAccessButtons() {
   const handleCloseMenu = useCallback(() => {
     setAnchorEl(null);
   }, []);
-
-  const handleOpenConfig = useCallback(() => {
-    handleCloseMenu();
-    log.info("Opening config file...");
-    window.f1mvli.config.open();
-  }, [handleCloseMenu]);
 
   const handleCheckForUpdates = useCallback(async () => {
     await window.f1mvli.updater.checkForUpdates();
@@ -43,21 +38,16 @@ export function QuickAccessButtons() {
   }, [handleCloseMenu]);
 
   return (
-    <div>
-      <Tooltip
-        arrow
-        title="Tip: You can also manage the settings on the settings page (three dots in the top right corner) instead of editing the config file."
-      >
-        <Button
-          variant="outlined"
-          onClick={handleOpenConfig}
-          startIcon={<OpenInNewIcon />}
-          sx={{ mr: 2 }}
-        >
-          Open Config
-        </Button>
-      </Tooltip>
-
+    <Box
+      sx={{
+        display: "flex",
+        flexDirection: "row",
+        justifyContent: "center",
+        alignItems: "center",
+        gap: 1.5,
+        mb: 5,
+      }}
+    >
       <Button
         variant="outlined"
         onClick={handleCheckForUpdates}
@@ -66,8 +56,9 @@ export function QuickAccessButtons() {
         Check for Updates
       </Button>
 
+      <SimulationMenu />
+
       <Button
-        sx={{ ml: 2 }}
         startIcon={<DescriptionIcon />}
         variant="outlined"
         disableElevation
@@ -100,6 +91,6 @@ export function QuickAccessButtons() {
           Open logs in editor
         </MenuItem>
       </Menu>
-    </div>
+    </Box>
   );
 }

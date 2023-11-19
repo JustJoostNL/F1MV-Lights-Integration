@@ -1,31 +1,31 @@
-import { IConfig } from "./IConfig";
+import { IConfig } from "./config_types";
 
 export const defaultConfig: IConfig = {
   autoTurnOffLightsWhenSessionEnds: true,
   defaultBrightness: 100,
   goBackToStatic: true,
-  goBackToStaticEnabledFlags: ["green"],
+  goBackToStaticEnabledEvents: ["green"],
   goBackToStaticDelay: 10,
   staticBrightness: 70,
   hideLogs: true,
   startMultiViewerWhenAppStarts: false,
-  colors: {
-    staticColor: {
+  eventColors: {
+    static: {
       r: 255,
       g: 255,
       b: 255,
     },
-    green: {
+    greenFlag: {
       r: 0,
       g: 255,
       b: 0,
     },
-    yellow: {
+    yellowFlag: {
       r: 255,
       g: 150,
       b: 0,
     },
-    red: {
+    redFlag: {
       r: 255,
       g: 0,
       b: 0,
@@ -35,12 +35,12 @@ export const defaultConfig: IConfig = {
       g: 150,
       b: 0,
     },
-    vsc: {
+    virtualSafetyCar: {
       r: 255,
       g: 150,
       b: 0,
     },
-    vscEnding: {
+    virtualSafetyCarEnding: {
       r: 255,
       g: 150,
       b: 0,

@@ -129,7 +129,7 @@ export function ThreeDotMenu() {
             padding: "0.5rem",
           }}
         >
-          Current version: {appVersion}
+          Current version: v{appVersion}
         </Typography>
       </Menu>
     </>

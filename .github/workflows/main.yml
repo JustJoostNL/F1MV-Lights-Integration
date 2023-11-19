@@ -7,7 +7,7 @@ on:
       - rebuild
 
 jobs:
-  release:
+  build:
     runs-on: ${{ matrix.os }}
 
     strategy:

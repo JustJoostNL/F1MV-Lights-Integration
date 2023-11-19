@@ -5,7 +5,6 @@ import { UpdateMonitor } from "../components/layouts/UpdateMonitor";
 import { useDocumentTitle } from "../hooks/useDocumentTitle";
 import { ContentLayout } from "../components/layouts/ContentLayout";
 import { QuickAccessButtons } from "../components/home/QuickAccessButtons";
-import { SimulationMenu } from "../components/home/SimulationMenu";
 
 export function HomePage() {
   useDocumentTitle("F1MV Lights Integration");
@@ -34,19 +33,7 @@ export function HomePage() {
           The best way to connect your smart home lights to MultiViewer.
         </Typography>
       </Box>
-      <Box
-        sx={{
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "center",
-          alignItems: "center",
-          gap: 4,
-          mb: 5,
-        }}
-      >
-        <QuickAccessButtons />
-        <SimulationMenu />
-      </Box>
+      <QuickAccessButtons />
       <Box
         sx={{
           display: "flex",

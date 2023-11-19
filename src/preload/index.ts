@@ -1,42 +1,16 @@
 import { ipcRenderer } from "electron";
-import { UpdateCheckResult } from "electron-updater";
-import { IConfig } from "../shared/config/IConfig";
+import { configAPI } from "./config";
+import { updaterAPI } from "./updater";
+import { loggerAPI } from "./logger";
+import { appInfoAPI } from "./appInfo";
+import { utilsAPI } from "./utils";
 
 export const f1mvli = {
-  config: {
-    set: (value: Partial<IConfig>): Promise<void> =>
-      ipcRenderer.invoke("f1mvli:config:set", value),
-    get: (): Promise<IConfig> => ipcRenderer.invoke("f1mvli:config:get"),
-    on: (channel: string, listener: (...args: any[]) => void) =>
-      ipcRenderer.on(channel, listener),
-    reset: (): Promise<void> => ipcRenderer.invoke("f1mvli:config:reset"),
-    open: (): Promise<void> => ipcRenderer.invoke("f1mvli:config:open"),
-  },
-  updater: {
-    checkForUpdates: (): Promise<UpdateCheckResult> =>
-      ipcRenderer.invoke("f1mvli:updater:checkForUpdates"),
-    getUpdateAvailable: (): Promise<boolean> =>
-      ipcRenderer.invoke("f1mvli:updater:getUpdateAvailable"),
-    quitAndInstall: (): Promise<void> =>
-      ipcRenderer.invoke("f1mvli:updater:quitAndInstall"),
-  },
-  logger: {
-    openLogFile: (): Promise<void> => ipcRenderer.invoke("f1mvli:log:open"),
-    getLogs: (): Promise<string[]> => ipcRenderer.invoke("f1mvli:log:get"),
-  },
-  appInfo: {
-    getAppVersion: (): Promise<string> =>
-      ipcRenderer.invoke("f1mvli:appInfo:getAppVersion"),
-  },
-  utils: {
-    getIntegrationStates: () =>
-      ipcRenderer.invoke("f1mvli:utils:getIntegrationStates"),
-    getWindowSizes: (): Promise<number[][]> =>
-      ipcRenderer.invoke("f1mvli:utils:getWindowSizes"),
-    relaunchApp: (): Promise<void> =>
-      ipcRenderer.invoke("f1mvli:utils:relaunchApp"),
-    exitApp: (): Promise<void> => ipcRenderer.invoke("f1mvli:utils:exitApp"),
-  },
+  config: configAPI,
+  updater: updaterAPI,
+  logger: loggerAPI,
+  appInfo: appInfoAPI,
+  utils: utilsAPI,
   platform: process.platform,
   arch: process.arch,
   integrationApi: {
@@ -50,7 +24,7 @@ export const f1mvli = {
         ),
     },
     openrgb: {
-      reConnect: () => ipcRenderer.invoke("integrations:openrgb:reConnect"),
+      reconnect: () => ipcRenderer.invoke("integrations:openrgb:reconnect"),
     },
     wled: {
       getDevices: () => ipcRenderer.invoke("integrations:wled:getDevices"),

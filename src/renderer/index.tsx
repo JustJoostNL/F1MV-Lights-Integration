@@ -47,7 +47,7 @@ root.render(
           vertical: "bottom",
           horizontal: "left",
         }}
-        maxSnack={1}
+        maxSnack={2}
         TransitionComponent={Grow}
       >
         <ThemeProvider theme={theme}>

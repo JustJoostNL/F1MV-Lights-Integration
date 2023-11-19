@@ -142,7 +142,7 @@ function onReady() {
   _utilsIPCCleanup = registerUtilsIPCHandlers();
   _loggerIPCCleanup = registerLoggerIPCHandlers();
   _appInfoIPCCleanup = registerAppInfoIPCHandlers();
-  autoUpdater.forceDevUpdateConfig = true;
+  autoUpdater.forceDevUpdateConfig = false;
   autoUpdater.autoDownload = false;
   autoUpdater.disableWebInstaller = true;
   autoUpdater.allowDowngrade = false;

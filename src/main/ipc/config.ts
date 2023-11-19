@@ -7,9 +7,11 @@ import {
 } from "fs";
 import { access, mkdir, readFile, writeFile } from "fs/promises";
 import path from "path";
+import { isEqual } from "lodash";
 import { app, ipcMain, shell } from "electron";
-import { IConfig } from "../../shared/config/IConfig";
+import { IConfig } from "../../shared/config/config_types";
 import { defaultConfig } from "../../shared/config/defaultConfig";
+import { broadcastToAllWindows } from "../utils/broadcastToAllWindows";
 
 const configPath = path.join(
   app.getPath("appData"),
@@ -23,12 +25,12 @@ let globalConfig = { ...defaultConfig, ...readConfigSync() };
  *
  * @param config The configuration
  */
-function removeDefaults(config: Record<string, any>) {
+function removeDefaults<T extends Record<string, any>>(config: T): T {
   return Object.fromEntries(
-    Object.entries(config).filter(([key, value]) => {
-      return defaultConfig[key as keyof IConfig] !== value;
-    }),
-  );
+    Object.entries(config).filter(
+      ([key, value]) => !isEqual(defaultConfig[key], value),
+    ),
+  ) as T;
 }
 
 async function hasConfig() {
@@ -49,7 +51,7 @@ function hasConfigSync() {
   }
 }
 
-async function readConfig() {
+async function readConfig(): Promise<IConfig> {
   try {
     const configJSON = await readFile(configPath, "utf8");
     return JSON.parse(configJSON);
@@ -58,7 +60,7 @@ async function readConfig() {
   }
 }
 
-function readConfigSync() {
+function readConfigSync(): IConfig {
   try {
     const configJSON = readFileSync(configPath, "utf8");
     return JSON.parse(configJSON);
@@ -81,8 +83,7 @@ function getConfigSync() {
 
 async function setConfig(config: IConfig) {
   const configJSON = JSON.stringify(removeDefaults(config));
-  console.log(configJSON);
-  ipcMain.emit("f1mvli:config:change", config);
+  broadcastToAllWindows("f1mvli:config:change", config);
   await mkdir(path.dirname(configPath), { recursive: true });
   await writeFile(configPath, configJSON);
   globalConfig = { ...defaultConfig, ...removeDefaults(config) };
@@ -90,7 +91,7 @@ async function setConfig(config: IConfig) {
 
 function setConfigSync(config: IConfig) {
   const configJSON = JSON.stringify(removeDefaults(config));
-  ipcMain.emit("f1mvli:config:change", config);
+  broadcastToAllWindows("f1mvli:config:change", config);
   mkdirSync(path.dirname(configPath), { recursive: true });
   writeFileSync(configPath, configJSON);
   globalConfig = { ...defaultConfig, ...removeDefaults(config) };

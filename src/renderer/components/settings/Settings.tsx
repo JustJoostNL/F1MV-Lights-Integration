@@ -5,6 +5,7 @@ import {
   CardActionArea,
   CardHeader,
   Collapse,
+  Divider,
   List,
   ListItem,
   ListItemText,
@@ -19,6 +20,11 @@ import { JSONTree } from "react-json-tree";
 import { useConfig } from "../../hooks/useConfig";
 import { AutoTurnOffLightsToggle } from "./AutoTurnOffLightsToggle";
 import { AutoMultiViewerStartToggle } from "./AutoMultiViewerStartToggle";
+import { DefaultBrightnessSlider } from "./DefaultBrightnessSlider";
+import { GoBackToStaticToggle } from "./GoBackToStaticToggle";
+import { GoBackToStaticDelayInput } from "./GoBackToStaticDelayInput";
+import { GoBackToStaticEventSelector } from "./GoBackToStaticEventSelector";
+import { ColorCustomization } from "./ColorCustomization";
 
 const StyledListItemText = styled(ListItemText)(({ theme }) => ({
   marginRight: theme.spacing(2),
@@ -82,6 +88,52 @@ export function Settings() {
               <InputWrapper>
                 <AutoMultiViewerStartToggle />
               </InputWrapper>
+            </ListItem>
+            <Divider />
+            <ListItem>
+              <StyledListItemText
+                primary="Default brightness"
+                secondary="This is the default brightness for all lights."
+              />
+              <InputWrapper>
+                <DefaultBrightnessSlider />
+              </InputWrapper>
+            </ListItem>
+            <Divider />
+            <ListItem>
+              <StyledListItemText
+                primary="Go back to static"
+                secondary="Automatically go back to a (customizable) static color after a (customizable) amount of time."
+              />
+              <InputWrapper>
+                <GoBackToStaticToggle />
+              </InputWrapper>
+            </ListItem>
+            {config.goBackToStatic && (
+              <>
+                <ListItem>
+                  <StyledListItemText
+                    primary="Go back to static delay"
+                    secondary="After how many seconds should the lights go back to static?"
+                  />
+                  <GoBackToStaticDelayInput />
+                </ListItem>
+                <ListItem>
+                  <StyledListItemText
+                    primary="Go back to static enabled events"
+                    secondary="On which events should the lights go back to static?"
+                  />
+                  <GoBackToStaticEventSelector />
+                </ListItem>
+              </>
+            )}
+            <Divider />
+            <ListItem>
+              <StyledListItemText
+                primary="Color customization"
+                secondary="If you have a color vision deficiency, or just like to have a different color to represent a team, you can customize the colors used for the events."
+              />
+              <ColorCustomization />
             </ListItem>
           </List>
         </Collapse>

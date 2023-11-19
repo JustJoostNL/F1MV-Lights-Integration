@@ -6,9 +6,8 @@ import React, {
   useEffect,
   useState,
 } from "react";
-import { ipcRenderer } from "electron";
 import { defaultConfig } from "../../shared/config/defaultConfig";
-import { IConfig } from "../../shared/config/IConfig";
+import { IConfig } from "../../shared/config/config_types";
 
 export const ConfigContext = createContext<IConfig>(defaultConfig);
 export function useConfig() {
@@ -36,14 +35,17 @@ export function ConfigProvider({ children }: { children: ReactNode }) {
   const [config, setConfig] = useState<IConfig>(defaultConfig);
 
   useEffect(() => {
-    const onChange = (_event: Electron.IpcRendererEvent, config: IConfig) => {
-      setConfig({ ...defaultConfig, ...config });
+    const configChangeHandler = (newConfig: Partial<IConfig>) => {
+      setConfig({ ...defaultConfig, ...newConfig });
     };
 
-    ipcRenderer.on("f1mvli:config:change", onChange);
+    const unsubscribe = window.f1mvli.config.on(
+      "f1mvli:config:change",
+      configChangeHandler,
+    );
 
     return () => {
-      ipcRenderer.removeListener("f1mvli:config:change", onChange);
+      unsubscribe();
     };
   }, []);
 
