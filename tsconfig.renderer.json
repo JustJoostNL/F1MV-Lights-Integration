@@ -1,0 +1,7 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "outDir": "dist/renderer"
+  },
+  "include": ["src/renderer/**/*"]
+}

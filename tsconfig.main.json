@@ -1,0 +1,8 @@
+// tsconfig.main.json
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "outDir": "dist/main"
+  },
+  "include": ["src/main/**/*"]
+}
