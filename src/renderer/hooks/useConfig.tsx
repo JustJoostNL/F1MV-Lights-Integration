@@ -36,7 +36,7 @@ export function ConfigProvider({ children }: { children: ReactNode }) {
   const [config, setConfig] = useState<IConfig>(defaultConfig);
 
   useEffect(() => {
-    const onChange = (_event, config: IConfig) => {
+    const onChange = (_event: Electron.IpcRendererEvent, config: IConfig) => {
       setConfig({ ...defaultConfig, ...config });
     };
 

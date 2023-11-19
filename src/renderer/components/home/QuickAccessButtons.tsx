@@ -28,8 +28,8 @@ export function QuickAccessButtons() {
 
   const handleCheckForUpdates = useCallback(async () => {
     await window.f1mvli.updater.checkForUpdates();
-    const updateInfo = await window.f1mvli.updater.getUpdateAvailable();
-    if (updateInfo.updateAvailable) {
+    const updateAvailable = await window.f1mvli.updater.getUpdateAvailable();
+    if (updateAvailable) {
       enqueueSnackbar("Update available! Downloading...", { variant: "info" });
     } else {
       enqueueSnackbar("No update available.", { variant: "success" });

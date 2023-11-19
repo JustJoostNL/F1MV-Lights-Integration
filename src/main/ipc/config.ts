@@ -25,9 +25,9 @@ let globalConfig = { ...defaultConfig, ...readConfigSync() };
  */
 function removeDefaults(config: Record<string, any>) {
   return Object.fromEntries(
-    Object.entries(config).filter(
-      ([key, value]) => defaultConfig[key] !== value,
-    ),
+    Object.entries(config).filter(([key, value]) => {
+      return defaultConfig[key as keyof IConfig] !== value;
+    }),
   );
 }
 

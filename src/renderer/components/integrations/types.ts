@@ -3,18 +3,3 @@ export type IntegrationState = {
   state: boolean;
   disabled: boolean;
 };
-
-export type IntegrationStatesMap = {
-  ikea: string;
-  govee: string;
-  hue: string;
-  openRGB: string;
-  homeAssistant: string;
-  streamDeck: string;
-  WLED: string;
-  MQTT: string;
-  F1MV: string;
-  F1TVLiveSession: string;
-  update: string;
-  webServer: string;
-};

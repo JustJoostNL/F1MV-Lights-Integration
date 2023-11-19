@@ -11,7 +11,7 @@ import {
   KeyboardArrowUpRounded,
   KeyboardArrowDownRounded,
 } from "@mui/icons-material";
-import { IntegrationState, IntegrationStatesMap } from "./types";
+import { IntegrationState } from "./types";
 import "./status.css";
 
 const testIntegrationStates: IntegrationState[] = [
@@ -77,7 +77,9 @@ const testIntegrationStates: IntegrationState[] = [
   },
 ];
 
-const integrationStateMap: IntegrationStatesMap = {
+const integrationStateMap: {
+  [key: string]: string;
+} = {
   ikea: "IKEA",
   govee: "Govee",
   hue: "Philips Hue",
