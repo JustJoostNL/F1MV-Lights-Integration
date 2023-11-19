@@ -11,7 +11,7 @@
   },
   "include": [
     "package.json",
-    "src/renderer/**/*",
-    "src/shared/**/*",
+    "src/renderer/*",
+    "src/shared/*",
   ],
 }
