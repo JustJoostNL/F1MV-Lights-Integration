@@ -9,10 +9,9 @@
   },
   "include": [
     "vite.config.ts",
-    "package.json",
     "src/main/**/*",
     "src/shared/**/*",
-    "src/preloard/**/*",
+    "src/preload/**/*",
   ],
   "exclude": [
     "node_modules"

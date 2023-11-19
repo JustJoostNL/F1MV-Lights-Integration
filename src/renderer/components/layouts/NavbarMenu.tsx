@@ -13,8 +13,8 @@ import {
 } from "@mui/icons-material";
 import MenuItem from "@mui/material/MenuItem";
 import Typography from "@mui/material/Typography";
+import swr from "swr";
 import { green, red } from "@mui/material/colors";
-import packageJson from "../../../../package.json";
 //@ts-ignore
 import multiviewerLogo from "../../assets/multiviewer-logo.png";
 
@@ -36,8 +36,9 @@ export function ThreeDotMenu() {
     window.f1mvli.utils.exitApp();
   }, []);
 
-  // get the version from package.json
-  const currentAppVersion = "v" + packageJson.version;
+  const appVersion = swr("appVersion", async () => {
+    return await window.f1mvli.appInfo.getAppVersion();
+  }).data;
 
   return (
     <>
@@ -128,7 +129,7 @@ export function ThreeDotMenu() {
             padding: "0.5rem",
           }}
         >
-          Current version: {currentAppVersion}
+          Current version: {appVersion}
         </Typography>
       </Menu>
     </>
