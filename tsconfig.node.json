@@ -10,7 +10,7 @@
   "include": [
     "vite.config.ts",
     "package.json",
-    "src/main/*",
+    "src/main/*.ts",
     "src/shared/*",
     "src/preload/*",
   ],

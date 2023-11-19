@@ -7,11 +7,11 @@
     "moduleResolution": "node",
     "useUnknownInCatchVariables": false,
     "strict": true,
-    "isolatedModules": false
+    "isolatedModules": false,
   },
   "include": [
     "package.json",
-    "src/renderer/*",
-    "src/shared/*",
+    "src/renderer/**/*",
+    "src/shared/**/*",
   ],
 }
