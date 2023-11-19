@@ -24,18 +24,18 @@ const MenuProps = {
 };
 
 const configEventNames = [
-  "green",
-  "yellow",
-  "red",
+  "greenFlag",
+  "yellowFlag",
+  "redFlag",
   "safetyCar",
   "virtualSafetyCar",
   "virtualSafetyCarEnding",
 ];
 
 const eventMap = {
-  green: "Green",
-  yellow: "Yellow",
-  red: "Red",
+  greenFlag: "Green",
+  yellowFlag: "Yellow",
+  redFlag: "Red",
   safetyCar: "Safety Car",
   virtualSafetyCar: "Virtual Safety Car",
   virtualSafetyCarEnding: "Virtual Safety Car Ending",

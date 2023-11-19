@@ -4,7 +4,7 @@ export const defaultConfig: IConfig = {
   autoTurnOffLightsWhenSessionEnds: true,
   defaultBrightness: 100,
   goBackToStatic: true,
-  goBackToStaticEnabledEvents: ["green"],
+  goBackToStaticEnabledEvents: ["greenFlag"],
   goBackToStaticDelay: 10,
   staticBrightness: 70,
   hideLogs: true,

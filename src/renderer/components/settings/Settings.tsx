@@ -25,6 +25,8 @@ import { GoBackToStaticToggle } from "./GoBackToStaticToggle";
 import { GoBackToStaticDelayInput } from "./GoBackToStaticDelayInput";
 import { GoBackToStaticEventSelector } from "./GoBackToStaticEventSelector";
 import { ColorCustomization } from "./ColorCustomization";
+import { MultiViewerLiveTimingUrlInput } from "./MultiViewerLiveTimingUrlInput";
+import { MultiViewerSyncToggle } from "./MultiViewerSyncToggle";
 
 const StyledListItemText = styled(ListItemText)(({ theme }) => ({
   marginRight: theme.spacing(2),
@@ -39,13 +41,14 @@ export function Settings() {
   const { config } = useConfig();
   const [debug, setDebug] = useState(false);
   const [generalCardOpen, setGeneralCardOpen] = useState(true);
+  const [multiviewerCardOpen, setMultiviewerCardOpen] = useState(false);
 
   useHotkeys("d", () => {
     setDebug(!debug);
   });
 
   return (
-    <Stack>
+    <Stack spacing={3}>
       <Card>
         <CardActionArea onClick={() => setGeneralCardOpen(!generalCardOpen)}>
           <CardHeader
@@ -131,13 +134,63 @@ export function Settings() {
             <ListItem>
               <StyledListItemText
                 primary="Color customization"
-                secondary="If you have a color vision deficiency, or just like to have a different color to represent a team, you can customize the colors used for the events."
+                secondary="If you have a color vision deficiency, or just like to have a different color, you can customize the colors used for the events."
               />
               <ColorCustomization />
             </ListItem>
           </List>
         </Collapse>
       </Card>
+
+      <Card>
+        <CardActionArea
+          onClick={() => setMultiviewerCardOpen(!multiviewerCardOpen)}
+        >
+          <CardHeader
+            title="MultiViewer Settings"
+            subheader="Settings related to MultiViewer"
+            action={
+              generalCardOpen ? (
+                <KeyboardArrowUpRounded />
+              ) : (
+                <KeyboardArrowDownRounded />
+              )
+            }
+            sx={{
+              "& .MuiCardHeader-action": {
+                mt: 0,
+                mr: 0,
+                mb: 0,
+                alignSelf: "center",
+              },
+            }}
+          />
+        </CardActionArea>
+
+        <Collapse in={multiviewerCardOpen}>
+          <List>
+            <ListItem>
+              <StyledListItemText
+                primary="Live Timing URL"
+                secondary="This is the MultiViewer Live Timing URL."
+              />
+              <InputWrapper>
+                <MultiViewerLiveTimingUrlInput />
+              </InputWrapper>
+            </ListItem>
+            <ListItem>
+              <StyledListItemText
+                primary="Sync with MultiViewer"
+                secondary="When disabled, the app will not sync with the current status of the MultiViewer Live Timing."
+              />
+              <InputWrapper>
+                <MultiViewerSyncToggle />
+              </InputWrapper>
+            </ListItem>
+          </List>
+        </Collapse>
+      </Card>
+
       {debug && <JSONTree data={config} />}
     </Stack>
   );
