@@ -2,11 +2,7 @@
   "compilerOptions": {
     "module": "CommonJS",
     "target": "ES2022",
-    "rootDir": ".",
   },
-  "include": [
-    "src/**/*",
-  ],
   "references": [
     {
       "path": "./tsconfig.node.json"
