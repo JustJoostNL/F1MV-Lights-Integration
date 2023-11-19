@@ -2,10 +2,6 @@
   "extends": "@electron-toolkit/tsconfig/tsconfig.node.json",
   "compilerOptions": {
     "composite": true,
-    "module": "CommonJS",
-    "target": "ES2022",
-    "moduleResolution": "node",
-    "strict": false,
   },
   "include": [
     "vite.config.ts",
