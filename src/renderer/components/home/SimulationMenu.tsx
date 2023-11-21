@@ -94,7 +94,7 @@ export function SimulationMenu() {
           <ListItemIcon>
             <NoCrash sx={{ color: "yellow" }} />
           </ListItemIcon>
-          VSC Ending
+          Virtual Safety Car Ending
         </MenuItem>
 
         <Tooltip

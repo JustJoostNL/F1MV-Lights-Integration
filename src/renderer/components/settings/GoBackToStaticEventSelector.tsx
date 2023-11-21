@@ -33,9 +33,9 @@ const configEventNames = [
 ];
 
 const eventMap = {
-  greenFlag: "Green",
-  yellowFlag: "Yellow",
-  redFlag: "Red",
+  greenFlag: "Green flag",
+  yellowFlag: "Yellow flag",
+  redFlag: "Red flag",
   safetyCar: "Safety Car",
   virtualSafetyCar: "Virtual Safety Car",
   virtualSafetyCarEnding: "Virtual Safety Car Ending",

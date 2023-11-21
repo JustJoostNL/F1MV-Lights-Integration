@@ -124,6 +124,8 @@ async function createWindow() {
       shell.openExternal(url);
     }
   });
+
+  win.webContents.setZoomLevel(0);
 }
 
 let _configIPCCleanup: () => void;

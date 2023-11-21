@@ -27,7 +27,7 @@ export function ColorCustomizationDialog({
     r: number;
     g: number;
     b: number;
-  }>({ r: 255, g: 0, b: 0 });
+  }>({ r: 255, g: 255, b: 255 });
 
   const [selectedEvent, setSelectedEvent] = useState<string>(DEFAULT_EVENT);
 
@@ -35,20 +35,35 @@ export function ColorCustomizationDialog({
     const storedColor = config.eventColors[selectedEvent];
     if (!storedColor) return;
     setColor(storedColor);
-  }, [config.eventColors, selectedEvent, open]);
+  }, [config.eventColors, selectedEvent, setColor, open]);
 
-  const handleClose = useCallback(() => {
-    updateConfig({
-      eventColors: {
-        ...config.eventColors,
-        [selectedEvent]: color,
-      },
-    });
-    onClose();
-  }, [color, config.eventColors, onClose, selectedEvent, updateConfig]);
+  // Reset selected event when dialog is closed
+  useEffect(() => {
+    setSelectedEvent(DEFAULT_EVENT);
+  }, [open]);
+
+  const handleClose = useCallback(
+    (isDismissed?: boolean) => {
+      if (!isDismissed) {
+        updateConfig({
+          eventColors: {
+            ...config.eventColors,
+            [selectedEvent]: color,
+          },
+        });
+      }
+      onClose();
+    },
+    [color, config.eventColors, onClose, selectedEvent, updateConfig],
+  );
 
   return (
-    <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
+    <Dialog
+      open={open}
+      onClose={() => handleClose(true)}
+      maxWidth="sm"
+      fullWidth
+    >
       <DialogTitle>Color Customizer</DialogTitle>
       <DialogContent>
         <Box
@@ -66,7 +81,7 @@ export function ColorCustomizationDialog({
         </Box>
       </DialogContent>
       <DialogActions>
-        <Button variant="contained" onClick={handleClose}>
+        <Button variant="contained" onClick={() => handleClose(false)}>
           Save
         </Button>
       </DialogActions>
