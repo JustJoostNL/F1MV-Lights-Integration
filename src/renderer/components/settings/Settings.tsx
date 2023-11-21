@@ -85,7 +85,7 @@ export function Settings() {
               title: "Go back to static brightness",
               description:
                 "What should the brightness be when the lights go back to static?",
-              configKeys: ["goBackToStaticBrightness"],
+              configKeys: ["staticBrightness"],
               input: <GoBackToStaticBrightnessSlider />,
             },
             {
@@ -94,7 +94,7 @@ export function Settings() {
               title: "Go back to static enabled events",
               description:
                 "On which events should the lights go back to static?",
-              configKeys: ["goBackToStaticEvents"],
+              configKeys: ["goBackToStaticEnabledEvents"],
               input: <GoBackToStaticEventSelector />,
             },
           ],
