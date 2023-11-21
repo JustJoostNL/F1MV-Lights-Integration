@@ -1,33 +1,18 @@
 import React from "react";
-import { CircularProgress, Container, Grid, Typography } from "@mui/material";
+import { CircularProgress, styled } from "@mui/material";
 
-interface ILoaderProps {
-  customText?: string;
-}
+const Root = styled("div")(() => ({
+  display: "grid",
+  placeItems: "center",
+  placeContent: "center",
+  height: "100%",
+  minHeight: "80vh",
+}));
 
-export const Loader = ({ customText }: ILoaderProps) => {
+export const Loader: React.FC = () => {
   return (
-    <Container>
-      <Grid
-        container
-        spacing={0}
-        direction="column"
-        alignItems="center"
-        justifyContent="center"
-        style={{ minHeight: "20vh" }}
-      >
-        <Grid item xs={3}>
-          <CircularProgress thickness={5} />
-          <Typography
-            sx={{
-              color: "text.primary",
-              mt: 2,
-            }}
-          >
-            {customText ? customText : "Loading..."}
-          </Typography>
-        </Grid>
-      </Grid>
-    </Container>
+    <Root>
+      <CircularProgress />
+    </Root>
   );
 };

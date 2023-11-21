@@ -1,12 +1,12 @@
 import React, { useCallback } from "react";
-import { Select, MenuItem } from "@mui/material";
+import { Select, MenuItem, SelectChangeEvent } from "@mui/material";
 import { useConfig } from "../../hooks/useConfig";
 
 export function UpdateChannelSelector() {
   const { config, updateConfig } = useConfig();
 
   const handleUpdateChannelChange = useCallback(
-    (event) => {
+    (event: SelectChangeEvent<string>) => {
       updateConfig({
         updateChannel: event.target.value,
       });
