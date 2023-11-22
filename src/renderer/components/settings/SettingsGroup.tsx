@@ -54,7 +54,7 @@ export interface SettingsGroupProps {
   experimental?: boolean;
 }
 
-const ListItemTextStyled = styled(ListItemText)(({ theme }) => ({
+export const ListItemTextStyled = styled(ListItemText)(({ theme }) => ({
   marginRight: theme.spacing(2),
 }));
 

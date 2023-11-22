@@ -17,7 +17,7 @@ export function MultiViewerLiveTimingUrlInput() {
     <TextField
       value={config.multiviewerLiveTimingURL}
       onChange={handleInputChange}
-      label="URL"
+      placeholder="e.g. http://localhost:10101"
       variant="outlined"
     />
   );

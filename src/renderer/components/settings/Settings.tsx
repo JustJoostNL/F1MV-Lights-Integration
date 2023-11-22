@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import { useHotkeys } from "react-hotkeys-hook";
-import { Stack } from "@mui/material";
+import { Button, Card, CardHeader, List, ListItem, Stack } from "@mui/material";
 import { JSONTree } from "react-json-tree";
+import { defaultConfig } from "../../../shared/config/defaultConfig";
 import { useConfig } from "../../hooks/useConfig";
 import { AutoTurnOffLightsToggle } from "./AutoTurnOffLightsToggle";
 import { AutoMultiViewerStartToggle } from "./AutoMultiViewerStartToggle";
@@ -9,7 +10,11 @@ import { ColorCustomization } from "./ColorCustomization";
 import { DefaultBrightnessSlider } from "./DefaultBrightnessSlider";
 import { EffectSettings } from "./EffectSettings";
 import { GoBackToStaticToggle } from "./GoBackToStaticToggle";
-import { SettingsGroup, SettingsGroupProps } from "./SettingsGroup";
+import {
+  ListItemTextStyled,
+  SettingsGroup,
+  SettingsGroupProps,
+} from "./SettingsGroup";
 import { GoBackToStaticEventSelector } from "./GoBackToStaticEventSelector";
 import { GoBackToStaticBrightnessSlider } from "./GoBackToStaticBrightnessSlider";
 import { GoBackToStaticDelayInput } from "./GoBackToStaticDelayInput";
@@ -23,11 +28,15 @@ interface ISettings extends SettingsGroupProps {
 }
 
 export function Settings() {
-  const { config } = useConfig();
+  const { config, setConfig } = useConfig();
   const [debug, setDebug] = useState(false);
   useHotkeys("shift+d", () => {
     setDebug(!debug);
   });
+
+  const handleResetConfig = useCallback(() => {
+    setConfig(defaultConfig);
+  }, [setConfig]);
 
   const settings: ISettings[] = [
     {
@@ -185,6 +194,27 @@ export function Settings() {
           />
         ) : null,
       )}
+      <Card variant="outlined" sx={{ borderColor: "error.main" }}>
+        <CardHeader
+          title="Danger area"
+          titleTypographyProps={{ color: "error.main" }}
+        />
+        <List>
+          <ListItem>
+            <ListItemTextStyled
+              primary="Restore default settings"
+              secondary="This will reset all settings to their default value. You can't undo this"
+            />
+            <Button
+              onClick={handleResetConfig}
+              color="error"
+              variant="contained"
+            >
+              Restore default settings
+            </Button>
+          </ListItem>
+        </List>
+      </Card>
       {debug && <JSONTree data={config} />}
     </Stack>
   );

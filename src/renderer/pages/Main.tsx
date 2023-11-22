@@ -1,7 +1,5 @@
 import React from "react";
 import log from "electron-log/renderer";
-import ReactGA from "react-ga4";
-import packageJson from "../../../package.json";
 import { Loader } from "../components/shared/Loader";
 
 const updateInformation = {
@@ -17,17 +15,6 @@ export const Main = () => {
       log.transports.console.level = false;
     }
 
-    ReactGA.initialize("G-BMW3JWS0RJ", {
-      //testMode: !!process.env.VITE_DEV_SERVER_URL,
-      gaOptions: {
-        appName: "F1MV-Lights-Integration",
-        appId: "com.justjoostnl.f1mv.lights.integration",
-        appInstallerId: "com.justjoostnl.f1mv.lights.integration",
-        appVersion: packageJson.version,
-        sampleRate: 100,
-        siteSpeedSampleRate: 100,
-      },
-    });
     const updateAvailable = await window.f1mvli.updater.getUpdateAvailable();
     if (updateAvailable) {
       updateInformation.updateFound = true;
