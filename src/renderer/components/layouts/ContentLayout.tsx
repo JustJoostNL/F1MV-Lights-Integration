@@ -1,5 +1,11 @@
 import React from "react";
-import { Box, BoxProps, Container, Typography } from "@mui/material";
+import {
+  Box,
+  BoxProps,
+  Container,
+  Typography,
+  TypographyOwnProps,
+} from "@mui/material";
 import { Navbar } from "./Navbar";
 
 interface ContentLayoutProps {
@@ -7,6 +13,7 @@ interface ContentLayoutProps {
   children: React.ReactNode;
   hideNavbar?: boolean;
   hideTitle?: boolean;
+  titleVariant?: TypographyOwnProps["variant"];
   container?: boolean;
   containerProps?: BoxProps;
 }
@@ -15,6 +22,7 @@ export const ContentLayout: React.FC<ContentLayoutProps> = ({
   title,
   children,
   hideTitle = false,
+  titleVariant = "h3",
   hideNavbar = false,
   container = false,
   containerProps,
@@ -29,7 +37,13 @@ export const ContentLayout: React.FC<ContentLayoutProps> = ({
         {/* @ts-ignore */}
         <ContainerWrapper {...containerProps}>
           {!hideTitle && title && (
-            <Typography fontWeight={800} variant="h3" noWrap my={2}>
+            <Typography
+              fontWeight={800}
+              variant={titleVariant}
+              noWrap
+              my={2}
+              textAlign="center"
+            >
               {title}
             </Typography>
           )}

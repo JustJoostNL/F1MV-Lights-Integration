@@ -70,7 +70,7 @@ process.env.PUBLIC = process.env.VITE_DEV_SERVER_URL
 // process.env['ELECTRON_DISABLE_SECURITY_WARNINGS'] = 'true'
 
 let win: BrowserWindow | null = null;
-export let availablePort: number;
+export let availablePort: number | null = null;
 export const preload = path.join(__dirname, "../preload/index.js");
 export const url = process.env.VITE_DEV_SERVER_URL;
 

@@ -1,66 +1,64 @@
+export const eventTypeReadableMap = {
+  greenFlag: "Green Flag",
+  yellowFlag: "Yellow Flag",
+  redFlag: "Red Flag",
+  safetyCar: "Safety Car",
+  virtualSafetyCar: "Virtual Safety Car",
+  virtualSafetyCarEnding: "Virtual Safety Car Ending",
+  fastestLap: "Fastest Lap",
+  goBackToStatic: "Go back to static",
+};
+
+export enum EventType {
+  greenFlag = "greenFlag",
+  yellowFlag = "yellowFlag",
+  redFlag = "redFlag",
+  safetyCar = "safetyCar",
+  virtualSafetyCar = "virtualSafetyCar",
+  virtualSafetyCarEnding = "virtualSafetyCarEnding",
+  fastestLap = "fastestLap",
+  goBackToStatic = "goBackToStatic",
+}
+
+export const actionTypeReadableMap = {
+  on: "On",
+  off: "Off",
+  delay: "Delay",
+  go_back_to_current_status: "Go back to current status",
+};
+
+export enum ActionType {
+  on = "on",
+  off = "off",
+  delay = "delay",
+  go_back_to_current_status = "go_back_to_current_status",
+}
+
+export interface Action {
+  type: ActionType;
+  color?: {
+    r: number;
+    g: number;
+    b: number;
+  };
+  brightness?: number;
+  delay?: number;
+}
+export interface Event {
+  id: number;
+  name: string;
+  triggers: EventType[];
+  enabled: boolean;
+  actions: Action[];
+  amount: number;
+}
+
 export interface IConfig {
   autoTurnOffLightsWhenSessionEnds: boolean;
   defaultBrightness: number;
-  goBackToStatic: boolean;
-  goBackToStaticEnabledEvents: string[];
-  goBackToStaticDelay: number;
-  staticBrightness: number;
   hideLogs: boolean;
   startMultiViewerWhenAppStarts: boolean;
-  eventColors: {
-    static: {
-      r: number;
-      g: number;
-      b: number;
-    };
-    greenFlag: {
-      r: number;
-      g: number;
-      b: number;
-    };
-    yellowFlag: {
-      r: number;
-      g: number;
-      b: number;
-    };
-    redFlag: {
-      r: number;
-      g: number;
-      b: number;
-    };
-    safetyCar: {
-      r: number;
-      g: number;
-      b: number;
-    };
-    virtualSafetyCar: {
-      r: number;
-      g: number;
-      b: number;
-    };
-    virtualSafetyCarEnding: {
-      r: number;
-      g: number;
-      b: number;
-    };
-  };
-  effects: {
-    name: string;
-    id: number;
-    trigger: string;
-    enabled: boolean;
-    actions: {
-      type: string;
-      color?: {
-        r: number;
-        g: number;
-        b: number;
-      };
-      brightness?: number;
-      delay?: number;
-    }[];
-    amount: number;
-  }[];
+  events: Event[];
   multiviewerLiveTimingURL: string;
   multiviewerCheck: boolean;
   philipsHueEnabled: boolean;

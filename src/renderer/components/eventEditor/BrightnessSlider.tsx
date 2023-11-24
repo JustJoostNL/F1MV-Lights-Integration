@@ -1,31 +1,33 @@
+import { Box, Slider, Input } from "@mui/material";
 import React, { useCallback } from "react";
-import { Box, Input, Slider } from "@mui/material";
-import { useConfig } from "../../hooks/useConfig";
 
-export function GoBackToStaticBrightnessSlider() {
-  const { config, updateConfig } = useConfig();
+interface BrightnessSliderProps {
+  value: number;
+  onChange: (newValue: number) => void;
+}
 
+export function BrightnessSlider({ value, onChange }: BrightnessSliderProps) {
   const handleSliderChange = useCallback(
     async (_event: Event, value: number | number[]) => {
       if (typeof value !== "number") return;
-      await updateConfig({ staticBrightness: value as number });
+      onChange(value as number);
     },
-    [updateConfig],
+    [onChange],
   );
 
   const handleInputChange = useCallback(
     async (event: React.ChangeEvent<HTMLInputElement>) => {
       const value = event.target.value;
-      await updateConfig({ staticBrightness: Number(value) });
+      onChange(Number(value));
     },
-    [updateConfig],
+    [onChange],
   );
 
   return (
     <Box display="flex" alignItems="center" sx={{ width: 300 }}>
       <Box sx={{ m: 1, width: "100%" }}>
         <Slider
-          value={config.staticBrightness}
+          value={value}
           onChange={handleSliderChange}
           min={0}
           max={100}
@@ -37,7 +39,7 @@ export function GoBackToStaticBrightnessSlider() {
         />
       </Box>
       <Input
-        value={config.staticBrightness}
+        value={value}
         onChange={handleInputChange}
         size="small"
         type="number"

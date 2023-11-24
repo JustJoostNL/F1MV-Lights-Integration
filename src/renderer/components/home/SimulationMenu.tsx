@@ -11,7 +11,6 @@ import {
   FlashOff,
   NoCrash,
 } from "@mui/icons-material";
-import { ipcRenderer } from "electron";
 import { ListItemIcon, Tooltip } from "@mui/material";
 import { green } from "@mui/material/colors";
 import KeyboardArrowDown from "@mui/icons-material/KeyboardArrowDown";
@@ -32,7 +31,7 @@ export function SimulationMenu() {
 
   const handleOnSimulateEvent = useCallback(
     (event: string, arg: string) => {
-      ipcRenderer.send(event, arg);
+      //ipcRenderer.send(event, arg);
       handleClose();
     },
     [handleClose],

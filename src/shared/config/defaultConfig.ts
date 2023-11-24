@@ -1,60 +1,145 @@
-import { IConfig } from "./config_types";
+import { ActionType, IConfig, EventType } from "./config_types";
 
 export const defaultConfig: IConfig = {
   autoTurnOffLightsWhenSessionEnds: true,
   defaultBrightness: 100,
-  goBackToStatic: true,
-  goBackToStaticEnabledEvents: ["greenFlag"],
-  goBackToStaticDelay: 10,
-  staticBrightness: 70,
   hideLogs: true,
   startMultiViewerWhenAppStarts: false,
-  eventColors: {
-    static: {
-      r: 255,
-      g: 255,
-      b: 255,
-    },
-    greenFlag: {
-      r: 0,
-      g: 255,
-      b: 0,
-    },
-    yellowFlag: {
-      r: 255,
-      g: 150,
-      b: 0,
-    },
-    redFlag: {
-      r: 255,
-      g: 0,
-      b: 0,
-    },
-    safetyCar: {
-      r: 255,
-      g: 150,
-      b: 0,
-    },
-    virtualSafetyCar: {
-      r: 255,
-      g: 150,
-      b: 0,
-    },
-    virtualSafetyCarEnding: {
-      r: 255,
-      g: 150,
-      b: 0,
-    },
-  },
-  effects: [
+  events: [
     {
       id: 0,
-      name: "Fastest Lap",
-      trigger: "fastestLap",
+      name: "Back to static",
+      triggers: [EventType.goBackToStatic],
       enabled: true,
       actions: [
         {
-          type: "on",
+          type: ActionType.on,
+          color: {
+            r: 255,
+            g: 255,
+            b: 255,
+          },
+          brightness: 100,
+        },
+      ],
+      amount: 1,
+    },
+    {
+      id: 1,
+      name: "Green Flag",
+      triggers: [EventType.greenFlag],
+      enabled: true,
+      actions: [
+        {
+          type: ActionType.on,
+          color: {
+            r: 0,
+            g: 255,
+            b: 0,
+          },
+          brightness: 100,
+        },
+      ],
+      amount: 1,
+    },
+    {
+      id: 2,
+      name: "Yellow Flag",
+      triggers: [EventType.yellowFlag],
+      enabled: true,
+      actions: [
+        {
+          type: ActionType.on,
+          color: {
+            r: 255,
+            g: 150,
+            b: 0,
+          },
+          brightness: 100,
+        },
+      ],
+      amount: 1,
+    },
+    {
+      id: 3,
+      name: "Red Flag",
+      triggers: [EventType.redFlag],
+      enabled: true,
+      actions: [
+        {
+          type: ActionType.on,
+          color: {
+            r: 255,
+            g: 0,
+            b: 0,
+          },
+          brightness: 100,
+        },
+      ],
+      amount: 1,
+    },
+    {
+      id: 4,
+      name: "Safety Car",
+      triggers: [EventType.safetyCar],
+      enabled: true,
+      actions: [
+        {
+          type: ActionType.on,
+          color: {
+            r: 255,
+            g: 150,
+            b: 0,
+          },
+          brightness: 100,
+        },
+      ],
+      amount: 1,
+    },
+    {
+      id: 5,
+      name: "Virtual Safety Car",
+      triggers: [EventType.virtualSafetyCar],
+      enabled: true,
+      actions: [
+        {
+          type: ActionType.on,
+          color: {
+            r: 255,
+            g: 150,
+            b: 0,
+          },
+          brightness: 100,
+        },
+      ],
+      amount: 1,
+    },
+    {
+      id: 6,
+      name: "Virtual Safety Car Ending",
+      triggers: [EventType.virtualSafetyCarEnding],
+      enabled: true,
+      actions: [
+        {
+          type: ActionType.on,
+          color: {
+            r: 255,
+            g: 150,
+            b: 0,
+          },
+          brightness: 100,
+        },
+      ],
+      amount: 1,
+    },
+    {
+      id: 7,
+      name: "Fastest Lap",
+      triggers: [EventType.fastestLap],
+      enabled: true,
+      actions: [
+        {
+          type: ActionType.on,
           color: {
             r: 91,
             g: 0,
@@ -63,11 +148,11 @@ export const defaultConfig: IConfig = {
           brightness: 100,
         },
         {
-          type: "delay",
+          type: ActionType.delay,
           delay: 1000,
         },
         {
-          type: "go_back_to_current_status",
+          type: ActionType.go_back_to_current_status,
         },
       ],
       amount: 1,

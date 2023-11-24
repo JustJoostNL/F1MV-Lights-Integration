@@ -11,7 +11,8 @@ import { theme } from "./lib/theme";
 import { ConfigProvider } from "./hooks/useConfig";
 import { MinimalScrollbars } from "./components/shared/MinimalScrollbars";
 import { BaseStyle } from "./components/shared/BaseStyle";
-import { Settingspage } from "./pages/Settings";
+import { SettingsPage } from "./pages/Settings";
+import { EventEditorPage } from "./pages/EventEditor";
 
 Sentry.init({
   dsn: "https://e64c3ec745124566b849043192e58711@o4504289317879808.ingest.sentry.io/4504289338392576",
@@ -58,7 +59,8 @@ root.render(
             <Routes>
               <Route path="/" element={<Main />} />
               <Route path="/home" element={<HomePage />} />
-              <Route path="/settings" element={<Settingspage />} />
+              <Route path="/settings" element={<SettingsPage />} />
+              <Route path="/event-editor" element={<EventEditorPage />} />
             </Routes>
           </HashRouter>
         </ThemeProvider>

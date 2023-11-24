@@ -5,7 +5,7 @@ import { ContentLayout } from "../components/layouts/ContentLayout";
 import { Settings } from "../components/settings/Settings";
 import { useDocumentTitle } from "../hooks/useDocumentTitle";
 
-export function Settingspage() {
+export function SettingsPage() {
   useDocumentTitle("F1MV Lights Integration - Settings");
 
   useHotkeys("shift+o", () => {

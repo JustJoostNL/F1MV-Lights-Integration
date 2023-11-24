@@ -6,18 +6,13 @@ import { defaultConfig } from "../../../shared/config/defaultConfig";
 import { useConfig } from "../../hooks/useConfig";
 import { AutoTurnOffLightsToggle } from "./AutoTurnOffLightsToggle";
 import { AutoMultiViewerStartToggle } from "./AutoMultiViewerStartToggle";
-import { ColorCustomization } from "./ColorCustomization";
 import { DefaultBrightnessSlider } from "./DefaultBrightnessSlider";
-import { EffectSettings } from "./EffectSettings";
-import { GoBackToStaticToggle } from "./GoBackToStaticToggle";
+import { EventSettings } from "./EventSettings";
 import {
   ListItemTextStyled,
   SettingsGroup,
   SettingsGroupProps,
 } from "./SettingsGroup";
-import { GoBackToStaticEventSelector } from "./GoBackToStaticEventSelector";
-import { GoBackToStaticBrightnessSlider } from "./GoBackToStaticBrightnessSlider";
-import { GoBackToStaticDelayInput } from "./GoBackToStaticDelayInput";
 import { MultiViewerLiveTimingUrlInput } from "./MultiViewerLiveTimingUrlInput";
 import { MultiViewerSyncToggle } from "./MultiViewerSyncToggle";
 import { UpdateChannelSelector } from "./UpdateChannelSelector";
@@ -68,67 +63,12 @@ export function Settings() {
           input: <DefaultBrightnessSlider />,
         },
         {
-          type: "subgroup",
-          title: "Go back to static",
-          settings: [
-            {
-              type: "setting",
-              title: "Go back to static",
-              description:
-                "Automatically go back to a (customizable) static color after a (customizable) amount of time.",
-              configKeys: ["goBackToStatic"],
-              input: <GoBackToStaticToggle />,
-            },
-            {
-              type: "setting",
-              condition: config.goBackToStatic,
-              title: "Go back to static delay",
-              description:
-                "After how many seconds should the lights go back to static?",
-              configKeys: ["goBackToStaticDelay"],
-              input: <GoBackToStaticDelayInput />,
-            },
-            {
-              type: "setting",
-              condition: config.goBackToStatic,
-              title: "Go back to static brightness",
-              description:
-                "What should the brightness be when the lights go back to static?",
-              configKeys: ["staticBrightness"],
-              input: <GoBackToStaticBrightnessSlider />,
-            },
-            {
-              type: "setting",
-              condition: config.goBackToStatic,
-              title: "Go back to static enabled events",
-              description:
-                "On which events should the lights go back to static?",
-              configKeys: ["goBackToStaticEnabledEvents"],
-              input: <GoBackToStaticEventSelector />,
-            },
-          ],
-        },
-        {
-          type: "subgroup",
-          title: "Customization",
-          settings: [
-            {
-              type: "setting",
-              title: "Color customization",
-              description:
-                "If you have a color vision deficiency, or just like to have a different color, you can customize the colors used for the events.",
-              configKeys: ["eventColors"],
-              input: <ColorCustomization />,
-            },
-            {
-              type: "setting",
-              title: "Effect settings",
-              description:
-                "Here you can customize your experience by creating your own effects, using an advanced effect editor.",
-              configKeys: ["effects"],
-              input: <EffectSettings />,
-            },
-          ],
+          type: "setting",
+          title: "Event settings",
+          description:
+            "Here you can enhance your experience by customizing what happens on certain events.",
+          configKeys: ["events"],
+          input: <EventSettings />,
         },
       ],
     },
