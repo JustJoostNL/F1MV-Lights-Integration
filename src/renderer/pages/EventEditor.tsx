@@ -1,29 +1,37 @@
 import React, { useCallback, useMemo, useState } from "react";
-import { Box, Button, IconButton, Tooltip } from "@mui/material";
-import { DataGrid, GridColDef, GridRowId } from "@mui/x-data-grid";
+import { Box, Button } from "@mui/material";
 import {
-  Edit,
-  DeleteRounded,
-  IosShareOutlined,
-  PlayArrowRounded,
-  AddRounded,
-} from "@mui/icons-material";
+  DataGrid,
+  GridColDef,
+  GridRowId,
+  useGridApiRef,
+} from "@mui/x-data-grid";
+import { AddRounded } from "@mui/icons-material";
 import { enqueueSnackbar } from "notistack";
 import { useHotkeys } from "react-hotkeys-hook";
+import { JSONTree } from "react-json-tree";
 import { useDocumentTitle } from "../hooks/useDocumentTitle";
 import { ContentLayout } from "../components/layouts/ContentLayout";
 import { useConfig } from "../hooks/useConfig";
-import { EditEventDialog } from "../components/eventEditor/EditEventDialog";
+import { EventDialog } from "../components/eventEditor/EventDialog";
 import { eventTypeReadableMap } from "../../shared/config/config_types";
+import { ToolsCell } from "../components/eventEditor/ToolsCell";
 
 export function EventEditorPage() {
   const { config, updateConfig } = useConfig();
+  const [debug, setDebug] = useState(false);
   const [editEventDialogOpen, setEditEventDialogOpen] = useState(false);
-  const [selectedEffectId, setSelectedEffectId] = useState<number | null>(null);
+  const [selectedEventIdIsNew, setSelectedEventIdIsNew] = useState(false);
+  const [selectedEventId, setSelectedEventId] = useState<number | null>(null);
+  const gridApiRef = useGridApiRef();
 
   useDocumentTitle("F1MV Lights Integration - Event Editor");
   useHotkeys("shift+o", () => {
     window.f1mvli.config.open();
+  });
+
+  useHotkeys("shift+d", () => {
+    setDebug((prev) => !prev);
   });
 
   const handleDelete = useCallback(
@@ -37,16 +45,17 @@ export function EventEditorPage() {
 
   const handleEdit = useCallback(
     (id: GridRowId) => {
-      setSelectedEffectId(parseInt(id.toString()));
+      setSelectedEventId(parseInt(id.toString()));
       setEditEventDialogOpen(true);
     },
-    [setSelectedEffectId],
+    [setSelectedEventId],
   );
 
   const handleCloseEditDialog = useCallback(() => {
     setEditEventDialogOpen(false);
-    setSelectedEffectId(null);
-  }, []);
+    if (selectedEventIdIsNew) setSelectedEventIdIsNew(false);
+    setSelectedEventId(null);
+  }, [selectedEventIdIsNew]);
 
   const handleShare = useCallback(
     (id: GridRowId) => {
@@ -66,17 +75,54 @@ export function EventEditorPage() {
     }, 0);
     newEvents.push({
       id: highestId + 1,
-      name: "New Event",
+      name: `New Event - ${highestId + 1}`,
       enabled: true,
       triggers: [],
       actions: [],
       amount: 1,
     });
     updateConfig({ events: newEvents });
-    setSelectedEffectId(highestId + 1);
+    setSelectedEventId(highestId + 1);
+    setSelectedEventIdIsNew(true);
+    gridApiRef.current.setPage(
+      Math.ceil(
+        (highestId + 1) /
+          gridApiRef.current.state.pagination.paginationModel.pageSize,
+      ),
+    );
     setEditEventDialogOpen(true);
     enqueueSnackbar("New event created", { variant: "success" });
-  }, [config, updateConfig]);
+  }, [config, updateConfig, gridApiRef]);
+
+  const handleDuplicate = useCallback(
+    (id: GridRowId) => {
+      const event = config.events.find((event) => event.id === id);
+      if (!event) return;
+      const newEvents = [...config.events];
+      const highestId = newEvents.reduce((prev, curr) => {
+        if (curr.id > prev) return curr.id;
+        return prev;
+      }, 0);
+      const newEvent = {
+        ...event,
+        id: highestId + 1,
+        name: `${event.name} (Copy)`,
+      };
+      newEvents.push(newEvent);
+      updateConfig({ events: newEvents });
+      setSelectedEventId(highestId + 1);
+      setSelectedEventIdIsNew(true);
+      gridApiRef.current.setPage(
+        Math.ceil(
+          (highestId + 1) /
+            gridApiRef.current.state.pagination.paginationModel.pageSize,
+        ),
+      );
+      setEditEventDialogOpen(true);
+      enqueueSnackbar("New event created", { variant: "success" });
+    },
+    [config, updateConfig, gridApiRef],
+  );
 
   const columns: GridColDef[] = useMemo(
     () => [
@@ -88,34 +134,19 @@ export function EventEditorPage() {
       {
         field: "edit",
         headerName: "Tools",
-        width: 150,
+        width: 120,
         renderCell: (params) => (
-          <>
-            <Tooltip arrow title="Simulate event">
-              <IconButton size="small" onClick={() => {}}>
-                <PlayArrowRounded />
-              </IconButton>
-            </Tooltip>
-            <Tooltip arrow title="Edit event">
-              <IconButton size="small" onClick={() => handleEdit(params.id)}>
-                <Edit />
-              </IconButton>
-            </Tooltip>
-            <Tooltip arrow title="Share event">
-              <IconButton size="small" onClick={() => handleShare(params.id)}>
-                <IosShareOutlined />
-              </IconButton>
-            </Tooltip>
-            <Tooltip arrow title="Delete event">
-              <IconButton size="small" onClick={() => handleDelete(params.id)}>
-                <DeleteRounded />
-              </IconButton>
-            </Tooltip>
-          </>
+          <ToolsCell
+            params={params}
+            handleEdit={handleEdit}
+            handleDuplicate={handleDuplicate}
+            handleShare={handleShare}
+            handleDelete={handleDelete}
+          />
         ),
       },
     ],
-    [handleDelete, handleEdit, handleShare],
+    [handleDelete, handleEdit, handleShare, handleDuplicate],
   );
 
   const rows = useMemo(() => {
@@ -153,6 +184,7 @@ export function EventEditorPage() {
           Create new event
         </Button>
         <DataGrid
+          apiRef={gridApiRef}
           rows={rows}
           columns={columns}
           disableColumnFilter
@@ -160,12 +192,21 @@ export function EventEditorPage() {
           disableColumnMenu
           disableRowSelectionOnClick
           checkboxSelection={false}
+          pageSizeOptions={[8, 12, 16]}
+          initialState={{ pagination: { paginationModel: { pageSize: 8 } } }}
+          sx={{
+            "&.MuiDataGrid-root .MuiDataGrid-cell:focus-within": {
+              outline: "none !important",
+            },
+          }}
         />
+        {debug && <JSONTree data={config.events} />}
       </Box>
-      <EditEventDialog
+      <EventDialog
         open={editEventDialogOpen}
         onClose={handleCloseEditDialog}
-        eventId={selectedEffectId ?? 0}
+        eventId={selectedEventId}
+        isNew={selectedEventIdIsNew}
       />
     </ContentLayout>
   );

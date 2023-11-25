@@ -17,26 +17,29 @@ import { ActionType, Event } from "../../../shared/config/config_types";
 import { EventTriggersAutocomplete } from "./EventTriggersAutocomplete";
 import { EffectAction } from "./EffectAction";
 
-interface EditEventDialogProps {
+interface EventDialogProps {
   open: boolean;
   onClose: () => void;
-  eventId: number;
+  eventId: number | null;
+  isNew: boolean;
 }
 
-export function EditEventDialog({
+export function EventDialog({
   open,
   onClose,
   eventId,
-}: EditEventDialogProps) {
+  isNew,
+}: EventDialogProps) {
   const [event, setEvent] = useState<Event | undefined>(undefined);
   const { config, updateConfig } = useConfig();
 
   useEffect(() => {
+    if (!open) setEvent(undefined);
+  }, [open]);
+
+  useEffect(() => {
     const event = config.events.find((event) => event.id === eventId);
-    if (!event) {
-      //onClose();
-      return;
-    }
+    if (!event) return;
     setEvent(event);
   }, [config, eventId, onClose]);
 
@@ -55,7 +58,16 @@ export function EditEventDialog({
     setEvent({ ...event, actions: newActions });
   }, [event]);
 
-  const onSubmit = useCallback(() => {
+  const handleClose = useCallback(() => {
+    setEvent(undefined);
+    if (isNew) {
+      const newEvents = config.events.filter((event) => event.id !== eventId);
+      updateConfig({ events: newEvents });
+    }
+    onClose();
+  }, [onClose, config, updateConfig, isNew, eventId]);
+
+  const handleSubmit = useCallback(() => {
     if (!event) return;
     const newEvents = config.events.map((configEvents) => {
       if (configEvents.id !== event.id) return configEvents;
@@ -65,7 +77,7 @@ export function EditEventDialog({
     onClose();
   }, [event, updateConfig, config, onClose]);
 
-  const isSaveButtonDisabled = useMemo(() => {
+  const isSubmitButtonDisabled = useMemo(() => {
     if (!event) return true;
     if (!event.name) return true;
     if (event.triggers.length === 0) return true;
@@ -78,12 +90,12 @@ export function EditEventDialog({
   return (
     <Dialog
       open={open}
-      onClose={onClose}
+      onClose={handleClose}
       fullWidth
       maxWidth="sm"
       scroll="paper"
     >
-      <DialogTitle>Edit Event</DialogTitle>
+      <DialogTitle>{isNew ? "Create New Event" : "Edit Event"}</DialogTitle>
       <DialogContent>
         <TextField
           margin="dense"
@@ -170,13 +182,13 @@ export function EditEventDialog({
         </Typography>
       </DialogContent>
       <DialogActions>
-        <Button onClick={onClose}>Cancel</Button>
+        <Button onClick={handleClose}>Cancel</Button>
         <Button
           variant="contained"
-          onClick={onSubmit}
-          disabled={isSaveButtonDisabled}
+          onClick={handleSubmit}
+          disabled={isSubmitButtonDisabled}
         >
-          Save
+          {isNew ? "Create" : "Save"}
         </Button>
       </DialogActions>
     </Dialog>

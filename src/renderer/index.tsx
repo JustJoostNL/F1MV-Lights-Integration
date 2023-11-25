@@ -43,7 +43,7 @@ root.render(
   <React.StrictMode>
     <ConfigProvider>
       <SnackbarProvider
-        autoHideDuration={3000}
+        autoHideDuration={1500}
         anchorOrigin={{
           vertical: "bottom",
           horizontal: "left",
