@@ -2,22 +2,22 @@ import React, { useCallback } from "react";
 import { TextField } from "@mui/material";
 import { useConfig } from "../../hooks/useConfig";
 
-export function MultiViewerLiveTimingUrlInput() {
+export function PhilipsHueBridgeIpInput() {
   const { config, updateConfig } = useConfig();
 
   const handleInputChange = useCallback(
     async (event: React.ChangeEvent<HTMLInputElement>) => {
-      const value = event.target.value;
-      await updateConfig({ multiviewerLiveTimingURL: value });
+      const value = event.target.value === "" ? undefined : event.target.value;
+      await updateConfig({ philipsHueBridgeIP: value });
     },
     [updateConfig],
   );
 
   return (
     <TextField
-      defaultValue={config.multiviewerLiveTimingURL}
+      defaultValue={config.philipsHueBridgeIP}
       onChange={handleInputChange}
-      placeholder="e.g. http://localhost:10101"
+      label="Bridge IP"
       variant="outlined"
     />
   );

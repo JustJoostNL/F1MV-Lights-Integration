@@ -2,22 +2,22 @@ import React, { useCallback } from "react";
 import { TextField } from "@mui/material";
 import { useConfig } from "../../hooks/useConfig";
 
-export function MultiViewerLiveTimingUrlInput() {
+export function HomeAssistantLongLivedAccessTokenInput() {
   const { config, updateConfig } = useConfig();
 
   const handleInputChange = useCallback(
     async (event: React.ChangeEvent<HTMLInputElement>) => {
-      const value = event.target.value;
-      await updateConfig({ multiviewerLiveTimingURL: value });
+      const value = event.target.value === "" ? undefined : event.target.value;
+      await updateConfig({ homeAssistantToken: value });
     },
     [updateConfig],
   );
 
   return (
     <TextField
-      defaultValue={config.multiviewerLiveTimingURL}
+      defaultValue={config.homeAssistantToken}
       onChange={handleInputChange}
-      placeholder="e.g. http://localhost:10101"
+      label="Long-Lived Access Token"
       variant="outlined"
     />
   );

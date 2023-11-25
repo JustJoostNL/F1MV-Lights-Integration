@@ -103,7 +103,7 @@ export function ThreeDotMenu() {
               style={{ width: "1.5rem" }}
             />
           </ListItemIcon>
-          Open Multiviewer{" "}
+          Open MultiViewer{" "}
           <OpenInNewRounded fontSize="inherit" sx={{ ml: 1 }} />
         </MenuItem>
 
