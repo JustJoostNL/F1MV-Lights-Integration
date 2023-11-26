@@ -9,6 +9,7 @@ import {
 } from "@mui/icons-material";
 import { Menu, MenuItem, Button, ListItemIcon } from "@mui/material";
 import { GridRenderCellParams, GridRowId } from "@mui/x-data-grid";
+import { useConfig } from "../../hooks/useConfig";
 
 interface ToolsCellProps {
   handleEdit: (eventId: GridRowId) => void;
@@ -26,6 +27,7 @@ export function ToolsCell({
   params,
 }: ToolsCellProps) {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const { config } = useConfig();
 
   const handleClick = useCallback(
     (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -40,7 +42,11 @@ export function ToolsCell({
 
   const handleSimulateClick = useCallback(() => {
     setAnchorEl(null);
-  }, []);
+    const event = config.events.find((ev) => ev.id === params.id);
+    const eventTrigger = event?.triggers[0];
+    if (!eventTrigger) return;
+    window.f1mvli.eventManager.simulate(eventTrigger);
+  }, [config, params.id]);
 
   const handleEditClick = useCallback(() => {
     setAnchorEl(null);

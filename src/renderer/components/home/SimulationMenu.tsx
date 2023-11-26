@@ -1,22 +1,65 @@
-import React, { useCallback, useState } from "react";
-import Button from "@mui/material/Button";
-import Menu from "@mui/material/Menu";
-import MenuItem from "@mui/material/MenuItem";
+import React, { useCallback, useMemo, useState } from "react";
 import {
+  Square,
+  KeyboardArrowDown,
+  DirectionsCar,
   Flag,
   MinorCrash,
-  DirectionsCar,
-  Square,
-  Timer,
   FlashOff,
   NoCrash,
+  Timer,
+  CheckCircle,
+  DoneAllRounded,
+  SportsScoreRounded,
+  BlockRounded,
+  LogoutRounded,
+  CancelRounded,
 } from "@mui/icons-material";
-import { ListItemIcon, Tooltip } from "@mui/material";
-import { green } from "@mui/material/colors";
-import KeyboardArrowDown from "@mui/icons-material/KeyboardArrowDown";
+import { ListItemIcon, Button, Menu, MenuItem, Divider } from "@mui/material";
+import { blue, green, red } from "@mui/material/colors";
+import {
+  EventType,
+  eventTypeReadableMap,
+} from "../../../shared/config/config_types";
+import { useConfig } from "../../hooks/useConfig";
+
+interface Item {
+  name: string;
+  icon: JSX.Element;
+  cta: () => void;
+  hidden: boolean;
+}
+
+const icons = {
+  [EventType.GreenFlag]: <Flag sx={{ color: green[500] }} />,
+  [EventType.YellowFlag]: <Flag sx={{ color: "yellow" }} />,
+  [EventType.BlueFlag]: <Flag sx={{ color: blue[500] }} />,
+  [EventType.RedFlag]: <Flag sx={{ color: "red" }} />,
+  [EventType.SafetyCar]: <MinorCrash sx={{ color: "yellow" }} />,
+  [EventType.VirtualSafetyCar]: <DirectionsCar sx={{ color: "yellow" }} />,
+  [EventType.VirtualSafetyCarEnding]: <NoCrash sx={{ color: "yellow" }} />,
+  [EventType.FastestLap]: <Timer sx={{ color: "#e801fe" }} />,
+  [EventType.TimePenalty]: <Timer sx={{ color: red[500] }} />,
+  [EventType.GoBackToStatic]: <Square sx={{ borderRadius: 10 }} />,
+  [EventType.SessionEnded]: <DoneAllRounded sx={{ color: green[500] }} />,
+  [EventType.DrsEnabled]: <CheckCircle sx={{ color: green[500] }} />,
+  [EventType.DrsDisabled]: <CancelRounded sx={{ color: red[500] }} />,
+  [EventType.ChequeredFlag]: <SportsScoreRounded />,
+  [EventType.PitEntryClosed]: <LogoutRounded sx={{ color: red[500] }} />,
+  [EventType.PitLaneEntryClosed]: <BlockRounded sx={{ color: red[500] }} />,
+  [EventType.PitExitOpen]: <LogoutRounded sx={{ color: green[500] }} />,
+};
 
 export function SimulationMenu() {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const { config } = useConfig();
+
+  const usedEventTriggers = useMemo(() => {
+    return config.events
+      .filter((event) => event.enabled)
+      .map((event) => event.triggers)
+      .flat();
+  }, [config]);
 
   const handleClick = useCallback(
     (event: React.MouseEvent<HTMLElement>) => {
@@ -30,12 +73,26 @@ export function SimulationMenu() {
   }, []);
 
   const handleOnSimulateEvent = useCallback(
-    (event: string, arg: string) => {
-      //ipcRenderer.send(event, arg);
+    (event: EventType) => {
+      window.f1mvli.eventManager.simulate(event);
       handleClose();
     },
     [handleClose],
   );
+
+  const handleOnAllLightsOff = useCallback(() => {
+    window.f1mvli.eventManager.allOff();
+    handleClose();
+  }, [handleClose]);
+
+  const items: Item[] = Object.values(EventType).map((event) => {
+    return {
+      name: eventTypeReadableMap[event],
+      icon: icons[event],
+      cta: () => handleOnSimulateEvent(event),
+      hidden: !usedEventTriggers.includes(event),
+    };
+  });
 
   return (
     <div>
@@ -53,73 +110,20 @@ export function SimulationMenu() {
         anchorEl={anchorEl}
         open={Boolean(anchorEl)}
         onClick={handleClose}
+        sx={{
+          maxHeight: 450,
+        }}
       >
-        <MenuItem onClick={() => handleOnSimulateEvent("flagSim", "Green")}>
-          <ListItemIcon>
-            <Flag sx={{ color: green[500] }} />
-          </ListItemIcon>
-          Green Flag
-        </MenuItem>
-
-        <MenuItem onClick={() => handleOnSimulateEvent("flagSim", "Yellow")}>
-          <ListItemIcon>
-            <Flag sx={{ color: "yellow" }} />
-          </ListItemIcon>
-          Yellow Flag
-        </MenuItem>
-
-        <MenuItem onClick={() => handleOnSimulateEvent("flagSim", "Red")}>
-          <ListItemIcon>
-            <Flag sx={{ color: "red" }} />
-          </ListItemIcon>
-          Red Flag
-        </MenuItem>
-
-        <MenuItem onClick={() => handleOnSimulateEvent("flagSim", "SC")}>
-          <ListItemIcon>
-            <MinorCrash sx={{ color: "yellow" }} />
-          </ListItemIcon>
-          Safety Car
-        </MenuItem>
-
-        <MenuItem onClick={() => handleOnSimulateEvent("flagSim", "VSC")}>
-          <ListItemIcon>
-            <DirectionsCar sx={{ color: "yellow" }} />
-          </ListItemIcon>
-          Virtual Safety Car
-        </MenuItem>
-
-        <MenuItem onClick={() => handleOnSimulateEvent("flagSim", "vscEnding")}>
-          <ListItemIcon>
-            <NoCrash sx={{ color: "yellow" }} />
-          </ListItemIcon>
-          Virtual Safety Car Ending
-        </MenuItem>
-
-        <Tooltip
-          arrow
-          title="This will only work when you have a fastest lap effect created and enabled."
-        >
-          <MenuItem
-            onClick={() => handleOnSimulateEvent("flagSim", "fastestLap")}
-          >
-            <ListItemIcon>
-              <Timer sx={{ color: "#e801fe" }} />
-            </ListItemIcon>
-            Fastest Lap
-          </MenuItem>
-        </Tooltip>
-
-        <MenuItem
-          onClick={() => handleOnSimulateEvent("flagSim", "staticColor")}
-        >
-          <ListItemIcon>
-            <Square sx={{ borderRadius: 10 }} />
-          </ListItemIcon>
-          Static Color
-        </MenuItem>
-
-        <MenuItem onClick={() => handleOnSimulateEvent("flagSim", "alloff")}>
+        {items
+          .filter((item) => !item.hidden)
+          .map((item) => (
+            <MenuItem key={item.name} onClick={item.cta}>
+              <ListItemIcon>{item.icon}</ListItemIcon>
+              {item.name}
+            </MenuItem>
+          ))}
+        <Divider />
+        <MenuItem onClick={handleOnAllLightsOff}>
           <ListItemIcon>
             <FlashOff />
           </ListItemIcon>

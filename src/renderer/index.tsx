@@ -13,6 +13,7 @@ import { MinimalScrollbars } from "./components/shared/MinimalScrollbars";
 import { BaseStyle } from "./components/shared/BaseStyle";
 import { SettingsPage } from "./pages/Settings";
 import { EventEditorPage } from "./pages/EventEditor";
+import { HomeAssistantDeviceSelector } from "./pages/HomeAssistantDeviceSelector";
 
 Sentry.init({
   dsn: "https://e64c3ec745124566b849043192e58711@o4504289317879808.ingest.sentry.io/4504289338392576",
@@ -61,6 +62,10 @@ root.render(
               <Route path="/home" element={<HomePage />} />
               <Route path="/settings" element={<SettingsPage />} />
               <Route path="/event-editor" element={<EventEditorPage />} />
+              <Route
+                path="/home-assistant-ds"
+                element={<HomeAssistantDeviceSelector />}
+              />
             </Routes>
           </HashRouter>
         </ThemeProvider>

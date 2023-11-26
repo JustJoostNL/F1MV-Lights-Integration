@@ -13,7 +13,7 @@ export function SettingsPage() {
   });
 
   return (
-    <ContentLayout title="Settings" hideTitle>
+    <ContentLayout title="Settings" titleVariant="h2">
       <Container
         sx={{
           mt: 3,

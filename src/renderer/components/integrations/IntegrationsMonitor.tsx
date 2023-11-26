@@ -14,69 +14,6 @@ import {
 import { IntegrationState } from "./types";
 import "./status.css";
 
-const testIntegrationStates: IntegrationState[] = [
-  {
-    name: "ikea",
-    state: true,
-    disabled: false,
-  },
-  {
-    name: "govee",
-    state: true,
-    disabled: false,
-  },
-  {
-    name: "hue",
-    state: true,
-    disabled: false,
-  },
-  {
-    name: "openRGB",
-    state: true,
-    disabled: true,
-  },
-  {
-    name: "homeAssistant",
-    state: true,
-    disabled: true,
-  },
-  {
-    name: "streamDeck",
-    state: true,
-    disabled: true,
-  },
-  {
-    name: "WLED",
-    state: true,
-    disabled: true,
-  },
-  {
-    name: "MQTT",
-    state: true,
-    disabled: true,
-  },
-  {
-    name: "F1MV",
-    state: true,
-    disabled: true,
-  },
-  {
-    name: "F1TVLiveSession",
-    state: true,
-    disabled: false,
-  },
-  {
-    name: "update",
-    state: true,
-    disabled: false,
-  },
-  {
-    name: "webServer",
-    state: true,
-    disabled: false,
-  },
-];
-
 const integrationStateMap: {
   [key: string]: string;
 } = {

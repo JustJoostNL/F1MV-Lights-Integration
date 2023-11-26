@@ -47,7 +47,7 @@ export function EventDialog({
     if (!event) return;
     const newActions = [...event.actions];
     newActions.push({
-      type: ActionType.on,
+      type: ActionType.On,
       color: {
         r: 255,
         g: 255,

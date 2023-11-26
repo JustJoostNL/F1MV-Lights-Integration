@@ -26,7 +26,7 @@ export function ActionTypeAutocomplete({
         value={selectedActionType}
         getOptionLabel={(key) => actionTypeReadableMap[key]}
         onChange={(_event, newValue) => {
-          onChange(newValue ?? ActionType.on);
+          onChange(newValue ?? ActionType.On);
         }}
         renderInput={(params) => <TextField {...params} label="Type" />}
       />

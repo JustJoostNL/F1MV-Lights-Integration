@@ -4,9 +4,7 @@ import { Button, Card, CardHeader, List, ListItem, Stack } from "@mui/material";
 import { JSONTree } from "react-json-tree";
 import { defaultConfig } from "../../../shared/config/defaultConfig";
 import { useConfig } from "../../hooks/useConfig";
-import { AutoTurnOffLightsToggle } from "./AutoTurnOffLightsToggle";
 import { AutoMultiViewerStartToggle } from "./AutoMultiViewerStartToggle";
-import { DefaultBrightnessSlider } from "./DefaultBrightnessSlider";
 import { EventSettings } from "./EventSettings";
 import {
   ListItemTextStyled,
@@ -45,6 +43,7 @@ import { DiscordEnabledToggle } from "./DiscordEnabledToggle";
 import { DiscordAvoidSpoilersToggle } from "./DiscordAvoidSpoilersToggle";
 import { WebserverEnabledToggle } from "./WebserverEnabledToggle";
 import { WebserverPortInput } from "./WebserverPortInput";
+import { HomeAssistantDevicesButton } from "./HomeAssistantDevicesButton";
 
 interface ISettings extends SettingsGroupProps {
   type?: "normal" | "experimental" | "debug";
@@ -79,26 +78,11 @@ export function Settings() {
       settings: [
         {
           type: "setting",
-          title: "Automatically turn off lights when the session has ended",
-          description:
-            "This will automatically turn off all lights when the session has ended.",
-          configKeys: ["autoTurnOffLightsWhenSessionEnds"],
-          input: <AutoTurnOffLightsToggle />,
-        },
-        {
-          type: "setting",
           title: "Automatically start MultiViewer when the application starts",
           description:
             "This will automatically start MultiViewer when the application starts.",
           configKeys: ["startMultiViewerWhenAppStarts"],
           input: <AutoMultiViewerStartToggle />,
-        },
-        {
-          type: "setting",
-          title: "Default brightness",
-          description: "This is the default brightness for all lights.",
-          configKeys: ["defaultBrightness"],
-          input: <DefaultBrightnessSlider />,
         },
         {
           type: "setting",
@@ -310,6 +294,15 @@ export function Settings() {
                 "This is the long-lived access token you can create in your Home Assistant profile.",
               configKeys: ["homeAssistantToken"],
               input: <HomeAssistantLongLivedAccessTokenInput />,
+            },
+            {
+              type: "setting",
+              title: "Home Assistant Devices",
+              condition: config.homeAssistantEnabled,
+              description:
+                "Here you can configure the devices that will be used for the Home Assistant integration.",
+              configKeys: ["homeAssistantDevices"],
+              input: <HomeAssistantDevicesButton />,
             },
           ],
         },

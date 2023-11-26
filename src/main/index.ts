@@ -12,6 +12,9 @@ import { registerUpdaterIPCHandlers } from "./ipc/updater";
 import { registerUtilsIPCHandlers } from "./ipc/utils";
 import { registerLoggerIPCHandlers } from "./ipc/logger";
 import { registerAppInfoIPCHandlers } from "./ipc/appInfo";
+import { startLiveTimingDataPolling } from "./multiviewer/api";
+import { registerEventManagerIPCHandlers } from "./ipc/eventManager";
+import { registerIntegrationsIPCHandlers } from "./ipc/integrations";
 
 Sentry.init({
   dsn: "https://e64c3ec745124566b849043192e58711@o4504289317879808.ingest.sentry.io/4504289338392576",
@@ -133,6 +136,8 @@ let _updaterIPCCleanup: () => void;
 let _utilsIPCCleanup: () => void;
 let _loggerIPCCleanup: () => void;
 let _appInfoIPCCleanup: () => void;
+let _eventManagerIPCCleanup: () => void;
+let _integrationsIPCCleanup: () => void;
 
 app.whenReady().then(onReady);
 
@@ -144,6 +149,8 @@ function onReady() {
   _utilsIPCCleanup = registerUtilsIPCHandlers();
   _loggerIPCCleanup = registerLoggerIPCHandlers();
   _appInfoIPCCleanup = registerAppInfoIPCHandlers();
+  _eventManagerIPCCleanup = registerEventManagerIPCHandlers();
+  _integrationsIPCCleanup = registerIntegrationsIPCHandlers();
   autoUpdater.forceDevUpdateConfig = false;
   autoUpdater.autoDownload = false;
   autoUpdater.disableWebInstaller = true;
@@ -159,6 +166,7 @@ function onReady() {
   }
   log.transports.file.level = globalConfig.debugMode ? "debug" : "info";
   log.info("App starting...");
+  startLiveTimingDataPolling();
 }
 
 app.on("window-all-closed", () => {

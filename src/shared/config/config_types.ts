@@ -1,37 +1,55 @@
 export const eventTypeReadableMap = {
-  greenFlag: "Green Flag",
-  yellowFlag: "Yellow Flag",
-  redFlag: "Red Flag",
-  safetyCar: "Safety Car",
-  virtualSafetyCar: "Virtual Safety Car",
-  virtualSafetyCarEnding: "Virtual Safety Car Ending",
-  fastestLap: "Fastest Lap",
-  goBackToStatic: "Go back to static",
+  GreenFlag: "Green Flag",
+  YellowFlag: "Yellow Flag",
+  RedFlag: "Red Flag",
+  SafetyCar: "Safety Car",
+  VirtualSafetyCar: "Virtual Safety Car",
+  VirtualSafetyCarEnding: "Virtual Safety Car Ending",
+  FastestLap: "Fastest Lap",
+  GoBackToStatic: "Go back to static",
+  SessionEnded: "Session Ended",
+  ChequeredFlag: "Chequered Flag",
+  BlueFlag: "Blue Flag",
+  DrsEnabled: "DRS Enabled",
+  DrsDisabled: "DRS Disabled",
+  PitLaneEntryClosed: "Pit Lane Entry Closed",
+  PitExitOpen: "Pit Exit Open",
+  PitEntryClosed: "Pit Entry Closed",
+  TimePenalty: "Time Penalty",
 };
 
 export enum EventType {
-  greenFlag = "greenFlag",
-  yellowFlag = "yellowFlag",
-  redFlag = "redFlag",
-  safetyCar = "safetyCar",
-  virtualSafetyCar = "virtualSafetyCar",
-  virtualSafetyCarEnding = "virtualSafetyCarEnding",
-  fastestLap = "fastestLap",
-  goBackToStatic = "goBackToStatic",
+  GreenFlag = "GreenFlag",
+  YellowFlag = "YellowFlag",
+  RedFlag = "RedFlag",
+  SafetyCar = "SafetyCar",
+  VirtualSafetyCar = "VirtualSafetyCar",
+  VirtualSafetyCarEnding = "VirtualSafetyCarEnding",
+  FastestLap = "FastestLap",
+  GoBackToStatic = "GoBackToStatic",
+  SessionEnded = "SessionEnded",
+  ChequeredFlag = "ChequeredFlag",
+  BlueFlag = "BlueFlag",
+  DrsEnabled = "DrsEnabled",
+  DrsDisabled = "DrsDisabled",
+  PitLaneEntryClosed = "PitLaneEntryClosed",
+  PitExitOpen = "PitExitOpen",
+  PitEntryClosed = "PitEntryClosed",
+  TimePenalty = "TimePenalty",
 }
 
 export const actionTypeReadableMap = {
-  on: "On",
-  off: "Off",
-  delay: "Delay",
-  go_back_to_current_status: "Go back to current status",
+  On: "On",
+  Off: "Off",
+  Delay: "Delay",
+  GoBackToCurrentStatus: "Go back to current status",
 };
 
 export enum ActionType {
-  on = "on",
-  off = "off",
-  delay = "delay",
-  go_back_to_current_status = "go_back_to_current_status",
+  On = "On",
+  off = "Off",
+  Delay = "Delay",
+  GoBackToCurrentStatus = "GoBackToCurrentStatus",
 }
 
 export interface Action {
@@ -54,8 +72,6 @@ export interface Event {
 }
 
 export interface IConfig {
-  autoTurnOffLightsWhenSessionEnds: boolean;
-  defaultBrightness: number;
   hideLogs: boolean;
   startMultiViewerWhenAppStarts: boolean;
   events: Event[];

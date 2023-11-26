@@ -19,7 +19,7 @@
   ],
   "overrides": [
     {
-      "files": ["vite.config.ts"],
+      "files": ["vite.config.ts", "codegen.ts"],
       "rules": {
         "import/no-default-export": "off"
       }

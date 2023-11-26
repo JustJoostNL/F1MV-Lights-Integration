@@ -65,7 +65,7 @@ export function EffectAction({
           </IconButton>
         </Tooltip>
       </Box>
-      {action.type === ActionType.on && (
+      {action.type === ActionType.On && (
         <Box mt={2}>
           <ColorSwatch
             color={action.color ?? { r: 0, g: 0, b: 0 }}
@@ -112,13 +112,13 @@ export function EffectAction({
           </Box>
         </Box>
       )}
-      {action.type === ActionType.delay && (
+      {action.type === ActionType.Delay && (
         <TextField
           sx={{ width: 200 }}
           margin="normal"
           type="number"
           label="Delay"
-          value={action.delay}
+          defaultValue={action.delay}
           InputProps={{
             endAdornment: (
               <Typography sx={{ ml: 1 }} color="text.disabled">

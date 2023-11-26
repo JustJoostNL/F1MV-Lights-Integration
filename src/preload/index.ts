@@ -1,9 +1,10 @@
-import { ipcRenderer } from "electron";
 import { configAPI } from "./config";
 import { updaterAPI } from "./updater";
 import { loggerAPI } from "./logger";
 import { appInfoAPI } from "./appInfo";
 import { utilsAPI } from "./utils";
+import { eventManagerAPI } from "./eventManager";
+import { integrationsAPI } from "./integrations";
 
 export const f1mvli = {
   config: configAPI,
@@ -13,40 +14,8 @@ export const f1mvli = {
   utils: utilsAPI,
   platform: process.platform,
   arch: process.arch,
-  integrationApi: {
-    homeassistant: {
-      getDevices: () =>
-        ipcRenderer.invoke("integrations:homeAssistant:getDevices"),
-      checkDeviceSpectrum: (entityId: string) =>
-        ipcRenderer.invoke(
-          "integrations:homeAssistant:checkDeviceSpectrum",
-          entityId,
-        ),
-    },
-    openrgb: {
-      reconnect: () => ipcRenderer.invoke("integrations:openrgb:reconnect"),
-    },
-    wled: {
-      getDevices: () => ipcRenderer.invoke("integrations:wled:getDevices"),
-    },
-    mqtt: {
-      reconnect: () => ipcRenderer.invoke("integrations:mqtt:reconnect"),
-    },
-    hue: {
-      getLights: () => ipcRenderer.invoke("integrations:hue:getLights"),
-      getEntertainmentZones: () =>
-        ipcRenderer.invoke("integrations:hue:getEntertainmentZones"),
-      discoverBridge: (discoverMode: "remote" | "local") =>
-        ipcRenderer.invoke("integrations:hue:discoverBridge", discoverMode),
-      connectToBridge: () =>
-        ipcRenderer.invoke("integrations:hue:connectToBridge"),
-    },
-    ikea: {
-      searchAndConnectToGateway: () =>
-        ipcRenderer.invoke("integrations:ikea:searchAndConnectToGateway"),
-      getDevices: () => ipcRenderer.invoke("integrations:ikea:getDevices"),
-    },
-  },
+  eventManager: eventManagerAPI,
+  integrations: integrationsAPI,
 };
 
 // @ts-ignore

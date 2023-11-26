@@ -1,8 +1,21 @@
 import { BrowserWindow, app, ipcMain } from "electron";
+import { integrationStates } from "../lightController/integrations/states";
+import { homeAssistantOnlineCheck } from "../lightController/integrations/homeAssistant/api";
+import { getConfig } from "./config";
 
-const handleGetIntegrationStates = () => {
-  //todo: implement
-  return "";
+const handleGetIntegrationStates = async () => {
+  const config = await getConfig();
+  if (config.homeAssistantEnabled) await homeAssistantOnlineCheck();
+
+  const states = [
+    {
+      name: "homeAssistant",
+      state: integrationStates.homeAssistant,
+      disabled: !config.homeAssistantEnabled,
+    },
+  ];
+
+  return states;
 };
 
 const handleGetWindowSizes = () => {
