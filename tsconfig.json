@@ -12,6 +12,7 @@
     "isolatedModules": true,
     "strict": true,
     //"baseUrl": "./",
+    "outDir": "./dist",
     "sourceMap": false,
     "noImplicitAny": false,
     "types": ["node"]
