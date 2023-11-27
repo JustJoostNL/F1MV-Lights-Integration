@@ -30,9 +30,15 @@
     entitlements: "build/entitlements.mac.plist",
     entitlementsInherit: "build/entitlements.mac.plist",
     category: "public.app-category.utilities",
-    "target": [
-      "dmg",
-      "zip"
+    target: [
+      {
+        target: "dmg",
+        arch: ["x64, arm64"],
+      },
+      {
+        target: "zip",
+        arch: ["x64, arm64"],
+      },
     ]
   },
 
