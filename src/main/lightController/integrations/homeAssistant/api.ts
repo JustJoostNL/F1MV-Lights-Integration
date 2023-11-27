@@ -171,7 +171,6 @@ export async function homeAssistantControl({
             foundDevice?.attributes.min_mireds || 0,
             foundDevice?.attributes.max_mireds || 0,
           );
-          console.log(colorTemp);
         }
 
         const postData = supportsRGB

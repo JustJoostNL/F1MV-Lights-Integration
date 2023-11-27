@@ -26,9 +26,13 @@ export async function controlAllLights({
   controlType,
   event,
 }: ControlAllLightsArgs) {
-  if (!color || !brightness || !controlType) return;
+  if (controlType === ControlType.Off) {
+    await turnOffAllLights();
+    return;
+  }
 
   const config = await getConfig();
+  if (!color || !brightness || !controlType) return;
 
   if (config.homeAssistantEnabled) {
     await homeAssistantControl({

@@ -1,15 +1,10 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
-import {
-  DataGrid,
-  GridColDef,
-  GridRowId,
-  GridRowSelectionModel,
-} from "@mui/x-data-grid";
+import React, { useCallback, useMemo, useState } from "react";
+import { DataGrid, GridColDef, GridRowId } from "@mui/x-data-grid";
 import { Box } from "@mui/material";
 import { useHotkeys } from "react-hotkeys-hook";
 import { JSONTree } from "react-json-tree";
+import useSWR from "swr";
 import { ContentLayout } from "../components/layouts/ContentLayout";
-import { IHomeAssistantStatesResponse } from "../../shared/integrations/homeAssistant_types";
 import { useConfig } from "../hooks/useConfig";
 
 const columns: GridColDef[] = [
@@ -18,61 +13,22 @@ const columns: GridColDef[] = [
   { field: "state", headerName: "State", width: 100 },
 ];
 
-interface IData {
-  devices: IHomeAssistantStatesResponse[];
-  selectedDevices: string[];
-}
-
 export function HomeAssistantDeviceSelector() {
   const { config, updateConfig } = useConfig();
   const [debug, setDebug] = useState(false);
-  const [data, setData] = useState<IData | null>(null);
-  const [selectionModel, setSelectionModel] = useState<GridRowSelectionModel>(
-    [],
-  );
 
   useHotkeys("shift+d", () => {
     setDebug((prev) => !prev);
   });
 
-  useEffect(() => {
-    (async () => {
+  const { data, mutate } = useSWR(
+    "homeAssistantDevices",
+    async () => {
       const data = await window.f1mvli.integrations.homeAssistant.getDevices();
-      setData(data);
-      setSelectionModel(data.selectedDevices);
-    })();
-  }, []);
-
-  useEffect(() => {
-    const intervalId = setInterval(async () => {
-      const fetchedData =
-        await window.f1mvli.integrations.homeAssistant.getDevices();
-      //@ts-ignore
-      setData((data: IData | null) => {
-        if (data) {
-          const existingRows = data.devices;
-          const newRows = fetchedData.devices.map((device) => {
-            const existingRow = existingRows.find(
-              (row) => row.entity_id === device.entity_id,
-            );
-            if (existingRow) {
-              return {
-                ...existingRow,
-                state: device.state,
-              };
-            }
-            return device;
-          });
-          return {
-            devices: newRows,
-            alreadySelectedDevices: data.selectedDevices,
-          };
-        }
-        return null;
-      });
-    }, 2000);
-    return () => clearInterval(intervalId);
-  }, []);
+      return { devices: data.devices, selectedDevices: data.selectedDevices };
+    },
+    { refreshInterval: 2000 },
+  );
 
   const rows = useMemo(() => {
     if (!data?.devices) return [];
@@ -85,16 +41,17 @@ export function HomeAssistantDeviceSelector() {
 
   const handleSelectionModelChange = useCallback(
     (newSelection: GridRowId[]) => {
+      if (!data) return;
       const selectedDevices = rows.filter((row) =>
         newSelection.includes(row.id),
       );
       const selectedDeviceIds = selectedDevices.map((device) => device.id);
-      setSelectionModel(selectedDeviceIds);
+      mutate({ ...data, selectedDevices: selectedDeviceIds }, false);
       updateConfig({
         homeAssistantDevices: selectedDeviceIds,
       });
     },
-    [rows, updateConfig],
+    [rows, data, mutate, updateConfig],
   );
 
   return (
@@ -116,10 +73,15 @@ export function HomeAssistantDeviceSelector() {
           checkboxSelection
           pageSizeOptions={[8, 12, 16]}
           initialState={{ pagination: { paginationModel: { pageSize: 8 } } }}
-          rowSelectionModel={selectionModel}
+          rowSelectionModel={data?.selectedDevices || []}
           onRowSelectionModelChange={handleSelectionModelChange}
+          sx={{
+            "&.MuiDataGrid-root .MuiDataGrid-cell:focus-within": {
+              outline: "none !important",
+            },
+          }}
         />
-        {debug && <JSONTree data={config} />}
+        {debug && <JSONTree data={config.homeAssistantDevices} />}
       </Box>
     </ContentLayout>
   );
