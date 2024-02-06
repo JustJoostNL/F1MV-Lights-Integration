@@ -1,6 +1,12 @@
 import { ipcRenderer } from "electron";
 
-function getIntegrationStates() {
+type IntegrationState = {
+  name: string;
+  state: boolean;
+  disabled: boolean;
+};
+
+function getIntegrationStates(): Promise<IntegrationState[]> {
   return ipcRenderer.invoke("f1mvli:utils:getIntegrationStates");
 }
 function getWindowSizes(): Promise<number[][]> {

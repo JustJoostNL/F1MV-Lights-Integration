@@ -1,6 +1,6 @@
 import React, { useCallback, useMemo, useState } from "react";
 import { DataGrid, GridColDef, GridRowId } from "@mui/x-data-grid";
-import { Box } from "@mui/material";
+import { Alert, Box } from "@mui/material";
 import { useHotkeys } from "react-hotkeys-hook";
 import { JSONTree } from "react-json-tree";
 import useSWR from "swr";
@@ -12,6 +12,12 @@ const columns: GridColDef[] = [
   { field: "id", headerName: "ID", width: 200 },
   { field: "state", headerName: "State", width: 100 },
 ];
+
+async function getHomeAssistantIntegrationState() {
+  return await window.f1mvli.utils.getIntegrationStates().then((states) => {
+    return states.find((state) => state.name === "homeAssistant")?.state;
+  });
+}
 
 export function HomeAssistantDeviceSelector() {
   const { config, updateConfig } = useConfig();
@@ -28,6 +34,12 @@ export function HomeAssistantDeviceSelector() {
       return { devices: data.devices, selectedDevices: data.selectedDevices };
     },
     { refreshInterval: 2000 },
+  );
+
+  const { data: homeAssistantState } = useSWR(
+    "integrationStates",
+    getHomeAssistantIntegrationState,
+    {},
   );
 
   const rows = useMemo(() => {
@@ -63,25 +75,36 @@ export function HomeAssistantDeviceSelector() {
           mb: 5,
         }}
       >
-        <DataGrid
-          columns={columns}
-          rows={rows}
-          disableColumnFilter
-          disableColumnSelector
-          disableColumnMenu
-          disableRowSelectionOnClick
-          checkboxSelection
-          pageSizeOptions={[8, 12, 16]}
-          initialState={{ pagination: { paginationModel: { pageSize: 8 } } }}
-          rowSelectionModel={data?.selectedDevices || []}
-          onRowSelectionModelChange={handleSelectionModelChange}
-          sx={{
-            "&.MuiDataGrid-root .MuiDataGrid-cell:focus-within": {
-              outline: "none !important",
-            },
-          }}
-        />
-        {debug && <JSONTree data={config.homeAssistantDevices} />}
+        {homeAssistantState ? (
+          <>
+            <DataGrid
+              columns={columns}
+              rows={rows}
+              disableColumnFilter
+              disableColumnSelector
+              disableColumnMenu
+              disableRowSelectionOnClick
+              checkboxSelection
+              pageSizeOptions={[8, 12, 16]}
+              initialState={{
+                pagination: { paginationModel: { pageSize: 8 } },
+              }}
+              rowSelectionModel={data?.selectedDevices || []}
+              onRowSelectionModelChange={handleSelectionModelChange}
+              sx={{
+                "&.MuiDataGrid-root .MuiDataGrid-cell:focus-within": {
+                  outline: "none !important",
+                },
+              }}
+            />
+            {debug && <JSONTree data={config.homeAssistantDevices} />}
+          </>
+        ) : (
+          <Alert severity="error">
+            The app is not connected to Home Assistant. Please check your Home
+            Assistant configuration and try again.
+          </Alert>
+        )}
       </Box>
     </ContentLayout>
   );

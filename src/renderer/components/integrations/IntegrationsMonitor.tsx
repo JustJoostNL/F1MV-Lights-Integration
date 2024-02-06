@@ -3,6 +3,7 @@ import {
   Card,
   CardActionArea,
   CardHeader,
+  CircularProgress,
   Collapse,
   Divider,
   List,
@@ -108,6 +109,18 @@ export function IntegrationsMonitor() {
                 />
               </div>
             ))}
+          {integrationStates.length === 0 && (
+            <div
+              style={{
+                display: "grid",
+                placeItems: "center",
+                placeContent: "center",
+                height: 80,
+              }}
+            >
+              <CircularProgress />
+            </div>
+          )}
         </List>
       </Collapse>
     </Card>

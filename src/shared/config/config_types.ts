@@ -42,7 +42,7 @@ export const actionTypeReadableMap = {
   On: "On",
   Off: "Off",
   Delay: "Delay",
-  GoBackToCurrentStatus: "Go back to current status",
+  GoBackToCurrentStatus: "Back to current track status",
 };
 
 export enum ActionType {
