@@ -150,17 +150,17 @@ export function EventEditorPage() {
   );
 
   const rows = useMemo(() => {
-    return config.events.map((effect) => {
-      const triggers = effect.triggers.map((trigger) => {
+    return config.events.map((event) => {
+      const triggers = event.triggers.map((trigger) => {
         return eventTypeReadableMap[trigger];
       });
       return {
-        id: effect.id,
-        name: effect.name,
-        enabled: effect.enabled ? "Yes" : "No",
+        id: event.id,
+        name: event.name,
+        enabled: event.enabled ? "Yes" : "No",
         triggers: triggers.join(", "),
-        actions: effect.actions.length,
-        amount: effect.amount,
+        actions: event.actions.length,
+        amount: event.amount,
         edit: "Edit",
       };
     });

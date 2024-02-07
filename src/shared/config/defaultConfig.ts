@@ -177,7 +177,7 @@ export const defaultConfig: IConfig = {
   philipsHueToken: undefined,
   philipsHueThirdPartyCompatiblityMode: false,
   philipsHueEnableFade: false,
-  philipsHueEnableFadeWithEffects: false,
+  philipsHueEnableFadeWithEvents: false,
   ikeaEnabled: false,
   ikeaSecurityCode: undefined,
   ikeaIdentity: undefined,
@@ -204,6 +204,9 @@ export const defaultConfig: IConfig = {
   discordRPCAvoidSpoilers: false,
   webserverEnabled: false,
   webserverPort: 20202,
+  authoritativeHostnames: ["https://api.jstt.me"],
+  otaConfigFetchInterval: 120000, // 2 minutes
+  otaConfigFetchJitter: 30000, // 30 seconds
   debugMode: false,
   updateChannel: "latest",
   analytics: true,

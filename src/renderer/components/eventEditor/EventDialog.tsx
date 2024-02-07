@@ -15,7 +15,7 @@ import {
 import { useConfig } from "../../hooks/useConfig";
 import { ActionType, Event } from "../../../shared/config/config_types";
 import { EventTriggersAutocomplete } from "./EventTriggersAutocomplete";
-import { EffectAction } from "./EffectAction";
+import { EventAction } from "./EffectAction";
 
 interface EventDialogProps {
   open: boolean;
@@ -99,7 +99,7 @@ export function EventDialog({
       <DialogContent>
         <TextField
           margin="dense"
-          label="Effect Name"
+          label="Event Name"
           type="text"
           fullWidth
           value={event?.name}
@@ -114,7 +114,7 @@ export function EventDialog({
         <FormControl fullWidth margin="normal">
           <FormControlLabel
             control={<Switch />}
-            label="Enable effect"
+            label="Enable event"
             sx={{ mb: 1 }}
             checked={event.enabled}
             onChange={() => setEvent({ ...event, enabled: !event.enabled })}
@@ -131,7 +131,7 @@ export function EventDialog({
               Action {index + 1}
             </Typography>
             <Divider sx={{ mt: 1 }} />
-            <EffectAction
+            <EventAction
               index={index}
               action={action}
               actions={event.actions}
@@ -153,8 +153,8 @@ export function EventDialog({
           component="div"
           sx={{ color: "grey", mb: -0.5, mt: 1 }}
         >
-          How many times should this effect repeat? (Fill in 1 if you don't want
-          it to repeat)
+          How many times should the given actions repeat? (Fill in 1 if you
+          don't want it to repeat)
         </Typography>
 
         <TextField
@@ -176,9 +176,9 @@ export function EventDialog({
           component="div"
           sx={{ color: "grey", mt: 1 }}
         >
-          Note: If you want to repeat an effect, make sure to add a delay at the
-          end of the effect. Otherwise, it will instantly go from the last
-          action to the first action.
+          Note: If you want to repeat the given actions, make sure to add a
+          delay at the end of the action. Otherwise, it will instantly go from
+          the last action to the first action.
         </Typography>
       </DialogContent>
       <DialogActions>

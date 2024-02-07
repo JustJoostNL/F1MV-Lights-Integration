@@ -7,7 +7,11 @@ import portfinder from "portfinder";
 import handler from "serve-handler";
 import * as Sentry from "@sentry/electron";
 import { autoUpdater } from "electron-updater";
-import { globalConfig, registerConfigIPCHandlers } from "./ipc/config";
+import {
+  fetchAuthoritativeConfig,
+  globalConfig,
+  registerConfigIPCHandlers,
+} from "./ipc/config";
 import { registerUpdaterIPCHandlers } from "./ipc/updater";
 import { registerUtilsIPCHandlers } from "./ipc/utils";
 import { registerLoggerIPCHandlers } from "./ipc/logger";
@@ -167,6 +171,14 @@ function onReady() {
   log.transports.file.level = globalConfig.debugMode ? "debug" : "info";
   log.info("App starting...");
   startLiveTimingDataPolling();
+  fetchAuthoritativeConfig();
+  setInterval(
+    () => {
+      fetchAuthoritativeConfig();
+    },
+    globalConfig.otaConfigFetchInterval +
+      Math.random() * globalConfig.otaConfigFetchJitter,
+  );
 }
 
 app.on("window-all-closed", () => {

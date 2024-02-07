@@ -13,19 +13,19 @@ import { ColorSwatch } from "../shared/ColorSwatch";
 import { ActionTypeAutocomplete } from "./ActionTypeAutocomplete";
 import { BrightnessSlider } from "./BrightnessSlider";
 
-interface EffectActionProps {
+interface EventActionProps {
   index: number;
   action: Action;
   actions: Action[];
   setActions: (newValue: Action[]) => void;
 }
 
-export function EffectAction({
+export function EventAction({
   index,
   action,
   actions,
   setActions,
-}: EffectActionProps) {
+}: EventActionProps) {
   return (
     <>
       <Box

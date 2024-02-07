@@ -6,10 +6,12 @@ import {
   writeFileSync,
 } from "fs";
 import { access, mkdir, readFile, writeFile } from "fs/promises";
+import os from "os";
 import path from "path";
 import { isEqual } from "lodash";
 import { app, ipcMain, shell } from "electron";
-import { IConfig } from "../../shared/config/config_types";
+import packageJson from "../../../package.json";
+import { IConfig, IOTAConfigPayload } from "../../shared/config/config_types";
 import { defaultConfig } from "../../shared/config/defaultConfig";
 import { broadcastToAllWindows } from "../utils/broadcastToAllWindows";
 
@@ -18,7 +20,14 @@ const configPath = path.join(
   app.getName(),
   "config.json",
 );
-let globalConfig = { ...defaultConfig, ...readConfigSync() };
+let otaDefaultConfig: Partial<IConfig> = {};
+let otaOverrideConfig: Partial<IConfig> = {};
+let globalConfig = {
+  ...defaultConfig,
+  ...readConfigSync(),
+  ...otaDefaultConfig,
+  ...otaOverrideConfig,
+};
 
 /**
  * Removes keys from configuration that are equal to defaults
@@ -72,13 +81,23 @@ function readConfigSync(): IConfig {
 async function getConfig() {
   if (!(await hasConfig())) return defaultConfig;
   const config = await readConfig();
-  return { ...defaultConfig, ...config };
+  return {
+    ...defaultConfig,
+    ...otaDefaultConfig,
+    ...config,
+    ...otaOverrideConfig,
+  };
 }
 
 function getConfigSync() {
   if (!hasConfigSync()) return defaultConfig;
   const config = readConfigSync();
-  return { ...defaultConfig, ...config };
+  return {
+    ...defaultConfig,
+    ...otaDefaultConfig,
+    ...config,
+    ...otaOverrideConfig,
+  };
 }
 
 async function setConfig(config: IConfig) {
@@ -86,7 +105,12 @@ async function setConfig(config: IConfig) {
   broadcastToAllWindows("f1mvli:config:change", config);
   await mkdir(path.dirname(configPath), { recursive: true });
   await writeFile(configPath, configJSON);
-  globalConfig = { ...defaultConfig, ...removeDefaults(config) };
+  globalConfig = {
+    ...defaultConfig,
+    ...otaDefaultConfig,
+    ...removeDefaults(config),
+    ...otaOverrideConfig,
+  };
 }
 
 function setConfigSync(config: IConfig) {
@@ -94,7 +118,29 @@ function setConfigSync(config: IConfig) {
   broadcastToAllWindows("f1mvli:config:change", config);
   mkdirSync(path.dirname(configPath), { recursive: true });
   writeFileSync(configPath, configJSON);
-  globalConfig = { ...defaultConfig, ...removeDefaults(config) };
+  globalConfig = {
+    ...defaultConfig,
+    ...otaDefaultConfig,
+    ...removeDefaults(config),
+    ...otaOverrideConfig,
+  };
+}
+
+async function setOTAConfig(otaConfig: IOTAConfigPayload) {
+  if (otaConfig.default_config) {
+    otaDefaultConfig = otaConfig.default_config;
+  }
+  if (otaConfig.override_config) {
+    otaOverrideConfig = otaConfig.override_config;
+  }
+  const config = await getConfig();
+  broadcastToAllWindows("f1mvli:config:change", globalConfig);
+  globalConfig = {
+    ...defaultConfig,
+    ...otaDefaultConfig,
+    ...config,
+    ...otaOverrideConfig,
+  };
 }
 
 async function handleConfigGet(): Promise<IConfig> {
@@ -113,6 +159,32 @@ async function handleConfigOpen() {
   await shell.openPath(configPath);
 }
 
+async function fetchAuthoritativeConfig() {
+  const config = await getConfig();
+  const platform = os
+    .platform()
+    .replace("win32", "windows")
+    .replace("darwin", "mac");
+  const version = packageJson.version;
+
+  for (const hostname of config.authoritativeHostnames) {
+    const url = new URL(
+      `/api/v2/f1mvli/ota-config/${platform}/${version}`,
+      hostname,
+    );
+    try {
+      const response = await fetch(url.toString());
+      if (response.status === 200) {
+        const json = (await response.json()) as IOTAConfigPayload;
+        setOTAConfig(json);
+        return json;
+      }
+    } catch (err) {
+      return;
+    }
+  }
+}
+
 function registerConfigIPCHandlers() {
   ipcMain.handle("f1mvli:config:get", handleConfigGet);
   ipcMain.handle("f1mvli:config:set", handleConfigSet);
@@ -129,11 +201,14 @@ function registerConfigIPCHandlers() {
 
 export {
   globalConfig,
+  otaDefaultConfig,
+  otaOverrideConfig,
   getConfig,
   getConfigSync,
   setConfig,
   setConfigSync,
   handleConfigGet,
   handleConfigSet,
+  fetchAuthoritativeConfig,
   registerConfigIPCHandlers,
 };

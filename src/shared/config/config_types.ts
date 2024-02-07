@@ -84,7 +84,7 @@ export interface IConfig {
   philipsHueToken: string | undefined;
   philipsHueThirdPartyCompatiblityMode: boolean;
   philipsHueEnableFade: boolean;
-  philipsHueEnableFadeWithEffects: boolean;
+  philipsHueEnableFadeWithEvents: boolean;
   ikeaEnabled: boolean;
   ikeaSecurityCode: string | undefined;
   ikeaIdentity: string | undefined;
@@ -111,7 +111,15 @@ export interface IConfig {
   discordRPCAvoidSpoilers: boolean;
   webserverEnabled: boolean;
   webserverPort: number;
+  authoritativeHostnames: string[];
+  otaConfigFetchInterval: number;
+  otaConfigFetchJitter: number;
   debugMode: boolean;
   updateChannel: string;
   analytics: boolean;
+}
+
+export interface IOTAConfigPayload {
+  default_config: Partial<IConfig>;
+  override_config: Partial<IConfig>;
 }
