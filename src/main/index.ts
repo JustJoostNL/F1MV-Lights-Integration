@@ -19,6 +19,7 @@ import { registerAppInfoIPCHandlers } from "./ipc/appInfo";
 import { startLiveTimingDataPolling } from "./multiviewer/api";
 import { registerEventManagerIPCHandlers } from "./ipc/eventManager";
 import { registerIntegrationsIPCHandlers } from "./ipc/integrations";
+import { initializeIntegrations } from "./initIntegrations";
 
 Sentry.init({
   dsn: "https://e64c3ec745124566b849043192e58711@o4504289317879808.ingest.sentry.io/4504289338392576",
@@ -179,6 +180,7 @@ function onReady() {
     globalConfig.otaConfigFetchInterval +
       Math.random() * globalConfig.otaConfigFetchJitter,
   );
+  initializeIntegrations();
 }
 
 app.on("window-all-closed", () => {

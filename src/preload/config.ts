@@ -1,5 +1,5 @@
 import { ipcRenderer } from "electron";
-import { IConfig } from "../shared/config/config_types";
+import { IConfig, IOTAConfigPayload } from "../shared/config/config_types";
 
 type EventCallback = (...args: any[]) => void;
 
@@ -27,10 +27,15 @@ function open(): Promise<void> {
   return ipcRenderer.invoke("f1mvli:config:open");
 }
 
+function updateOTA(): Promise<IOTAConfigPayload> {
+  return ipcRenderer.invoke("f1mvli:config:updateOTA");
+}
+
 export const configAPI = {
   on,
   set,
   get,
   reset,
   open,
+  updateOTA,
 };

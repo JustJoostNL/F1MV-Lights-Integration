@@ -8,12 +8,13 @@ import {
 import { access, mkdir, readFile, writeFile } from "fs/promises";
 import os from "os";
 import path from "path";
-import { isEqual } from "lodash";
+import deepEqual from "deep-equal";
 import { app, ipcMain, shell } from "electron";
 import packageJson from "../../../package.json";
 import { IConfig, IOTAConfigPayload } from "../../shared/config/config_types";
 import { defaultConfig } from "../../shared/config/defaultConfig";
 import { broadcastToAllWindows } from "../utils/broadcastToAllWindows";
+import { handleConfigChange } from "../utils/handleConfigChange";
 
 const configPath = path.join(
   app.getPath("appData"),
@@ -22,7 +23,7 @@ const configPath = path.join(
 );
 let otaDefaultConfig: Partial<IConfig> = {};
 let otaOverrideConfig: Partial<IConfig> = {};
-let globalConfig = {
+let globalConfig: IConfig = {
   ...defaultConfig,
   ...readConfigSync(),
   ...otaDefaultConfig,
@@ -34,12 +35,12 @@ let globalConfig = {
  *
  * @param config The configuration
  */
-function removeDefaults<T extends Record<string, any>>(config: T): T {
+export function removeDefaultConfig(config: IConfig): Partial<IConfig> {
   return Object.fromEntries(
     Object.entries(config).filter(
-      ([key, value]) => !isEqual(defaultConfig[key], value),
+      ([key, value]) => !deepEqual(defaultConfig[key as keyof IConfig], value),
     ),
-  ) as T;
+  );
 }
 
 async function hasConfig() {
@@ -101,29 +102,38 @@ function getConfigSync() {
 }
 
 async function setConfig(config: IConfig) {
-  const configJSON = JSON.stringify(removeDefaults(config));
+  const oldConfig = await getConfig();
+  const configJSON = JSON.stringify(removeDefaultConfig(config));
   broadcastToAllWindows("f1mvli:config:change", config);
   await mkdir(path.dirname(configPath), { recursive: true });
   await writeFile(configPath, configJSON);
   globalConfig = {
     ...defaultConfig,
     ...otaDefaultConfig,
-    ...removeDefaults(config),
+    ...removeDefaultConfig(config),
     ...otaOverrideConfig,
   };
+  await handleConfigChange(oldConfig, globalConfig);
 }
 
 function setConfigSync(config: IConfig) {
-  const configJSON = JSON.stringify(removeDefaults(config));
+  const configJSON = JSON.stringify(removeDefaultConfig(config));
   broadcastToAllWindows("f1mvli:config:change", config);
   mkdirSync(path.dirname(configPath), { recursive: true });
   writeFileSync(configPath, configJSON);
   globalConfig = {
     ...defaultConfig,
     ...otaDefaultConfig,
-    ...removeDefaults(config),
+    ...removeDefaultConfig(config),
     ...otaOverrideConfig,
   };
+  handleConfigChange(globalConfig, config);
+}
+
+async function patchConfig(configPatch: Partial<IConfig>) {
+  const config = await getConfig();
+  const newConfig = { ...config, ...configPatch };
+  setConfig(newConfig);
 }
 
 async function setOTAConfig(otaConfig: IOTAConfigPayload) {
@@ -190,6 +200,7 @@ function registerConfigIPCHandlers() {
   ipcMain.handle("f1mvli:config:set", handleConfigSet);
   ipcMain.handle("f1mvli:config:reset", handleConfigReset);
   ipcMain.handle("f1mvli:config:open", handleConfigOpen);
+  ipcMain.handle("f1mvli:config:updateOTA", fetchAuthoritativeConfig);
 
   return function () {
     ipcMain.removeHandler("f1mvli:config:get");
@@ -207,6 +218,7 @@ export {
   getConfigSync,
   setConfig,
   setConfigSync,
+  patchConfig,
   handleConfigGet,
   handleConfigSet,
   fetchAuthoritativeConfig,

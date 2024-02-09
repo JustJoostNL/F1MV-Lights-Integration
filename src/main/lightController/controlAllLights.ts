@@ -1,6 +1,7 @@
 import { EventType } from "../../shared/config/config_types";
 import { getConfig } from "../ipc/config";
 import { homeAssistantControl } from "./integrations/homeAssistant/api";
+import { webServerControl } from "./integrations/webserver/api";
 
 export enum ControlType {
   On = "On",
@@ -42,6 +43,12 @@ export async function controlAllLights({
       event,
     });
   }
+
+  if (config.webserverEnabled) {
+    await webServerControl({
+      color,
+    });
+  }
 }
 
 export async function turnOffAllLights() {
@@ -57,6 +64,16 @@ export async function turnOffAllLights() {
       },
       brightness: 100,
       event: fallBackEvent,
+    });
+  }
+
+  if (config.webserverEnabled) {
+    await webServerControl({
+      color: {
+        r: 0,
+        g: 0,
+        b: 0,
+      },
     });
   }
 }

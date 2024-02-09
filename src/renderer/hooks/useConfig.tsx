@@ -52,7 +52,7 @@ export function ConfigProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     window.f1mvli.config
       .get()
-      .then((config) => setConfig({ ...defaultConfig, ...config }));
+      .then((newConfig) => setConfig({ ...defaultConfig, ...newConfig }));
   }, []);
 
   return (
