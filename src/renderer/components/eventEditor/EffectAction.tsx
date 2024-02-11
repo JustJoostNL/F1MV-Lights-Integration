@@ -10,8 +10,10 @@ import {
 import { DeleteRounded } from "@mui/icons-material";
 import { Action, ActionType } from "../../../shared/config/config_types";
 import { ColorSwatch } from "../shared/ColorSwatch";
+import { useConfig } from "../../hooks/useConfig";
 import { ActionTypeAutocomplete } from "./ActionTypeAutocomplete";
 import { BrightnessSlider } from "./BrightnessSlider";
+import { PhilipsHueEnableFadeToggle } from "./PhilipsHueEnableFadeToggle";
 
 interface EventActionProps {
   index: number;
@@ -26,6 +28,7 @@ export function EventAction({
   actions,
   setActions,
 }: EventActionProps) {
+  const { config } = useConfig();
   return (
     <>
       <Box
@@ -108,8 +111,28 @@ export function EventAction({
                   );
                 }}
               />
+              {config.philipsHueEnabled && (
+                <PhilipsHueEnableFadeToggle
+                  action={action}
+                  actions={actions}
+                  index={index}
+                  setActions={setActions}
+                />
+              )}
             </FormControl>
           </Box>
+        </Box>
+      )}
+      {action.type === ActionType.Off && (
+        <Box mt={2}>
+          {config.philipsHueEnabled && (
+            <PhilipsHueEnableFadeToggle
+              action={action}
+              actions={actions}
+              index={index}
+              setActions={setActions}
+            />
+          )}
         </Box>
       )}
       {action.type === ActionType.Delay && (

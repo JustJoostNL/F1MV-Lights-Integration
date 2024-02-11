@@ -1,17 +1,29 @@
 import { BrowserWindow, app, ipcMain } from "electron";
 import { integrationStates } from "../lightController/integrations/states";
 import { homeAssistantOnlineCheck } from "../lightController/integrations/homeAssistant/api";
+import { philipsHueOnlineCheck } from "../lightController/integrations/philipsHue/api";
 import { getConfig } from "./config";
 
 const handleGetIntegrationStates = async () => {
   const config = await getConfig();
   if (config.homeAssistantEnabled) await homeAssistantOnlineCheck();
+  if (config.philipsHueEnabled) await philipsHueOnlineCheck();
 
   const states = [
     {
       name: "homeAssistant",
       state: integrationStates.homeAssistant,
       disabled: !config.homeAssistantEnabled,
+    },
+    {
+      name: "philipsHue",
+      state: integrationStates.philipsHue,
+      disabled: !config.philipsHueEnabled,
+    },
+    {
+      name: "webserver",
+      state: integrationStates.webserver,
+      disabled: !config.webserverEnabled,
     },
   ];
 

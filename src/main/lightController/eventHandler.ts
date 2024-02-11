@@ -27,12 +27,14 @@ export async function eventHandler(event: EventType) {
               color: currentAction.color,
               brightness: currentAction.brightness,
               event,
+              eventAction: currentAction,
             });
             break;
-          case ActionType.off:
+          case ActionType.Off:
             await controlAllLights({
               controlType: ControlType.Off,
               event,
+              eventAction: currentAction,
             });
             break;
           case ActionType.Delay:

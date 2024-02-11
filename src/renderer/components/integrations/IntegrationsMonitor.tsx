@@ -20,7 +20,7 @@ const integrationStateMap: {
 } = {
   ikea: "IKEA",
   govee: "Govee",
-  hue: "Philips Hue",
+  philipsHue: "Philips Hue",
   openRGB: "OpenRGB",
   homeAssistant: "Home Assistant",
   streamDeck: "Stream Deck",
@@ -29,7 +29,7 @@ const integrationStateMap: {
   F1MV: "MultiViewer",
   F1TVLiveSession: "F1TV Live Session Found",
   update: "Auto Updater",
-  webServer: "Webserver",
+  webserver: "Webserver",
 };
 
 export function IntegrationsMonitor() {

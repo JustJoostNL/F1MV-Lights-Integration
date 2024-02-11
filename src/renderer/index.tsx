@@ -14,6 +14,8 @@ import { BaseStyle } from "./components/shared/BaseStyle";
 import { SettingsPage } from "./pages/Settings";
 import { EventEditorPage } from "./pages/EventEditor";
 import { HomeAssistantDeviceSelector } from "./pages/HomeAssistantDeviceSelector";
+import { PhilipsHueDeviceSelector } from "./pages/PhilipsHueDeviceSelector";
+import { PhilipsHueGroupSelector } from "./pages/PhilipsHueGroupSelector";
 
 Sentry.init({
   dsn: "https://e64c3ec745124566b849043192e58711@o4504289317879808.ingest.sentry.io/4504289338392576",
@@ -65,6 +67,14 @@ root.render(
               <Route
                 path="/home-assistant-ds"
                 element={<HomeAssistantDeviceSelector />}
+              />
+              <Route
+                path="/philips-hue-ds"
+                element={<PhilipsHueDeviceSelector />}
+              />
+              <Route
+                path="/philips-hue-gs"
+                element={<PhilipsHueGroupSelector />}
               />
             </Routes>
           </HashRouter>

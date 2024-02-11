@@ -3,7 +3,7 @@ import { Button } from "@mui/material";
 
 export function HomeAssistantDevicesButton() {
   return (
-    <Button variant="contained" href="#/home-assistant-ds">
+    <Button variant="outlined" href="#/home-assistant-ds">
       Select Devices
     </Button>
   );

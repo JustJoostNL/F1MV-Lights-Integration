@@ -47,7 +47,7 @@ export const actionTypeReadableMap = {
 
 export enum ActionType {
   On = "On",
-  off = "Off",
+  Off = "Off",
   Delay = "Delay",
   GoBackToCurrentStatus = "GoBackToCurrentStatus",
 }
@@ -61,6 +61,7 @@ export interface Action {
   };
   brightness?: number;
   delay?: number;
+  philipsHueEnableFade?: boolean;
 }
 export interface Event {
   id: number;
@@ -80,11 +81,9 @@ export interface IConfig {
   philipsHueEnabled: boolean;
   philipsHueBridgeIP: string | undefined;
   philipsHueDeviceIds: string[];
-  philipsHueEntertainmentZoneIds: string[];
-  philipsHueToken: string | undefined;
-  philipsHueThirdPartyCompatiblityMode: boolean;
+  philipsHueGroupIds: string[];
+  philipsHueBridgeAuthToken: string | undefined;
   philipsHueEnableFade: boolean;
-  philipsHueEnableFadeWithEvents: boolean;
   ikeaEnabled: boolean;
   ikeaSecurityCode: string | undefined;
   ikeaIdentity: string | undefined;

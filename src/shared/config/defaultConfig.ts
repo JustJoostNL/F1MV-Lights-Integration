@@ -162,7 +162,7 @@ export const defaultConfig: IConfig = {
       enabled: true,
       actions: [
         {
-          type: ActionType.off,
+          type: ActionType.Off,
         },
       ],
       amount: 1,
@@ -173,11 +173,9 @@ export const defaultConfig: IConfig = {
   philipsHueEnabled: false,
   philipsHueBridgeIP: undefined,
   philipsHueDeviceIds: [],
-  philipsHueEntertainmentZoneIds: [],
-  philipsHueToken: undefined,
-  philipsHueThirdPartyCompatiblityMode: false,
+  philipsHueGroupIds: [],
+  philipsHueBridgeAuthToken: undefined,
   philipsHueEnableFade: false,
-  philipsHueEnableFadeWithEvents: false,
   ikeaEnabled: false,
   ikeaSecurityCode: undefined,
   ikeaIdentity: undefined,

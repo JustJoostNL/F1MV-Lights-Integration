@@ -1,6 +1,7 @@
-import { EventType } from "../../shared/config/config_types";
+import { Action, EventType } from "../../shared/config/config_types";
 import { getConfig } from "../ipc/config";
 import { homeAssistantControl } from "./integrations/homeAssistant/api";
+import { philipsHueControl } from "./integrations/philipsHue/api";
 import { webServerControl } from "./integrations/webserver/api";
 
 export enum ControlType {
@@ -17,6 +18,7 @@ export interface ControlAllLightsArgs {
   };
   brightness?: number;
   event: EventType;
+  eventAction: Action;
 }
 
 const fallBackEvent = EventType.GreenFlag;
@@ -26,6 +28,7 @@ export async function controlAllLights({
   brightness,
   controlType,
   event,
+  eventAction,
 }: ControlAllLightsArgs) {
   if (controlType === ControlType.Off) {
     await turnOffAllLights();
@@ -41,6 +44,15 @@ export async function controlAllLights({
       color,
       brightness,
       event,
+    });
+  }
+
+  if (config.philipsHueEnabled) {
+    await philipsHueControl({
+      controlType,
+      color,
+      brightness,
+      eventAction,
     });
   }
 
@@ -74,6 +86,18 @@ export async function turnOffAllLights() {
         g: 0,
         b: 0,
       },
+    });
+  }
+
+  if (config.philipsHueEnabled) {
+    await philipsHueControl({
+      controlType: ControlType.Off,
+      color: {
+        r: 0,
+        g: 0,
+        b: 0,
+      },
+      brightness: 100,
     });
   }
 }

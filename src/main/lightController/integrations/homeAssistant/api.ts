@@ -1,6 +1,6 @@
 import fetch from "cross-fetch";
 import log from "electron-log";
-import { getConfig } from "../../../ipc/config";
+import { getConfig, globalConfig } from "../../../ipc/config";
 import { integrationStates } from "../states";
 import { ControlType } from "../../controlAllLights";
 import { rgbToColorTemp } from "../rgbToColorTemp";
@@ -14,10 +14,8 @@ import {
 export async function homeAssistantOnlineCheck(): Promise<
   "online" | "offline"
 > {
-  const config = await getConfig();
-
   const headers = {
-    Authorization: "Bearer " + config.homeAssistantToken,
+    Authorization: "Bearer " + globalConfig.homeAssistantToken,
     "Content-Type": "application/json",
   };
   const options = {
@@ -25,8 +23,8 @@ export async function homeAssistantOnlineCheck(): Promise<
     headers,
   };
 
-  const url = new URL("/api/", config.homeAssistantHost);
-  url.port = config.homeAssistantPort.toString();
+  const url = new URL("/api/", globalConfig.homeAssistantHost);
+  url.port = globalConfig.homeAssistantPort.toString();
 
   try {
     const res = await fetch(url, options);

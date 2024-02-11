@@ -17,7 +17,6 @@ import { UpdateChannelSelector } from "./UpdateChannelSelector";
 import { DebugModeToggle } from "./DebugModeToggle";
 import { PhilipsHueEnabledToggle } from "./PhilipsHueEnabledToggle";
 import { PhilipsHueFadeToggle } from "./PhilipsHueFadeToggle";
-import { PhilipsHueThirdPartyCompatiblityModeToggle } from "./PhilipsHueThirdPartyCompatModeToggle";
 import { IkeaEnabledToggle } from "./IkeaEnabledToggle";
 import { IkeaSecurityCodeInput } from "./IkeaSecurityCodeInput";
 import { PhilipsHueBridgeIpInput } from "./PhilipsHueBridgeIpInput";
@@ -44,6 +43,7 @@ import { DiscordAvoidSpoilersToggle } from "./DiscordAvoidSpoilersToggle";
 import { WebserverEnabledToggle } from "./WebserverEnabledToggle";
 import { WebserverPortInput } from "./WebserverPortInput";
 import { HomeAssistantDevicesButton } from "./HomeAssistantDevicesButton";
+import { PhilipsHueSelectButton } from "./PhilipsHueSelectButton";
 
 interface ISettings extends SettingsGroupProps {
   type?: "normal" | "experimental" | "debug";
@@ -52,15 +52,10 @@ interface ISettings extends SettingsGroupProps {
 export function Settings() {
   const { config, setConfig } = useConfig();
   const [debug, setDebug] = useState(false);
-  const [philipsHueAdvancedVisible, setPhilipsHueAdvancedVisible] =
-    useState(false);
   const [ikeaAdvancedVisible, setIkeaAdvancedVisible] = useState(false);
 
   useHotkeys("shift+d", () => {
     setDebug(!debug);
-  });
-  useHotkeys("shift+a+1", () => {
-    setPhilipsHueAdvancedVisible(!philipsHueAdvancedVisible);
   });
   useHotkeys("shift+a+2", () => {
     setIkeaAdvancedVisible(!ikeaAdvancedVisible);
@@ -133,39 +128,43 @@ export function Settings() {
             },
             {
               type: "setting",
-              title: "Philips Hue bridge IP address",
-              condition: philipsHueAdvancedVisible && config.philipsHueEnabled,
+              title: "Philips Hue Bridge IP address",
+              condition: config.philipsHueEnabled,
               description:
-                "If you know your Hue bridge IP, you can enter it here. If you don't know it, leave this blank, and it will be automatically detected.",
+                "You can use the button to discover your bridge, or you can enter the IP address manually.",
               configKeys: ["philipsHueBridgeIP"],
               input: <PhilipsHueBridgeIpInput />,
             },
             {
               type: "setting",
               title: "Philips Hue Bridge Token",
-              condition: philipsHueAdvancedVisible && config.philipsHueEnabled,
+              condition:
+                config.philipsHueEnabled &&
+                typeof config.philipsHueBridgeIP === "string",
               description:
-                "If you know your Hue bridge token, you can enter it here. If you don't know it, leave this blank, and it will be automatically generated.",
-              configKeys: ["philipsHueToken"],
+                "You can use the button to generate a new token, or you can enter a token manually.",
+              configKeys: ["philipsHueBridgeAuthToken"],
               input: <PhilipsHueBridgeTokenInput />,
+            },
+            {
+              type: "setting",
+              title: "Philips Hue Devices/Groups",
+              condition:
+                config.philipsHueEnabled &&
+                typeof config.philipsHueBridgeIP === "string",
+              description:
+                "Here you can configure the devices and groups that will be used for the Philips Hue integration.",
+              configKeys: ["philipsHueDeviceIds", "philipsHueGroupIds"],
+              input: <PhilipsHueSelectButton />,
             },
             {
               type: "setting",
               title: "Enable fade",
               condition: config.philipsHueEnabled,
               description:
-                "Enable this if you want your Hue devices to fade to the new color instead of instantly changing.",
+                "Enable this if you want your Philips Hue devices to fade to the new color instead of instantly changing.",
               configKeys: ["philipsHueEnableFade"],
               input: <PhilipsHueFadeToggle />,
-            },
-            {
-              type: "setting",
-              title: "Enable third-party compatibility mode",
-              condition: config.philipsHueEnabled,
-              description:
-                "Enable this if the third-party devices connected to your Hue bridge are not working correctly.",
-              configKeys: ["philipsHueThirdPartyCompatiblityMode"],
-              input: <PhilipsHueThirdPartyCompatiblityModeToggle />,
             },
           ],
         },

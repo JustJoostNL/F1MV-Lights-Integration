@@ -6,6 +6,7 @@ import {
   Typography,
   TypographyOwnProps,
 } from "@mui/material";
+import { Loader } from "../shared/Loader";
 import { Navbar } from "./Navbar";
 
 interface ContentLayoutProps {
@@ -15,6 +16,7 @@ interface ContentLayoutProps {
   hideTitle?: boolean;
   titleVariant?: TypographyOwnProps["variant"];
   container?: boolean;
+  isLoading?: boolean;
   containerProps?: BoxProps;
 }
 
@@ -25,6 +27,7 @@ export const ContentLayout: React.FC<ContentLayoutProps> = ({
   titleVariant = "h3",
   hideNavbar = false,
   container = false,
+  isLoading = false,
   containerProps,
   ...props
 }) => {
@@ -36,7 +39,8 @@ export const ContentLayout: React.FC<ContentLayoutProps> = ({
       <Box flexGrow={1}>
         {/* @ts-ignore */}
         <ContainerWrapper {...containerProps}>
-          {!hideTitle && title && (
+          {isLoading && <Loader />}
+          {!hideTitle && title && !isLoading && (
             <Typography
               fontWeight={800}
               variant={titleVariant}
@@ -47,7 +51,7 @@ export const ContentLayout: React.FC<ContentLayoutProps> = ({
               {title}
             </Typography>
           )}
-          {children}
+          {!isLoading && children}
         </ContainerWrapper>
       </Box>
     </Box>

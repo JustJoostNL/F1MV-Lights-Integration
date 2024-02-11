@@ -35,8 +35,8 @@ export function ConfigProvider({ children }: { children: ReactNode }) {
   const [config, setConfig] = useState<IConfig>(defaultConfig);
 
   useEffect(() => {
-    const configChangeHandler = (newConfig: Partial<IConfig>) => {
-      setConfig({ ...defaultConfig, ...newConfig });
+    const configChangeHandler = (newConfig: IConfig) => {
+      setConfig(newConfig);
     };
 
     const unsubscribe = window.f1mvli.config.on(
