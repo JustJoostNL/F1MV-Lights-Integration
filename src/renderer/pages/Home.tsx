@@ -16,7 +16,12 @@ export function HomePage() {
         <Typography
           variant="h3"
           component="h1"
-          sx={{ fontSize: "3rem", mb: 1.5, textAlign: "center" }}
+          sx={{
+            fontSize: "3rem",
+            mb: 1.5,
+            textAlign: "center",
+            fontWeight: 700,
+          }}
         >
           F1MV Lights Integration
         </Typography>

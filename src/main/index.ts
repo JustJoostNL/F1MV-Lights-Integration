@@ -20,6 +20,7 @@ import { startLiveTimingDataPolling } from "./multiviewer/api";
 import { registerEventManagerIPCHandlers } from "./ipc/eventManager";
 import { registerIntegrationsIPCHandlers } from "./ipc/integrations";
 import { initializeIntegrations } from "./initIntegrations";
+import { handleRegisterUser, handleUserActiveExit } from "./analytics/api";
 
 Sentry.init({
   dsn: "https://e64c3ec745124566b849043192e58711@o4504289317879808.ingest.sentry.io/4504289338392576",
@@ -181,12 +182,14 @@ function onReady() {
       Math.random() * globalConfig.otaConfigFetchJitter,
   );
   initializeIntegrations();
+  handleRegisterUser();
 }
 
-app.on("window-all-closed", () => {
+app.on("window-all-closed", async () => {
+  await handleUserActiveExit();
   win = null;
 
-  //todo: add cleanup for integrations + analytics
+  //todo: add cleanup for integrations
 
   if (process.platform !== "darwin") app.quit();
 });

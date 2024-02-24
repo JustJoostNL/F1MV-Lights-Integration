@@ -16,6 +16,7 @@ import {
   EventType,
   eventTypeReadableMap,
 } from "../../shared/config/config_types";
+import { eventHandler } from "../lightController/eventHandler";
 
 export interface ILiveTimingData {
   RaceControlMessages: IRaceControlMessages;
@@ -256,6 +257,7 @@ export function startLiveTimingDataPolling() {
 }
 
 function newEventHandler(event: EventType) {
+  eventHandler(event);
   log.info(eventTypeReadableMap[event]);
   previousTrackStatus = liveTimingState?.TrackStatus;
   previousSessionStatus = liveTimingState?.SessionStatus;
