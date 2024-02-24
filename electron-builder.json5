@@ -1,7 +1,7 @@
 {
   "productName": "F1MV-Lights-Integration",
   "appId": "com.justjoostnl.f1mv.lights.integration",
-  "copyright": "Copyright © 2023 JustJoostNL",
+  "copyright": "Copyright © 2024 JustJoostNL",
 
   generateUpdatesFilesForAllChannels: true,
   "asar": true,
