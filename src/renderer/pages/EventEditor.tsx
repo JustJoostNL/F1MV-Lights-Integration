@@ -61,7 +61,10 @@ export function EventEditorPage() {
     (id: GridRowId) => {
       const event = config.events.find((event) => event.id === id);
       if (!event) return;
-      window.navigator.clipboard.writeText(JSON.stringify(event));
+      const url =
+        "https://api.jstt.me/api/v2/f1mvli/go/app/config/add-event?event=" +
+        JSON.stringify(event);
+      window.navigator.clipboard.writeText(url);
       enqueueSnackbar("Event url copied to clipboard", { variant: "success" });
     },
     [config],

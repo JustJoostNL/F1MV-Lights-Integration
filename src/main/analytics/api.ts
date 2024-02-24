@@ -39,7 +39,6 @@ export async function handleRegisterUser(): Promise<{
   }
 
   analyticsPostInterval = setInterval(async () => {
-    console.log("Posting user active");
     await handlePostUserActive();
   }, 15000); // 15 seconds
 
@@ -54,7 +53,6 @@ export async function handleUserActiveExit(): Promise<any | null> {
 
   if (userActiveId && analyticsPostInterval) {
     clearInterval(analyticsPostInterval);
-    console.log("Cleared analyticsPostInterval");
     const res = await fetch(postUrl, {
       method: "POST",
       headers: {

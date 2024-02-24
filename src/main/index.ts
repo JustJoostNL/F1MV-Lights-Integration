@@ -21,6 +21,7 @@ import { registerEventManagerIPCHandlers } from "./ipc/eventManager";
 import { registerIntegrationsIPCHandlers } from "./ipc/integrations";
 import { initializeIntegrations } from "./initIntegrations";
 import { handleRegisterUser, handleUserActiveExit } from "./analytics/api";
+import { registerDeepLink } from "./deeplinking";
 
 Sentry.init({
   dsn: "https://e64c3ec745124566b849043192e58711@o4504289317879808.ingest.sentry.io/4504289338392576",
@@ -31,38 +32,11 @@ Sentry.init({
   tracesSampleRate: 1.0,
 });
 
-// handle deep-link protocol
-if (process.defaultApp) {
-  if (process.argv.length >= 2) {
-    app.setAsDefaultProtocolClient("f1mvli", process.execPath, [
-      path.resolve(process.argv[1]),
-    ]);
-  }
-} else {
-  app.setAsDefaultProtocolClient("f1mvli");
-}
-
 // Disable GPU Acceleration for Windows 7
 if (release().startsWith("6.1")) app.disableHardwareAcceleration();
 
 // Set application name for Windows 10+ notifications
 if (process.platform === "win32") app.setAppUserModelId(app.getName());
-
-app.on("open-url", async (event) => {
-  event.preventDefault();
-  if (win) {
-    win.show();
-    win.focus();
-  }
-});
-
-app.on("second-instance", async () => {
-  if (win) {
-    if (win.isMinimized()) win.restore();
-    win.show();
-    win.focus();
-  }
-});
 
 if (!app.requestSingleInstanceLock()) {
   app.quit();
@@ -78,13 +52,13 @@ process.env.PUBLIC = process.env.VITE_DEV_SERVER_URL
 // Remove electron security warnings
 // process.env['ELECTRON_DISABLE_SECURITY_WARNINGS'] = 'true'
 
-let win: BrowserWindow | null = null;
+export let mainWindow: BrowserWindow | null = null;
 export let availablePort: number | null = null;
 export const preload = path.join(__dirname, "../preload/index.js");
-export const url = process.env.VITE_DEV_SERVER_URL;
+export const devServerUrl = process.env.VITE_DEV_SERVER_URL;
 
-async function createWindow() {
-  win = new BrowserWindow({
+export async function createMainWindow() {
+  mainWindow = new BrowserWindow({
     title: "F1MV Lights Integration",
     icon: join(process.env.PUBLIC, "favicon.ico"),
     width: 1100,
@@ -104,11 +78,11 @@ async function createWindow() {
 
   if (process.env.VITE_DEV_SERVER_URL) {
     // electron-vite-vue#298
-    await win.loadURL(url);
-    win.webContents.openDevTools({ mode: "detach" });
-    win.setMenuBarVisibility(false);
+    await mainWindow.loadURL(devServerUrl);
+    mainWindow.webContents.openDevTools({ mode: "detach" });
+    mainWindow.setMenuBarVisibility(false);
   } else {
-    win.setMenuBarVisibility(false);
+    mainWindow.setMenuBarVisibility(false);
     availablePort = await portfinder.getPortPromise({
       port: 30303,
       host: "localhost",
@@ -119,22 +93,25 @@ async function createWindow() {
       });
     });
     server.listen(availablePort, () => {
-      win?.loadURL(`http://localhost:${availablePort}/index.html`);
+      mainWindow?.loadURL(`http://localhost:${availablePort}/index.html`);
     });
   }
 
-  win.webContents.setWindowOpenHandler(({ url }) => {
+  mainWindow.webContents.setWindowOpenHandler(({ url }) => {
     if (url.startsWith("https:" || "http:")) shell.openExternal(url);
     return { action: "deny" };
   });
-  win.webContents.on("will-navigate", (event: Electron.Event, url: string) => {
-    if (url.startsWith("https:" || "http:") && !url.includes("localhost")) {
-      event.preventDefault();
-      shell.openExternal(url);
-    }
-  });
+  mainWindow.webContents.on(
+    "will-navigate",
+    (event: Electron.Event, url: string) => {
+      if (url.startsWith("https:" || "http:") && !url.includes("localhost")) {
+        event.preventDefault();
+        shell.openExternal(url);
+      }
+    },
+  );
 
-  win.webContents.setZoomLevel(0);
+  mainWindow.webContents.setZoomLevel(0);
 }
 
 let _configIPCCleanup: () => void;
@@ -148,7 +125,7 @@ let _integrationsIPCCleanup: () => void;
 app.whenReady().then(onReady);
 
 function onReady() {
-  createWindow();
+  createMainWindow();
 
   _configIPCCleanup = registerConfigIPCHandlers();
   _updaterIPCCleanup = registerUpdaterIPCHandlers();
@@ -172,6 +149,7 @@ function onReady() {
   }
   log.transports.file.level = globalConfig.debugMode ? "debug" : "info";
   log.info("App starting...");
+  registerDeepLink();
   startLiveTimingDataPolling();
   fetchAuthoritativeConfig();
   setInterval(
@@ -187,7 +165,7 @@ function onReady() {
 
 app.on("window-all-closed", async () => {
   await handleUserActiveExit();
-  win = null;
+  mainWindow = null;
 
   //todo: add cleanup for integrations
 
@@ -199,6 +177,6 @@ app.on("activate", () => {
   if (allWindows.length) {
     allWindows[0].focus();
   } else {
-    createWindow();
+    createMainWindow();
   }
 });
