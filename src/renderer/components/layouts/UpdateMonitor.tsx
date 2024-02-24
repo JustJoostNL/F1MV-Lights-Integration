@@ -14,7 +14,7 @@ import LoadingButton from "@mui/lab/LoadingButton";
 import ReactMarkdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
 import remarkGfm from "remark-gfm";
-import swr from "swr";
+import useSWR from "swr";
 import { shell } from "electron";
 import semver from "semver";
 import { DonateButton } from "../shared/DonateButton";
@@ -81,11 +81,11 @@ export const UpdateMonitor = ({
   const [releaseNotesOpen, setReleaseNotesOpen] = useState(false);
   const [supportsAutoUpdate, setSupportsAutoUpdate] = useState(true);
 
-  const appVersion = swr("appVersion", async () => {
+  const appVersion = useSWR("appVersion", async () => {
     return await window.f1mvli.appInfo.getAppVersion();
   }).data;
 
-  const data = swr(
+  const data = useSWR(
     "update-info",
     async () => {
       const releaseInfo = await window.f1mvli.updater.checkForUpdates();

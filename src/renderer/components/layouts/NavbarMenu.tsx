@@ -13,8 +13,9 @@ import {
 } from "@mui/icons-material";
 import MenuItem from "@mui/material/MenuItem";
 import Typography from "@mui/material/Typography";
-import swr from "swr";
+import useSWR from "swr";
 import { green, red } from "@mui/material/colors";
+import { shell } from "electron";
 //@ts-ignore
 import multiviewerLogo from "../../assets/multiviewer-logo.png";
 
@@ -36,7 +37,12 @@ export function ThreeDotMenu() {
     window.f1mvli.utils.exitApp();
   }, []);
 
-  const appVersion = swr("appVersion", async () => {
+  const handleOpenMultiViewer = useCallback(() => {
+    setAnchorEl(undefined);
+    shell.openExternal("multiviewer://");
+  }, []);
+
+  const appVersion = useSWR("appVersion", async () => {
     return await window.f1mvli.appInfo.getAppVersion();
   }).data;
 
@@ -91,9 +97,8 @@ export function ThreeDotMenu() {
         </MenuItem>
 
         <MenuItem
-          onClick={handleMenuClose}
+          onClick={handleOpenMultiViewer}
           component={Link}
-          href="multiviewer://"
           target="_blank"
         >
           <ListItemIcon>
