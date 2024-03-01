@@ -1,6 +1,5 @@
 import React, { useCallback, useMemo, useState } from "react";
 import {
-  Square,
   KeyboardArrowDown,
   DirectionsCar,
   Flag,
@@ -40,7 +39,6 @@ const icons = {
   [EventType.VirtualSafetyCarEnding]: <NoCrash sx={{ color: "yellow" }} />,
   [EventType.FastestLap]: <Timer sx={{ color: "#e801fe" }} />,
   [EventType.TimePenalty]: <Timer sx={{ color: red[500] }} />,
-  [EventType.GoBackToStatic]: <Square sx={{ borderRadius: 10 }} />,
   [EventType.SessionEnded]: <DoneAllRounded sx={{ color: green[500] }} />,
   [EventType.DrsEnabled]: <CheckCircle sx={{ color: green[500] }} />,
   [EventType.DrsDisabled]: <CancelRounded sx={{ color: red[500] }} />,

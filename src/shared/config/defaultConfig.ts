@@ -5,24 +5,6 @@ export const defaultConfig: IConfig = {
   startMultiViewerWhenAppStarts: false,
   events: [
     {
-      id: 0,
-      name: "Back to static",
-      triggers: [EventType.GoBackToStatic],
-      enabled: true,
-      actions: [
-        {
-          type: ActionType.On,
-          color: {
-            r: 255,
-            g: 255,
-            b: 255,
-          },
-          brightness: 100,
-        },
-      ],
-      amount: 1,
-    },
-    {
       id: 1,
       name: "Green Flag",
       triggers: [EventType.GreenFlag],

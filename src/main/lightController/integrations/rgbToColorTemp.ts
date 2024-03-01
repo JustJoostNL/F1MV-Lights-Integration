@@ -7,7 +7,6 @@ export function rgbToColorTemp(
 ) {
   switch (event) {
     case EventType.GreenFlag:
-    case EventType.GoBackToStatic:
     case EventType.DrsEnabled:
     case EventType.DrsDisabled:
     case EventType.PitLaneEntryClosed:
