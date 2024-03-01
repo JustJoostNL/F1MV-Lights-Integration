@@ -1,5 +1,6 @@
 import { Action, EventType } from "../../shared/config/config_types";
 import { getConfig } from "../ipc/config";
+import { goveeControl } from "./integrations/govee/api";
 import { homeAssistantControl } from "./integrations/homeAssistant/api";
 import { philipsHueControl } from "./integrations/philipsHue/api";
 import { webServerControl } from "./integrations/webserver/api";
@@ -61,6 +62,14 @@ export async function controlAllLights({
       color,
     });
   }
+
+  if (config.goveeEnabled) {
+    await goveeControl({
+      controlType,
+      color,
+      brightness,
+    });
+  }
 }
 
 export async function turnOffAllLights() {
@@ -91,6 +100,18 @@ export async function turnOffAllLights() {
 
   if (config.philipsHueEnabled) {
     await philipsHueControl({
+      controlType: ControlType.Off,
+      color: {
+        r: 0,
+        g: 0,
+        b: 0,
+      },
+      brightness: 100,
+    });
+  }
+
+  if (config.goveeEnabled) {
+    await goveeControl({
       controlType: ControlType.Off,
       color: {
         r: 0,

@@ -4,5 +4,6 @@ export const integrationStates = {
   f1tvLiveSession: false,
   homeAssistant: false,
   philipsHue: false,
+  govee: false,
   webserver: false,
 };

@@ -36,6 +36,11 @@ const handleGetIntegrationStates = async () => {
       disabled: !config.philipsHueEnabled,
     },
     {
+      name: "govee",
+      state: integrationStates.govee,
+      disabled: !config.goveeEnabled,
+    },
+    {
       name: "webserver",
       state: integrationStates.webserver,
       disabled: !config.webserverEnabled,

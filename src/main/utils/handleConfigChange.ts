@@ -6,6 +6,7 @@ import {
   webserverInitialize,
 } from "../lightController/integrations/webserver/api";
 import { registerDiscordRPC } from "../lightController/integrations/discord/api";
+import { goveeInitialize } from "../lightController/integrations/govee/api";
 
 export async function handleConfigChange(
   oldConfig: IConfig,
@@ -33,6 +34,11 @@ export async function handleConfigChange(
   //discord rpc
   if (!oldConfig.discordRPCEnabled && newConfig.discordRPCEnabled) {
     await registerDiscordRPC();
+  }
+
+  //govee
+  if (!oldConfig.goveeEnabled && newConfig.goveeEnabled) {
+    await goveeInitialize();
   }
 
   //logging

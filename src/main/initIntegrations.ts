@@ -1,5 +1,6 @@
 import { globalConfig } from "./ipc/config";
 import { registerDiscordRPC } from "./lightController/integrations/discord/api";
+import { goveeInitialize } from "./lightController/integrations/govee/api";
 import { homeAssistantInitialize } from "./lightController/integrations/homeAssistant/api";
 import { philipsHueInitialize } from "./lightController/integrations/philipsHue/api";
 import { integrationStates } from "./lightController/integrations/states";
@@ -29,6 +30,11 @@ export async function initializeIntegrations() {
       name: "webserver",
       function: webserverInitialize,
       enabled: globalConfig.webserverEnabled,
+    },
+    {
+      name: "govee",
+      function: goveeInitialize,
+      enabled: globalConfig.goveeEnabled,
     },
     {
       name: "discord",
