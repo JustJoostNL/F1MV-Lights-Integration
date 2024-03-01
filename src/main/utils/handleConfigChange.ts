@@ -5,6 +5,7 @@ import {
   closeWebServer,
   webserverInitialize,
 } from "../lightController/integrations/webserver/api";
+import { registerDiscordRPC } from "../lightController/integrations/discord/api";
 
 export async function handleConfigChange(
   oldConfig: IConfig,
@@ -27,6 +28,11 @@ export async function handleConfigChange(
   //home assistant
   if (!oldConfig.homeAssistantEnabled && newConfig.homeAssistantEnabled) {
     await homeAssistantInitialize();
+  }
+
+  //discord rpc
+  if (!oldConfig.discordRPCEnabled && newConfig.discordRPCEnabled) {
+    await registerDiscordRPC();
   }
 
   //logging

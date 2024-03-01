@@ -26,9 +26,9 @@ const integrationStateMap: {
   streamDeck: "Stream Deck",
   WLED: "WLED",
   MQTT: "MQTT",
-  F1MV: "MultiViewer",
-  F1TVLiveSession: "F1TV Live Session Found",
-  update: "Auto Updater",
+  multiviewer: "MultiViewer Live Timing",
+  f1tvLiveSession: "F1TV Live Session Found",
+  autoUpdater: "Auto Updater",
   webserver: "Webserver",
 };
 

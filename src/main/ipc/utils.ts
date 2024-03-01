@@ -11,6 +11,21 @@ const handleGetIntegrationStates = async () => {
 
   const states = [
     {
+      name: "multiviewer",
+      state: integrationStates.multiviewer,
+      disabled: false,
+    },
+    {
+      name: "autoUpdater",
+      state: integrationStates.autoUpdater,
+      disabled: false,
+    },
+    {
+      name: "f1tvLiveSession",
+      state: integrationStates.f1tvLiveSession,
+      disabled: false,
+    },
+    {
       name: "homeAssistant",
       state: integrationStates.homeAssistant,
       disabled: !config.homeAssistantEnabled,

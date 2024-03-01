@@ -91,6 +91,31 @@ export async function fetchMultiViewerLiveTimingData(): Promise<
   }
 }
 
+export async function checkMultiViewerAPIStatus() {
+  const config = await getConfig();
+  const heartbeatUrl = new URL(
+    "/api/v1/live-timing/Heartbeat",
+    config.multiviewerLiveTimingURL,
+  );
+
+  try {
+    const res = await fetch(heartbeatUrl.toString(), {
+      method: "GET",
+    });
+    const json = await res.json();
+
+    if (json.error !== "No data found, do you have live timing running?") {
+      log.debug("MultiViewer API is online.");
+      return true;
+    } else {
+      log.debug("MultiViewer API is offline.");
+      return false;
+    }
+  } catch (err) {
+    return false;
+  }
+}
+
 export function parseLapTime(lapTime: string) {
   const [minutes, seconds, milliseconds] = lapTime
     .split(/[:.]/)
