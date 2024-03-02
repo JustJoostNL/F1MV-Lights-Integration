@@ -17,6 +17,7 @@ import { HomeAssistantDeviceSelector } from "./pages/HomeAssistantDeviceSelector
 import { PhilipsHueDeviceSelector } from "./pages/PhilipsHueDeviceSelector";
 import { PhilipsHueGroupSelector } from "./pages/PhilipsHueGroupSelector";
 import { LogsPage } from "./pages/Logs";
+import { WLEDDeviceSelector } from "./pages/WLEDDeviceSelector";
 
 Sentry.init({
   dsn: "https://e64c3ec745124566b849043192e58711@o4504289317879808.ingest.sentry.io/4504289338392576",
@@ -78,6 +79,7 @@ root.render(
                 path="/philips-hue-gs"
                 element={<PhilipsHueGroupSelector />}
               />
+              <Route path="/wled-ds" element={<WLEDDeviceSelector />} />
             </Routes>
           </HashRouter>
         </ThemeProvider>

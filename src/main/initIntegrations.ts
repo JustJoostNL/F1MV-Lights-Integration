@@ -8,6 +8,7 @@ import { philipsHueInitialize } from "./lightController/integrations/philipsHue/
 import { integrationStates } from "./lightController/integrations/states";
 import { streamdeckInitialize } from "./lightController/integrations/streamdeck/api";
 import { webserverInitialize } from "./lightController/integrations/webserver/api";
+import { wledInitialize } from "./lightController/integrations/wled/api";
 import { checkMultiViewerAPIStatus } from "./multiviewer/api";
 import { handleMiscIntegrationStateChecks } from "./utils/handleMiscIntegrationStateChecks";
 
@@ -60,6 +61,11 @@ export async function initializeIntegrations() {
       name: "mqtt",
       function: mqttInitialize,
       enabled: globalConfig.mqttEnabled,
+    },
+    {
+      name: "wled",
+      function: wledInitialize,
+      enabled: globalConfig.wledEnabled,
     },
   ];
 

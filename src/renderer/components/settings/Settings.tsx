@@ -45,6 +45,7 @@ import { WebserverPortInput } from "./WebserverPortInput";
 import { HomeAssistantDevicesButton } from "./HomeAssistantDevicesButton";
 import { PhilipsHueSelectButton } from "./PhilipsHueSelectButton";
 import { OpenRGBConnectButton } from "./OpenRGBConnectButton";
+import { WLEDConfigureDevicesButton } from "./WLEDConfigureDevicesButton";
 
 interface ISettings extends SettingsGroupProps {
   type?: "normal" | "experimental" | "debug";
@@ -326,6 +327,15 @@ export function Settings() {
                 "This will enable the WLED integration, keep this disabled if you don't have WLED devices.",
               configKeys: ["wledEnabled"],
               input: <WLEDEnabledToggle />,
+            },
+            {
+              type: "setting",
+              title: "Configure WLED Devices",
+              condition: config.wledEnabled,
+              description:
+                "Here you can configure the devices that will be used for the WLED integration.",
+              configKeys: ["wledDevices"],
+              input: <WLEDConfigureDevicesButton />,
             },
           ],
         },

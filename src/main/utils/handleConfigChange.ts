@@ -13,6 +13,7 @@ import {
   mqttClient,
   mqttInitialize,
 } from "../lightController/integrations/mqtt/api";
+import { wledInitialize } from "../lightController/integrations/wled/api";
 
 export async function handleConfigChange(
   oldConfig: IConfig,
@@ -90,6 +91,11 @@ export async function handleConfigChange(
           err.message,
       );
     }
+  }
+
+  //wled
+  if (!oldConfig.wledEnabled && newConfig.wledEnabled) {
+    await wledInitialize();
   }
 
   //logging

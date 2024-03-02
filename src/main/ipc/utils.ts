@@ -9,6 +9,10 @@ const handleGetIntegrationStates = async () => {
   if (config.homeAssistantEnabled) await homeAssistantOnlineCheck();
   if (config.philipsHueEnabled) await philipsHueOnlineCheck();
 
+  if (config.wledEnabled && config.wledDevices.length > 0) {
+    integrationStates.wled = true;
+  }
+
   const states = [
     {
       name: "multiviewer",
@@ -59,6 +63,11 @@ const handleGetIntegrationStates = async () => {
       name: "mqtt",
       state: integrationStates.mqtt,
       disabled: !config.mqttEnabled,
+    },
+    {
+      name: "wled",
+      state: integrationStates.wled,
+      disabled: !config.wledEnabled,
     },
   ];
 

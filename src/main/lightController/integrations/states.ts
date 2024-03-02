@@ -8,5 +8,6 @@ export const integrationStates = {
   streamdeck: false,
   openrgb: false,
   mqtt: false,
+  wled: false,
   webserver: false,
 };
