@@ -44,6 +44,7 @@ import { WebserverEnabledToggle } from "./WebserverEnabledToggle";
 import { WebserverPortInput } from "./WebserverPortInput";
 import { HomeAssistantDevicesButton } from "./HomeAssistantDevicesButton";
 import { PhilipsHueSelectButton } from "./PhilipsHueSelectButton";
+import { OpenRGBConnectButton } from "./OpenRGBConnectButton";
 
 interface ISettings extends SettingsGroupProps {
   type?: "normal" | "experimental" | "debug";
@@ -252,6 +253,15 @@ export function Settings() {
                 "This is the port of the OpenRGB server, you can find this port in the 'SDK Server' tab in the OpenRGB software. (default is 6742)",
               configKeys: ["openrgbServerPort"],
               input: <OpenRGBServerPortInput />,
+            },
+            {
+              type: "setting",
+              title: "(Re)connect to OpenRGB",
+              condition: config.openrgbEnabled,
+              description:
+                "This will (re)connect to the OpenRGB server, this can be useful if you have changed the OpenRGB server settings.",
+              configKeys: [],
+              input: <OpenRGBConnectButton />,
             },
           ],
         },

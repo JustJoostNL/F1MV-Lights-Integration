@@ -9,6 +9,7 @@ import {
   getPhilipsHueDevices,
   getPhilipsHueGroups,
 } from "../lightController/integrations/philipsHue/api";
+import { openrgbInitialize } from "../lightController/integrations/openrgb/api";
 
 // home assistant
 async function handleHomeAssistantGetDevices() {
@@ -34,6 +35,11 @@ async function handlePhilipsHueGetDevices() {
 
 async function handlePhilipsHueGetGroups() {
   return await getPhilipsHueGroups();
+}
+
+//openrgb
+async function handleConnectOpenRGB() {
+  return await openrgbInitialize();
 }
 
 function registerIntegrationsIPCHandlers() {
@@ -63,6 +69,7 @@ function registerIntegrationsIPCHandlers() {
     "f1mvli:integrations:philipsHue:getGroups",
     handlePhilipsHueGetGroups,
   );
+  ipcMain.handle("f1mvli:integrations:openrgb:connect", handleConnectOpenRGB);
 
   return function () {
     ipcMain.removeHandler("f1mvli:integrations:homeAssistant:getDevices");
@@ -73,6 +80,7 @@ function registerIntegrationsIPCHandlers() {
     ipcMain.removeHandler("f1mvli:integrations:philipsHue:generateAuthToken");
     ipcMain.removeHandler("f1mvli:integrations:philipsHue:getDevices");
     ipcMain.removeHandler("f1mvli:integrations:philipsHue:getGroups");
+    ipcMain.removeHandler("f1mvli:integrations:openrgb:connect");
   };
 }
 

@@ -39,6 +39,11 @@ function getPhilipsHueGroups(): Promise<GetPhilipsHueGroupsResponse> {
   return ipcRenderer.invoke("f1mvli:integrations:philipsHue:getGroups");
 }
 
+// openrgb
+function openrgbInitialize(): Promise<void> {
+  return ipcRenderer.invoke("f1mvli:integrations:openrgb:connect");
+}
+
 export const integrationsAPI = {
   homeAssistant: {
     getDevices: homeAssistantGetDevices,
@@ -49,5 +54,8 @@ export const integrationsAPI = {
     generateAuthToken: generatePhilipsHueBridgeAuthToken,
     getDevices: getPhilipsHueDevices,
     getGroups: getPhilipsHueGroups,
+  },
+  openrgb: {
+    connect: openrgbInitialize,
   },
 };

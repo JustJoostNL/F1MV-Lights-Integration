@@ -6,6 +6,7 @@ import { ControlType } from "../../controlAllLights";
 import { IOpenRGBClient } from "./types";
 
 let openrgbClient: IOpenRGBClient | undefined = undefined;
+let manualDisconnect = false;
 
 export interface OpenRGBControlArgs {
   controlType: ControlType;
@@ -19,8 +20,10 @@ export interface OpenRGBControlArgs {
 export async function openrgbInitialize() {
   try {
     if (integrationStates.openrgb) {
+      manualDisconnect = true;
       log.debug("Already connected to OpenRGB, closing current connection...");
       openrgbClient?.disconnect();
+      openrgbClient = undefined;
     } else {
       log.debug("Connecting to OpenRGB...");
     }
@@ -30,6 +33,21 @@ export async function openrgbInitialize() {
       globalConfig.openrgbServerIp,
     );
     await openrgbClient.connect().then(() => {
+      integrationStates.openrgb = true;
+    });
+    //@ts-ignore
+    openrgbClient.on("disconnect", () => {
+      if (manualDisconnect) {
+        manualDisconnect = false;
+        return;
+      }
+      integrationStates.openrgb = false;
+      log.error(
+        "Disconnected from OpenRGB, please make sure that the OpenRGB SDK server is running and that the hostname/ip + port are correct!",
+      );
+    });
+    //@ts-ignore
+    openrgbClient.on("connect", () => {
       integrationStates.openrgb = true;
     });
   } catch (err) {

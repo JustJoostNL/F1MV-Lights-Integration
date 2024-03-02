@@ -17,6 +17,8 @@ interface Integration {
 }
 
 export async function initializeIntegrations() {
+  await handleMiscIntegrationStateChecks();
+
   const integrations: Integration[] = [
     {
       name: "homeAssistant",
@@ -69,7 +71,6 @@ export async function initializeIntegrations() {
     integrationStates.multiviewer = apiStatus;
   }, 15000);
 
-  await handleMiscIntegrationStateChecks();
   setInterval(async () => {
     await handleMiscIntegrationStateChecks();
   }, 30000); // 30 seconds
