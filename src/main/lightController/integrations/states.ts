@@ -7,5 +7,6 @@ export const integrationStates = {
   govee: false,
   streamdeck: false,
   openrgb: false,
+  mqtt: false,
   webserver: false,
 };

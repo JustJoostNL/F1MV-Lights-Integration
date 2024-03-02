@@ -2,6 +2,7 @@ import { Action, EventType } from "../../shared/config/config_types";
 import { getConfig } from "../ipc/config";
 import { goveeControl } from "./integrations/govee/api";
 import { homeAssistantControl } from "./integrations/homeAssistant/api";
+import { mqttControl } from "./integrations/mqtt/api";
 import { openrgbControl } from "./integrations/openrgb/api";
 import { philipsHueControl } from "./integrations/philipsHue/api";
 import { streamdeckControl } from "./integrations/streamdeck/api";
@@ -87,6 +88,15 @@ export async function controlAllLights({
       color,
     });
   }
+
+  if (config.mqttEnabled) {
+    await mqttControl({
+      controlType,
+      color,
+      brightness,
+      event,
+    });
+  }
 }
 
 export async function turnOffAllLights() {
@@ -159,6 +169,19 @@ export async function turnOffAllLights() {
         g: 0,
         b: 0,
       },
+    });
+  }
+
+  if (config.mqttEnabled) {
+    await mqttControl({
+      controlType: ControlType.Off,
+      color: {
+        r: 0,
+        g: 0,
+        b: 0,
+      },
+      brightness: 100,
+      event: fallBackEvent,
     });
   }
 }

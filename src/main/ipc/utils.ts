@@ -55,6 +55,11 @@ const handleGetIntegrationStates = async () => {
       state: integrationStates.openrgb,
       disabled: !config.openrgbEnabled,
     },
+    {
+      name: "mqtt",
+      state: integrationStates.mqtt,
+      disabled: !config.mqttEnabled,
+    },
   ];
 
   return states;

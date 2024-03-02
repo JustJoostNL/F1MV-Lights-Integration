@@ -9,6 +9,10 @@ import { registerDiscordRPC } from "../lightController/integrations/discord/api"
 import { goveeInitialize } from "../lightController/integrations/govee/api";
 import { streamdeckInitialize } from "../lightController/integrations/streamdeck/api";
 import { openrgbInitialize } from "../lightController/integrations/openrgb/api";
+import {
+  mqttClient,
+  mqttInitialize,
+} from "../lightController/integrations/mqtt/api";
 
 export async function handleConfigChange(
   oldConfig: IConfig,
@@ -55,6 +59,37 @@ export async function handleConfigChange(
     oldConfig.openrgbEnabled !== newConfig.openrgbEnabled
   ) {
     await openrgbInitialize();
+  }
+
+  //mqtt
+  if (
+    oldConfig.mqttBrokerHost !== newConfig.mqttBrokerHost ||
+    oldConfig.mqttBrokerPort !== newConfig.mqttBrokerPort ||
+    oldConfig.mqttBrokerUsername !== newConfig.mqttBrokerUsername ||
+    oldConfig.mqttBrokerPassword !== newConfig.mqttBrokerPassword
+  ) {
+    await mqttInitialize();
+  }
+
+  if (!oldConfig.mqttEnabled && newConfig.mqttEnabled) {
+    await mqttInitialize();
+  }
+
+  if (oldConfig.mqttEnabled && !newConfig.mqttEnabled) {
+    try {
+      mqttClient?.publish(
+        "F1MV-Lights-Integration/appState",
+        JSON.stringify({
+          appIsActive: false,
+        }),
+      );
+      mqttClient?.end();
+    } catch (err) {
+      log.error(
+        "Error while setting appIsActive to false, and closing the MQTT client: " +
+          err.message,
+      );
+    }
   }
 
   //logging

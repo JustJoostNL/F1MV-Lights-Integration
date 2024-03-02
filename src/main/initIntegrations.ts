@@ -2,6 +2,7 @@ import { globalConfig } from "./ipc/config";
 import { registerDiscordRPC } from "./lightController/integrations/discord/api";
 import { goveeInitialize } from "./lightController/integrations/govee/api";
 import { homeAssistantInitialize } from "./lightController/integrations/homeAssistant/api";
+import { mqttInitialize } from "./lightController/integrations/mqtt/api";
 import { openrgbInitialize } from "./lightController/integrations/openrgb/api";
 import { philipsHueInitialize } from "./lightController/integrations/philipsHue/api";
 import { integrationStates } from "./lightController/integrations/states";
@@ -54,6 +55,11 @@ export async function initializeIntegrations() {
       name: "openrgb",
       function: openrgbInitialize,
       enabled: globalConfig.openrgbEnabled,
+    },
+    {
+      name: "mqtt",
+      function: mqttInitialize,
+      enabled: globalConfig.mqttEnabled,
     },
   ];
 

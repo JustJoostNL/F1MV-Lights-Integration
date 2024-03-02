@@ -22,6 +22,8 @@ import { registerIntegrationsIPCHandlers } from "./ipc/integrations";
 import { initializeIntegrations } from "./initIntegrations";
 import { handleRegisterUser, handleUserActiveExit } from "./analytics/api";
 import { registerDeepLink } from "./deeplinking";
+import { mqttClient } from "./lightController/integrations/mqtt/api";
+import { integrationStates } from "./lightController/integrations/states";
 
 Sentry.init({
   dsn: "https://e64c3ec745124566b849043192e58711@o4504289317879808.ingest.sentry.io/4504289338392576",
@@ -165,9 +167,24 @@ function onReady() {
 
 app.on("window-all-closed", async () => {
   await handleUserActiveExit();
-  mainWindow = null;
+  if (mqttClient && integrationStates.mqtt && globalConfig.mqttEnabled) {
+    try {
+      mqttClient?.publish(
+        "F1MV-Lights-Integration/appState",
+        JSON.stringify({
+          appIsActive: false,
+        }),
+      );
+      mqttClient?.end();
+    } catch (err) {
+      log.error(
+        "Error while setting appIsActive to false, and closing the MQTT client: " +
+          err.message,
+      );
+    }
+  }
 
-  //todo: add cleanup for integrations
+  mainWindow = null;
 
   if (process.platform !== "darwin") app.quit();
 });
