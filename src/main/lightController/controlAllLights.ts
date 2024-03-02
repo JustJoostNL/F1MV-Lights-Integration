@@ -76,6 +76,7 @@ export async function controlAllLights({
     await streamdeckControl({
       controlType,
       color,
+      brightness,
     });
   }
 }
@@ -138,6 +139,7 @@ export async function turnOffAllLights() {
         g: 0,
         b: 0,
       },
+      brightness: 100,
     });
   }
 }

@@ -42,11 +42,13 @@ export interface StreamDeckControlArgs {
     g: number;
     b: number;
   };
+  brightness: number;
 }
 
 export async function streamdeckControl({
   controlType,
   color,
+  brightness,
 }: StreamDeckControlArgs) {
   const streamdeckList = await listStreamDecks();
   streamdeckList.forEach(async (deck) => {
@@ -56,6 +58,7 @@ export async function streamdeckControl({
       case ControlType.On:
         log.debug("Turning all the available keys on the Stream Deck on...");
         for (let i = 0; i < instance.NUM_KEYS; i++) {
+          instance.setBrightness(brightness);
           instance.fillKeyColor(i, color.r, color.g, color.b);
         }
         break;
