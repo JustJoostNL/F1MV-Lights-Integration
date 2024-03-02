@@ -21,7 +21,7 @@ const integrationStateMap: {
   ikea: "IKEA",
   govee: "Govee",
   philipsHue: "Philips Hue",
-  openRGB: "OpenRGB",
+  openrgb: "OpenRGB",
   homeAssistant: "Home Assistant",
   streamdeck: "Elgato Stream Deck",
   WLED: "WLED",

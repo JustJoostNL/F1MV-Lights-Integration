@@ -6,5 +6,6 @@ export const integrationStates = {
   philipsHue: false,
   govee: false,
   streamdeck: false,
+  openrgb: false,
   webserver: false,
 };

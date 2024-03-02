@@ -2,6 +2,7 @@ import { globalConfig } from "./ipc/config";
 import { registerDiscordRPC } from "./lightController/integrations/discord/api";
 import { goveeInitialize } from "./lightController/integrations/govee/api";
 import { homeAssistantInitialize } from "./lightController/integrations/homeAssistant/api";
+import { openrgbInitialize } from "./lightController/integrations/openrgb/api";
 import { philipsHueInitialize } from "./lightController/integrations/philipsHue/api";
 import { integrationStates } from "./lightController/integrations/states";
 import { streamdeckInitialize } from "./lightController/integrations/streamdeck/api";
@@ -46,6 +47,11 @@ export async function initializeIntegrations() {
       name: "discord",
       function: registerDiscordRPC,
       enabled: globalConfig.discordRPCEnabled,
+    },
+    {
+      name: "openrgb",
+      function: openrgbInitialize,
+      enabled: globalConfig.openrgbEnabled,
     },
   ];
 

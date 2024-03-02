@@ -50,6 +50,11 @@ const handleGetIntegrationStates = async () => {
       state: integrationStates.streamdeck,
       disabled: !config.streamdeckEnabled,
     },
+    {
+      name: "openrgb",
+      state: integrationStates.openrgb,
+      disabled: !config.openrgbEnabled,
+    },
   ];
 
   return states;

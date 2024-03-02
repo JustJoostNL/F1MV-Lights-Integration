@@ -8,6 +8,7 @@ import {
 import { registerDiscordRPC } from "../lightController/integrations/discord/api";
 import { goveeInitialize } from "../lightController/integrations/govee/api";
 import { streamdeckInitialize } from "../lightController/integrations/streamdeck/api";
+import { openrgbInitialize } from "../lightController/integrations/openrgb/api";
 
 export async function handleConfigChange(
   oldConfig: IConfig,
@@ -45,6 +46,15 @@ export async function handleConfigChange(
   //streamdeck
   if (!oldConfig.streamdeckEnabled && newConfig.streamdeckEnabled) {
     await streamdeckInitialize();
+  }
+
+  //openrgb
+  if (
+    oldConfig.openrgbServerIp !== newConfig.openrgbServerIp ||
+    oldConfig.openrgbServerPort !== newConfig.openrgbServerPort ||
+    oldConfig.openrgbEnabled !== newConfig.openrgbEnabled
+  ) {
+    await openrgbInitialize();
   }
 
   //logging
