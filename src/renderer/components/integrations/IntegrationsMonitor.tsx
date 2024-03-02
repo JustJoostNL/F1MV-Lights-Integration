@@ -23,7 +23,7 @@ const integrationStateMap: {
   philipsHue: "Philips Hue",
   openRGB: "OpenRGB",
   homeAssistant: "Home Assistant",
-  streamDeck: "Stream Deck",
+  streamdeck: "Elgato Stream Deck",
   WLED: "WLED",
   MQTT: "MQTT",
   multiviewer: "MultiViewer Live Timing",

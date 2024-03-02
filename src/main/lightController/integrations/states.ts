@@ -5,5 +5,6 @@ export const integrationStates = {
   homeAssistant: false,
   philipsHue: false,
   govee: false,
+  streamdeck: false,
   webserver: false,
 };

@@ -45,6 +45,11 @@ const handleGetIntegrationStates = async () => {
       state: integrationStates.webserver,
       disabled: !config.webserverEnabled,
     },
+    {
+      name: "streamdeck",
+      state: integrationStates.streamdeck,
+      disabled: !config.streamdeckEnabled,
+    },
   ];
 
   return states;

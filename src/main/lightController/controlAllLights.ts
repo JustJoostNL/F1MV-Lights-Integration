@@ -3,6 +3,7 @@ import { getConfig } from "../ipc/config";
 import { goveeControl } from "./integrations/govee/api";
 import { homeAssistantControl } from "./integrations/homeAssistant/api";
 import { philipsHueControl } from "./integrations/philipsHue/api";
+import { streamdeckControl } from "./integrations/streamdeck/api";
 import { webServerControl } from "./integrations/webserver/api";
 
 export enum ControlType {
@@ -70,6 +71,13 @@ export async function controlAllLights({
       brightness,
     });
   }
+
+  if (config.streamdeckEnabled) {
+    await streamdeckControl({
+      controlType,
+      color,
+    });
+  }
 }
 
 export async function turnOffAllLights() {
@@ -119,6 +127,17 @@ export async function turnOffAllLights() {
         b: 0,
       },
       brightness: 100,
+    });
+  }
+
+  if (config.streamdeckEnabled) {
+    await streamdeckControl({
+      controlType: ControlType.Off,
+      color: {
+        r: 0,
+        g: 0,
+        b: 0,
+      },
     });
   }
 }

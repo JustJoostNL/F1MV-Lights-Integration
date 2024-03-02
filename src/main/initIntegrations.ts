@@ -4,6 +4,7 @@ import { goveeInitialize } from "./lightController/integrations/govee/api";
 import { homeAssistantInitialize } from "./lightController/integrations/homeAssistant/api";
 import { philipsHueInitialize } from "./lightController/integrations/philipsHue/api";
 import { integrationStates } from "./lightController/integrations/states";
+import { streamdeckInitialize } from "./lightController/integrations/streamdeck/api";
 import { webserverInitialize } from "./lightController/integrations/webserver/api";
 import { checkMultiViewerAPIStatus } from "./multiviewer/api";
 import { handleMiscIntegrationStateChecks } from "./utils/handleMiscIntegrationStateChecks";
@@ -35,6 +36,11 @@ export async function initializeIntegrations() {
       name: "govee",
       function: goveeInitialize,
       enabled: globalConfig.goveeEnabled,
+    },
+    {
+      name: "streamdeck",
+      function: streamdeckInitialize,
+      enabled: globalConfig.streamdeckEnabled,
     },
     {
       name: "discord",

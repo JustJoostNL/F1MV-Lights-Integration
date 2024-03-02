@@ -7,6 +7,7 @@ import {
 } from "../lightController/integrations/webserver/api";
 import { registerDiscordRPC } from "../lightController/integrations/discord/api";
 import { goveeInitialize } from "../lightController/integrations/govee/api";
+import { streamdeckInitialize } from "../lightController/integrations/streamdeck/api";
 
 export async function handleConfigChange(
   oldConfig: IConfig,
@@ -39,6 +40,11 @@ export async function handleConfigChange(
   //govee
   if (!oldConfig.goveeEnabled && newConfig.goveeEnabled) {
     await goveeInitialize();
+  }
+
+  //streamdeck
+  if (!oldConfig.streamdeckEnabled && newConfig.streamdeckEnabled) {
+    await streamdeckInitialize();
   }
 
   //logging
