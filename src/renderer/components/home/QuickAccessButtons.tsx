@@ -73,11 +73,7 @@ export function QuickAccessButtons() {
         open={Boolean(anchorEl)}
         onClick={handleCloseMenu}
       >
-        <MenuItem
-          onClick={handleCloseMenu}
-          component={Link}
-          href="#/log-viewer"
-        >
+        <MenuItem onClick={handleCloseMenu} component={Link} href="#/logs">
           <ListItemIcon>
             <DescriptionIcon />
           </ListItemIcon>
