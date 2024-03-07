@@ -5,7 +5,7 @@ import * as Sentry from "@sentry/electron/renderer";
 import { SnackbarProvider } from "notistack";
 import { HashRouter, Route, Routes } from "react-router-dom";
 import packageJson from "../../package.json";
-import { Main } from "./pages/Main";
+import { IndexPage } from "./pages/Main";
 import { HomePage } from "./pages/Home";
 import { theme } from "./lib/theme";
 import { ConfigProvider } from "./hooks/useConfig";
@@ -63,7 +63,7 @@ root.render(
           <CssBaseline />
           <HashRouter>
             <Routes>
-              <Route path="/" element={<Main />} />
+              <Route path="/" element={<IndexPage />} />
               <Route path="/home" element={<HomePage />} />
               <Route path="/settings" element={<SettingsPage />} />
               <Route path="/event-editor" element={<EventEditorPage />} />
