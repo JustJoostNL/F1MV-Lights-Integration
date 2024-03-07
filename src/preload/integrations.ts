@@ -1,4 +1,5 @@
 import { ipcRenderer } from "electron";
+import { DiscoveredGateway } from "node-tradfri-client";
 import { IHomeAssistantStatesResponse } from "../shared/integrations/homeAssistant_types";
 import {
   DiscoverPhilipsHueBridgeResponse,
@@ -6,6 +7,7 @@ import {
   GetPhilipsHueGroupsResponse,
   GetPhilipsHueDevicesResponse,
 } from "../shared/integrations/philipsHue_types";
+import { IGetTradfriDevicesResponse } from "../shared/integrations/tradfri_types";
 
 // home assistant
 function homeAssistantGetDevices(): Promise<{
@@ -44,6 +46,15 @@ function openrgbInitialize(): Promise<void> {
   return ipcRenderer.invoke("f1mvli:integrations:openrgb:connect");
 }
 
+// tradfri
+function discoverTradfriGateway(): Promise<DiscoveredGateway | null> {
+  return ipcRenderer.invoke("f1mvli:integrations:tradfri:discoverGateway");
+}
+
+function getTradfriDevices(): Promise<IGetTradfriDevicesResponse | undefined> {
+  return ipcRenderer.invoke("f1mvli:integrations:tradfri:getDevices");
+}
+
 export const integrationsAPI = {
   homeAssistant: {
     getDevices: homeAssistantGetDevices,
@@ -57,5 +68,9 @@ export const integrationsAPI = {
   },
   openrgb: {
     connect: openrgbInitialize,
+  },
+  tradfri: {
+    discoverGateway: discoverTradfriGateway,
+    getDevices: getTradfriDevices,
   },
 };

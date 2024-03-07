@@ -9,5 +9,6 @@ export const integrationStates = {
   openrgb: false,
   mqtt: false,
   wled: false,
+  tradfri: false,
   webserver: false,
 };

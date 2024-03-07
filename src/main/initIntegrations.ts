@@ -7,6 +7,7 @@ import { openrgbInitialize } from "./lightController/integrations/openrgb/api";
 import { philipsHueInitialize } from "./lightController/integrations/philipsHue/api";
 import { integrationStates } from "./lightController/integrations/states";
 import { streamdeckInitialize } from "./lightController/integrations/streamdeck/api";
+import { tradfriInitialize } from "./lightController/integrations/tradfri/api";
 import { webserverInitialize } from "./lightController/integrations/webserver/api";
 import { wledInitialize } from "./lightController/integrations/wled/api";
 import { checkMultiViewerAPIStatus } from "./multiviewer/api";
@@ -66,6 +67,11 @@ export async function initializeIntegrations() {
       name: "wled",
       function: wledInitialize,
       enabled: globalConfig.wledEnabled,
+    },
+    {
+      name: "ikea",
+      function: tradfriInitialize,
+      enabled: globalConfig.ikeaEnabled,
     },
   ];
 

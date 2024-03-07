@@ -84,9 +84,10 @@ export interface IConfig {
   philipsHueEnableFade: boolean;
   ikeaEnabled: boolean;
   ikeaSecurityCode: string | undefined;
+  ikeaGatewayIp: string | undefined;
   ikeaIdentity: string | undefined;
   ikeaPreSharedKey: string | undefined;
-  ikeaDeviceIds: string[];
+  ikeaDeviceIds: number[];
   goveeEnabled: boolean;
   openrgbEnabled: boolean;
   openrgbServerIp: string;

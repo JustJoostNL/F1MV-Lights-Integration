@@ -25,10 +25,10 @@ export async function goveeInitialize() {
     log.error("Error initializing Govee instance: ", e);
   }
   goveeInstance?.on("ready", () => {
-    log.info("Govee instance ready.");
+    log.debug("Govee instance ready.");
   });
   goveeInstance?.on("deviceAdded", (device) => {
-    log.info("Govee device found: ", device.model);
+    log.debug("Govee device found: ", device.model);
   });
 }
 

@@ -46,6 +46,8 @@ import { HomeAssistantDevicesButton } from "./HomeAssistantDevicesButton";
 import { PhilipsHueSelectButton } from "./PhilipsHueSelectButton";
 import { OpenRGBConnectButton } from "./OpenRGBConnectButton";
 import { WLEDConfigureDevicesButton } from "./WLEDConfigureDevicesButton";
+import { IkeaGatewayIpInput } from "./IkeaGatewayIpInput.tsx";
+import { IkeaSelectButton } from "./IkeaSelectButton";
 
 interface ISettings extends SettingsGroupProps {
   type?: "normal" | "experimental" | "debug";
@@ -184,6 +186,15 @@ export function Settings() {
             },
             {
               type: "setting",
+              title: "IKEA gateway IP",
+              condition: config.ikeaEnabled,
+              description:
+                "This is the IP address of your IKEA gateway, you can use the button to discover your gateway or you can enter the IP address manually.",
+              configKeys: ["ikeaGatewayIp"],
+              input: <IkeaGatewayIpInput />,
+            },
+            {
+              type: "setting",
               title: "IKEA gateway security code",
               condition: config.ikeaEnabled,
               description:
@@ -208,6 +219,15 @@ export function Settings() {
                 "This is the pre-shared key the app uses to pair with the gateway, this is/will be generated automatically.",
               configKeys: ["ikeaPreSharedKey"],
               input: <IkeaPreSharedKeyInput />,
+            },
+            {
+              type: "setting",
+              title: "IKEA Trådfri devices",
+              condition: config.ikeaEnabled,
+              description:
+                "Here you can configure the devices that will be used for the IKEA Trådfri integration.",
+              configKeys: ["ikeaDeviceIds"],
+              input: <IkeaSelectButton />,
             },
           ],
         },

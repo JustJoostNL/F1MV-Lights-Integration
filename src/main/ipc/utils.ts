@@ -2,12 +2,14 @@ import { BrowserWindow, app, ipcMain } from "electron";
 import { integrationStates } from "../lightController/integrations/states";
 import { homeAssistantOnlineCheck } from "../lightController/integrations/homeAssistant/api";
 import { philipsHueOnlineCheck } from "../lightController/integrations/philipsHue/api";
+import { tradfriOnlineCheck } from "../lightController/integrations/tradfri/api";
 import { getConfig } from "./config";
 
 const handleGetIntegrationStates = async () => {
   const config = await getConfig();
   if (config.homeAssistantEnabled) await homeAssistantOnlineCheck();
   if (config.philipsHueEnabled) await philipsHueOnlineCheck();
+  if (config.ikeaEnabled) await tradfriOnlineCheck();
 
   if (config.wledEnabled && config.wledDevices.length > 0) {
     integrationStates.wled = true;
@@ -68,6 +70,11 @@ const handleGetIntegrationStates = async () => {
       name: "wled",
       state: integrationStates.wled,
       disabled: !config.wledEnabled,
+    },
+    {
+      name: "tradfri",
+      state: integrationStates.tradfri,
+      disabled: !config.ikeaEnabled,
     },
   ];
 

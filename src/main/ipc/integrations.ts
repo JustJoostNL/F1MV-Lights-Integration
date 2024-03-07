@@ -10,6 +10,10 @@ import {
   getPhilipsHueGroups,
 } from "../lightController/integrations/philipsHue/api";
 import { openrgbInitialize } from "../lightController/integrations/openrgb/api";
+import {
+  discoverTradfriGateway,
+  getTradfriDevices,
+} from "../lightController/integrations/tradfri/api";
 
 // home assistant
 async function handleHomeAssistantGetDevices() {
@@ -42,6 +46,15 @@ async function handleConnectOpenRGB() {
   return await openrgbInitialize();
 }
 
+//tradfri
+async function handleDiscoverTradfriBridge() {
+  return await discoverTradfriGateway();
+}
+
+async function handleGetTradfriDevices() {
+  return await getTradfriDevices();
+}
+
 function registerIntegrationsIPCHandlers() {
   ipcMain.handle(
     "f1mvli:integrations:homeAssistant:getDevices",
@@ -70,6 +83,14 @@ function registerIntegrationsIPCHandlers() {
     handlePhilipsHueGetGroups,
   );
   ipcMain.handle("f1mvli:integrations:openrgb:connect", handleConnectOpenRGB);
+  ipcMain.handle(
+    "f1mvli:integrations:tradfri:discoverGateway",
+    handleDiscoverTradfriBridge,
+  );
+  ipcMain.handle(
+    "f1mvli:integrations:tradfri:getDevices",
+    handleGetTradfriDevices,
+  );
 
   return function () {
     ipcMain.removeHandler("f1mvli:integrations:homeAssistant:getDevices");
@@ -81,6 +102,8 @@ function registerIntegrationsIPCHandlers() {
     ipcMain.removeHandler("f1mvli:integrations:philipsHue:getDevices");
     ipcMain.removeHandler("f1mvli:integrations:philipsHue:getGroups");
     ipcMain.removeHandler("f1mvli:integrations:openrgb:connect");
+    ipcMain.removeHandler("f1mvli:integrations:tradfri:discoverGateway");
+    ipcMain.removeHandler("f1mvli:integrations:tradfri:getDevices");
   };
 }
 

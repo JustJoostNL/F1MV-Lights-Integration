@@ -18,6 +18,7 @@ import { PhilipsHueDeviceSelector } from "./pages/PhilipsHueDeviceSelector";
 import { PhilipsHueGroupSelector } from "./pages/PhilipsHueGroupSelector";
 import { LogsPage } from "./pages/Logs";
 import { WLEDDeviceSelector } from "./pages/WLEDDeviceSelector";
+import { IkeaTradfriDeviceSelector } from "./pages/IkeaTradfriDeviceSelector";
 
 Sentry.init({
   dsn: "https://e64c3ec745124566b849043192e58711@o4504289317879808.ingest.sentry.io/4504289338392576",
@@ -80,6 +81,10 @@ root.render(
                 element={<PhilipsHueGroupSelector />}
               />
               <Route path="/wled-ds" element={<WLEDDeviceSelector />} />
+              <Route
+                path="/ikea-tradfri-ds"
+                element={<IkeaTradfriDeviceSelector />}
+              />
             </Routes>
           </HashRouter>
         </ThemeProvider>

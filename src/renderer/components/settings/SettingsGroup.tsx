@@ -30,7 +30,7 @@ interface Setting {
   type: "setting";
   title: string;
   description: string;
-  configKeys: string[];
+  configKeys: (keyof IConfig)[];
   input?: React.ReactNode;
   condition?: boolean;
 }

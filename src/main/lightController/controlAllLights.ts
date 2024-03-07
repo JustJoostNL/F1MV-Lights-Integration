@@ -6,6 +6,7 @@ import { mqttControl } from "./integrations/mqtt/api";
 import { openrgbControl } from "./integrations/openrgb/api";
 import { philipsHueControl } from "./integrations/philipsHue/api";
 import { streamdeckControl } from "./integrations/streamdeck/api";
+import { tradfriControl } from "./integrations/tradfri/api";
 import { webServerControl } from "./integrations/webserver/api";
 
 export enum ControlType {
@@ -97,6 +98,15 @@ export async function controlAllLights({
       event,
     });
   }
+
+  if (config.ikeaEnabled) {
+    await tradfriControl({
+      controlType,
+      color,
+      brightness,
+      event,
+    });
+  }
 }
 
 export async function turnOffAllLights() {
@@ -174,6 +184,19 @@ export async function turnOffAllLights() {
 
   if (config.mqttEnabled) {
     await mqttControl({
+      controlType: ControlType.Off,
+      color: {
+        r: 0,
+        g: 0,
+        b: 0,
+      },
+      brightness: 100,
+      event: fallBackEvent,
+    });
+  }
+
+  if (config.ikeaEnabled) {
+    await tradfriControl({
       controlType: ControlType.Off,
       color: {
         r: 0,

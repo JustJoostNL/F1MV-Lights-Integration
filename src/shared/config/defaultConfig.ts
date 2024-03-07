@@ -160,6 +160,7 @@ export const defaultConfig: IConfig = {
   philipsHueEnableFade: false,
   ikeaEnabled: false,
   ikeaSecurityCode: undefined,
+  ikeaGatewayIp: undefined,
   ikeaIdentity: undefined,
   ikeaPreSharedKey: undefined,
   ikeaDeviceIds: [],

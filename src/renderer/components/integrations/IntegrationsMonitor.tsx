@@ -18,7 +18,7 @@ import "./status.css";
 const integrationStateMap: {
   [key: string]: string;
 } = {
-  ikea: "IKEA",
+  tradfri: "IKEA Tradfri",
   govee: "Govee",
   philipsHue: "Philips Hue",
   openrgb: "OpenRGB",
