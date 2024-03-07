@@ -7,6 +7,6 @@ output/*
 dist/*
 release/*
 dist-electron/*
-
-.prettierrc
-.prettierrc.json
+codegen.yml
+yarn-error.log
+```

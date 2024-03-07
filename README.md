@@ -164,7 +164,7 @@ Distributed under the GNU General Public License v3.0. See `LICENSE.md` for more
 
 <!-- ACKNOWLEDGMENTS -->
 ## Acknowledgments
-* [Thanks to @LapsTimeOFF for helping me with the hue integration!](https://github.com/LapsTimeOFF/)
+* [Thanks to all who contributed to this project!](https://github.com/JustJoostNL/F1MV-Lights-Integration/graphs/contributors)
 * [Thanks to MultiViewer for the amazing software!](https://multiviewer.app)
 
 

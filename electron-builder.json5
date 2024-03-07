@@ -1,7 +1,7 @@
 {
   "productName": "F1MV-Lights-Integration",
   "appId": "com.justjoostnl.f1mv.lights.integration",
-  "copyright": "Copyright © 2023 JustJoostNL",
+  "copyright": "Copyright © 2024 JustJoostNL",
 
   generateUpdatesFilesForAllChannels: true,
   "asar": true,
@@ -30,9 +30,21 @@
     entitlements: "build/entitlements.mac.plist",
     entitlementsInherit: "build/entitlements.mac.plist",
     category: "public.app-category.utilities",
-    "target": [
-      "dmg",
-      "zip"
+    target: [
+      {
+        target: "dmg",
+        arch: [
+          "x64",
+          "arm64"
+        ],
+      },
+      {
+        target: "zip",
+        arch: [
+          "x64",
+          "arm64"
+        ],
+      },
     ]
   },
 

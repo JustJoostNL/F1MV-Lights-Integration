@@ -2,56 +2,86 @@ import { rmSync } from "node:fs";
 import path from "node:path";
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
-import electron from "vite-electron-plugin";
-import { customStart, loadViteEnv } from "vite-electron-plugin/plugin";
+import electron from "vite-plugin-electron";
 import renderer from "vite-plugin-electron-renderer";
 import pkg from "./package.json";
 
 // https://vitejs.dev/config/
+//@ts-ignore
 export default defineConfig(({ command }) => {
   rmSync("dist-electron", { recursive: true, force: true });
 
-  const sourcemap = command === "serve" || !!process.env.VSCODE_DEBUG;
+  const isServe = command === "serve";
+  const isBuild = command === "build";
+  const sourcemap = isServe || !!process.env.VSCODE_DEBUG;
 
   return {
     resolve: {
       alias: {
-        "@": path.join(__dirname, "src")
+        "@": path.join(__dirname, "src"),
       },
     },
     plugins: [
       react(),
-      electron({
-        include: [
-          "electron"
-        ],
-        transformOptions: {
-          sourcemap,
+      electron([
+        {
+          // Main-Process entry file of the Electron App.
+          entry: "src/main/index.ts",
+          onstart(options) {
+            if (process.env.VSCODE_DEBUG) {
+              console.log(
+                /* For `.vscode/.debug.script.mjs` */ "[startup] Electron App",
+              );
+            } else {
+              options.startup();
+            }
+          },
+          vite: {
+            build: {
+              sourcemap,
+              minify: isBuild,
+              outDir: "dist-electron/main",
+              rollupOptions: {
+                external: Object.keys(
+                  "dependencies" in pkg ? pkg.dependencies : {},
+                ),
+              },
+            },
+          },
         },
-        plugins: [
-          ...(process.env.VSCODE_DEBUG
-            ? [
-              // Will start Electron via VSCode Debug
-              customStart(() => console.log(/* For `.vscode/.debug.script.mjs` */"[startup] Electron App")),
-            ]
-            : []),
-          // Allow use `import.meta.env.VITE_SOME_KEY` in Electron-Main
-          loadViteEnv(),
-        ],
-      }),
+        {
+          entry: "src/preload/index.ts",
+          onstart(options) {
+            // Notify the Renderer-Process to reload the page when the Preload-Scripts build is complete,
+            // instead of restarting the entire Electron App.
+            options.reload();
+          },
+          vite: {
+            build: {
+              sourcemap: sourcemap ? "inline" : undefined, // #332
+              minify: isBuild,
+              outDir: "dist-electron/preload",
+              rollupOptions: {
+                external: Object.keys(
+                  "dependencies" in pkg ? pkg.dependencies : {},
+                ),
+              },
+            },
+          },
+        },
+      ]),
       // Use Node.js API in the Renderer-process
-      renderer({
-        // @ts-ignore
-        nodeIntegration: true,
-      }),
+      renderer(),
     ],
-    server: process.env.VSCODE_DEBUG ? (() => {
-      const url = new URL(pkg.debug.env.VITE_DEV_SERVER_URL);
-      return {
-        host: url.hostname,
-        port: +url.port,
-      };
-    })() : undefined,
+    server:
+      process.env.VSCODE_DEBUG &&
+      (() => {
+        const url = new URL(pkg.debug.env.VITE_DEV_SERVER_URL);
+        return {
+          host: url.hostname,
+          port: +url.port,
+        };
+      })(),
     clearScreen: false,
   };
 });
