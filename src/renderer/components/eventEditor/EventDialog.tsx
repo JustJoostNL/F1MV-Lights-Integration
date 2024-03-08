@@ -148,6 +148,24 @@ export function EventDialog({
         </Button>
         <Divider sx={{ mb: 2 }} />
 
+        <Typography variant="body2" component="div" sx={{ color: "grey" }}>
+          Go back to static settings
+        </Typography>
+
+        <FormControl fullWidth margin="dense">
+          <FormControlLabel
+            control={<Switch />}
+            label="Go back to static after event ends"
+            sx={{ mb: 1 }}
+            checked={event.goBackToStatic}
+            onChange={() =>
+              setEvent({ ...event, goBackToStatic: !event.goBackToStatic })
+            }
+          />
+        </FormControl>
+
+        <Divider sx={{ mb: 2 }} />
+
         <Typography
           variant="body2"
           component="div"

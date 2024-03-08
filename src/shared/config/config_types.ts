@@ -67,6 +67,7 @@ export interface Event {
   triggers: EventType[];
   enabled: boolean;
   actions: Action[];
+  goBackToStatic?: boolean;
   amount: number;
 }
 
@@ -74,6 +75,13 @@ export interface IConfig {
   hideLogs: boolean;
   startMultiViewerWhenAppStarts: boolean;
   globalMaxBrightness: number;
+  goBackToStaticBrightness?: number;
+  goBackToStaticDelay?: number;
+  goBackToStaticColor?: {
+    r: number;
+    g: number;
+    b: number;
+  };
   events: Event[];
   multiviewerLiveTimingURL: string;
   multiviewerCheck: boolean;

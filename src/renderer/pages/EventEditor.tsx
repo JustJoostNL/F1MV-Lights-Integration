@@ -82,6 +82,7 @@ export function EventEditorPage() {
       enabled: true,
       triggers: [],
       actions: [],
+      goBackToStatic: false,
       amount: 1,
     });
     updateConfig({ events: newEvents });

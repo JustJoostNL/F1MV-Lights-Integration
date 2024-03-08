@@ -49,6 +49,9 @@ import { WLEDConfigureDevicesButton } from "./WLEDConfigureDevicesButton";
 import { IkeaGatewayIpInput } from "./IkeaGatewayIpInput.tsx";
 import { IkeaSelectButton } from "./IkeaSelectButton";
 import { GlobalMaxBrightnessSlider } from "./GlobalMaxBrightnessSlider";
+import { GoBackToStaticDelayInput } from "./GoBackToStaticDelayInput";
+import { GoBackToStaticBrightnessInput } from "./GoBackToStaticBrightnessInput";
+import { GoBackToStaticColorChangeButton } from "./GoBackToStaticColorChangeButton";
 
 interface ISettings extends SettingsGroupProps {
   type?: "normal" | "experimental" | "debug";
@@ -91,6 +94,30 @@ export function Settings() {
             "This is the maximum brightness the app will use for the lights.",
           configKeys: ["globalMaxBrightness"],
           input: <GlobalMaxBrightnessSlider />,
+        },
+        {
+          type: "setting",
+          title: "Go back to static delay",
+          description:
+            "This is the delay in milliseconds the app will wait before going back to the static color.",
+          configKeys: ["goBackToStaticDelay"],
+          input: <GoBackToStaticDelayInput />,
+        },
+        {
+          type: "setting",
+          title: "Go back to static brightness",
+          description:
+            "This is the brightness the app will use when going back to the static color.",
+          configKeys: ["goBackToStaticBrightness"],
+          input: <GoBackToStaticBrightnessInput />,
+        },
+        {
+          type: "setting",
+          title: "Go back to static color",
+          description:
+            "This is the color the app will use when going back to the static color.",
+          configKeys: ["goBackToStaticColor"],
+          input: <GoBackToStaticColorChangeButton />,
         },
         {
           type: "setting",

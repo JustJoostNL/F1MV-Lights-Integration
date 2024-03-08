@@ -65,5 +65,20 @@ export async function eventHandler(event: EventType) {
         }
       }
     }
+
+    if (currentEvent.goBackToStatic) {
+      const delay = config.goBackToStaticDelay;
+      const color = config.goBackToStaticColor;
+      const brightness = config.goBackToStaticBrightness;
+
+      if (delay) await sleep(delay);
+      await controlAllLights({
+        controlType: ControlType.On,
+        color,
+        brightness,
+        event,
+        eventAction: { type: ActionType.On },
+      });
+    }
   }
 }

@@ -20,6 +20,7 @@ export const defaultConfig: IConfig = {
           brightness: 100,
         },
       ],
+      goBackToStatic: true,
       amount: 1,
     },
     {
@@ -38,6 +39,7 @@ export const defaultConfig: IConfig = {
           brightness: 100,
         },
       ],
+      goBackToStatic: false,
       amount: 1,
     },
     {
@@ -56,6 +58,7 @@ export const defaultConfig: IConfig = {
           brightness: 100,
         },
       ],
+      goBackToStatic: false,
       amount: 1,
     },
     {
@@ -74,6 +77,7 @@ export const defaultConfig: IConfig = {
           brightness: 100,
         },
       ],
+      goBackToStatic: false,
       amount: 1,
     },
     {
@@ -92,6 +96,7 @@ export const defaultConfig: IConfig = {
           brightness: 100,
         },
       ],
+      goBackToStatic: false,
       amount: 1,
     },
     {
@@ -110,6 +115,7 @@ export const defaultConfig: IConfig = {
           brightness: 100,
         },
       ],
+      goBackToStatic: false,
       amount: 1,
     },
     {
@@ -135,6 +141,7 @@ export const defaultConfig: IConfig = {
           type: ActionType.GoBackToCurrentStatus,
         },
       ],
+      goBackToStatic: false,
       amount: 1,
     },
     {
@@ -147,10 +154,18 @@ export const defaultConfig: IConfig = {
           type: ActionType.Off,
         },
       ],
+      goBackToStatic: false,
       amount: 1,
     },
   ],
   globalMaxBrightness: 100,
+  goBackToStaticBrightness: 70,
+  goBackToStaticDelay: 3000,
+  goBackToStaticColor: {
+    r: 255,
+    g: 255,
+    b: 255,
+  },
   multiviewerLiveTimingURL: "http://localhost:10101",
   multiviewerCheck: true,
   philipsHueEnabled: false,
