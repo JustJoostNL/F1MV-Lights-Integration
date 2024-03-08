@@ -30,7 +30,7 @@ const fallBackEvent = EventType.GreenFlag;
 
 export async function controlAllLights({
   color,
-  brightness,
+  brightness: initialBrightness,
   controlType,
   event,
   eventAction,
@@ -41,6 +41,12 @@ export async function controlAllLights({
   }
 
   const config = await getConfig();
+
+  const globalMaxBrightness = config.globalMaxBrightness;
+  const brightness = initialBrightness
+    ? (initialBrightness / 100) * globalMaxBrightness
+    : globalMaxBrightness;
+
   if (!color || !brightness || !controlType) return;
 
   if (config.homeAssistantEnabled) {

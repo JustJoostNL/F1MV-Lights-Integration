@@ -73,6 +73,7 @@ export interface Event {
 export interface IConfig {
   hideLogs: boolean;
   startMultiViewerWhenAppStarts: boolean;
+  globalMaxBrightness: number;
   events: Event[];
   multiviewerLiveTimingURL: string;
   multiviewerCheck: boolean;

@@ -48,6 +48,7 @@ import { OpenRGBConnectButton } from "./OpenRGBConnectButton";
 import { WLEDConfigureDevicesButton } from "./WLEDConfigureDevicesButton";
 import { IkeaGatewayIpInput } from "./IkeaGatewayIpInput.tsx";
 import { IkeaSelectButton } from "./IkeaSelectButton";
+import { GlobalMaxBrightnessSlider } from "./GlobalMaxBrightnessSlider";
 
 interface ISettings extends SettingsGroupProps {
   type?: "normal" | "experimental" | "debug";
@@ -82,6 +83,14 @@ export function Settings() {
             "This will automatically start MultiViewer when the application starts.",
           configKeys: ["startMultiViewerWhenAppStarts"],
           input: <AutoMultiViewerStartToggle />,
+        },
+        {
+          type: "setting",
+          title: "Global maximum brightness",
+          description:
+            "This is the maximum brightness the app will use for the lights.",
+          configKeys: ["globalMaxBrightness"],
+          input: <GlobalMaxBrightnessSlider />,
         },
         {
           type: "setting",
