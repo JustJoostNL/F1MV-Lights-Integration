@@ -13,6 +13,7 @@ import {
   BlockRounded,
   LogoutRounded,
   CancelRounded,
+  SquareRounded,
 } from "@mui/icons-material";
 import { ListItemIcon, Button, Menu, MenuItem, Divider } from "@mui/material";
 import { blue, green, red } from "@mui/material/colors";
@@ -78,6 +79,11 @@ export function SimulationMenu() {
     [handleClose],
   );
 
+  const handleSimulateBackToStatic = useCallback(() => {
+    window.f1mvli.eventManager.simulateBackToStatic();
+    handleClose();
+  }, [handleClose]);
+
   const handleOnAllLightsOff = useCallback(() => {
     window.f1mvli.eventManager.allOff();
     handleClose();
@@ -121,6 +127,12 @@ export function SimulationMenu() {
             </MenuItem>
           ))}
         <Divider />
+        <MenuItem onClick={handleSimulateBackToStatic}>
+          <ListItemIcon>
+            <SquareRounded />
+          </ListItemIcon>
+          Back to static color
+        </MenuItem>
         <MenuItem onClick={handleOnAllLightsOff}>
           <ListItemIcon>
             <FlashOff />

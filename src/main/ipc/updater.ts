@@ -1,6 +1,7 @@
 import { ipcMain } from "electron";
 import log from "electron-log";
 import { autoUpdater } from "electron-updater";
+import { broadcastToAllWindows } from "../utils/broadcastToAllWindows";
 
 let updateAvailable = false;
 
@@ -26,6 +27,7 @@ function handleUpdateNotAvailable() {
 function handleUpdateDownloaded() {
   updateAvailable = true;
   log.info("Update downloaded.");
+  broadcastToAllWindows("update-downloaded", null);
 }
 
 function handleGetUpdateAvailable() {
@@ -34,6 +36,7 @@ function handleGetUpdateAvailable() {
 
 function handleUpdateError(error: Error) {
   log.error("An error occurred in the update process: " + error);
+  broadcastToAllWindows("update-error", error.message);
 }
 
 function registerUpdaterIPCHandlers() {
@@ -41,6 +44,7 @@ function registerUpdaterIPCHandlers() {
   autoUpdater.on("update-downloaded", handleUpdateDownloaded);
   autoUpdater.on("update-available", handleUpdateAvailable);
   autoUpdater.on("update-not-available", handleUpdateNotAvailable);
+  autoUpdater.on("error", handleUpdateError);
 
   ipcMain.handle("f1mvli:updater:checkForUpdates", handleCheckForUpdates);
   ipcMain.handle("f1mvli:updater:getUpdateAvailable", handleGetUpdateAvailable);
@@ -51,6 +55,7 @@ function registerUpdaterIPCHandlers() {
     autoUpdater.off("update-downloaded", handleUpdateDownloaded);
     autoUpdater.off("update-available", handleUpdateAvailable);
     autoUpdater.off("update-not-available", handleUpdateNotAvailable);
+    autoUpdater.off("error", handleUpdateError);
 
     ipcMain.removeHandler("f1mvli:updater:checkForUpdates");
     ipcMain.removeHandler("f1mvli:updater:getUpdateAvailable");

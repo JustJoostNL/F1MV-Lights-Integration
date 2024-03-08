@@ -60,7 +60,7 @@ export function IndexPage() {
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState(false);
   const [doneChecking, setDoneChecking] = useState(false);
-  const [error, setError] = useState<Error | null>(null);
+  const [updateError, setUpdateError] = useState<boolean>(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -78,10 +78,10 @@ export function IndexPage() {
         const isAvailable = await window.f1mvli.updater.getUpdateAvailable();
         setUpdating(isAvailable);
         setDoneChecking(true);
+        setLoading(false);
       } catch (err) {
-        setError(err);
+        setUpdateError(err);
         setDoneChecking(true);
-        setUpdating(false);
       }
     })();
   }, []);
@@ -91,13 +91,12 @@ export function IndexPage() {
 
     const handleInstallUpdate = async () => {
       await window.f1mvli.updater.quitAndInstall().catch((err) => {
-        setError(err);
-        setUpdating(false);
+        setUpdateError(err);
       });
     };
 
     const handleUpdateError = () => {
-      setError(new Error("Failed to install update"));
+      setUpdateError(true);
       setUpdating(false);
     };
 
@@ -118,27 +117,27 @@ export function IndexPage() {
   useEffect(() => {
     if (!updating && doneChecking) {
       setLoading(false);
-      if (!error) {
+      if (!updateError) {
         navigate("/home");
       }
     }
-  }, [updating, doneChecking, navigate, error]);
+  }, [updating, doneChecking, navigate, updateError]);
 
   return (
     <Container>
       <Content>
-        {loading && <CircularProgress />}
-        {error && <ErrorOutlineRounded color="warning" />}
+        {!updateError && <CircularProgress />}
+        {updateError && <ErrorOutlineRounded color="warning" />}
         <Typography>
-          {loading
+          {loading || !doneChecking
             ? "Checking for updates..."
             : updating
               ? "Installing update..."
-              : error
+              : updateError
                 ? "Failed to automatically update, please download the latest version manually."
                 : ""}
         </Typography>
-        {!updating && error && (
+        {!updating && updateError && (
           <Stack direction="row" gap={2}>
             <Button onClick={handleContinue}>
               Continue with outdated version
@@ -153,7 +152,7 @@ export function IndexPage() {
           </Stack>
         )}
         {updating && (
-          <Button onClick={handleContinue} sx={{ mt: 5 }}>
+          <Button onClick={handleContinue} sx={{ mt: 2 }}>
             Skip checking for updates
           </Button>
         )}
