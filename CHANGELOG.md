@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## Version 3.0.1 - 2024-03-08
+### Changed
+- Enable Discord RPC by default.
+- Reset zoom level on app start.
+- Add global maximum brightness setting.
+- Add go back to static.
+
 ## Version 3.0.0 - 2024-03-07
 
 **Important**: This update will reset your configuration due to major application changes, you will need to reconfigure your devices and events. There is no way around this, sorry for the inconvenience.
