@@ -151,6 +151,8 @@ function onReady() {
   }
   log.transports.file.level = globalConfig.debugMode ? "debug" : "info";
   log.info("App starting...");
+  mainWindow?.webContents.setZoomLevel(0);
+  mainWindow?.webContents.setZoomFactor(1);
   registerDeepLink();
   startLiveTimingDataPolling();
   fetchAuthoritativeConfig();
