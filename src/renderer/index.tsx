@@ -25,19 +25,28 @@ Sentry.init({
   //enabled: process.env.NODE_ENV === "production",
   release: "F1MV-Lights-Integration@" + packageJson.version,
   environment: process.env.VITE_DEV_SERVER_URL ? "development" : "production",
+  tracePropagationTargets: ["localhost", "api.jstt.me", /(.*?)/],
   integrations: [
-    new Sentry.BrowserTracing({
-      traceFetch: true,
-      tracePropagationTargets: ["localhost", "api.jstt.me"],
+    Sentry.browserTracingIntegration({
+      _experiments: {
+        enableInteractions: true,
+      },
     }),
-    new Sentry.Replay({
+    Sentry.replayIntegration({
       maskAllText: false,
       maskAllInputs: false,
       blockAllMedia: false,
+      _experiments: {
+        captureExceptions: true,
+      },
     }),
   ],
-  replaysSessionSampleRate: 0.2,
+  attachStacktrace: true,
+  autoSessionTracking: true,
+  enableTracing: true,
+  replaysSessionSampleRate: 0.4,
   replaysOnErrorSampleRate: 1.0,
+  profilesSampleRate: 1.0,
   tracesSampleRate: 1.0,
 });
 

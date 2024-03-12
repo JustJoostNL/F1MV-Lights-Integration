@@ -32,6 +32,10 @@ Sentry.init({
   release: "F1MV-Lights-Integration@" + app.getVersion(),
   environment: process.env.VITE_DEV_SERVER_URL ? "development" : "production",
   tracesSampleRate: 1.0,
+  attachStacktrace: true,
+  profilesSampleRate: 1.0,
+  enableTracing: true,
+  autoSessionTracking: true,
 });
 
 // Disable GPU Acceleration for Windows 7
@@ -73,7 +77,7 @@ export async function createMainWindow() {
     },
     resizable: true,
     maximizable: true,
-    minimizable: false,
+    minimizable: true,
     minWidth: 900,
     minHeight: 750,
   });
