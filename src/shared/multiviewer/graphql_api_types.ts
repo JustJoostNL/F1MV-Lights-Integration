@@ -11,7 +11,7 @@ export interface IRealtimeTimingState {
   Heartbeat: IHeartbeat;
   LapCount: ILapCount | undefined;
   LapSeries: ILapSeries | undefined;
-  LapTimeSeries: any;
+  LapTimeSeries: ILapTimeSeries | undefined;
   PitLaneTimeCollection: IPitLaneTimeCollection | undefined;
   Position: IPosition;
   RaceControlMessages: IRaceControlMessages;
@@ -237,6 +237,14 @@ export enum RaceControlMessageSubCategory {
   SessionResume = "SessionResume",
   Correction = "Correction",
   RecoveryVehicle = "RecoveryVehicle",
+  SessionTemperatures = "SessionTemperatures",
+  PaddingMaterial = "PaddingMaterial",
+  AwningsAllowed = "AwningsAllowed",
+  MandatoryTireCompound = "MandatoryTireCompound",
+  RestartOrder = "RestartOrder",
+  NoPracticeStarts = "NoPracticeStarts",
+  SessionStartAborted = "SessionStartAborted",
+  DriveThroughPenalty = "DriveThroughPenalty",
 }
 
 export interface IRaceControlMessage {

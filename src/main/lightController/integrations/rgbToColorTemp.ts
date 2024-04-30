@@ -26,5 +26,7 @@ export function rgbToColorTemp(
       return (minMiReds + maxMiReds) / 2;
     case EventType.SessionEnded:
       return 0;
+    default:
+      return 0;
   }
 }

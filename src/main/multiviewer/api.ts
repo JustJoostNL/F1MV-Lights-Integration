@@ -211,6 +211,14 @@ function checkForNewEventsInRaceControlMessages(
   if (!RaceControlMessages || !RaceControlMessages.Messages) return;
 
   if (
+    processedRaceControlMessages.Messages.length === 0 &&
+    RaceControlMessages.Messages.length > 0
+  ) {
+    processedRaceControlMessages = RaceControlMessages;
+    return;
+  }
+
+  if (
     RaceControlMessages.Messages.length ===
     processedRaceControlMessages.Messages.length
   ) {
@@ -249,6 +257,119 @@ function checkForNewEventsInRaceControlMessages(
   }
   if (lastMessage.SubCategory === RaceControlMessageSubCategory.TimePenalty) {
     newEventHandler(EventType.TimePenalty);
+  }
+  if (
+    lastMessage.SubCategory ===
+    RaceControlMessageSubCategory.SessionStartDelayed
+  ) {
+    newEventHandler(EventType.SessionStartDelayed);
+  }
+  if (
+    lastMessage.SubCategory ===
+    RaceControlMessageSubCategory.SessionDurationChanged
+  ) {
+    newEventHandler(EventType.SessionDurationChanged);
+  }
+  if (
+    lastMessage.SubCategory === RaceControlMessageSubCategory.LapTimeDeleted
+  ) {
+    newEventHandler(EventType.LapTimeDeleted);
+  }
+  if (
+    lastMessage.SubCategory === RaceControlMessageSubCategory.LapTimeReinstated
+  ) {
+    newEventHandler(EventType.LapTimeReinstated);
+  }
+  if (
+    lastMessage.SubCategory ===
+    RaceControlMessageSubCategory.LappedCarsMayOvertake
+  ) {
+    newEventHandler(EventType.LappedCarsMayOvertake);
+  }
+  if (
+    lastMessage.SubCategory ===
+    RaceControlMessageSubCategory.LappedCarsMayNotOvertake
+  ) {
+    newEventHandler(EventType.LappedCarsMayNotOvertake);
+  }
+  if (
+    lastMessage.SubCategory ===
+    RaceControlMessageSubCategory.NormalGripConditions
+  ) {
+    newEventHandler(EventType.NormalGripConditions);
+  }
+  if (
+    lastMessage.SubCategory ===
+    RaceControlMessageSubCategory.OffTrackAndContinued
+  ) {
+    newEventHandler(EventType.OffTrackAndContinued);
+  }
+  if (
+    lastMessage.SubCategory === RaceControlMessageSubCategory.SpunAndContinued
+  ) {
+    newEventHandler(EventType.SpunAndContinued);
+  }
+  if (lastMessage.SubCategory === RaceControlMessageSubCategory.MissedApex) {
+    newEventHandler(EventType.MissedApex);
+  }
+  if (lastMessage.SubCategory === RaceControlMessageSubCategory.CarStopped) {
+    newEventHandler(EventType.CarStopped);
+  }
+  if (lastMessage.SubCategory === RaceControlMessageSubCategory.MedicalCar) {
+    newEventHandler(EventType.MedicalCar);
+  }
+  if (lastMessage.SubCategory === RaceControlMessageSubCategory.IncidentNoted) {
+    newEventHandler(EventType.IncidentNoted);
+  }
+  if (
+    lastMessage.SubCategory ===
+    RaceControlMessageSubCategory.IncidentUnderInvestigation
+  ) {
+    newEventHandler(EventType.IncidentUnderInvestigation);
+  }
+  if (
+    lastMessage.SubCategory ===
+    RaceControlMessageSubCategory.IncidentInvestigationAfterSession
+  ) {
+    newEventHandler(EventType.IncidentInvestigationAfterSession);
+  }
+  if (
+    lastMessage.SubCategory ===
+    RaceControlMessageSubCategory.IncidentNoFurtherAction
+  ) {
+    newEventHandler(EventType.IncidentNoFurtherAction);
+  }
+  if (
+    lastMessage.SubCategory ===
+    RaceControlMessageSubCategory.IncidentNoFurtherInvestigation
+  ) {
+    newEventHandler(EventType.IncidentNoFurtherInvestigation);
+  }
+  if (lastMessage.SubCategory === RaceControlMessageSubCategory.StopGoPenalty) {
+    newEventHandler(EventType.StopGoPenalty);
+  }
+  if (
+    lastMessage.SubCategory ===
+    RaceControlMessageSubCategory.TrackSurfaceSlippery
+  ) {
+    newEventHandler(EventType.TrackSurfaceSlippery);
+  }
+  if (
+    lastMessage.SubCategory === RaceControlMessageSubCategory.LowGripConditions
+  ) {
+    newEventHandler(EventType.LowGripConditions);
+  }
+  if (
+    lastMessage.SubCategory ===
+    RaceControlMessageSubCategory.SessionStartAborted
+  ) {
+    newEventHandler(EventType.SessionStartAborted);
+  }
+  if (
+    lastMessage.SubCategory ===
+    RaceControlMessageSubCategory.DriveThroughPenalty
+  ) {
+    newEventHandler(EventType.DriveThroughPenalty);
   }
 
   processedRaceControlMessages = RaceControlMessages;
