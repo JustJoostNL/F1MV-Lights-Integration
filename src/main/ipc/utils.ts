@@ -11,10 +11,6 @@ const handleGetIntegrationStates = async () => {
   if (config.philipsHueEnabled) await philipsHueOnlineCheck();
   if (config.ikeaEnabled) await tradfriOnlineCheck();
 
-  if (config.wledEnabled && config.wledDevices.length > 0) {
-    integrationStates.wled = true;
-  }
-
   const states = [
     {
       name: "multiviewer",

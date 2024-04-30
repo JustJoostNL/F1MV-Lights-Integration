@@ -14,6 +14,7 @@ import {
 } from "@mui/icons-material";
 import { IntegrationState } from "./types";
 import "./status.css";
+import useSWR from "swr";
 
 const integrationStateMap: {
   [key: string]: string;
@@ -32,27 +33,24 @@ const integrationStateMap: {
   webserver: "Webserver",
 };
 
+async function fetchIntegrationStates() {
+  return await window.f1mvli.utils.getIntegrationStates();
+}
+
 export function IntegrationsMonitor() {
-  const [integrationStates, setIntegrationStates] = useState<
-    IntegrationState[]
-  >([]);
   const [open, setOpen] = useState(true);
 
-  const handleToggleOpenClick = useCallback(() => {
+  const handleToggleOpen = useCallback(() => {
     setOpen(!open);
   }, [open]);
 
-  useEffect(() => {
-    async function fetchIntegrationStates() {
-      const newIntegrationStates =
-        await window.f1mvli.utils.getIntegrationStates();
-      setIntegrationStates([...newIntegrationStates]);
-    }
-
-    fetchIntegrationStates();
-    const intervalId = setInterval(fetchIntegrationStates, 5000);
-    return () => clearInterval(intervalId);
-  }, []);
+  const { data: integrationStates } = useSWR(
+    "integrationStates",
+    fetchIntegrationStates,
+    {
+      refreshInterval: 5000,
+    },
+  );
 
   return (
     <Card
@@ -60,7 +58,7 @@ export function IntegrationsMonitor() {
         width: "70%",
       }}
     >
-      <CardActionArea onClick={handleToggleOpenClick}>
+      <CardActionArea onClick={handleToggleOpen}>
         <CardHeader
           title="Integration States"
           action={
@@ -82,7 +80,7 @@ export function IntegrationsMonitor() {
 
         <List disablePadding>
           {integrationStates
-            .filter(
+            ?.filter(
               (integrationState: IntegrationState) =>
                 !integrationState.disabled,
             )
@@ -109,7 +107,7 @@ export function IntegrationsMonitor() {
                 />
               </div>
             ))}
-          {integrationStates.length === 0 && (
+          {integrationStates?.length === 0 && (
             <div
               style={{
                 display: "grid",

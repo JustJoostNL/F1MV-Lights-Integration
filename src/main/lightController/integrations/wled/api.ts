@@ -24,9 +24,10 @@ export async function wledInitialize() {
       await device.connect();
       successCount++;
       device.disconnect();
+      log.debug(`Successfully initialized WLED device ${deviceIp}`);
     } catch (err) {
       log.error(
-        `Error while trying to initialize WLED device ${deviceIp}: ${err}`,
+        `Error while trying to initialize WLED device ${deviceIp}: ${err.message}`,
       );
     }
   }
@@ -49,8 +50,10 @@ export async function wledControl({
   const wledDevices = globalConfig.wledDevices;
 
   for (const deviceIp of wledDevices) {
+    log.debug(`Controlling WLED device ${deviceIp}, type: ${controlType}`);
     try {
       const device = new WLEDClient(deviceIp);
+      device.connect();
       switch (controlType) {
         case ControlType.On:
           await device.clearSegments();

@@ -29,7 +29,7 @@ export function WLEDDeviceSelector() {
   const isValidDevice = useCallback(
     (deviceIp: string) => {
       return (
-        deviceIp.match(/^(?:(?:[a-zA-Z0-9]+)\.){1,3}(?:[a-zA-Z0-9]+)$/) &&
+        deviceIp.match(/^(?:(?:[a-zA-Z0-9-]+)\.){1,3}(?:[a-zA-Z0-9]+)$/) &&
         !alreadySelectedDevices.includes(deviceIp)
       );
     },
@@ -47,7 +47,7 @@ export function WLEDDeviceSelector() {
       >
         <Stack spacing={2} direction="row" alignItems="center">
           <TextField
-            label="WLED Device IP"
+            label="WLED Device IP/Hostname"
             error={(inputValue && !isValidDevice(inputValue)) as boolean}
             // helperText={
             //   (inputValue &&
