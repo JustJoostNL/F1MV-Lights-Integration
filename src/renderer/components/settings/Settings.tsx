@@ -70,6 +70,11 @@ export function Settings() {
   });
 
   const handleResetConfig = useCallback(() => {
+    const reponse = window.confirm(
+      "Are you sure you want to reset all settings to default?",
+    );
+    if (!reponse) return;
+
     setConfig(defaultConfig);
   }, [setConfig]);
 

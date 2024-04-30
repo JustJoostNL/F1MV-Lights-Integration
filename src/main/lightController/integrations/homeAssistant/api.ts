@@ -129,14 +129,16 @@ export async function homeAssistantControl({
   event,
 }: HomeAssistantControlArgs) {
   if (!integrationStates.homeAssistant) return;
+
   const config = await getConfig();
+
   const homeAssistantDevices = config.homeAssistantDevices;
+  brightness = Math.round((brightness / 100) * 254);
+
   const headers = {
     Authorization: "Bearer " + config.homeAssistantToken,
     "Content-Type": "application/json",
   };
-
-  brightness = Math.round((brightness / 100) * 254);
 
   const onUrl = new URL(
     "/api/services/light/turn_on",
@@ -154,8 +156,8 @@ export async function homeAssistantControl({
     case ControlType.On:
       for (const device in homeAssistantDevices) {
         const entityId = homeAssistantDevices[device];
-
         const supportsRGB = await homeAssistantCheckDeviceSpectrum(entityId);
+
         let colorTemp = 0;
 
         if (!supportsRGB) {
@@ -182,11 +184,13 @@ export async function homeAssistantControl({
               color_temp: colorTemp,
               brightness,
             };
+
         const options = {
           method: "POST",
           headers,
           body: JSON.stringify(postData),
         };
+
         try {
           await fetch(onUrl, options);
         } catch (error) {
@@ -199,14 +203,17 @@ export async function homeAssistantControl({
     case ControlType.Off:
       for (const device in homeAssistantDevices) {
         const entityId = homeAssistantDevices[device];
+
         const postData = {
           entity_id: entityId,
         };
+
         const options = {
           method: "POST",
           headers,
           body: JSON.stringify(postData),
         };
+
         try {
           await fetch(offUrl, options);
         } catch (error) {
