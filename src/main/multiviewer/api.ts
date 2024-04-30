@@ -19,7 +19,7 @@ import {
 import { eventHandler } from "../lightController/eventHandler";
 
 export interface ILiveTimingData {
-  RaceControlMessages: IRaceControlMessages;
+  RaceControlMessages: IRaceControlMessages | undefined;
   SessionData: ISessionData;
   SessionInfo: ISessionInfo;
   SessionStatus: ISessionStatus;
@@ -37,7 +37,7 @@ interface IGraphQLResponse {
 let errorCheck: boolean = false;
 export let liveTimingState: ILiveTimingData | undefined = undefined;
 let currentFastestLapTimeSeconds: number = 3600; // 1 hour
-//let currentFastestLapLapNumber: number | undefined = undefined;
+let currentQualifyingPart: number | undefined = undefined;
 let previousTrackStatus: ITrackStatus | undefined = undefined;
 let previousSessionStatus: ISessionStatus | undefined = undefined;
 let processedRaceControlMessages: IRaceControlMessages = {
@@ -139,39 +139,31 @@ export function getOverallFastestLapTime(
 }
 
 function checkForNewFastestLap(
-  TimingStats: ITimingStats["Lines"],
+  _TimingStats: ITimingStats["Lines"],
   TimingData: ITimingData["Lines"],
 ) {
-  for (const [driver, { Retired, Stopped }] of Object.entries(TimingData)) {
-    const { PersonalBestLapTime } = TimingStats[driver];
+  const fastestLapTimeSeconds = Object.values(TimingData ?? {})
+    .map((line) => {
+      if (line.KnockedOut === true) return "";
+      if (line.Retired === true) return "";
+      if (line.Stopped === true) return "";
+      // if (TimingStats[line.RacingNumber]?.PersonalBestLapTime.Position !== 1) {
+      //   return "";
+      // }
+      return line.BestLapTime?.Value;
+    })
+    .filter((lapTime) => lapTime !== "")
+    .map((lapTime) => ({ lapTime, parsed: parseLapTime(lapTime) }))
+    .sort((a, b) => a.parsed - b.parsed)[0]?.parsed;
 
-    //if the driver is retired or stopped, skip
-    if (Retired || Stopped) {
-      continue;
-    }
+  if (fastestLapTimeSeconds === undefined) return;
 
-    const { Position, Value } = PersonalBestLapTime;
-    const lapTimeSeconds = parseLapTime(Value);
-
-    //if the driver fastest lap is not in first place, skip
-    if (Position !== 1) {
-      continue;
-    }
-
-    //if the lap time is slower than the current fastest lap, skip
-    if (lapTimeSeconds >= currentFastestLapTimeSeconds) {
-      continue;
-    }
-
-    //if the lap number is not greater than the current fastest lap, skip
-    // if (Lap <= currentFastestLapLap) {
-    //   continue;
-    // }
-
-    currentFastestLapTimeSeconds = lapTimeSeconds;
-    //currentFastestLapLapNumber = Lap;
-    newEventHandler(EventType.FastestLap);
+  if (fastestLapTimeSeconds >= currentFastestLapTimeSeconds) {
+    return;
   }
+
+  currentFastestLapTimeSeconds = fastestLapTimeSeconds;
+  newEventHandler(EventType.FastestLap);
 }
 
 function checkForTrackStatusChange(
@@ -214,9 +206,9 @@ function checkForTrackStatusChange(
 }
 
 function checkForNewEventsInRaceControlMessages(
-  RaceControlMessages: IRaceControlMessages,
+  RaceControlMessages: IRaceControlMessages | undefined,
 ) {
-  if (!RaceControlMessages.Messages) return;
+  if (!RaceControlMessages || !RaceControlMessages.Messages) return;
 
   if (
     RaceControlMessages.Messages.length ===
@@ -262,11 +254,32 @@ function checkForNewEventsInRaceControlMessages(
   processedRaceControlMessages = RaceControlMessages;
 }
 
+function checkForNewQualifyingPart() {
+  if (liveTimingState?.SessionInfo.Type !== "Qualifying") return;
+
+  const qualifyingPart = liveTimingState?.SessionData.Series
+    ? liveTimingState?.SessionData.Series[
+        liveTimingState?.SessionData.Series.length - 1
+      ]?.QualifyingPart
+    : null;
+
+  if (qualifyingPart === null) return;
+
+  if (currentQualifyingPart !== qualifyingPart) {
+    if (typeof currentQualifyingPart !== "undefined") {
+      currentFastestLapTimeSeconds = 3600;
+    }
+    currentQualifyingPart = qualifyingPart;
+  }
+}
+
 export function startLiveTimingDataPolling() {
   setInterval(async () => {
     const liveTimingData = await fetchMultiViewerLiveTimingData();
     if (!liveTimingData) return;
     liveTimingState = liveTimingData;
+
+    checkForNewQualifyingPart();
     checkForNewFastestLap(
       liveTimingData.TimingStats.Lines,
       liveTimingData.TimingData.Lines,
