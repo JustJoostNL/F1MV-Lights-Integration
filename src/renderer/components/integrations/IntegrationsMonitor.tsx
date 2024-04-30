@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useState } from "react";
 import {
   Card,
   CardActionArea,
@@ -12,9 +12,9 @@ import {
   KeyboardArrowUpRounded,
   KeyboardArrowDownRounded,
 } from "@mui/icons-material";
+import useSWR from "swr";
 import { IntegrationState } from "./types";
 import "./status.css";
-import useSWR from "swr";
 
 const integrationStateMap: {
   [key: string]: string;
