@@ -17,19 +17,16 @@ jobs:
       - name: Check out Git repository
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
+      - name: Install Node.js, NPM and Yarn
         uses: actions/setup-node@v4
         with:
           node-version: 20
 
-      - name: Install bun
-        uses: oven-sh/setup-bun@v1
-
       - name: Install dependencies
-        run: bun install --frozen-lockfile
+        run: yarn install --frozen-lockfile --network-timeout 400000
 
       - name: Build app
-        run: bun run build
+        run: yarn build
         env:
           APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
           APPLE_ID: ${{ secrets.APPLE_ID }}
