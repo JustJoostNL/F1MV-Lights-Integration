@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - master
-      - rebuild
 
 jobs:
   build:
@@ -18,16 +17,19 @@ jobs:
       - name: Check out Git repository
         uses: actions/checkout@v4
 
-      - name: Install Node.js, NPM and Yarn
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 20
+
+      - name: Install bun
+        uses: oven-sh/setup-bun@v1
 
       - name: Install dependencies
-        run: yarn install --frozen-lockfile --network-timeout 400000
+        run: bun install --frozen-lockfile
 
       - name: Build app
-        run: yarn build
+        run: bun run build
         env:
           APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
           APPLE_ID: ${{ secrets.APPLE_ID }}
