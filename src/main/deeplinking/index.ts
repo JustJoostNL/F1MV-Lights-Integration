@@ -1,6 +1,6 @@
 import path from "path";
 import { app, ipcMain } from "electron";
-import { createMainWindow, mainWindow } from "..";
+import { createMainWindow, mainWindow } from "../main";
 import {
   handleAddEvent,
   handleOpenWhitelisted,
@@ -74,6 +74,7 @@ export function registerDeepLink() {
       if (process.defaultApp) {
         if (process.argv.length >= 2) {
           protocols.forEach((protocol) => {
+            console.log(process.execPath, process.argv);
             app.setAsDefaultProtocolClient(protocol, process.execPath, [
               path.resolve(process.argv[1]),
             ]);

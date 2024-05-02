@@ -1,10 +1,7 @@
 import { release } from "node:os";
-import path, { join } from "node:path";
-import http from "http";
+import path from "path";
 import { app, BrowserWindow, shell } from "electron";
 import log from "electron-log";
-import portfinder from "portfinder";
-import handler from "serve-handler";
 import * as Sentry from "@sentry/electron";
 import { autoUpdater } from "electron-updater";
 import {
@@ -25,6 +22,9 @@ import { registerDeepLink } from "./deeplinking";
 import { mqttClient } from "./lightController/integrations/mqtt/api";
 import { integrationStates } from "./lightController/integrations/states";
 
+declare const MAIN_WINDOW_VITE_DEV_SERVER_URL: string;
+declare const MAIN_WINDOW_VITE_NAME: string;
+
 Sentry.init({
   dsn: "https://e64c3ec745124566b849043192e58711@o4504289317879808.ingest.sentry.io/4504289338392576",
   attachScreenshot: true,
@@ -38,6 +38,11 @@ Sentry.init({
   autoSessionTracking: true,
 });
 
+// Handle creating/removing shortcuts on Windows when installing/uninstalling.
+if (require("electron-squirrel-startup")) {
+  app.quit();
+}
+
 // Disable GPU Acceleration for Windows 7
 if (release().startsWith("6.1")) app.disableHardwareAcceleration();
 
@@ -49,28 +54,19 @@ if (!app.requestSingleInstanceLock()) {
   process.exit(0);
 }
 
-process.env.DIST_ELECTRON = join(__dirname, "../");
-process.env.DIST = join(process.env.DIST_ELECTRON, "../dist");
-process.env.PUBLIC = process.env.VITE_DEV_SERVER_URL
-  ? join(process.env.DIST_ELECTRON, "../public")
-  : process.env.DIST;
-
 // Remove electron security warnings
 // process.env['ELECTRON_DISABLE_SECURITY_WARNINGS'] = 'true'
 
 export let mainWindow: BrowserWindow | null = null;
-export let availablePort: number | null = null;
-export const preload = path.join(__dirname, "../preload/index.js");
-export const devServerUrl = process.env.VITE_DEV_SERVER_URL;
 
 export async function createMainWindow() {
   mainWindow = new BrowserWindow({
     title: "F1MV Lights Integration",
-    icon: join(process.env.PUBLIC, "favicon.ico"),
+    icon: path.join(__dirname, "favicon.ico"),
     width: 1100,
     height: 800,
     webPreferences: {
-      preload,
+      preload: path.join(__dirname, "preload.js"),
       backgroundThrottling: false,
       nodeIntegration: true,
       contextIsolation: false,
@@ -82,25 +78,18 @@ export async function createMainWindow() {
     minHeight: 750,
   });
 
-  if (process.env.VITE_DEV_SERVER_URL) {
-    // electron-vite-vue#298
-    await mainWindow.loadURL(devServerUrl);
-    mainWindow.webContents.openDevTools({ mode: "detach" });
-    mainWindow.setMenuBarVisibility(false);
+  if (MAIN_WINDOW_VITE_DEV_SERVER_URL) {
+    mainWindow.loadURL(MAIN_WINDOW_VITE_DEV_SERVER_URL);
   } else {
-    mainWindow.setMenuBarVisibility(false);
-    availablePort = await portfinder.getPortPromise({
-      port: 30303,
-      host: "localhost",
-    });
-    const server = http.createServer((request, response) => {
-      return handler(request, response, {
-        public: process.env.DIST,
-      });
-    });
-    server.listen(availablePort, () => {
-      mainWindow?.loadURL(`http://localhost:${availablePort}/index.html`);
-    });
+    mainWindow.loadFile(
+      path.join(__dirname, `../renderer/${MAIN_WINDOW_VITE_NAME}/index.html`),
+    );
+  }
+
+  mainWindow.setMenuBarVisibility(false);
+
+  if (process.env.NODE_ENV === "development") {
+    mainWindow.webContents.openDevTools({ mode: "detach" });
   }
 
   mainWindow.webContents.setWindowOpenHandler(({ url }) => {
@@ -154,9 +143,12 @@ function onReady() {
     log.transports.console.level = globalConfig.debugMode ? "debug" : "info";
   }
   log.transports.file.level = globalConfig.debugMode ? "debug" : "info";
+
   log.info("App starting...");
+
   mainWindow?.webContents.setZoomLevel(0);
   mainWindow?.webContents.setZoomFactor(1);
+
   registerDeepLink();
   startLiveTimingDataPolling();
   fetchAuthoritativeConfig();

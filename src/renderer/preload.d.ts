@@ -1,4 +1,4 @@
-import { f1mvli } from "../preload";
+import { f1mvli } from "../preload/preload";
 export {};
 declare global {
   interface Window {

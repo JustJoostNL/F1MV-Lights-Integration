@@ -1,22 +1,20 @@
 {
   "compilerOptions": {
-    "target": "esnext",
-    "module": "esnext",
-    "moduleResolution": "node",
-    "jsx": "preserve",
-    "esModuleInterop": true,
-    "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true,
-    "useUnknownInCatchVariables": false,
-    "resolveJsonModule": true,
+    "target": "ESNext",
+    "module": "commonjs",
     "isolatedModules": true,
     "strict": true,
-    //"baseUrl": "./",
+    "allowJs": true,
+    "skipLibCheck": true,
+    "jsx": "preserve",
+    "forceConsistentCasingInFileNames": true,
+    "useUnknownInCatchVariables": false,
+    "esModuleInterop": true,
+    "noImplicitAny": true,
+    "sourceMap": true,
+    //"baseUrl": ".",
     "outDir": "./dist",
-    "sourceMap": false,
-    "noImplicitAny": false,
-    "types": ["node"]
-  },
-  "include": ["src/**/*"],
-  "exclude": ["node_modules", "src/preload/**/*"]
+    "moduleResolution": "node",
+    "resolveJsonModule": true
+  }
 }
