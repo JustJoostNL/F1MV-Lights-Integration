@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - master
-      - electron-forge
+      - electron-forge-tests
 
 jobs:
   build:
