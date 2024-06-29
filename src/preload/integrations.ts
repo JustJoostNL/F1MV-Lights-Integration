@@ -1,6 +1,7 @@
 import { ipcRenderer } from "electron";
 import { DiscoveredGateway } from "node-tradfri-client";
 import { IHomeAssistantStatesResponse } from "../shared/integrations/homeAssistant_types";
+import { IHomebridgeAPIAccessoryResponse } from "../shared/integrations/homebridge_types";
 import {
   DiscoverPhilipsHueBridgeResponse,
   GeneratePhilipsHueBridgeAuthTokenResponse,
@@ -22,6 +23,14 @@ function homeAssistantCheckDeviceSpectrum(entityId: string): Promise<boolean> {
     "f1mvli:integrations:homeAssistant:checkDeviceSpectrum",
     entityId,
   );
+}
+
+// homebridge
+function homebridgeGetAccessories(): Promise<{
+  accessories: IHomebridgeAPIAccessoryResponse[];
+  selectedAccessories: string[];
+}> {
+  return ipcRenderer.invoke("f1mvli:integrations:homebridge:getAccessories");
 }
 
 // philips hue
@@ -59,6 +68,9 @@ export const integrationsAPI = {
   homeAssistant: {
     getDevices: homeAssistantGetDevices,
     checkDeviceSpectrum: homeAssistantCheckDeviceSpectrum,
+  },
+  homebridge: {
+    getAccessories: homebridgeGetAccessories,
   },
   philipsHue: {
     discoverBridge: discoverPhilipsHueBridge,

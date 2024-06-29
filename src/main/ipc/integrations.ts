@@ -4,6 +4,9 @@ import {
   homeAssistantGetDevices,
 } from "../lightController/integrations/homeAssistant/api";
 import {
+  homebridgeGetAccessories
+} from "../lightController/integrations/homebridge-http/api";
+import {
   discoverPhilipsHueBridge,
   generatePhilipsHueBridgeAuthToken,
   getPhilipsHueDevices,
@@ -22,6 +25,11 @@ async function handleHomeAssistantGetDevices() {
 
 async function handleHomeAssistantCheckDeviceSpectrum(entityId: string) {
   return await homeAssistantCheckDeviceSpectrum(entityId);
+}
+
+// homebridge
+async function handleHomebridgeGetAccessories() {
+  return await homebridgeGetAccessories();
 }
 
 //philips hue
@@ -67,6 +75,10 @@ function registerIntegrationsIPCHandlers() {
     },
   );
   ipcMain.handle(
+    "f1mvli:integrations:homebridge:getAccessories",
+    handleHomebridgeGetAccessories,
+  );
+  ipcMain.handle(
     "f1mvli:integrations:philipsHue:discoverBridge",
     handleDiscoverPhilipsHueBridge,
   );
@@ -97,6 +109,7 @@ function registerIntegrationsIPCHandlers() {
     ipcMain.removeHandler(
       "f1mvli:integrations:homeAssistant:checkDeviceSpectrum",
     );
+    ipcMain.removeHandler("f1mvli:integrations:homebridge:getAccessories");
     ipcMain.removeHandler("f1mvli:integrations:philipsHue:discoverBridge");
     ipcMain.removeHandler("f1mvli:integrations:philipsHue:generateAuthToken");
     ipcMain.removeHandler("f1mvli:integrations:philipsHue:getDevices");
