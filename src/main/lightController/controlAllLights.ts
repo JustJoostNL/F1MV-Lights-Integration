@@ -2,6 +2,7 @@ import { Action, EventType } from "../../shared/config/config_types";
 import { getConfig } from "../ipc/config";
 import { goveeControl } from "./integrations/govee/api";
 import { homeAssistantControl } from "./integrations/homeAssistant/api";
+import { homebridgeControl } from "./integrations/homebridge-http/api";
 import { mqttControl } from "./integrations/mqtt/api";
 import { openrgbControl } from "./integrations/openrgb/api";
 import { philipsHueControl } from "./integrations/philipsHue/api";
@@ -51,6 +52,15 @@ export async function controlAllLights({
 
   if (config.homeAssistantEnabled) {
     await homeAssistantControl({
+      controlType,
+      color,
+      brightness,
+      event,
+    });
+  }
+
+  if (config.homebridgeEnabled) {
+    await homebridgeControl({
       controlType,
       color,
       brightness,
@@ -120,6 +130,19 @@ export async function turnOffAllLights() {
 
   if (config.homeAssistantEnabled) {
     await homeAssistantControl({
+      controlType: ControlType.Off,
+      color: {
+        r: 0,
+        g: 0,
+        b: 0,
+      },
+      brightness: 100,
+      event: fallBackEvent,
+    });
+  }
+
+  if (config.homebridgeEnabled) {
+    await homebridgeControl({
       controlType: ControlType.Off,
       color: {
         r: 0,
