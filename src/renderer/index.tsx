@@ -14,6 +14,7 @@ import { BaseStyle } from "./components/shared/BaseStyle";
 import { SettingsPage } from "./pages/Settings";
 import { EventEditorPage } from "./pages/EventEditor";
 import { HomeAssistantDeviceSelector } from "./pages/HomeAssistantDeviceSelector";
+import { HomebridgeAccessoriesSelector } from "./pages/HomebridgeAccessoriesSelector";
 import { PhilipsHueDeviceSelector } from "./pages/PhilipsHueDeviceSelector";
 import { PhilipsHueGroupSelector } from "./pages/PhilipsHueGroupSelector";
 import { LogsPage } from "./pages/Logs";
@@ -80,6 +81,10 @@ root.render(
               <Route
                 path="/home-assistant-ds"
                 element={<HomeAssistantDeviceSelector />}
+              />
+              <Route
+                path="/homebridge-as"
+                element={<HomebridgeAccessoriesSelector />}
               />
               <Route
                 path="/philips-hue-ds"
