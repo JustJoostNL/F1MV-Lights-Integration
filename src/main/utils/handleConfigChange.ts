@@ -14,6 +14,7 @@ import {
   mqttInitialize,
 } from "../lightController/integrations/mqtt/api";
 import { wledInitialize } from "../lightController/integrations/wled/api";
+import { homebridgeInitialize } from "../lightController/integrations/homebridge-http/api";
 
 export async function handleConfigChange(
   oldConfig: IConfig,
@@ -36,6 +37,11 @@ export async function handleConfigChange(
   //home assistant
   if (!oldConfig.homeAssistantEnabled && newConfig.homeAssistantEnabled) {
     await homeAssistantInitialize();
+  }
+
+  //homebridge
+  if (!oldConfig.homebridgeEnabled && newConfig.homebridgeEnabled) {
+    await homebridgeInitialize();
   }
 
   //discord rpc
@@ -88,7 +94,7 @@ export async function handleConfigChange(
     } catch (err) {
       log.error(
         "Error while setting appIsActive to false, and closing the MQTT client: " +
-          err.message,
+        err.message,
       );
     }
   }
