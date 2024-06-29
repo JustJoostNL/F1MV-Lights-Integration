@@ -24,6 +24,7 @@ const integrationStateMap: {
   philipsHue: "Philips Hue",
   openrgb: "OpenRGB",
   homeAssistant: "Home Assistant",
+  homebridge: "Homebridge",
   streamdeck: "Elgato Stream Deck",
   wled: "WLED",
   mqtt: "MQTT",
@@ -91,9 +92,8 @@ export function IntegrationsMonitor() {
                   title={integrationStateMap[integrationState.name]}
                   action={
                     <div
-                      className={`status ${
-                        integrationState.state ? "success" : "error"
-                      }`}
+                      className={`status ${integrationState.state ? "success" : "error"
+                        }`}
                     ></div>
                   }
                   sx={{
