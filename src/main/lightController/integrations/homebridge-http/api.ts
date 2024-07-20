@@ -32,7 +32,6 @@ export async function homebridgeOnlineCheck(): Promise<
     try {
         const res = await fetch(url, options);
         const data = await res.json();
-        console.log(data);
         if (data.message == "Unauthorized") {
             // Authorize the user
             let url;
@@ -61,7 +60,6 @@ export async function homebridgeOnlineCheck(): Promise<
             };
             const res = await fetch(url, options);
             const data = await res.json();
-            console.log(data);
             if (data.access_token) {
                 token = data.access_token;
                 return "online";
@@ -119,34 +117,37 @@ export async function homebridgeGetAccessories() {
     };
 }
 
-export async function homebridgeCheckDeviceSpectrum(entityId: string) {
-    // const config = await getConfig();
-    // const url = new URL("/api/states/" + entityId, config.homeAssistantHost);
-    // url.port = config.homeAssistantPort.toString();
+/*
+    Check that the Homebridge accessory supports HSB colour format.
+    Dev note: I can't find examples of non homebrdige accessories, so will need to explore further if other formats exist.
+*/
+export async function homebridgeCheckDeviceSpectrum(uniqueId: string) {
+    const config = await getConfig();
+    const url = new URL("/api/accessories/" + uniqueId, config.homebridgeHost);
+    url.port = config.homebridgePort.toString();
 
-    // const headers = {
-    //     Authorization: "Bearer " + config.homeAssistantToken,
-    //     "Content-Type": "application/json",
-    // };
-    // const options = {
-    //     method: "GET",
-    //     headers,
-    // };
+    const headers = {
+        Authorization: "Bearer " + token,
+        "Content-Type": "application/json",
+    };
+    const options = {
+        method: "GET",
+        headers,
+    };
 
-    // try {
-    //     const res = await fetch(url, options);
-    //     const data: IHomeAssistantStateResponse = await res.json();
-    //     if (!data.attributes.supported_color_modes) return false;
-    //     return !!data.attributes.supported_color_modes.find(
-    //         (mode: string) =>
-    //             mode === "rgb" || mode === "rgbw" || mode === "hs" || mode === "xy",
-    //     );
-    // } catch (err) {
-    //     log.error(
-    //         `An error occurred while checking if Home Assistant device ${entityId} supports spectrum: ${err}`,
-    //     );
-    //     return false;
-    // }
+    try {
+        const res = await fetch(url, options);
+        const data = await res.json();
+        if ("Hue" in data.values && "Saturation" in data.values) {
+            log.debug("Homebridge accessory " + uniqueId + " supports spectrum.");
+            return true;
+        }
+    } catch (err) {
+        log.error(
+            `An error occurred while checking if Homebridge accessory ${uniqueId} supports spectrum: ${err}`,
+        );
+        return false;
+    }
     return true;
 }
 
@@ -167,7 +168,6 @@ export async function homebridgeControl({
     brightness,
     event,
 }: HomebridgeControlArgs) {
-    console.log("control device");
     if (!integrationStates.homebridge) return;
 
     const config = await getConfig();
@@ -180,9 +180,7 @@ export async function homebridgeControl({
         "Content-Type": "application/json",
     };
 
-    console.log(event);
-    console.log(controlType);
-    console.log(color);
+
     switch (controlType) {
         case ControlType.On:
             for (const accessory in homebridgeAccessories) {
@@ -194,27 +192,14 @@ export async function homebridgeControl({
                 );
                 url.port = config.homebridgePort.toString();
 
-                const supportsRGB = await homebridgeCheckDeviceSpectrum(uniqueId);
+                const supportsHSB = await homebridgeCheckDeviceSpectrum(uniqueId);
 
-                let colorTemp = 0;
-
-                if (!supportsRGB) {
-                    const accessoryData = (await homebridgeGetAccessories()).accessories;
-                    const foundDevice = accessoryData.find(
-                        (item) => item.uniqueId === uniqueId,
-                    );
-
-                    // colorTemp = rgbToColorTemp(
-                    //     event,
-                    //     foundDevice?.attributes.min_mireds || 0,
-                    //     foundDevice?.attributes.max_mireds || 0,
-                    // );
+                if (!supportsHSB) {
+                    log.debug("Homebridge accessory " + uniqueId + " does not support HSB. Leave issue on github.");
                 }
 
                 // convert RGB to HSB
                 const hsb = rgbToHueSat(color.r, color.g, color.b);
-
-                console.log(hsb);
 
                 const putData = [
                     {
