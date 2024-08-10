@@ -8,6 +8,7 @@ import { philipsHueControl } from "./integrations/philipsHue/api";
 import { streamdeckControl } from "./integrations/streamdeck/api";
 import { tradfriControl } from "./integrations/tradfri/api";
 import { webServerControl } from "./integrations/webserver/api";
+import { wledControl } from "./integrations/wled/api";
 
 export enum ControlType {
   On = "On",
@@ -113,6 +114,15 @@ export async function controlAllLights({
       event,
     });
   }
+
+  if (config.wledEnabled) {
+    await wledControl({
+      controlType,
+      color,
+      brightness,
+    });
+  }
+
 }
 
 export async function turnOffAllLights() {
@@ -211,6 +221,18 @@ export async function turnOffAllLights() {
       },
       brightness: 100,
       event: fallBackEvent,
+    });
+  }
+
+  if (config.wledEnabled) {
+    await wledControl({
+      controlType: ControlType.Off,
+      color: {
+        r: 0,
+        g: 0,
+        b: 0,
+      },
+      brightness: 100,
     });
   }
 }
