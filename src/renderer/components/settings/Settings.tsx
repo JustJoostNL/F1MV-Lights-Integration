@@ -31,6 +31,11 @@ import { HomeAssistantEnabledToggle } from "./HomeAssistantEnabledToggle";
 import { HomeAssistantServerHostInput } from "./HomeAssistantServerHostInput";
 import { HomeAssistantServerPortInput } from "./HomeAssistantServerPortInput";
 import { HomeAssistantLongLivedAccessTokenInput } from "./HomeAssistantLongLivedAccessTokenInput";
+import { HomebridgeEnabledToggle } from "./HomebridgeEnabledToggle";
+import { HomebridgeServerHostInput } from "./HomebridgeServerHostInput";
+import { HomebridgeServerPortInput } from "./HomebridgeServerPortInput";
+import { HomebridgeServerUsername } from "./HomebridgeServerUsername";
+import { HomebridgeServerPassword } from "./HomebridgeServerPassword";
 import { WLEDEnabledToggle } from "./WLEDEnabledToggle";
 import { MQTTEnabledToggle } from "./MQTTEnabledToggle";
 import { MQTTBrokerHostInput } from "./MQTTBrokerHostInput";
@@ -43,6 +48,7 @@ import { DiscordAvoidSpoilersToggle } from "./DiscordAvoidSpoilersToggle";
 import { WebserverEnabledToggle } from "./WebserverEnabledToggle";
 import { WebserverPortInput } from "./WebserverPortInput";
 import { HomeAssistantDevicesButton } from "./HomeAssistantDevicesButton";
+import { HomebridgeAccessoriesButton } from "./HomebridgeAccessoriesButton";
 import { PhilipsHueSelectButton } from "./PhilipsHueSelectButton";
 import { OpenRGBConnectButton } from "./OpenRGBConnectButton";
 import { WLEDConfigureDevicesButton } from "./WLEDConfigureDevicesButton";
@@ -374,6 +380,65 @@ export function Settings() {
                 "Here you can configure the devices that will be used for the Home Assistant integration.",
               configKeys: ["homeAssistantDevices"],
               input: <HomeAssistantDevicesButton />,
+            },
+          ],
+        },
+        {
+          type: "subgroup",
+          title: "Homebridge",
+          settings: [
+            {
+              type: "setting",
+              title: "Enable Homebridge integration",
+              description:
+                "This will enable the Homebridge integration, keep this disabled if you don't have Homebridge.",
+              configKeys: ["homebridgeEnabled"],
+              input: <HomebridgeEnabledToggle />,
+            },
+            {
+              type: "setting",
+              title: "Homebridge Server Host",
+              condition: config.homebridgeEnabled,
+              description:
+                "This is the hostname or IP of the system Homebridge is running on. Don't forget to add http:// or https://",
+              configKeys: ["homebridgeHost"],
+              input: <HomebridgeServerHostInput />,
+            },
+            {
+              type: "setting",
+              title: "Homebridge Access Port",
+              condition: config.homebridgeEnabled,
+              description:
+                "This is the port of the Homebridge server. (default is 8581)",
+              configKeys: ["homebridgePort"],
+              input: <HomebridgeServerPortInput />,
+            },
+            {
+              type: "setting",
+              title: "Homebridge Username",
+              condition: config.homebridgeEnabled,
+              description:
+                "This is the username you can use to authenticate with the Homebridge server.",
+              configKeys: ["homebridgeUsername"],
+              input: <HomebridgeServerUsername />,
+            },
+            {
+              type: "setting",
+              title: "Homebridge Password",
+              condition: config.homebridgeEnabled,
+              description:
+                "This is the password you can use to authenticate with the Homebridge server.",
+              configKeys: ["homebridgePassword"],
+              input: <HomebridgeServerPassword />,
+            },
+            {
+              type: "setting",
+              title: "Homebridge Accessories",
+              condition: config.homebridgeEnabled,
+              description:
+                "Here you can configure the accessories that will be used for the Homebridge integration.",
+              configKeys: ["homebridgeAccessories"],
+              input: <HomebridgeAccessoriesButton />,
             },
           ],
         },

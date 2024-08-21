@@ -3,6 +3,7 @@ export const integrationStates = {
   autoUpdater: false,
   f1tvLiveSession: false,
   homeAssistant: false,
+  homebridge: false,
   philipsHue: false,
   govee: false,
   streamdeck: false,

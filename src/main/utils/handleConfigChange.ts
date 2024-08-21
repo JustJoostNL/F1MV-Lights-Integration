@@ -14,6 +14,7 @@ import {
   mqttInitialize,
 } from "../lightController/integrations/mqtt/api";
 import { wledInitialize } from "../lightController/integrations/wled/api";
+import { homebridgeInitialize } from "../lightController/integrations/homebridge/api";
 
 export async function handleConfigChange(
   oldConfig: IConfig,
@@ -36,6 +37,20 @@ export async function handleConfigChange(
   //home assistant
   if (!oldConfig.homeAssistantEnabled && newConfig.homeAssistantEnabled) {
     await homeAssistantInitialize();
+  }
+
+  //homebridge
+  if (!oldConfig.homebridgeEnabled && newConfig.homebridgeEnabled) {
+    await homebridgeInitialize();
+  }
+
+  if (
+    oldConfig.homebridgeHost !== newConfig.homebridgeHost ||
+    oldConfig.homebridgePort !== newConfig.homebridgePort ||
+    oldConfig.homebridgeUsername !== newConfig.homebridgeUsername ||
+    oldConfig.homebridgePassword !== newConfig.homebridgePassword
+  ) {
+    await homebridgeInitialize();
   }
 
   //discord rpc

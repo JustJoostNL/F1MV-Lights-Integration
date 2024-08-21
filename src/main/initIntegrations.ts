@@ -2,6 +2,7 @@ import { globalConfig } from "./ipc/config";
 import { registerDiscordRPC } from "./lightController/integrations/discord/api";
 import { goveeInitialize } from "./lightController/integrations/govee/api";
 import { homeAssistantInitialize } from "./lightController/integrations/homeAssistant/api";
+import { homebridgeInitialize } from "./lightController/integrations/homebridge/api";
 import { mqttInitialize } from "./lightController/integrations/mqtt/api";
 import { openrgbInitialize } from "./lightController/integrations/openrgb/api";
 import { philipsHueInitialize } from "./lightController/integrations/philipsHue/api";
@@ -27,6 +28,11 @@ export async function initializeIntegrations() {
       name: "homeAssistant",
       function: homeAssistantInitialize,
       enabled: globalConfig.homeAssistantEnabled,
+    },
+    {
+      name: "homebridge",
+      function: homebridgeInitialize,
+      enabled: globalConfig.homebridgeEnabled,
     },
     {
       name: "philipsHue",

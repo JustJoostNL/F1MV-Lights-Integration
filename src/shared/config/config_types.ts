@@ -150,6 +150,12 @@ export interface IConfig {
   homeAssistantPort: number;
   homeAssistantToken: string | undefined;
   homeAssistantDevices: string[];
+  homebridgeEnabled: boolean;
+  homebridgeHost: string | undefined;
+  homebridgePort: number;
+  homebridgeUsername: string | undefined;
+  homebridgePassword: string | undefined;
+  homebridgeAccessories: string[];
   wledEnabled: boolean;
   wledDevices: string[];
   mqttEnabled: boolean;

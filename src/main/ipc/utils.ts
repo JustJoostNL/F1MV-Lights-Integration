@@ -1,6 +1,7 @@
 import { BrowserWindow, app, ipcMain } from "electron";
 import { integrationStates } from "../lightController/integrations/states";
 import { homeAssistantOnlineCheck } from "../lightController/integrations/homeAssistant/api";
+import { homebridgeOnlineCheck } from "../lightController/integrations/homebridge/api";
 import { philipsHueOnlineCheck } from "../lightController/integrations/philipsHue/api";
 import { tradfriOnlineCheck } from "../lightController/integrations/tradfri/api";
 import { getConfig } from "./config";
@@ -8,6 +9,7 @@ import { getConfig } from "./config";
 const handleGetIntegrationStates = async () => {
   const config = await getConfig();
   if (config.homeAssistantEnabled) await homeAssistantOnlineCheck();
+  if (config.homebridgeEnabled) await homebridgeOnlineCheck();
   if (config.philipsHueEnabled) await philipsHueOnlineCheck();
   if (config.ikeaEnabled) await tradfriOnlineCheck();
 
@@ -31,6 +33,11 @@ const handleGetIntegrationStates = async () => {
       name: "homeAssistant",
       state: integrationStates.homeAssistant,
       disabled: !config.homeAssistantEnabled,
+    },
+    {
+      name: "homebridge",
+      state: integrationStates.homebridge,
+      disabled: !config.homebridgeEnabled,
     },
     {
       name: "philipsHue",
