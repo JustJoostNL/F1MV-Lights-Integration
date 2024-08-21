@@ -131,7 +131,6 @@ export async function controlAllLights({
       brightness,
     });
   }
-
 }
 
 export async function turnOffAllLights() {

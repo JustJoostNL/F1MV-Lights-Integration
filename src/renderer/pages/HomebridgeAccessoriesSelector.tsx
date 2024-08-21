@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo, useState } from "react";
-import { DataGrid, GridColDef, GridRowId } from "@mui/x-data-grid";
+import { DataGrid, GridColDef, GridRowSelectionModel } from "@mui/x-data-grid";
 import { Alert, Box } from "@mui/material";
 import { useHotkeys } from "react-hotkeys-hook";
 import { JSONTree } from "react-json-tree";
@@ -57,7 +57,7 @@ export function HomebridgeAccessoriesSelector() {
   }, [data?.accessories]);
 
   const handleSelectionModelChange = useCallback(
-    (newSelection: GridRowId[]) => {
+    (newSelection: GridRowSelectionModel) => {
       if (!data) return;
 
       const selectedAccessories = rows.filter((row) =>

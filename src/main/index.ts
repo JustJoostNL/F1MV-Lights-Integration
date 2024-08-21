@@ -5,7 +5,7 @@ import { app, BrowserWindow, shell } from "electron";
 import log from "electron-log";
 import portfinder from "portfinder";
 import handler from "serve-handler";
-import * as Sentry from "@sentry/electron";
+import * as Sentry from "@sentry/electron/main";
 import { autoUpdater } from "electron-updater";
 import {
   fetchAuthoritativeConfig,
