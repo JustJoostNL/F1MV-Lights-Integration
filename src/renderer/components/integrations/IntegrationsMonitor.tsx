@@ -92,8 +92,9 @@ export function IntegrationsMonitor() {
                   title={integrationStateMap[integrationState.name]}
                   action={
                     <div
-                      className={`status ${integrationState.state ? "success" : "error"
-                        }`}
+                      className={`status ${
+                        integrationState.state ? "success" : "error"
+                      }`}
                     ></div>
                   }
                   sx={{

@@ -2,7 +2,7 @@ import { globalConfig } from "./ipc/config";
 import { registerDiscordRPC } from "./lightController/integrations/discord/api";
 import { goveeInitialize } from "./lightController/integrations/govee/api";
 import { homeAssistantInitialize } from "./lightController/integrations/homeAssistant/api";
-import { homebridgeInitialize } from "./lightController/integrations/homebridge-http/api";
+import { homebridgeInitialize } from "./lightController/integrations/homebridge/api";
 import { mqttInitialize } from "./lightController/integrations/mqtt/api";
 import { openrgbInitialize } from "./lightController/integrations/openrgb/api";
 import { philipsHueInitialize } from "./lightController/integrations/philipsHue/api";

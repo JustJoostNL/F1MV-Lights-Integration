@@ -2,7 +2,7 @@ import { Action, EventType } from "../../shared/config/config_types";
 import { getConfig } from "../ipc/config";
 import { goveeControl } from "./integrations/govee/api";
 import { homeAssistantControl } from "./integrations/homeAssistant/api";
-import { homebridgeControl } from "./integrations/homebridge-http/api";
+import { homebridgeControl } from "./integrations/homebridge/api";
 import { mqttControl } from "./integrations/mqtt/api";
 import { openrgbControl } from "./integrations/openrgb/api";
 import { philipsHueControl } from "./integrations/philipsHue/api";
@@ -64,7 +64,6 @@ export async function controlAllLights({
       controlType,
       color,
       brightness,
-      event,
     });
   }
 
@@ -150,7 +149,6 @@ export async function turnOffAllLights() {
         b: 0,
       },
       brightness: 100,
-      event: fallBackEvent,
     });
   }
 

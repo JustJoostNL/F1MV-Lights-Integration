@@ -3,9 +3,7 @@ import {
   homeAssistantCheckDeviceSpectrum,
   homeAssistantGetDevices,
 } from "../lightController/integrations/homeAssistant/api";
-import {
-  homebridgeGetAccessories
-} from "../lightController/integrations/homebridge-http/api";
+import { homebridgeGetAccessories } from "../lightController/integrations/homebridge/api";
 import {
   discoverPhilipsHueBridge,
   generatePhilipsHueBridgeAuthToken,

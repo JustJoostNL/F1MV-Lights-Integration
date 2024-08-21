@@ -1,7 +1,7 @@
 import { BrowserWindow, app, ipcMain } from "electron";
 import { integrationStates } from "../lightController/integrations/states";
 import { homeAssistantOnlineCheck } from "../lightController/integrations/homeAssistant/api";
-import { homebridgeOnlineCheck } from "../lightController/integrations/homebridge-http/api";
+import { homebridgeOnlineCheck } from "../lightController/integrations/homebridge/api";
 import { philipsHueOnlineCheck } from "../lightController/integrations/philipsHue/api";
 import { tradfriOnlineCheck } from "../lightController/integrations/tradfri/api";
 import { getConfig } from "./config";

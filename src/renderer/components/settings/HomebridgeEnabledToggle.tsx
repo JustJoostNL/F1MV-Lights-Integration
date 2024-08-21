@@ -13,7 +13,5 @@ export function HomebridgeEnabledToggle() {
     [updateConfig],
   );
 
-  return (
-    <Switch checked={config.homebridgeEnabled} onChange={handleChange} />
-  );
+  return <Switch checked={config.homebridgeEnabled} onChange={handleChange} />;
 }

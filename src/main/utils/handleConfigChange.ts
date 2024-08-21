@@ -14,7 +14,7 @@ import {
   mqttInitialize,
 } from "../lightController/integrations/mqtt/api";
 import { wledInitialize } from "../lightController/integrations/wled/api";
-import { homebridgeInitialize } from "../lightController/integrations/homebridge-http/api";
+import { homebridgeInitialize } from "../lightController/integrations/homebridge/api";
 
 export async function handleConfigChange(
   oldConfig: IConfig,
@@ -41,6 +41,15 @@ export async function handleConfigChange(
 
   //homebridge
   if (!oldConfig.homebridgeEnabled && newConfig.homebridgeEnabled) {
+    await homebridgeInitialize();
+  }
+
+  if (
+    oldConfig.homebridgeHost !== newConfig.homebridgeHost ||
+    oldConfig.homebridgePort !== newConfig.homebridgePort ||
+    oldConfig.homebridgeUsername !== newConfig.homebridgeUsername ||
+    oldConfig.homebridgePassword !== newConfig.homebridgePassword
+  ) {
     await homebridgeInitialize();
   }
 
@@ -94,7 +103,7 @@ export async function handleConfigChange(
     } catch (err) {
       log.error(
         "Error while setting appIsActive to false, and closing the MQTT client: " +
-        err.message,
+          err.message,
       );
     }
   }
