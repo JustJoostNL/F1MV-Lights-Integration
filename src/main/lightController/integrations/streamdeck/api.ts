@@ -35,7 +35,7 @@ export async function streamdeckInitialize() {
   }
 }
 
-export interface StreamDeckControlArgs {
+interface StreamDeckControlArgs {
   controlType: ControlType;
   color: {
     r: number;

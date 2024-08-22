@@ -6,11 +6,16 @@ import {
   CircularProgress,
   Collapse,
   Divider,
+  IconButton,
   List,
+  Stack,
+  Tooltip,
+  Typography,
 } from "@mui/material";
 import {
   KeyboardArrowUpRounded,
   KeyboardArrowDownRounded,
+  InfoRounded,
 } from "@mui/icons-material";
 import useSWR from "swr";
 import { IntegrationState } from "./types";
@@ -29,9 +34,15 @@ const integrationStateMap: {
   wled: "WLED",
   mqtt: "MQTT",
   multiviewer: "MultiViewer Live Timing",
-  f1tvLiveSession: "F1TV Live Session Found",
-  autoUpdater: "Auto Updater",
+  f1tvLiveSession: "Live Session",
   webserver: "Webserver",
+};
+
+const integrationExplanationMap: {
+  [key: string]: string;
+} = {
+  f1tvLiveSession:
+    "This checks if there is a live session currently active on F1TV.",
 };
 
 async function fetchIntegrationStates() {
@@ -52,6 +63,52 @@ export function IntegrationsMonitor() {
       refreshInterval: 5000,
     },
   );
+
+  const isLoading =
+    !integrationStates ||
+    integrationStates.length === 0 ||
+    !Array.isArray(integrationStates);
+
+  if (isLoading) {
+    return (
+      <Card
+        sx={{
+          width: "70%",
+        }}
+      >
+        <CardActionArea onClick={handleToggleOpen}>
+          <CardHeader
+            title="Integration States"
+            action={<KeyboardArrowDownRounded />}
+            sx={{
+              "& .MuiCardHeader-action": {
+                mt: 0,
+                mr: 0,
+                mb: 0,
+                alignSelf: "center",
+              },
+            }}
+          />
+        </CardActionArea>
+
+        <Collapse in={open}>
+          <Divider />
+          <List disablePadding>
+            <div
+              style={{
+                display: "grid",
+                placeItems: "center",
+                placeContent: "center",
+                height: 80,
+              }}
+            >
+              <CircularProgress />
+            </div>
+          </List>
+        </Collapse>
+      </Card>
+    );
+  }
 
   return (
     <Card
@@ -81,7 +138,7 @@ export function IntegrationsMonitor() {
 
         <List disablePadding>
           {integrationStates
-            ?.filter(
+            .filter(
               (integrationState: IntegrationState) =>
                 !integrationState.disabled,
             )
@@ -89,7 +146,26 @@ export function IntegrationsMonitor() {
               <div key={integrationState.name}>
                 <Divider />
                 <CardHeader
-                  title={integrationStateMap[integrationState.name]}
+                  title={
+                    <Stack direction="row" spacing={1} alignItems="center">
+                      <Typography fontSize={18} fontWeight="500">
+                        {integrationStateMap[integrationState.name]}
+                      </Typography>
+
+                      {integrationExplanationMap[integrationState.name] && (
+                        <Tooltip
+                          arrow
+                          title={
+                            integrationExplanationMap[integrationState.name]
+                          }
+                        >
+                          <IconButton size="medium" sx={{ padding: 0 }}>
+                            <InfoRounded color="primary" fontSize="medium" />
+                          </IconButton>
+                        </Tooltip>
+                      )}
+                    </Stack>
+                  }
                   action={
                     <div
                       className={`status ${
@@ -108,18 +184,6 @@ export function IntegrationsMonitor() {
                 />
               </div>
             ))}
-          {integrationStates?.length === 0 && (
-            <div
-              style={{
-                display: "grid",
-                placeItems: "center",
-                placeContent: "center",
-                height: 80,
-              }}
-            >
-              <CircularProgress />
-            </div>
-          )}
         </List>
       </Collapse>
     </Card>

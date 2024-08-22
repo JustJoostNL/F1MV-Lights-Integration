@@ -46,20 +46,23 @@ function registerUpdaterIPCHandlers() {
   autoUpdater.on("update-not-available", handleUpdateNotAvailable);
   autoUpdater.on("error", handleUpdateError);
 
-  ipcMain.handle("f1mvli:updater:checkForUpdates", handleCheckForUpdates);
-  ipcMain.handle("f1mvli:updater:getUpdateAvailable", handleGetUpdateAvailable);
-  ipcMain.handle("f1mvli:updater:quitAndInstall", handleQuitAndInstall);
+  ipcMain.handle("f1mvli:updater:check-for-updates", handleCheckForUpdates);
+  ipcMain.handle(
+    "f1mvli:updater:get-update-available",
+    handleGetUpdateAvailable,
+  );
+  ipcMain.handle("f1mvli:updater:quit-and-install", handleQuitAndInstall);
 
-  return function () {
+  return () => {
     autoUpdater.off("error", handleUpdateError);
     autoUpdater.off("update-downloaded", handleUpdateDownloaded);
     autoUpdater.off("update-available", handleUpdateAvailable);
     autoUpdater.off("update-not-available", handleUpdateNotAvailable);
     autoUpdater.off("error", handleUpdateError);
 
-    ipcMain.removeHandler("f1mvli:updater:checkForUpdates");
-    ipcMain.removeHandler("f1mvli:updater:getUpdateAvailable");
-    ipcMain.removeHandler("f1mvli:updater:quitAndInstall");
+    ipcMain.removeHandler("f1mvli:updater:check-for-updates");
+    ipcMain.removeHandler("f1mvli:updater:get-update-available");
+    ipcMain.removeHandler("f1mvli:updater:quit-and-install");
   };
 }
 

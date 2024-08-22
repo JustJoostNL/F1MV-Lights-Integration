@@ -63,58 +63,60 @@ async function handleGetTradfriDevices() {
 
 function registerIntegrationsIPCHandlers() {
   ipcMain.handle(
-    "f1mvli:integrations:homeAssistant:getDevices",
+    "f1mvli:integrations:homeassistant:get-devices",
     handleHomeAssistantGetDevices,
   );
   ipcMain.handle(
-    "f1mvli:integrations:homeAssistant:checkDeviceSpectrum",
+    "f1mvli:integrations:homeassistant:check-device-spectrum",
     (_, arg) => {
       return handleHomeAssistantCheckDeviceSpectrum(arg);
     },
   );
   ipcMain.handle(
-    "f1mvli:integrations:homebridge:getAccessories",
+    "f1mvli:integrations:homebridge:get-accessories",
     handleHomebridgeGetAccessories,
   );
   ipcMain.handle(
-    "f1mvli:integrations:philipsHue:discoverBridge",
+    "f1mvli:integrations:philips-hue:discover-bridge",
     handleDiscoverPhilipsHueBridge,
   );
   ipcMain.handle(
-    "f1mvli:integrations:philipsHue:generateAuthToken",
+    "f1mvli:integrations:philips-hue:generate-auth-token",
     handleGeneratePhilipsHueBridgeAuthToken,
   );
   ipcMain.handle(
-    "f1mvli:integrations:philipsHue:getDevices",
+    "f1mvli:integrations:philips-hue:get-devices",
     handlePhilipsHueGetDevices,
   );
   ipcMain.handle(
-    "f1mvli:integrations:philipsHue:getGroups",
+    "f1mvli:integrations:philips-hue:get-groups",
     handlePhilipsHueGetGroups,
   );
   ipcMain.handle("f1mvli:integrations:openrgb:connect", handleConnectOpenRGB);
   ipcMain.handle(
-    "f1mvli:integrations:tradfri:discoverGateway",
+    "f1mvli:integrations:tradfri:discover-gateway",
     handleDiscoverTradfriBridge,
   );
   ipcMain.handle(
-    "f1mvli:integrations:tradfri:getDevices",
+    "f1mvli:integrations:tradfri:get-devices",
     handleGetTradfriDevices,
   );
 
-  return function () {
-    ipcMain.removeHandler("f1mvli:integrations:homeAssistant:getDevices");
+  return () => {
+    ipcMain.removeHandler("f1mvli:integrations:homeassistant:get-devices");
     ipcMain.removeHandler(
-      "f1mvli:integrations:homeAssistant:checkDeviceSpectrum",
+      "f1mvli:integrations:homeassistant:check-device-spectrum",
     );
-    ipcMain.removeHandler("f1mvli:integrations:homebridge:getAccessories");
-    ipcMain.removeHandler("f1mvli:integrations:philipsHue:discoverBridge");
-    ipcMain.removeHandler("f1mvli:integrations:philipsHue:generateAuthToken");
-    ipcMain.removeHandler("f1mvli:integrations:philipsHue:getDevices");
-    ipcMain.removeHandler("f1mvli:integrations:philipsHue:getGroups");
+    ipcMain.removeHandler("f1mvli:integrations:homebridge:get-accessories");
+    ipcMain.removeHandler("f1mvli:integrations:philips-hue:discover-bridge");
+    ipcMain.removeHandler(
+      "f1mvli:integrations:philips-hue:generate-auth-token",
+    );
+    ipcMain.removeHandler("f1mvli:integrations:philips-hue:get-devices");
+    ipcMain.removeHandler("f1mvli:integrations:philips-hue:get-groups");
     ipcMain.removeHandler("f1mvli:integrations:openrgb:connect");
-    ipcMain.removeHandler("f1mvli:integrations:tradfri:discoverGateway");
-    ipcMain.removeHandler("f1mvli:integrations:tradfri:getDevices");
+    ipcMain.removeHandler("f1mvli:integrations:tradfri:discover-gateway");
+    ipcMain.removeHandler("f1mvli:integrations:tradfri:get-devices");
   };
 }
 

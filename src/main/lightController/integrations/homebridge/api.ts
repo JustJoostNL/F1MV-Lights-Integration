@@ -10,6 +10,7 @@ import {
   IHomebridgeAuthCheckResponse,
   IHomebridgeTokenResponse,
 } from "../../../../shared/integrations/homebridge_types";
+import { fetchWithTimeout } from "../../../utils/fetch";
 
 let storedToken: { token: string; expiry: number } | null = null;
 
@@ -28,7 +29,7 @@ export async function homebridgeOnlineCheck(): Promise<"online" | "offline"> {
   };
 
   try {
-    const res = await fetch(url, options);
+    const res = await fetchWithTimeout(url.toString(), options);
     const data: IHomebridgeAuthCheckResponse = await res.json();
 
     const isOnline = data.status === "OK";
@@ -59,7 +60,7 @@ export async function requestHomebridgeToken() {
   };
 
   try {
-    const res = await fetch(url, options);
+    const res = await fetchWithTimeout(url.toString(), options);
     const data: IHomebridgeTokenResponse = await res.json();
 
     storedToken = {
@@ -104,7 +105,7 @@ export async function homebridgeGetAccessories() {
     },
   };
 
-  const res = await fetch(url, options);
+  const res = await fetch(url.toString(), options);
   const json: IHomebridgeAccessoryResponse = await res.json();
 
   const lightList: IHomebridgeAccessory[] = [];
@@ -195,7 +196,7 @@ export async function homebridgeControl({
             body: JSON.stringify(data),
           };
 
-          const response = await fetch(url, options);
+          const response = await fetch(url.toString(), options);
 
           if (!response.ok) {
             log.error(
@@ -225,7 +226,7 @@ export async function homebridgeControl({
         };
 
         try {
-          await fetch(url, options);
+          await fetch(url.toString(), options);
         } catch (err) {
           log.error(
             `An error occurred while turning off Homebridge device ${uniqueId}: ${err}`,

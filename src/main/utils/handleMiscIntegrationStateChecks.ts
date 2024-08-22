@@ -1,30 +1,12 @@
-import log from "electron-log";
 import { integrationStates } from "../lightController/integrations/states";
 
-export const baseURL = "https://api.jstt.me/api/v2";
-export const apiUrls = {
-  updateURL: `${baseURL}/github/repos/JustJoostNL/F1MV-Lights-Integration/releases`,
-  liveSessionCheckURL: `${baseURL}/f1tv/live-session`,
-};
+const baseUrl = "https://api.jstt.me/api/v2";
+const liveSessionUrl = `${baseUrl}/f1tv/live-session`;
 
 export async function handleMiscIntegrationStateChecks() {
-  await fetch(apiUrls.updateURL)
-    .then(function () {
-      integrationStates.autoUpdater = true;
-      log.debug("AutoUpdater API is online.");
-    })
-    .catch(function () {
-      integrationStates.autoUpdater = false;
-      log.debug("AutoUpdater API is offline.");
-    });
-
-  await fetch(apiUrls.liveSessionCheckURL)
+  await fetch(liveSessionUrl)
     .then((res) => res.json())
     .then((data) => {
-      if (data.liveSessionFound) {
-        integrationStates.f1tvLiveSession = true;
-      } else {
-        integrationStates.f1tvLiveSession = false;
-      }
+      integrationStates.f1tvLiveSession = Boolean(data.liveSessionFound);
     });
 }

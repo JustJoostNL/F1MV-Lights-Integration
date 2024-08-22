@@ -17,7 +17,10 @@ import {
 import { integrationStates } from "../states";
 import { ControlType } from "../../controlAllLights";
 import { Action } from "../../../../shared/config/config_types";
-import { fetchWithoutSSLCheck } from "./fetchWithoutSSLCheck";
+import {
+  fetchWithoutSSLCheck,
+  fetchWithoutSSLCheckWithTimeout,
+} from "../../../utils/fetch";
 import { rgbToXY } from "./rgbToXyUsingGamut";
 
 export async function discoverPhilipsHueBridge(): Promise<DiscoverPhilipsHueBridgeResponse> {
@@ -65,7 +68,7 @@ export async function philipsHueOnlineCheck(): Promise<"online" | "offline"> {
       globalConfig.philipsHueBridgeAuthToken,
     );
 
-  const res = await fetchWithoutSSLCheck(
+  const res = await fetchWithoutSSLCheckWithTimeout(
     `https://${globalConfig.philipsHueBridgeIP}/clip/v2/resource/bridge`,
     {
       headers,
@@ -134,7 +137,7 @@ export async function getPhilipsHueGroups(): Promise<GetPhilipsHueGroupsResponse
   };
 }
 
-export interface PhilipsHueControlArgs {
+interface PhilipsHueControlArgs {
   controlType: ControlType;
   color: {
     r: number;

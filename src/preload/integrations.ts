@@ -15,12 +15,12 @@ function homeAssistantGetDevices(): Promise<{
   devices: IHomeAssistantStatesResponse[];
   selectedDevices: string[];
 }> {
-  return ipcRenderer.invoke("f1mvli:integrations:homeAssistant:getDevices");
+  return ipcRenderer.invoke("f1mvli:integrations:homeassistant:get-devices");
 }
 
 function homeAssistantCheckDeviceSpectrum(entityId: string): Promise<boolean> {
   return ipcRenderer.invoke(
-    "f1mvli:integrations:homeAssistant:checkDeviceSpectrum",
+    "f1mvli:integrations:homeassistant:check-device-spectrum",
     entityId,
   );
 }
@@ -30,24 +30,26 @@ function homebridgeGetAccessories(): Promise<{
   accessories: IHomebridgeAccessory[];
   selectedAccessories: string[];
 }> {
-  return ipcRenderer.invoke("f1mvli:integrations:homebridge:getAccessories");
+  return ipcRenderer.invoke("f1mvli:integrations:homebridge:get-accessories");
 }
 
 // philips hue
 function discoverPhilipsHueBridge(): Promise<DiscoverPhilipsHueBridgeResponse> {
-  return ipcRenderer.invoke("f1mvli:integrations:philipsHue:discoverBridge");
+  return ipcRenderer.invoke("f1mvli:integrations:philips-hue:discover-bridge");
 }
 
 function generatePhilipsHueBridgeAuthToken(): Promise<GeneratePhilipsHueBridgeAuthTokenResponse> {
-  return ipcRenderer.invoke("f1mvli:integrations:philipsHue:generateAuthToken");
+  return ipcRenderer.invoke(
+    "f1mvli:integrations:philips-hue:generate-auth-token",
+  );
 }
 
 function getPhilipsHueDevices(): Promise<GetPhilipsHueDevicesResponse> {
-  return ipcRenderer.invoke("f1mvli:integrations:philipsHue:getDevices");
+  return ipcRenderer.invoke("f1mvli:integrations:philips-hue:get-devices");
 }
 
 function getPhilipsHueGroups(): Promise<GetPhilipsHueGroupsResponse> {
-  return ipcRenderer.invoke("f1mvli:integrations:philipsHue:getGroups");
+  return ipcRenderer.invoke("f1mvli:integrations:philips-hue:get-groups");
 }
 
 // openrgb
@@ -57,11 +59,11 @@ function openrgbInitialize(): Promise<void> {
 
 // tradfri
 function discoverTradfriGateway(): Promise<DiscoveredGateway | null> {
-  return ipcRenderer.invoke("f1mvli:integrations:tradfri:discoverGateway");
+  return ipcRenderer.invoke("f1mvli:integrations:tradfri:discover-gateway");
 }
 
 function getTradfriDevices(): Promise<IGetTradfriDevicesResponse | undefined> {
-  return ipcRenderer.invoke("f1mvli:integrations:tradfri:getDevices");
+  return ipcRenderer.invoke("f1mvli:integrations:tradfri:get-devices");
 }
 
 export const integrationsAPI = {

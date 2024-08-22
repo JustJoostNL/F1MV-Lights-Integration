@@ -10,6 +10,7 @@ import {
   IHomeAssistantStatesResponse,
   IHomeAssistantStateResponse,
 } from "../../../../shared/integrations/homeAssistant_types";
+import { fetchWithTimeout } from "../../../utils/fetch";
 
 export async function homeAssistantOnlineCheck(): Promise<
   "online" | "offline"
@@ -27,7 +28,7 @@ export async function homeAssistantOnlineCheck(): Promise<
   url.port = globalConfig.homeAssistantPort.toString();
 
   try {
-    const res = await fetch(url, options);
+    const res = await fetchWithTimeout(url.toString(), options);
     const data: IHomeAssistantAPIPingResponse = await res.json();
     integrationStates.homeAssistant = data.message === "API running.";
     return integrationStates.homeAssistant ? "online" : "offline";
@@ -111,7 +112,7 @@ export async function homeAssistantCheckDeviceSpectrum(entityId: string) {
   }
 }
 
-export interface HomeAssistantControlArgs {
+interface HomeAssistantControlArgs {
   controlType: ControlType;
   color: {
     r: number;

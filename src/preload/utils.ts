@@ -7,16 +7,16 @@ type IntegrationState = {
 };
 
 function getIntegrationStates(): Promise<IntegrationState[]> {
-  return ipcRenderer.invoke("f1mvli:utils:getIntegrationStates");
+  return ipcRenderer.invoke("f1mvli:utils:get-integration-states");
 }
 function getWindowSizes(): Promise<number[][]> {
-  return ipcRenderer.invoke("f1mvli:utils:getWindowSizes");
+  return ipcRenderer.invoke("f1mvli:utils:get-window-sizes");
 }
 function relaunchApp(): Promise<void> {
-  return ipcRenderer.invoke("f1mvli:utils:relaunchApp");
+  return ipcRenderer.invoke("f1mvli:utils:relaunch-app");
 }
 function exitApp(): Promise<void> {
-  return ipcRenderer.invoke("f1mvli:utils:exitApp");
+  return ipcRenderer.invoke("f1mvli:utils:exit-app");
 }
 
 export const utilsAPI = {

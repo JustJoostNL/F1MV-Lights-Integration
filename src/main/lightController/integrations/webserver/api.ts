@@ -47,7 +47,7 @@ export async function webserverInitialize() {
   }
 }
 
-export interface WebServerControlArgs {
+interface WebServerControlArgs {
   color: {
     r: number;
     g: number;

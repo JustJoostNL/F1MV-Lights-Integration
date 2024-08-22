@@ -200,9 +200,9 @@ function registerConfigIPCHandlers() {
   ipcMain.handle("f1mvli:config:set", handleConfigSet);
   ipcMain.handle("f1mvli:config:reset", handleConfigReset);
   ipcMain.handle("f1mvli:config:open", handleConfigOpen);
-  ipcMain.handle("f1mvli:config:updateOTA", fetchAuthoritativeConfig);
+  ipcMain.handle("f1mvli:config:ota:get", fetchAuthoritativeConfig);
 
-  return function () {
+  return () => {
     ipcMain.removeHandler("f1mvli:config:get");
     ipcMain.removeHandler("f1mvli:config:set");
     ipcMain.removeHandler("f1mvli:config:reset");

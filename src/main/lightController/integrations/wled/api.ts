@@ -4,7 +4,7 @@ import { globalConfig } from "../../../ipc/config";
 import { ControlType } from "../../controlAllLights";
 import { integrationStates } from "../states";
 
-export interface WLEDControlArgs {
+interface WLEDControlArgs {
   controlType: ControlType;
   color: {
     r: number;

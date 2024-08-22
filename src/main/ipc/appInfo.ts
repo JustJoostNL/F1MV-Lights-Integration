@@ -5,10 +5,10 @@ function handleGetAppVersion() {
 }
 
 function registerAppInfoIPCHandlers() {
-  ipcMain.handle("f1mvli:appInfo:getAppVersion", handleGetAppVersion);
+  ipcMain.handle("f1mvli:appInfo:get-app-version", handleGetAppVersion);
 
-  return function () {
-    ipcMain.removeHandler("f1mvli:appInfo:getAppVersion");
+  return () => {
+    ipcMain.removeHandler("f1mvli:appInfo:get-app-version");
   };
 }
 

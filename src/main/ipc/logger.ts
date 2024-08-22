@@ -13,7 +13,7 @@ function registerLoggerIPCHandlers() {
   ipcMain.handle("f1mvli:log:open", handleOpenLogfile);
   ipcMain.handle("f1mvli:log:get", handleGetLogs);
 
-  return function () {
+  return () => {
     ipcMain.removeHandler("f1mvli:log:open");
     ipcMain.removeHandler("f1mvli:log:get");
   };

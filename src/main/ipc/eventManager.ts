@@ -32,15 +32,15 @@ function registerEventManagerIPCHandlers() {
     return handleSimulate(arg);
   });
   ipcMain.handle(
-    "f1mvli:eventManager:simulateBackToStatic",
+    "f1mvli:eventManager:simulate:static",
     handleSimulateBackToStatic,
   );
-  ipcMain.handle("f1mvli:eventManager:allOff", handleAllOff);
+  ipcMain.handle("f1mvli:eventManager:all-off", handleAllOff);
 
-  return function () {
+  return () => {
     ipcMain.removeHandler("f1mvli:eventManager:simulate");
-    ipcMain.removeHandler("f1mvli:eventManager:simulateBackToStatic");
-    ipcMain.removeHandler("f1mvli:eventManager:allOff");
+    ipcMain.removeHandler("f1mvli:eventManager:simulate:static");
+    ipcMain.removeHandler("f1mvli:eventManager:all-off");
   };
 }
 

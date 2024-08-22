@@ -128,16 +128,6 @@ export function parseLapTime(lapTime: string) {
   return minutes * 60 + seconds + milliseconds / 1000;
 }
 
-export function getOverallFastestLapTime(
-  timingDataLines: ITimingData["Lines"],
-): string | undefined {
-  return Object.values(timingDataLines ?? {})
-    .map((line) => (line.KnockedOut === true ? "" : line.BestLapTime?.Value))
-    .filter((lapTime) => lapTime !== "")
-    .map((lapTime) => ({ lapTime, parsed: parseLapTime(lapTime) }))
-    .sort((a, b) => a.parsed - b.parsed)[0]?.lapTime;
-}
-
 function checkForNewFastestLap(
   _TimingStats: ITimingStats["Lines"],
   TimingData: ITimingData["Lines"],

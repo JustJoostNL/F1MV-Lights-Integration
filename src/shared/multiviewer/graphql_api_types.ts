@@ -10,9 +10,11 @@ export interface IRealtimeTimingState {
   ExtrapolatedClock: IExtrapolatedClock;
   Heartbeat: IHeartbeat;
   LapCount: ILapCount | undefined;
-  LapSeries: ILapSeries | undefined;
   LapTimeSeries: ILapTimeSeries | undefined;
+  LapSeries: ILapSeries | undefined;
   PitLaneTimeCollection: IPitLaneTimeCollection | undefined;
+  PitStopTimeCollection: IPitStopTimeCollection | undefined;
+  SegmentGapTimeSeries: ISegmentGapTimeSeries | undefined;
   Position: IPosition;
   RaceControlMessages: IRaceControlMessages;
   SessionData: ISessionData;
@@ -26,6 +28,21 @@ export interface IRealtimeTimingState {
   TrackStatus: ITrackStatus;
   WeatherData: IWeatherData;
   WeatherDataSeries: IWeatherDataSeries;
+}
+
+export interface ISegmentGapTimeSeries {
+  [lapNumberSectorSegmentId: string]: ISegmentGapTimeSeriesData;
+}
+
+export interface ISegmentGapTimeSeriesData {
+  [driverNumber: string]: ISegmentGapTimeSeriesDataValue;
+}
+
+export interface ISegmentGapTimeSeriesDataValue {
+  ts: number;
+  GapToLeader: string;
+  IntervalToPositionAhead: string;
+  Position: string;
 }
 
 export interface ILapTimeSeries {
@@ -64,6 +81,26 @@ export interface IPitTime {
   RacingNumber: string;
   Duration: string;
   Lap: string;
+}
+
+export interface IPitStopTimeCollection {
+  PitStops: IPitStops;
+}
+
+export interface IPitStops {
+  [driverNumber: string]: IPitStopTimeCollectionEntry;
+}
+
+export interface IPitStopTimeCollectionEntry {
+  [pitStopNumber: string]: IPitStop;
+}
+
+export interface IPitStop {
+  LapNumber: number;
+  InPitTime: number;
+  InPitPosition: string;
+  PitOutTime: number;
+  PitOutPosition: string;
 }
 
 export interface ILapSeries {
@@ -250,17 +287,15 @@ export enum RaceControlMessageSubCategory {
 export interface IRaceControlMessage {
   Utc: DateString;
   Category: string;
-  SubCategory?: RaceControlMessageSubCategory;
+  SubCategory: RaceControlMessageSubCategory;
   Flag:
     | "YELLOW"
     | "DOUBLE YELLOW"
     | "GREEN"
     | "CHECKERED"
-    | "CHEQUERED"
     | "RED"
     | "BLUE"
     | "BLACK AND WHITE"
-    | "OPEN"
     | string;
   Status?:
     | "DEPLOYED"
@@ -269,7 +304,7 @@ export interface IRaceControlMessage {
     | "ENABLED"
     | "IN THIS LAP"
     | "THROUGH THE PIT LANE";
-  Scope?: "Track" | "Sector" | "Driver";
+  Scope: "Track" | "Sector" | "Driver";
   Mode?: "SAFETY CAR" | "VIRTUAL SAFETY CAR";
   Message: string;
   Lap?: number;
@@ -419,7 +454,6 @@ export interface ITimingDataLine {
 export interface IBestLapTime {
   Value: string;
   Lap?: number;
-  Position?: number;
 }
 
 export interface IIntervalToPositionAhead {

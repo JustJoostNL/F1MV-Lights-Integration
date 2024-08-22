@@ -28,7 +28,7 @@ function open(): Promise<void> {
 }
 
 function updateOTA(): Promise<IOTAConfigPayload> {
-  return ipcRenderer.invoke("f1mvli:config:updateOTA");
+  return ipcRenderer.invoke("f1mvli:config:ota:get");
 }
 
 export const configAPI = {

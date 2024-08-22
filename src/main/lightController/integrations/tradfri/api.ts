@@ -72,16 +72,16 @@ async function getTradfriClient() {
   return tradfriClient;
 }
 
-export async function tradfriOnlineCheck(): Promise<boolean> {
+export async function tradfriOnlineCheck(): Promise<"online" | "offline"> {
   const client = await getTradfriClient();
   if (!client) {
     integrationStates.tradfri = false;
-    return false;
+    return "offline";
   }
 
   const ping = await client.ping();
   integrationStates.tradfri = ping;
-  return ping;
+  return ping ? "online" : "offline";
 }
 
 export async function getTradfriDevices() {

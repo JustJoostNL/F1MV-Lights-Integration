@@ -6,11 +6,11 @@ function simulate(event: EventType): Promise<void> {
 }
 
 function simulateBackToStatic(): Promise<void> {
-  return ipcRenderer.invoke("f1mvli:eventManager:simulateBackToStatic");
+  return ipcRenderer.invoke("f1mvli:eventManager:simulate:static");
 }
 
 function allOff(): Promise<void> {
-  return ipcRenderer.invoke("f1mvli:eventManager:allOff");
+  return ipcRenderer.invoke("f1mvli:eventManager:all-off");
 }
 
 export const eventManagerAPI = {

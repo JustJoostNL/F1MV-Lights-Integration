@@ -8,20 +8,33 @@ import { getConfig } from "./config";
 
 const handleGetIntegrationStates = async () => {
   const config = await getConfig();
-  if (config.homeAssistantEnabled) await homeAssistantOnlineCheck();
-  if (config.homebridgeEnabled) await homebridgeOnlineCheck();
-  if (config.philipsHueEnabled) await philipsHueOnlineCheck();
-  if (config.ikeaEnabled) await tradfriOnlineCheck();
+
+  const checks: { enabled: boolean; fn: () => Promise<string> }[] = [
+    {
+      enabled: config.homeAssistantEnabled,
+      fn: homeAssistantOnlineCheck,
+    },
+    {
+      enabled: config.homebridgeEnabled,
+      fn: homebridgeOnlineCheck,
+    },
+    {
+      enabled: config.philipsHueEnabled,
+      fn: philipsHueOnlineCheck,
+    },
+    {
+      enabled: config.ikeaEnabled,
+      fn: tradfriOnlineCheck,
+    },
+  ];
+
+  const enabledChecks = checks.filter((check) => check.enabled);
+  await Promise.all(enabledChecks.map((check) => check.fn()));
 
   const states = [
     {
       name: "multiviewer",
       state: integrationStates.multiviewer,
-      disabled: false,
-    },
-    {
-      name: "autoUpdater",
-      state: integrationStates.autoUpdater,
       disabled: false,
     },
     {
@@ -104,18 +117,18 @@ const handleExitApp = () => {
 
 function registerUtilsIPCHandlers() {
   ipcMain.handle(
-    "f1mvli:utils:getIntegrationStates",
+    "f1mvli:utils:get-integration-states",
     handleGetIntegrationStates,
   );
-  ipcMain.handle("f1mvli:utils:getWindowSizes", handleGetWindowSizes);
-  ipcMain.handle("f1mvli:utils:relaunchApp", handleRelaunchApp);
-  ipcMain.handle("f1mvli:utils:exitApp", handleExitApp);
+  ipcMain.handle("f1mvli:utils:get-window-sizes", handleGetWindowSizes);
+  ipcMain.handle("f1mvli:utils:relaunch-app", handleRelaunchApp);
+  ipcMain.handle("f1mvli:utils:exit-app", handleExitApp);
 
-  return function () {
-    ipcMain.removeHandler("f1mvli:utils:getIntegrationStates");
-    ipcMain.removeHandler("f1mvli:utils:getWindowSizes");
-    ipcMain.removeHandler("f1mvli:utils:relaunchApp");
-    ipcMain.removeHandler("f1mvli:utils:exitApp");
+  return () => {
+    ipcMain.removeHandler("f1mvli:utils:get-integration-states");
+    ipcMain.removeHandler("f1mvli:utils:get-window-sizes");
+    ipcMain.removeHandler("f1mvli:utils:relaunch-app");
+    ipcMain.removeHandler("f1mvli:utils:exit-app");
   };
 }
 

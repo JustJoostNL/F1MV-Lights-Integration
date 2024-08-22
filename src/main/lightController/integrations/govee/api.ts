@@ -5,7 +5,7 @@ import { integrationStates } from "../states";
 
 let goveeInstance: Govee | undefined = undefined;
 
-export interface GoveeControlArgs {
+interface GoveeControlArgs {
   controlType: ControlType;
   color: {
     r: number;

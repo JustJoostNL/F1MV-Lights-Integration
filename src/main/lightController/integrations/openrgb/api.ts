@@ -8,7 +8,7 @@ import { IOpenRGBClient } from "./types";
 let openrgbClient: IOpenRGBClient | undefined = undefined;
 let manualDisconnect = false;
 
-export interface OpenRGBControlArgs {
+interface OpenRGBControlArgs {
   controlType: ControlType;
   color: {
     r: number;
