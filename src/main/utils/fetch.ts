@@ -4,10 +4,10 @@ import fetch from "cross-fetch";
 export function extendFetch(
   fetchFn: typeof fetch,
   timeout?: number,
-  rejectUnauthorized?: boolean,
+  allowUnauthorized?: boolean,
 ): (url: string, options: RequestInit) => Promise<Response> {
-  const agent = rejectUnauthorized
-    ? new Agent({ rejectUnauthorized })
+  const agent = allowUnauthorized
+    ? new Agent({ rejectUnauthorized: false })
     : undefined;
 
   return async (url: string, options: RequestInit) => {
