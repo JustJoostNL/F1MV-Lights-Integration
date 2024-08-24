@@ -68,16 +68,20 @@ export async function philipsHueOnlineCheck(): Promise<"online" | "offline"> {
       globalConfig.philipsHueBridgeAuthToken,
     );
 
-  const res = await fetchWithoutSSLCheckWithTimeout(
-    `https://${globalConfig.philipsHueBridgeIP}/clip/v2/resource/bridge`,
-    {
-      headers,
-    },
-  );
+  try {
+    const res = await fetchWithoutSSLCheckWithTimeout(
+      `https://${globalConfig.philipsHueBridgeIP}/clip/v2/resource/bridge`,
+      {
+        headers,
+      },
+    );
 
-  integrationStates.philipsHue = res.status === 200;
-
-  return res.status === 200 ? "online" : "offline";
+    integrationStates.philipsHue = res.status === 200;
+    return res.status === 200 ? "online" : "offline";
+  } catch (err) {
+    integrationStates.philipsHue = false;
+    return "offline";
+  }
 }
 
 export async function philipsHueInitialize() {
