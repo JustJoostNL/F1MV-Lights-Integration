@@ -83,7 +83,6 @@ export async function createMainWindow() {
   });
 
   if (process.env.VITE_DEV_SERVER_URL) {
-    // electron-vite-vue#298
     await mainWindow.loadURL(devServerUrl);
     mainWindow.webContents.openDevTools({ mode: "detach" });
     mainWindow.setMenuBarVisibility(false);
@@ -104,13 +103,19 @@ export async function createMainWindow() {
   }
 
   mainWindow.webContents.setWindowOpenHandler(({ url }) => {
-    if (url.startsWith("https:" || "http:")) shell.openExternal(url);
+    if (url.startsWith("http:") || url.startsWith("https:")) {
+      shell.openExternal(url);
+    }
     return { action: "deny" };
   });
+
   mainWindow.webContents.on(
     "will-navigate",
     (event: Electron.Event, url: string) => {
-      if (url.startsWith("https:" || "http:") && !url.includes("localhost")) {
+      if (
+        (url.startsWith("http:") || url.startsWith("https:")) &&
+        !url.includes("localhost")
+      ) {
         event.preventDefault();
         shell.openExternal(url);
       }
