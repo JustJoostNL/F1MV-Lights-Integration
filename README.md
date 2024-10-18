@@ -79,7 +79,6 @@ By integrating your smart home lights with Formula 1 sessions, using [MultiViewe
 [![IDE][ide]][ide-url]
 [![ESLint][eslint]][eslint-url]
 [![Sentry][sentry]][sentry-url]
-[![Google Analytics][ga4]][ga4-url]
 [![CloudFlare][cloudflare]][cloudflare-url]
 
 [![Philips Hue][philips-hue]][philips-hue-url]
@@ -220,8 +219,6 @@ Distributed under the GNU General Public License v3.0. See `LICENSE.md` for more
 [ESLint-url]: https://eslint.org/
 [Sentry]: https://img.shields.io/badge/Sentry-362D59?style=for-the-badge&logo=sentry&logoColor=white
 [Sentry-url]: https://sentry.io/
-[ga4]: https://img.shields.io/badge/Google%20Analytics-E37400?style=for-the-badge&logo=google-analytics&logoColor=white
-[ga4-url]: https://analytics.google.com/
 [nodejs]: https://img.shields.io/badge/Node.js-43853D?style=for-the-badge&logo=node.js&logoColor=white
 [nodejs-url]: https://nodejs.org/en/
 [releases-url]: https://github.com/JustJoostNL/F1MV-Lights-Integration/releases
