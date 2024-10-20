@@ -27,9 +27,9 @@ export function extendFetch(
           if (timeout) clearTimeout(timer);
           resolve(res);
         })
-        .catch((err) => {
+        .catch((error) => {
           if (timeout) clearTimeout(timer);
-          reject(err);
+          reject(error);
         });
     });
   };

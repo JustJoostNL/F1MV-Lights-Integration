@@ -36,7 +36,7 @@ export async function homebridgeOnlineCheck(): Promise<"online" | "offline"> {
 
     integrationStates.homebridge = isOnline;
     return isOnline ? "online" : "offline";
-  } catch (err) {
+  } catch (error) {
     integrationStates.homebridge = false;
     return "offline";
   }
@@ -69,9 +69,9 @@ export async function requestHomebridgeToken() {
     };
 
     return data.access_token;
-  } catch (err) {
+  } catch (error) {
     log.error(
-      `An error occurred while requesting the Homebridge token: ${err}`,
+      `An error occurred while requesting the Homebridge token: ${error}`,
     );
   }
 }
@@ -227,9 +227,9 @@ export async function homebridgeControl({
 
         try {
           await fetch(url.toString(), options);
-        } catch (err) {
+        } catch (error) {
           log.error(
-            `An error occurred while turning off Homebridge device ${uniqueId}: ${err}`,
+            `An error occurred while turning off Homebridge device ${uniqueId}: ${error}`,
           );
         }
       }

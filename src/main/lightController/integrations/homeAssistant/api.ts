@@ -32,7 +32,7 @@ export async function homeAssistantOnlineCheck(): Promise<
     const data: IHomeAssistantAPIPingResponse = await res.json();
     integrationStates.homeAssistant = data.message === "API running.";
     return integrationStates.homeAssistant ? "online" : "offline";
-  } catch (err) {
+  } catch (error) {
     integrationStates.homeAssistant = false;
     return "offline";
   }
@@ -104,9 +104,9 @@ export async function homeAssistantCheckDeviceSpectrum(entityId: string) {
       (mode: string) =>
         mode === "rgb" || mode === "rgbw" || mode === "hs" || mode === "xy",
     );
-  } catch (err) {
+  } catch (error) {
     log.error(
-      `An error occurred while checking if Home Assistant device ${entityId} supports spectrum: ${err}`,
+      `An error occurred while checking if Home Assistant device ${entityId} supports spectrum: ${error}`,
     );
     return false;
   }

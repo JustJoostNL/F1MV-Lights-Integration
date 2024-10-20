@@ -163,7 +163,6 @@ function onReady() {
   mainWindow?.webContents.setZoomLevel(0);
   mainWindow?.webContents.setZoomFactor(1);
   registerDeepLink();
-  startLiveTimingDataPolling();
   fetchAuthoritativeConfig();
   setInterval(
     () => {
@@ -173,6 +172,7 @@ function onReady() {
       Math.random() * globalConfig.otaConfigFetchJitter,
   );
   initializeIntegrations();
+  startLiveTimingDataPolling();
   handleRegisterUser();
 }
 
@@ -182,15 +182,13 @@ app.on("window-all-closed", async () => {
     try {
       mqttClient?.publish(
         "F1MV-Lights-Integration/appState",
-        JSON.stringify({
-          appIsActive: false,
-        }),
+        JSON.stringify({ appIsActive: false }),
       );
       mqttClient?.end();
-    } catch (err) {
+    } catch (error: any) {
       log.error(
         "Error while setting appIsActive to false, and closing the MQTT client: " +
-          err.message,
+          error.message,
       );
     }
   }

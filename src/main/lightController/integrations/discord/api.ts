@@ -5,58 +5,61 @@ import { globalConfig } from "../../../ipc/config";
 import { trackStatusToString } from "../../trackStatusToString";
 import { integrationStates } from "../states";
 
-export async function registerDiscordRPC() {
-  const clientId = "1104476733865996439";
-  const RPC = new DiscordRPC.Client({ transport: "ipc" });
+const clientId = "1104476733865996439";
 
-  await DiscordRPC.register(clientId);
+async function setActivity(rpc: any) {
+  if (!rpc) return;
+
   const currentDate = Date.now();
 
-  async function setActivity() {
-    if (!RPC) return;
+  await rpc.setActivity({
+    details:
+      liveTimingState?.SessionInfo.Meeting.Name +
+      " - " +
+      liveTimingState?.SessionInfo.Name,
+    state: globalConfig.discordRPCAvoidSpoilers
+      ? "F1MV Lights Integration is running."
+      : trackStatusToString(liveTimingState?.TrackStatus.Status) +
+        " - F1MVLI is running.",
+    startTimestamp: currentDate,
+    largeImageKey: "multiviewer_logo",
+    largeImageText: "MultiViewer Logo",
+    instance: false,
+    buttons: [
+      {
+        label: "Download MultiViewer",
+        url: "https://multiviewer.app/download",
+      },
+      {
+        label: "Download F1MV Lights Integration",
+        url: "https://github.com/JustJoostNL/F1MV-Lights-Integration/releases/latest",
+      },
+    ],
+  });
+}
 
-    await RPC.setActivity({
-      details:
-        liveTimingState?.SessionInfo.Meeting.Name +
-        " - " +
-        liveTimingState?.SessionInfo.Name,
-      state: globalConfig.discordRPCAvoidSpoilers
-        ? "F1MV Lights Integration is running."
-        : trackStatusToString(liveTimingState?.TrackStatus.Status) +
-          " - F1MVLI is running.",
-      startTimestamp: currentDate,
-      largeImageKey: "multiviewer_logo",
-      largeImageText: "MultiViewer Logo",
-      instance: false,
-      buttons: [
-        {
-          label: "Download MultiViewer",
-          url: "https://multiviewer.app/download",
-        },
-        {
-          label: "Download F1MV Lights Integration",
-          url: "https://github.com/JustJoostNL/F1MV-Lights-Integration/releases/latest",
-        },
-      ],
-    });
-  }
-  RPC.on("ready", async () => {
+export async function registerDiscordRPC() {
+  const rpc = new DiscordRPC.Client({ transport: "ipc" });
+  await DiscordRPC.register(clientId);
+
+  rpc.on("ready", async () => {
     if (globalConfig.discordRPCEnabled && integrationStates.multiviewer) {
-      await setActivity();
+      await setActivity(rpc);
     }
+
     setInterval(async () => {
       if (globalConfig.discordRPCEnabled && integrationStates.multiviewer) {
-        await setActivity();
+        await setActivity(rpc);
       } else {
-        await RPC.clearActivity();
+        await rpc.clearActivity();
       }
     }, 15000);
   });
 
-  RPC.login({ clientId }).catch((e) => {
+  rpc.login({ clientId }).catch((error: any) => {
     log.error(
       "An error occurred while initializing the Discord integration, are you sure Discord is running?",
     );
-    log.error("Discord error: " + e.message);
+    log.error("Discord error: " + error.message);
   });
 }

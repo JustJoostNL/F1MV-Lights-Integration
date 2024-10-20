@@ -79,8 +79,8 @@ export function IndexPage() {
         setUpdating(isAvailable);
         setDoneChecking(true);
         setLoading(false);
-      } catch (err) {
-        setUpdateError(err);
+      } catch (error: any) {
+        setUpdateError(error);
         setDoneChecking(true);
       }
     })();
@@ -90,8 +90,8 @@ export function IndexPage() {
     if (!updating && !doneChecking) return;
 
     const handleInstallUpdate = async () => {
-      await window.f1mvli.updater.quitAndInstall().catch((err) => {
-        setUpdateError(err);
+      await window.f1mvli.updater.quitAndInstall().catch((error) => {
+        setUpdateError(error);
       });
     };
 

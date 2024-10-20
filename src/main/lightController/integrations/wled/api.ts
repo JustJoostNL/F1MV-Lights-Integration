@@ -25,9 +25,9 @@ export async function wledInitialize() {
       successCount++;
       device.disconnect();
       log.debug(`Successfully initialized WLED device ${deviceIp}`);
-    } catch (err) {
+    } catch (error: any) {
       log.error(
-        `Error while trying to initialize WLED device ${deviceIp}: ${err.message}`,
+        `Error while trying to initialize WLED device ${deviceIp}: ${error.message}`,
       );
     }
   }
@@ -78,9 +78,9 @@ export async function wledControl({
           break;
       }
       device.disconnect();
-    } catch (err) {
+    } catch (error) {
       log.error(
-        `Error while trying to control WLED device ${deviceIp}: ${err}`,
+        `Error while trying to control WLED device ${deviceIp}: ${error}`,
       );
     }
   }

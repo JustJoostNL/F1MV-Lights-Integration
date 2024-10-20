@@ -35,7 +35,7 @@ export async function handlePatchConfig(
     if (response === 1) return;
 
     await patchConfig(config);
-  } catch (e) {
+  } catch (error) {
     dialog.showErrorBox("Error", "Invalid config");
   }
 }
@@ -96,7 +96,7 @@ export async function handleAddEvent(
     await patchConfig({
       events: [...events, { ...event, id: nextId }],
     });
-  } catch (e) {
+  } catch (error) {
     dialog.showErrorBox("Error", "Invalid config");
   }
 }

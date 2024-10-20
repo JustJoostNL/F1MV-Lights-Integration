@@ -1,78 +1,76 @@
 import { generateUniqueId } from "../utils/generateUniqueId";
 
+class AnalyticsApiError extends Error {
+  constructor(
+    message: string,
+    public readonly response: Response,
+  ) {
+    super(message);
+
+    this.name = "AnalyticsApiError";
+  }
+}
+
 let analyticsPostInterval: NodeJS.Timeout | null = null;
 let userActiveId: string | null = null;
 let isPosting = false;
 const postUrl = "https://api.jstt.me/api/v2/f1mvli/analytics/active-users/post";
 
-async function handlePostUserActive(): Promise<any> {
+async function handlePostUserActive() {
   if (!userActiveId || isPosting) return;
   isPosting = true;
-  const res = await fetch(postUrl, {
+
+  const response = await fetch(postUrl, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      uniqueID: userActiveId,
-      userActive: true,
-    }),
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ uniqueID: userActiveId, userActive: true }),
   });
 
-  const json = await res.json();
+  if (!response.ok) {
+    isPosting = false;
+    throw new AnalyticsApiError("Failed to post user active status", response);
+  }
+
+  const json = await response.json();
+
   isPosting = false;
   return json;
 }
 
-export async function handleRegisterUser(): Promise<{
-  userActiveId: string | null;
-  resPostJson: any;
-}> {
+export async function handleRegisterUser() {
   const generatedId = generateUniqueId(8);
-  if (!userActiveId) {
-    userActiveId = generatedId;
-  }
-  const resPostJson = await handlePostUserActive();
+  if (!userActiveId) userActiveId = generatedId;
 
-  if (analyticsPostInterval) {
-    clearInterval(analyticsPostInterval);
-  }
+  // Initial post
+  await handlePostUserActive();
 
+  if (analyticsPostInterval) clearInterval(analyticsPostInterval);
   analyticsPostInterval = setInterval(async () => {
     await handlePostUserActive();
   }, 15000); // 15 seconds
-
-  return {
-    userActiveId,
-    resPostJson,
-  };
 }
 
-export async function handleUserActiveExit(): Promise<any | null> {
-  let json: any | null = null;
-
+export async function handleUserActiveExit() {
   if (userActiveId && analyticsPostInterval) {
     clearInterval(analyticsPostInterval);
-    const res = await fetch(postUrl, {
+    const response = await fetch(postUrl, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        uniqueID: userActiveId,
-        userActive: false,
-      }),
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ uniqueID: userActiveId, userActive: false }),
     });
-    json = await res.json();
-  }
 
-  return json;
+    if (!response.ok) {
+      throw new AnalyticsApiError(
+        "Failed to post user active status",
+        response,
+      );
+    }
+
+    userActiveId = null;
+  }
 }
 
-export async function handleGetStatus(): Promise<{
-  isRegistered: boolean;
-  userActiveId: string | null;
-}> {
+export function handleGetStatus() {
   return {
     isRegistered: !!userActiveId && !!analyticsPostInterval,
     userActiveId,

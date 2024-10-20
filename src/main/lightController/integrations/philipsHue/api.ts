@@ -78,7 +78,7 @@ export async function philipsHueOnlineCheck(): Promise<"online" | "offline"> {
 
     integrationStates.philipsHue = res.status === 200;
     return res.status === 200 ? "online" : "offline";
-  } catch (err) {
+  } catch (error) {
     integrationStates.philipsHue = false;
     return "offline";
   }

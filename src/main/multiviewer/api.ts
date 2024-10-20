@@ -28,15 +28,9 @@ export interface ILiveTimingData {
   TrackStatus: ITrackStatus;
 }
 
-interface IGraphQLResponse {
-  data: {
-    liveTimingState: ILiveTimingData;
-  };
-}
-
 let errorCheck: boolean = false;
 export let liveTimingState: ILiveTimingData | undefined = undefined;
-let currentFastestLapTimeSeconds: number = 3600; // 1 hour
+let currentFastestLapTimeSeconds: number | undefined = undefined;
 let currentQualifyingPart: number | undefined = undefined;
 let previousTrackStatus: ITrackStatus | undefined = undefined;
 let previousSessionStatus: ISessionStatus | undefined = undefined;
@@ -51,13 +45,13 @@ export async function fetchMultiViewerLiveTimingData(): Promise<
     const config = await getConfig();
     const graphqlUrl = new URL("/api/graphql", config.multiviewerLiveTimingURL);
 
-    const res = await fetch(graphqlUrl.toString(), {
+    const response = await fetch(graphqlUrl.toString(), {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         query: /* GraphQL */ `
           query QueryAllLiveTimingData {
-            liveTimingState {
+            f1LiveTimingState {
               RaceControlMessages
               SessionData
               SessionInfo
@@ -71,22 +65,23 @@ export async function fetchMultiViewerLiveTimingData(): Promise<
       }),
     });
 
-    if (!res.ok) {
+    if (!response.ok) {
       if (!errorCheck) {
         errorCheck = true;
         log.warn(
-          "MultiViewer GrahpQL API call failed! Error: " + res.statusText,
+          "MultiViewer GrahpQL API call failed! Error: " + response.statusText,
         );
       }
     }
 
-    const json: IGraphQLResponse = await res.json();
-    if (!json.data.liveTimingState) return;
-    return json.data.liveTimingState;
-  } catch (err) {
+    const json = await response.json();
+    if (!json.data.f1LiveTimingState) return;
+
+    return json.data.f1LiveTimingState;
+  } catch (error: any) {
     if (!errorCheck) {
       errorCheck = true;
-      log.warn("MultiViewer GrahpQL API call failed! Error: " + err.message);
+      log.warn("MultiViewer GrahpQL API call failed! Error: " + error.message);
     }
   }
 }
@@ -99,10 +94,8 @@ export async function checkMultiViewerAPIStatus() {
   );
 
   try {
-    const res = await fetch(heartbeatUrl.toString(), {
-      method: "GET",
-    });
-    const json = await res.json();
+    const response = await fetch(heartbeatUrl.toString(), { method: "GET" });
+    const json = await response.json();
 
     if (json.error !== "No data found, do you have live timing running?") {
       log.debug("MultiViewer API is online.");
@@ -111,7 +104,7 @@ export async function checkMultiViewerAPIStatus() {
       log.debug("MultiViewer API is offline.");
       return false;
     }
-  } catch (err) {
+  } catch (error) {
     return false;
   }
 }
@@ -148,12 +141,19 @@ function checkForNewFastestLap(
 
   if (fastestLapTimeSeconds === undefined) return;
 
-  if (fastestLapTimeSeconds >= currentFastestLapTimeSeconds) {
+  if (
+    typeof currentFastestLapTimeSeconds === "number" &&
+    fastestLapTimeSeconds >= currentFastestLapTimeSeconds
+  ) {
     return;
   }
 
-  currentFastestLapTimeSeconds = fastestLapTimeSeconds;
-  newEventHandler(EventType.FastestLap);
+  if (typeof currentFastestLapTimeSeconds === "number") {
+    currentFastestLapTimeSeconds = fastestLapTimeSeconds;
+    newEventHandler(EventType.FastestLap);
+  } else {
+    currentFastestLapTimeSeconds = fastestLapTimeSeconds;
+  }
 }
 
 function checkForTrackStatusChange(
@@ -407,7 +407,7 @@ export function startLiveTimingDataPolling() {
 
 function newEventHandler(event: EventType) {
   eventHandler(event);
-  log.info(eventTypeReadableMap[event]);
+  log.info("New event: ", eventTypeReadableMap[event]);
   previousTrackStatus = liveTimingState?.TrackStatus;
   previousSessionStatus = liveTimingState?.SessionStatus;
 }

@@ -90,8 +90,11 @@ export function registerDeepLink() {
     app.on("second-instance", handleSecondInstance);
 
     ipcMain.handle("f1mvli:deep-link:open-url", handleOpenURL);
-  } catch (e: any) {
-    console.error("Failed to register F1MV Lights Integration protocol:", e);
+  } catch (error: any) {
+    console.error(
+      "Failed to register F1MV Lights Integration protocol:",
+      error,
+    );
   }
 
   return () => {

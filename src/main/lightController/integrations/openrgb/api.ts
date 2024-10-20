@@ -50,7 +50,7 @@ export async function openrgbInitialize() {
     openrgbClient.on("connect", () => {
       integrationStates.openrgb = true;
     });
-  } catch (err) {
+  } catch (error) {
     integrationStates.openrgb = false;
     log.error(
       "Error: Could not connect to OpenRGB, please make sure that the OpenRGB SDK server is running and that the hostname/ip + port are correct!",

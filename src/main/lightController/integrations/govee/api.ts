@@ -20,9 +20,9 @@ export async function goveeInitialize() {
     // @ts-ignore
     goveeInstance = new Govee.default();
     integrationStates.govee = true;
-  } catch (e) {
+  } catch (error) {
     integrationStates.govee = false;
-    log.error("Error initializing Govee instance: ", e);
+    log.error("Error initializing Govee instance: ", error);
   }
   goveeInstance?.on("ready", () => {
     log.debug("Govee instance ready.");

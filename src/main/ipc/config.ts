@@ -189,7 +189,7 @@ async function fetchAuthoritativeConfig() {
         setOTAConfig(json);
         return json;
       }
-    } catch (err) {
+    } catch (error) {
       return;
     }
   }

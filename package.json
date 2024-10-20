@@ -17,13 +17,13 @@
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx --fix"
   },
   "dependencies": {
-    "@elgato-stream-deck/node": "^6.2.0",
+    "@elgato-stream-deck/node": "^7.0.2",
     "@emotion/react": "^11.13.3",
     "@emotion/styled": "^11.13.0",
     "@mui/icons-material": "6.1.4",
     "@mui/lab": "^6.0.0-beta.12",
     "@mui/material": "6.1.4",
-    "@mui/x-data-grid": "^7.20.0",
+    "@mui/x-data-grid": "^7.21.0",
     "@q42philips/hue-color-converter": "^1.0.0",
     "@sentry/electron": "^5.6.0",
     "colortranslator": "^4.1.0",

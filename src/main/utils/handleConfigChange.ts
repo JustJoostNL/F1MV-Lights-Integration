@@ -100,10 +100,10 @@ export async function handleConfigChange(
         }),
       );
       mqttClient?.end();
-    } catch (err) {
+    } catch (error: any) {
       log.error(
         "Error while setting appIsActive to false, and closing the MQTT client: " +
-          err.message,
+          error.message,
       );
     }
   }

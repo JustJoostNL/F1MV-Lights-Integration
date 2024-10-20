@@ -38,9 +38,9 @@ export async function mqttInitialize() {
     mqttClient.on("connect", onConnect);
     mqttClient.on("offline", onOffline);
     mqttClient.on("error", onError);
-  } catch (err) {
+  } catch (error) {
     integrationStates.mqtt = false;
-    log.error("Failed to connect to MQTT broker", err);
+    log.error("Failed to connect to MQTT broker", error);
   }
 }
 
@@ -54,9 +54,9 @@ function onConnect() {
         appIsActive: true,
       }),
     );
-  } catch (err) {
+  } catch (error: any) {
     log.error(
-      "An error occurred while sending the appState to MQTT: " + err.message,
+      "An error occurred while sending the appState to MQTT: " + error.message,
     );
   }
   log.debug("Successfully connected to the MQTT broker.");

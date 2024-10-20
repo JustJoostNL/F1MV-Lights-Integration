@@ -6,31 +6,40 @@ import { ControlType } from "../../controlAllLights";
 export async function streamdeckInitialize() {
   try {
     const streamdeckList = await listStreamDecks();
-    streamdeckList.forEach(async (deck) => {
+    let failedCount = 0;
+
+    const handleError = (error: unknown) => {
+      failedCount++;
+      log.error(
+        `An error occurred while trying to initialize the Stream Deck integration: ${error} - Please make sure the Stream Deck app is closed.`,
+      );
+
+      if (failedCount === streamdeckList.length) {
+        console.log("all failed, setting to false");
+        integrationStates.streamdeck = false;
+      }
+    };
+
+    for (const deck of streamdeckList) {
       try {
         const instance = await openStreamDeck(deck.path);
-        instance.clearPanel();
+
+        await instance.clearPanel();
         integrationStates.streamdeck = true;
-        instance.on("error", (err) => {
-          integrationStates.streamdeck = false;
-          log.error(
-            "An error occurred while initializing the Stream Deck integration: " +
-              err,
-          );
-        });
-      } catch (err) {
-        integrationStates.streamdeck = false;
-        log.error(
-          "An error occurred while initializing the Stream Deck integration: " +
-            err,
-        );
+
+        instance.on("error", handleError);
+      } catch (error) {
+        handleError(error);
       }
-    });
-  } catch (err) {
+    }
+
+    if (streamdeckList.length === 0) {
+      integrationStates.streamdeck = false;
+    }
+  } catch (error) {
     integrationStates.streamdeck = false;
     log.error(
-      "An error occurred while initializing the Stream Deck integration: " +
-        err,
+      `An error occurred while trying to list the Stream Decks: ${error} - Please make sure the Stream Deck app is closed.`,
     );
   }
 }
@@ -50,24 +59,44 @@ export async function streamdeckControl({
   color,
   brightness,
 }: StreamDeckControlArgs) {
-  const streamdeckList = await listStreamDecks();
-  streamdeckList.forEach(async (deck) => {
-    const instance = await openStreamDeck(deck.path);
-
-    switch (controlType) {
-      case ControlType.On:
-        log.debug("Turning all the available keys on the Stream Deck on...");
-        for (let i = 0; i < instance.NUM_KEYS; i++) {
-          instance.setBrightness(brightness);
-          instance.fillKeyColor(i, color.r, color.g, color.b);
-        }
-        break;
-      case ControlType.Off:
-        log.debug("Turning all the available keys on the Stream Deck off...");
-        for (let i = 0; i < instance.NUM_KEYS; i++) {
-          instance.fillKeyColor(i, 0, 0, 0);
-        }
-        break;
-    }
+  const streamdeckList = await listStreamDecks().catch((error) => {
+    log.error(
+      `An error occurred while trying to list the Stream Decks: ${error} - Please make sure the Stream Deck app is closed.`,
+    );
+    return [];
   });
+
+  for (const deck of streamdeckList) {
+    try {
+      const instance = await openStreamDeck(deck.path);
+      if (!instance) return;
+
+      const buttons = instance.CONTROLS.filter(
+        (control) => control.type === "button",
+      );
+
+      switch (controlType) {
+        case ControlType.On:
+          log.debug("Turning all the available keys on the Stream Deck on...");
+          for (const button of buttons) {
+            await instance.setBrightness(brightness);
+            await instance.fillKeyColor(
+              button.index,
+              color.r,
+              color.g,
+              color.b,
+            );
+          }
+          break;
+        case ControlType.Off:
+          log.debug("Turning all the available keys on the Stream Deck off...");
+          await instance.clearPanel();
+          break;
+      }
+    } catch (error) {
+      log.error(
+        `An error occurred while trying to control the Stream Deck: ${error}`,
+      );
+    }
+  }
 }
