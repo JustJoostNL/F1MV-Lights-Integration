@@ -59,11 +59,6 @@
     "mimeTypes": [
       "x-scheme-handler/f1mvli"
     ],
-    "desktop": {
-      "entry": {
-        "Exec": "f1mvli %u"
-      }
-    },
     "category": "Utility",
     "target": [
       "AppImage"
