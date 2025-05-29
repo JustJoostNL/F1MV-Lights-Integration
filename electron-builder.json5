@@ -8,7 +8,6 @@
   "buildDependenciesFromSource": true,
   "nodeGypRebuild": false,
   "npmRebuild": false,
-  "afterSign": "build/notarize.js",
   "directories": {
     "output": "out"
   },
@@ -23,7 +22,7 @@
   "mac": {
     "hardenedRuntime": true,
     "gatekeeperAssess": false,
-    "notarize": false,
+    "notarize": true,
     "entitlements": "build/entitlements.mac.plist",
     "entitlementsInherit": "build/entitlements.mac.plist",
     "category": "public.app-category.utilities",
@@ -45,6 +44,8 @@
     ]
   },
   "win": {
+    "cscLink": null,
+    "cscKeyPassword": null,
     "target": [
       {
         "target": "nsis",
