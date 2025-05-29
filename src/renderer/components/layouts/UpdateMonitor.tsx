@@ -118,7 +118,7 @@ export const UpdateMonitor = ({
       setUpdating(true);
 
       await window.f1mvli.updater.quitAndInstall();
-    } catch (error) {
+    } catch (error: any) {
       alert(`Failed to download update: ${error.toString()}`);
       setSupportsAutoUpdate(false);
     } finally {
