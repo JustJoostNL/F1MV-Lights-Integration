@@ -1,18 +1,17 @@
 {
+  "$schema": "https://raw.githubusercontent.com/electron-userland/electron-builder/refs/heads/master/packages/app-builder-lib/scheme.json",
   "productName": "F1MV-Lights-Integration",
   "appId": "com.justjoostnl.f1mv.lights.integration",
   "copyright": "Copyright © 2025 JustJoostNL",
-
-  generateUpdatesFilesForAllChannels: true,
+  "generateUpdatesFilesForAllChannels": true,
   "asar": true,
-
-  afterSign: "build/notarize.js",
-
+  "buildDependenciesFromSource": true,
+  "nodeGypRebuild": false,
+  "npmRebuild": false,
+  "afterSign": "build/notarize.js",
   "directories": {
     "output": "out"
   },
-
-
   "files": [
     "!.deepsource.toml",
     "!dist/**/*",
@@ -21,34 +20,30 @@
     "dist-electron",
     "dist"
   ],
-
-
   "mac": {
-    hardenedRuntime: true,
-    gatekeeperAssess: false,
-    notarize: false, // notarization is already done in afterSign
-    entitlements: "build/entitlements.mac.plist",
-    entitlementsInherit: "build/entitlements.mac.plist",
-    category: "public.app-category.utilities",
-    target: [
+    "hardenedRuntime": true,
+    "gatekeeperAssess": false,
+    "notarize": false,
+    "entitlements": "build/entitlements.mac.plist",
+    "entitlementsInherit": "build/entitlements.mac.plist",
+    "category": "public.app-category.utilities",
+    "target": [
       {
-        target: "dmg",
-        arch: [
+        "target": "dmg",
+        "arch": [
           "x64",
           "arm64"
-        ],
+        ]
       },
       {
-        target: "zip",
-        arch: [
+        "target": "zip",
+        "arch": [
           "x64",
           "arm64"
-        ],
-      },
+        ]
+      }
     ]
   },
-
-
   "win": {
     "target": [
       {
@@ -58,37 +53,32 @@
         ]
       }
     ],
-    "verifyUpdateCodeSignature": false,
+    "verifyUpdateCodeSignature": false
   },
-
-
   "linux": {
-    mimeTypes: ["x-scheme-handler/f1mvli"],
-    desktop: {
+    "mimeTypes": [
+      "x-scheme-handler/f1mvli"
+    ],
+    "desktop": {
       "entry": {
         "Exec": "f1mvli %u"
       }
     },
-    category: "Utility",
+    "category": "Utility",
     "target": [
       "AppImage"
-    ],
+    ]
   },
-
   "appImage": {
     "category": "Utility"
   },
-
-
   "nsis": {
     "oneClick": true,
     "perMachine": true,
     "deleteAppDataOnUninstall": true
   },
-
-
   "publish": {
     "provider": "github",
-    "updaterCacheDirName": "F1MV-Lights-Integration-update-cache",
+    "updaterCacheDirName": "F1MV-Lights-Integration-update-cache"
   }
 }

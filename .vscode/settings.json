@@ -15,5 +15,8 @@
   "files.readonlyInclude": {
     "**/node_modules/**": true
   },
+  "files.associations": {
+    "*.json5": "json",
+  },
   "typescript.tsdk": "node_modules/typescript/lib"
 }
