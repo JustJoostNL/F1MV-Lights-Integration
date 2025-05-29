@@ -1,7 +1,7 @@
 {
   "productName": "F1MV-Lights-Integration",
   "appId": "com.justjoostnl.f1mv.lights.integration",
-  "copyright": "Copyright © 2024 JustJoostNL",
+  "copyright": "Copyright © 2025 JustJoostNL",
 
   generateUpdatesFilesForAllChannels: true,
   "asar": true,
@@ -64,8 +64,8 @@
 
   "linux": {
     mimeTypes: ["x-scheme-handler/f1mvli"],
-    desktop: {
-      exec: "f1mvli %u",
+    "entry": {
+      "Exec": "f1mvli %u"
     },
     category: "Utility",
     "target": [
