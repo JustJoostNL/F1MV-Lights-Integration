@@ -49,14 +49,12 @@ function onConnect() {
   errorCheck = false;
   try {
     mqttClient?.publish(
-      "F1MV-Lights-Integration/appState",
-      JSON.stringify({
-        appIsActive: true,
-      }),
+      "F1MV-Lights-Integration/appstate",
+      JSON.stringify({ active: true }),
     );
   } catch (error: any) {
     log.error(
-      "An error occurred while sending the appState to MQTT: " + error.message,
+      "An error occurred while sending the appstate to MQTT: " + error.message,
     );
   }
   log.debug("Successfully connected to the MQTT broker.");
@@ -102,7 +100,7 @@ export async function mqttControl({
   mqttClient.publish(
     "F1MV-Lights-Integration/state",
     JSON.stringify({
-      controlType,
+      type: controlType.toLowerCase(),
       color,
       brightness,
       event,

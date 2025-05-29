@@ -34,8 +34,6 @@ Sentry.init({
   tracesSampleRate: 1.0,
   attachStacktrace: true,
   profilesSampleRate: 1.0,
-  enableTracing: true,
-  autoSessionTracking: true,
 });
 
 // Disable GPU Acceleration for Windows 7
@@ -181,13 +179,13 @@ app.on("window-all-closed", async () => {
   if (mqttClient && integrationStates.mqtt && globalConfig.mqttEnabled) {
     try {
       mqttClient?.publish(
-        "F1MV-Lights-Integration/appState",
-        JSON.stringify({ appIsActive: false }),
+        "F1MV-Lights-Integration/appstate",
+        JSON.stringify({ active: false }),
       );
       mqttClient?.end();
     } catch (error: any) {
       log.error(
-        "Error while setting appIsActive to false, and closing the MQTT client: " +
+        "Error while setting active to false, and closing the MQTT client: " +
           error.message,
       );
     }

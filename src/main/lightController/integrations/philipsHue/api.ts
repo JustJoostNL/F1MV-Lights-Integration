@@ -202,11 +202,7 @@ export async function philipsHueControl({
           y: xy[1],
         },
       },
-      dynamics: !shouldFade
-        ? {
-            duration: 0,
-          }
-        : undefined,
+      ...(!shouldFade && { dynamics: { duration: 0 } }),
     };
 
     const options = {
@@ -229,7 +225,7 @@ export async function philipsHueControl({
       xy,
       bri: Math.round((brightness / 100) * 254),
       effect: "none",
-      transitiontime: globalConfig.philipsHueEnableFade ? undefined : 2,
+      transitiontime: globalConfig.philipsHueEnableFade ? undefined : 0,
     };
 
     const options = {

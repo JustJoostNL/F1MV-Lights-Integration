@@ -94,15 +94,13 @@ export async function handleConfigChange(
   if (oldConfig.mqttEnabled && !newConfig.mqttEnabled) {
     try {
       mqttClient?.publish(
-        "F1MV-Lights-Integration/appState",
-        JSON.stringify({
-          appIsActive: false,
-        }),
+        "F1MV-Lights-Integration/appstate",
+        JSON.stringify({ active: false }),
       );
       mqttClient?.end();
     } catch (error: any) {
       log.error(
-        "Error while setting appIsActive to false, and closing the MQTT client: " +
+        "Error while setting active to false, and closing the MQTT client: " +
           error.message,
       );
     }
