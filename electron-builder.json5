@@ -64,8 +64,10 @@
 
   "linux": {
     mimeTypes: ["x-scheme-handler/f1mvli"],
-    "entry": {
-      "Exec": "f1mvli %u"
+    desktop: {
+      "entry": {
+        "Exec": "f1mvli %u"
+      }
     },
     category: "Utility",
     "target": [
