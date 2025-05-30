@@ -172,7 +172,6 @@ export interface IConfig {
   otaConfigFetchInterval: number;
   otaConfigFetchJitter: number;
   debugMode: boolean;
-  updateChannel: string;
   analytics: boolean;
 }
 

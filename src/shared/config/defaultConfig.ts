@@ -211,6 +211,5 @@ export const defaultConfig: IConfig = {
   otaConfigFetchInterval: 120000, // 2 minutes
   otaConfigFetchJitter: 30000, // 30 seconds
   debugMode: false,
-  updateChannel: "latest",
   analytics: true,
 };

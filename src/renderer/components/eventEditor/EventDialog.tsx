@@ -77,6 +77,13 @@ export function EventDialog({
     onClose();
   }, [event, updateConfig, config, onClose]);
 
+  const handleSimulateClick = useCallback(() => {
+    const event = config.events.find((ev) => ev.id === eventId);
+    const eventTrigger = event?.triggers[0];
+    if (!eventTrigger) return;
+    window.f1mvli.eventManager.simulate(eventTrigger);
+  }, [config, eventId]);
+
   const isSubmitButtonDisabled = useMemo(() => {
     if (!event) return true;
     if (!event.name) return true;
@@ -201,6 +208,9 @@ export function EventDialog({
       </DialogContent>
       <DialogActions>
         <Button onClick={handleClose}>Cancel</Button>
+        <Button variant="outlined" onClick={handleSimulateClick}>
+          Simulate Event
+        </Button>
         <Button
           variant="contained"
           onClick={handleSubmit}

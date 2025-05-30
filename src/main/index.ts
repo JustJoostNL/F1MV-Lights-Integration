@@ -149,7 +149,7 @@ function onReady() {
   autoUpdater.allowDowngrade = false;
   autoUpdater.autoInstallOnAppQuit = true;
   autoUpdater.autoRunAppAfterInstall = true;
-  autoUpdater.channel = globalConfig.updateChannel;
+  autoUpdater.channel = "latest";
 
   log.initialize({ preload: true });
   log.transports.console.level = false;

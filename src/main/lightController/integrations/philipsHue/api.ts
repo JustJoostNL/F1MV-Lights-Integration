@@ -225,7 +225,7 @@ export async function philipsHueControl({
       xy,
       bri: Math.round((brightness / 100) * 254),
       effect: "none",
-      transitiontime: globalConfig.philipsHueEnableFade ? undefined : 0,
+      transitiontime: shouldFade ? undefined : 0,
     };
 
     const options = {

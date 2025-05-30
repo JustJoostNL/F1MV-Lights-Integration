@@ -3,7 +3,6 @@
   "productName": "F1MV-Lights-Integration",
   "appId": "com.justjoostnl.f1mv.lights.integration",
   "copyright": "Copyright © 2025 JustJoostNL",
-  "generateUpdatesFilesForAllChannels": true,
   "asar": true,
   "buildDependenciesFromSource": true,
   "nodeGypRebuild": false,

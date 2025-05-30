@@ -13,7 +13,6 @@ import {
 } from "./SettingsGroup";
 import { MultiViewerLiveTimingUrlInput } from "./MultiViewerLiveTimingUrlInput";
 import { MultiViewerSyncToggle } from "./MultiViewerSyncToggle";
-import { UpdateChannelSelector } from "./UpdateChannelSelector";
 import { DebugModeToggle } from "./DebugModeToggle";
 import { PhilipsHueEnabledToggle } from "./PhilipsHueEnabledToggle";
 import { PhilipsHueFadeToggle } from "./PhilipsHueFadeToggle";
@@ -588,14 +587,6 @@ export function Settings() {
             "This will enable debug mode, enable this if you want to see debug messages in the logs.",
           configKeys: ["debugMode"],
           input: <DebugModeToggle />,
-        },
-        {
-          type: "setting",
-          title: "Update channel",
-          description:
-            "The update channel the app uses to automatically update.",
-          configKeys: ["updateChannel"],
-          input: <UpdateChannelSelector />,
         },
       ],
     },
