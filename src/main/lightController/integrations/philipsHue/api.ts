@@ -21,7 +21,6 @@ import {
   fetchWithoutSSLCheck,
   fetchWithoutSSLCheckWithTimeout,
 } from "../../../utils/fetch";
-import { rgbToXY } from "./rgbToXyUsingGamut";
 
 export async function discoverPhilipsHueBridge(): Promise<DiscoverPhilipsHueBridgeResponse> {
   const res = await fetch("https://discovery.meethue.com");
@@ -176,18 +175,7 @@ export async function philipsHueControl({
       `https://${globalConfig.philipsHueBridgeIP}/clip/v2/resource/light/${deviceId}`,
     );
 
-    const lightRes = await fetchWithoutSSLCheck(url.toString(), {
-      headers,
-    });
-    const lightJson: IHueClipLightResponse = await lightRes.json();
-    const deviceColorGamut = lightJson.data[0].color.gamut;
-    const xyUsingGamut = rgbToXY([color.r, color.g, color.b], deviceColorGamut);
-    const calculatedColor: number[] = converter.calculateXY(
-      color.r,
-      color.g,
-      color.b,
-    );
-    const xy = xyUsingGamut || calculatedColor;
+    const xy: number[] = converter.calculateXY(color.r, color.g, color.b);
 
     const body = {
       on: {
