@@ -8,7 +8,7 @@
 [![GNU GPL 3.0 License][license-shield]][license-url]
 
 <div align="center">
-<img src="icons/logo_1024x1024-rounded.png" alt="The F1MV Lights Integration logo" align="center" width="256" height="256"/>
+<img src="icons/icon_1024.png" alt="The F1MV Lights Integration logo" align="center" width="256" height="256"/>
 <h3 align="center">F1MV Lights Integration</h3>
   <p align="center">
     The best way to connect your smart home lights to MultiViewer.
@@ -51,8 +51,6 @@
 
 <!-- ABOUT THE PROJECT -->
 ## About The Project
-
-[//]: # ([![Product Name Screen Shot][product-screenshot]]&#40;product-screenshot-here&#41;)
 
 F1MV Lights Integration is the perfect tool for Formula 1 fans who want to add a new level of excitement to their viewing experience.
 By integrating your smart home lights with Formula 1 sessions, using [MultiViewer](https://multiviewer.app), you can immerse yourself in the session like never before.
@@ -183,7 +181,6 @@ Distributed under the GNU General Public License v3.0. See `LICENSE.md` for more
 [issues-url]: https://github.com/JustJoostNL/F1MV-Lights-Integration/issues
 [license-shield]: https://img.shields.io/github/license/JustJoostNL/F1MV-Lights-Integration.svg?style=for-the-badge
 [license-url]: https://github.com/JustJoostNL/F1MV-Lights-Integration/blob/main/LICENSE.MD
-[product-screenshot]: https://github.com/JustJoostNL/F1MV-Lights-Integration/blob/master/icons/icon_256.png?raw=true
 [typescript]: https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white
 [typescript-url]: https://www.typescriptlang.org/
 [react]: https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB
