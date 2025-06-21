@@ -2,11 +2,11 @@
 .idea/*
 *.iml
 
-out/*
-output/*
-dist/*
-release/*
-dist-electron/*
+out/
+output/
+dist/
+release/
+dist-electron/
 codegen.yml
 yarn-error.log
 ```

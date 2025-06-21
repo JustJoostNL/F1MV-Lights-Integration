@@ -183,7 +183,7 @@ Distributed under the GNU General Public License v3.0. See `LICENSE.md` for more
 [issues-url]: https://github.com/JustJoostNL/F1MV-Lights-Integration/issues
 [license-shield]: https://img.shields.io/github/license/JustJoostNL/F1MV-Lights-Integration.svg?style=for-the-badge
 [license-url]: https://github.com/JustJoostNL/F1MV-Lights-Integration/blob/main/LICENSE.MD
-[product-screenshot]: https://github.com/JustJoostNL/F1MV-Lights-Integration/blob/master/icons/logo_256x256_rounded.png?raw=true
+[product-screenshot]: https://github.com/JustJoostNL/F1MV-Lights-Integration/blob/master/icons/icon_256.png?raw=true
 [typescript]: https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white
 [typescript-url]: https://www.typescriptlang.org/
 [react]: https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB
