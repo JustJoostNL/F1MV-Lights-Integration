@@ -1,4 +1,4 @@
-import Client from "openrgb-sdk/src/client";
+import Client from "openrgb-sdk";
 import log from "electron-log";
 import { globalConfig } from "../../../ipc/config";
 import { integrationStates } from "../states";
