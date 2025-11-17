@@ -7,6 +7,7 @@ import { JSONTree } from "react-json-tree";
 import useSWR from "swr";
 import { ContentLayout } from "../layouts/ContentLayout";
 import { useConfig } from "../../hooks/useConfig";
+import { IConfig } from "../../../shared/config/config_types";
 
 export interface DeviceSelectorConfig<TDevice, TRawDevice = TDevice> {
   /** Integration name used for state checking */
@@ -23,7 +24,7 @@ export interface DeviceSelectorConfig<TDevice, TRawDevice = TDevice> {
   /** Column definitions for the data grid */
   columns: GridColDef[];
   /** Config key where selected device IDs are stored */
-  configKey: string;
+  configKey: keyof IConfig;
   /** Refresh interval in milliseconds (default: 2000) */
   refreshInterval?: number;
 }
