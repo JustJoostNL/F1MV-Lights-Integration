@@ -1,11 +1,10 @@
-import { Client } from "openrgb-sdk";
+import Client from "openrgb-sdk/src/client";
 import log from "electron-log";
 import { globalConfig } from "../../../ipc/config";
 import { integrationStates } from "../states";
 import { ControlType } from "../../controlAllLights";
-import { IOpenRGBClient } from "./types";
 
-let openrgbClient: IOpenRGBClient | undefined = undefined;
+let openrgbClient: Client | undefined = undefined;
 let manualDisconnect = false;
 
 interface OpenRGBControlArgs {
@@ -32,10 +31,9 @@ export async function openrgbInitialize() {
       globalConfig.openrgbServerPort,
       globalConfig.openrgbServerIp,
     );
-    await openrgbClient.connect().then(() => {
+    await openrgbClient?.connect().then(() => {
       integrationStates.openrgb = true;
     });
-    //@ts-ignore
     openrgbClient.on("disconnect", () => {
       if (manualDisconnect) {
         manualDisconnect = false;
@@ -46,7 +44,6 @@ export async function openrgbInitialize() {
         "Disconnected from OpenRGB, please make sure that the OpenRGB SDK server is running and that the hostname/ip + port are correct!",
       );
     });
-    //@ts-ignore
     openrgbClient.on("connect", () => {
       integrationStates.openrgb = true;
     });

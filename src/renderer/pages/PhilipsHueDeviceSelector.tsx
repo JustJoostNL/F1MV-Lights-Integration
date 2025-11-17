@@ -54,8 +54,9 @@ export function PhilipsHueDeviceSelector() {
   const handleSelectionModelChange = useCallback(
     (newSelection: GridRowSelectionModel) => {
       if (!data) return;
+      const selectedIds = Array.from(newSelection.ids);
       const selectedDevices = rows.filter((row) =>
-        newSelection.includes(row.id),
+        selectedIds.includes(row.id),
       );
       const selectedDeviceIds = selectedDevices.map((device) => device.id);
       mutate({ ...data, selectedDevices: selectedDeviceIds }, false);
@@ -93,7 +94,10 @@ export function PhilipsHueDeviceSelector() {
               initialState={{
                 pagination: { paginationModel: { pageSize: 8 } },
               }}
-              rowSelectionModel={data?.selectedDevices || []}
+              rowSelectionModel={{
+                type: "include",
+                ids: new Set(data?.selectedDevices || []),
+              }}
               onRowSelectionModelChange={handleSelectionModelChange}
               sx={{
                 "&.MuiDataGrid-root .MuiDataGrid-cell:focus-within": {

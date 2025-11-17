@@ -88,7 +88,7 @@ export function EventEditorPage() {
     updateConfig({ events: newEvents });
     setSelectedEventId(highestId + 1);
     setSelectedEventIdIsNew(true);
-    gridApiRef.current.setPage(
+    gridApiRef.current?.setPage(
       Math.ceil(
         (highestId + 1) /
           gridApiRef.current.state.pagination.paginationModel.pageSize,
@@ -116,7 +116,7 @@ export function EventEditorPage() {
       updateConfig({ events: newEvents });
       setSelectedEventId(highestId + 1);
       setSelectedEventIdIsNew(true);
-      gridApiRef.current.setPage(
+      gridApiRef.current?.setPage(
         Math.ceil(
           (highestId + 1) /
             gridApiRef.current.state.pagination.paginationModel.pageSize,

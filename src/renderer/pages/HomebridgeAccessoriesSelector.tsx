@@ -59,9 +59,9 @@ export function HomebridgeAccessoriesSelector() {
   const handleSelectionModelChange = useCallback(
     (newSelection: GridRowSelectionModel) => {
       if (!data) return;
-
+      const selectedIds = Array.from(newSelection.ids);
       const selectedAccessories = rows.filter((row) =>
-        newSelection.includes(row.id),
+        selectedIds.includes(row.id),
       );
       const selectedAccessoriesIds = selectedAccessories.map(
         (device) => device.id,
@@ -98,7 +98,10 @@ export function HomebridgeAccessoriesSelector() {
               initialState={{
                 pagination: { paginationModel: { pageSize: 8 } },
               }}
-              rowSelectionModel={data?.selectedDevices || []}
+              rowSelectionModel={{
+                type: "include",
+                ids: new Set(data?.selectedDevices || []),
+              }}
               onRowSelectionModelChange={handleSelectionModelChange}
               sx={{
                 "&.MuiDataGrid-root .MuiDataGrid-cell:focus-within": {
