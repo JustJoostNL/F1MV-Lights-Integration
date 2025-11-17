@@ -138,7 +138,9 @@ export function EventEditorPage() {
       {
         field: "edit",
         headerName: "Tools",
-        width: 120,
+        width: 130,
+        sortable: false,
+        filterable: false,
         renderCell: (params) => (
           <ToolsCell
             params={params}
@@ -165,7 +167,6 @@ export function EventEditorPage() {
         triggers: triggers.join(", "),
         actions: event.actions.length,
         amount: event.amount,
-        edit: "Edit",
       };
     });
   }, [config]);

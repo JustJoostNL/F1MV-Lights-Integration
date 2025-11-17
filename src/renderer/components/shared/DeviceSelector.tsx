@@ -25,8 +25,6 @@ export interface DeviceSelectorConfig<TDevice, TRawDevice = TDevice> {
   columns: GridColDef[];
   /** Config key where selected device IDs are stored */
   configKey: keyof IConfig;
-  /** Refresh interval in milliseconds (default: 2000) */
-  refreshInterval?: number;
 }
 
 interface DeviceSelectorProps<TDevice, TRawDevice = TDevice> {
@@ -63,7 +61,7 @@ export function DeviceSelector<TDevice, TRawDevice = TDevice>({
         selectedDevices: data.selectedDevices,
       };
     },
-    { refreshInterval: selectorConfig.refreshInterval ?? 2000 },
+    { refreshInterval: 2000 },
   );
 
   const { data: integrationState, error: integrationError } = useSWR(

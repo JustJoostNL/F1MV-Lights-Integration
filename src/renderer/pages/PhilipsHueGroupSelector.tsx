@@ -5,7 +5,7 @@ import {
   DeviceSelectorConfig,
 } from "../components/shared/DeviceSelector";
 
-interface PhilipsHueGroup {
+interface IPhilipsHueGroup {
   id: string;
   name: string;
   state: boolean;
@@ -19,7 +19,7 @@ const columns: GridColDef[] = [
 
 const selectorConfig: DeviceSelectorConfig<
   { id: string; name: string; state: string },
-  PhilipsHueGroup
+  IPhilipsHueGroup
 > = {
   integrationName: "philipsHue",
   swrKey: "philipsHueGroups",

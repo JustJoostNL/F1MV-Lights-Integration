@@ -5,7 +5,7 @@ import {
   DeviceSelectorConfig,
 } from "../components/shared/DeviceSelector";
 
-interface HomeAssistantDevice {
+interface IHomeAssistantDevice {
   entity_id: string;
   state: string;
   attributes: {
@@ -21,7 +21,7 @@ const columns: GridColDef[] = [
 
 const selectorConfig: DeviceSelectorConfig<
   { id: string; name: string; state: string },
-  HomeAssistantDevice
+  IHomeAssistantDevice
 > = {
   integrationName: "homeAssistant",
   swrKey: "homeAssistantDevices",

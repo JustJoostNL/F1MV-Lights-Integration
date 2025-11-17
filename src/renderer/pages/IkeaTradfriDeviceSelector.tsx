@@ -6,7 +6,7 @@ import {
 } from "../components/shared/DeviceSelector";
 import { IGetTradfriDevicesResponse } from "../../shared/integrations/tradfri_types";
 
-type IkeaTradfriDevice = IGetTradfriDevicesResponse["devices"][number];
+type IIkeaTradfriDevice = IGetTradfriDevicesResponse["devices"][number];
 
 const columns: GridColDef[] = [
   { field: "name", headerName: "Name", flex: 1, minWidth: 200 },
@@ -17,7 +17,7 @@ const columns: GridColDef[] = [
 
 const selectorConfig: DeviceSelectorConfig<
   { id: string; name: string; state: string; spectrum: string },
-  IkeaTradfriDevice
+  IIkeaTradfriDevice
 > = {
   integrationName: "tradfri",
   swrKey: "ikeaTradfriDevices",
