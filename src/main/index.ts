@@ -20,7 +20,7 @@ import { startLiveTimingDataPolling } from "./multiviewer/api";
 import { registerEventManagerIPCHandlers } from "./ipc/eventManager";
 import { registerIntegrationsIPCHandlers } from "./ipc/integrations";
 import { initializeIntegrations } from "./initIntegrations";
-import { handleRegisterUser, handleUserActiveExit } from "./analytics/api";
+import { UserAnalytics } from "./analytics/api";
 import { registerDeepLink } from "./deeplinking";
 import { mqttClient } from "./lightController/integrations/mqtt/api";
 import { integrationStates } from "./lightController/integrations/states";
@@ -171,11 +171,12 @@ function onReady() {
   );
   initializeIntegrations();
   startLiveTimingDataPolling();
-  handleRegisterUser();
+  UserAnalytics.startAnalytics();
 }
 
 app.on("window-all-closed", async () => {
-  await handleUserActiveExit();
+  await UserAnalytics.stopAnalytics();
+
   if (mqttClient && integrationStates.mqtt && globalConfig.mqttEnabled) {
     try {
       mqttClient?.publish(
@@ -203,4 +204,11 @@ app.on("activate", () => {
   } else {
     createMainWindow();
   }
+  UserAnalytics.startAnalytics();
+});
+
+app.on("before-quit", async (event) => {
+  event.preventDefault();
+  await UserAnalytics.stopAnalytics();
+  app.exit();
 });
