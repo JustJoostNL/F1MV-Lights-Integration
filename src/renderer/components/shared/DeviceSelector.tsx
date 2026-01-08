@@ -117,7 +117,8 @@ export function DeviceSelector({
           </Alert>
         ) : !isOnline ? (
           <Alert severity="warning">
-            Integration is offline. Please check your configuration.
+            Integration is offline. Please check your configuration and the
+            logs.
           </Alert>
         ) : (
           <>

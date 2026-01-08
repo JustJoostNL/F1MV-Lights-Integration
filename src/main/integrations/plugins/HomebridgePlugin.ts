@@ -1,7 +1,7 @@
-import fetch from "cross-fetch";
 import { BaseIntegrationPlugin } from "../BaseIntegrationPlugin";
 import { getConfig, globalConfig } from "../../ipc/config";
-import { fetchWithTimeout } from "../../utils/fetch";
+import { ApiClient, createApiClient, buildBaseUrl } from "../utils/apiClient";
+import { IntegrationApiError } from "../utils/error";
 import {
   IntegrationPlugin,
   IntegrationControlArgs,
@@ -31,74 +31,92 @@ export class HomebridgePlugin extends BaseIntegrationPlugin {
     "homebridgePassword",
   ];
 
-  async initialize(): Promise<void> {
-    this.log("debug", "Checking if the Homebridge API is online...");
-
-    const status = await this.healthCheck();
-    if (status === "online") {
-      this.log("debug", "Homebridge API is online.");
-    } else {
-      this.log(
-        "error",
-        "Could not connect to the Homebridge API, please make sure that the hostname and port are correct!",
+  private validateConfiguration(): void {
+    if (!globalConfig.homebridgeHost) {
+      throw new IntegrationApiError("Homebridge host is not configured");
+    }
+    if (!globalConfig.homebridgeUsername || !globalConfig.homebridgePassword) {
+      throw new IntegrationApiError(
+        "Homebridge credentials are not configured",
       );
     }
   }
 
-  async healthCheck(): Promise<IntegrationHealthStatus> {
-    const url = new URL("/api/auth/check", globalConfig.homebridgeHost);
-    url.port = globalConfig.homebridgePort.toString();
-
+  private async getApiClient(): Promise<ApiClient> {
     const token = await this.requestToken();
-    const headers = new Headers({
-      "Content-Type": "application/json",
-      Authorization: "Bearer " + token,
+    if (!token) {
+      throw new IntegrationApiError(
+        "Failed to obtain Homebridge authentication token",
+      );
+    }
+
+    const baseUrl = buildBaseUrl(
+      globalConfig.homebridgeHost,
+      globalConfig.homebridgePort,
+    );
+    if (!baseUrl) {
+      throw new IntegrationApiError("Failed to build Homebridge API URL");
+    }
+
+    return createApiClient({
+      baseUrl,
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      timeout: 5000,
     });
+  }
 
+  async initialize(): Promise<void> {
+    this.log("debug", "Initializing Homebridge...");
+    await this.healthCheck();
+    if (this._isOnline) {
+      this.log("info", "Homebridge API is online");
+    }
+  }
+
+  async healthCheck(): Promise<IntegrationHealthStatus> {
     try {
-      const res = await fetchWithTimeout(url.toString(), { headers });
-      const data: IHomebridgeAuthCheckResponse = await res.json();
-
+      this.validateConfiguration();
+      const client = await this.getApiClient();
+      const { data } =
+        await client.get<IHomebridgeAuthCheckResponse>("/api/auth/check");
       const isOnline = data.status === "OK";
       this.setOnline(isOnline);
-      return isOnline ? "online" : "offline";
+      if (!isOnline) {
+        this.log(
+          "warn",
+          "Health check failed: Auth check returned non-OK status",
+        );
+      }
+      return isOnline
+        ? IntegrationHealthStatus.ONLINE
+        : IntegrationHealthStatus.OFFLINE;
     } catch (error) {
+      const reason = error instanceof Error ? error.message : "Unknown error";
+      this.log("warn", `Health check failed: ${reason}`);
       this.setOnline(false);
-      return "offline";
+      return IntegrationHealthStatus.OFFLINE;
     }
   }
 
   async listDevices(): Promise<ListDevicesResponse> {
     const config = await getConfig();
-    const url = new URL("/api/accessories", config.homebridgeHost);
-    url.port = config.homebridgePort.toString();
+    const client = await this.getApiClient();
+    const { data } =
+      await client.get<IHomebridgeAccessoryResponse>("/api/accessories");
 
-    const token = await this.requestToken();
-    const headers = new Headers({
-      "Content-Type": "application/json",
-      Authorization: "Bearer " + token,
-    });
-
-    try {
-      const res = await fetch(url.toString(), { headers });
-      const json: IHomebridgeAccessoryResponse = await res.json();
-
-      const devices = json
+    return {
+      devices: data
         .filter((item) => item.type === "Lightbulb" && this.supportsHSB(item))
         .map((item) => ({
           id: item.uniqueId,
           label: item.serviceName,
           state: item.values.On === 1,
-        }));
-
-      return {
-        devices,
-        selectedDevices: config.homebridgeAccessories,
-      };
-    } catch (error) {
-      this.log("error", `Failed to list devices: ${error}`);
-      return { devices: [], selectedDevices: [] };
-    }
+        })),
+      selectedDevices: config.homebridgeAccessories,
+    };
   }
 
   async control(args: IntegrationControlArgs): Promise<void> {
@@ -106,68 +124,33 @@ export class HomebridgePlugin extends BaseIntegrationPlugin {
 
     const { controlType, color, brightness } = args;
     const config = await getConfig();
-    const token = await this.requestToken();
-    const homebridgeAccessories = config.homebridgeAccessories;
+    const client = await this.getApiClient();
 
-    const headers = new Headers({
-      "Content-Type": "application/json",
-      Authorization: "Bearer " + token,
-    });
+    if (controlType === ControlType.ON) {
+      const { hue, sat } = rgbToHueSat(color.r, color.g, color.b);
+      const payloads = [
+        { characteristicType: "On", value: 1 },
+        { characteristicType: "Hue", value: Math.floor(hue) },
+        { characteristicType: "Saturation", value: Math.floor(sat) },
+        { characteristicType: "Brightness", value: brightness },
+      ];
 
-    switch (controlType) {
-      case ControlType.ON:
-        for (const uniqueId of homebridgeAccessories) {
-          const url = new URL(
-            "/api/accessories/" + uniqueId,
-            config.homebridgeHost,
-          );
-          url.port = config.homebridgePort.toString();
-
-          const { hue, sat } = rgbToHueSat(color.r, color.g, color.b);
-
-          const payloads = [
-            { characteristicType: "On", value: 1 },
-            { characteristicType: "Hue", value: Math.floor(hue) },
-            { characteristicType: "Saturation", value: Math.floor(sat) },
-            { characteristicType: "Brightness", value: brightness },
-          ];
-
-          for (const payload of payloads) {
-            try {
-              await fetch(url.toString(), {
-                method: "PUT",
-                headers,
-                body: JSON.stringify(payload),
-              });
-            } catch (error) {
-              this.log(
-                "error",
-                `Error setting ${payload.characteristicType} on ${uniqueId}: ${error}`,
-              );
-            }
-          }
-        }
-        break;
-
-      case ControlType.OFF:
-        for (const uniqueId of homebridgeAccessories) {
-          const url = new URL(
-            "/api/accessories/" + uniqueId,
-            config.homebridgeHost,
-          );
-          url.port = config.homebridgePort.toString();
-
-          try {
-            await fetch(url.toString(), {
-              method: "PUT",
-              headers,
-              body: JSON.stringify({ characteristicType: "On", value: 0 }),
-            });
-          } catch (error) {
-            this.log("error", `Error turning off ${uniqueId}: ${error}`);
-          }
-        }
-        break;
+      await Promise.all(
+        config.homebridgeAccessories.flatMap((uniqueId) =>
+          payloads.map((payload) =>
+            client.put(`/api/accessories/${uniqueId}`, payload),
+          ),
+        ),
+      );
+    } else {
+      await Promise.all(
+        config.homebridgeAccessories.map((uniqueId) =>
+          client.put(`/api/accessories/${uniqueId}`, {
+            characteristicType: "On",
+            value: 0,
+          }),
+        ),
+      );
     }
   }
 
@@ -176,30 +159,33 @@ export class HomebridgePlugin extends BaseIntegrationPlugin {
       return storedToken.token;
     }
 
-    const url = new URL("/api/auth/login", globalConfig.homebridgeHost);
-    url.port = globalConfig.homebridgePort.toString();
-
-    try {
-      const res = await fetchWithTimeout(url.toString(), {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          username: globalConfig.homebridgeUsername,
-          password: globalConfig.homebridgePassword,
-        }),
-      });
-      const data: IHomebridgeTokenResponse = await res.json();
-
-      storedToken = {
-        token: data.access_token,
-        expiry: Date.now() + data.expires_in * 1000,
-      };
-
-      return data.access_token;
-    } catch (error) {
-      this.log("error", `Error requesting token: ${error}`);
-      return undefined;
+    this.validateConfiguration();
+    const baseUrl = buildBaseUrl(
+      globalConfig.homebridgeHost,
+      globalConfig.homebridgePort,
+    );
+    if (!baseUrl) {
+      throw new IntegrationApiError("Failed to build Homebridge login URL");
     }
+
+    const loginClient = createApiClient({ baseUrl, timeout: 5000 });
+    const { data } = await loginClient.post<IHomebridgeTokenResponse>(
+      "/api/auth/login",
+      {
+        username: globalConfig.homebridgeUsername,
+        password: globalConfig.homebridgePassword,
+      },
+    );
+
+    if (!data.access_token) {
+      throw new IntegrationApiError("No access token received from Homebridge");
+    }
+
+    storedToken = {
+      token: data.access_token,
+      expiry: Date.now() + data.expires_in * 1000,
+    };
+    return data.access_token;
   }
 
   private supportsHSB(accessory: IHomebridgeAccessory): boolean {

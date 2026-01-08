@@ -55,7 +55,11 @@ export interface ListDevicesResponse {
   selectedDevices: (string | number)[];
 }
 
-export type IntegrationHealthStatus = "online" | "offline" | "unknown";
+export enum IntegrationHealthStatus {
+  ONLINE = "online",
+  OFFLINE = "offline",
+  UNKNOWN = "unknown",
+}
 
 export interface IntegrationUtilityFunction<
   TArgs = unknown,

@@ -64,6 +64,7 @@
     "@electron-toolkit/tsconfig": "^1.0.1",
     "@electron/notarize": "^3.1.1",
     "@types/deep-equal": "^1.0.4",
+    "@types/discord-rpc": "^4.0.10",
     "@types/express": "^5.0.6",
     "@types/jsonwebtoken": "^9.0.10",
     "@types/react": "^18.2.61",

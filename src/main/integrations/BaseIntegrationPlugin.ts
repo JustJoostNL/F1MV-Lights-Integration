@@ -62,7 +62,9 @@ export abstract class BaseIntegrationPlugin implements IIntegrationPlugin {
   }
 
   async healthCheck(): Promise<IntegrationHealthStatus> {
-    return this._isOnline ? "online" : "offline";
+    return this._isOnline
+      ? IntegrationHealthStatus.ONLINE
+      : IntegrationHealthStatus.OFFLINE;
   }
 
   isOnline(): boolean {

@@ -5,6 +5,7 @@ import {
 } from "node-tradfri-client";
 import { BaseIntegrationPlugin } from "../BaseIntegrationPlugin";
 import { globalConfig, patchConfig } from "../../ipc/config";
+import { IntegrationApiError } from "../utils/error";
 import {
   IntegrationPlugin,
   IntegrationControlArgs,
@@ -25,56 +26,76 @@ export class TradfriPlugin extends BaseIntegrationPlugin {
   readonly enabledConfigKey = "ikeaEnabled";
   readonly restartConfigKeys: (keyof IConfig)[] = ["ikeaGatewayIp"];
 
+  private validateConfiguration(): void {
+    if (!globalConfig.ikeaGatewayIp) {
+      throw new IntegrationApiError(
+        "IKEA Tradfri gateway IP is not configured",
+      );
+    }
+    if (!globalConfig.ikeaSecurityCode) {
+      throw new IntegrationApiError(
+        "IKEA Tradfri security code is not configured",
+      );
+    }
+  }
+
   async initialize(): Promise<void> {
     this.log("debug", "Initializing IKEA Tradfri...");
     await this.healthCheck();
+    if (this._isOnline) {
+      this.log("info", "IKEA Tradfri gateway is online");
+    }
   }
 
   async healthCheck(): Promise<IntegrationHealthStatus> {
-    const client = await this.getClient();
-    if (!client) {
+    try {
+      const client = await this.getClient();
+      const ping = await client.ping();
+      this.setOnline(ping);
+      if (!ping) {
+        this.log(
+          "warn",
+          "Health check failed: Gateway did not respond to ping",
+        );
+      }
+      return ping
+        ? IntegrationHealthStatus.ONLINE
+        : IntegrationHealthStatus.OFFLINE;
+    } catch (error) {
+      const reason = error instanceof Error ? error.message : "Unknown error";
+      this.log("warn", `Health check failed: ${reason}`);
       this.setOnline(false);
-      return "offline";
+      return IntegrationHealthStatus.OFFLINE;
     }
-
-    const ping = await client.ping();
-    this.setOnline(ping);
-    return ping ? "online" : "offline";
   }
 
   async listDevices(): Promise<ListDevicesResponse> {
     const client = await this.getClient();
-    if (!client) {
-      return { devices: [], selectedDevices: [] };
-    }
-
     await client.observeDevices();
 
-    const deviceList = Object.values(client.devices)
-      .filter((device) => device.type === 2)
-      .map((device) => ({
-        id: device.instanceId,
-        label: device.name,
-        state: device.lightList[0]?.onOff,
-        metadata: {
-          type: device.type,
-          spectrum: device.lightList[0]?.spectrum,
-        },
-      }));
-
     return {
-      devices: deviceList,
+      devices: Object.values(client.devices)
+        .filter((device) => device.type === 2)
+        .map((device) => ({
+          id: device.instanceId,
+          label: device.name,
+          state: device.lightList[0]?.onOff,
+          metadata: {
+            type: device.type,
+            spectrum: device.lightList[0]?.spectrum,
+          },
+        })),
       selectedDevices: globalConfig.ikeaDeviceIds,
     };
   }
 
   async control(args: IntegrationControlArgs): Promise<void> {
+    if (!this._isOnline) return;
+
     const { controlType, color, brightness, event } = args;
-
     const client = await this.getClient();
-    if (!client) return;
-
     await client.observeDevices();
+
     const devices = Object.values(client.devices).filter(
       (device) =>
         device.type === 2 &&
@@ -83,33 +104,24 @@ export class TradfriPlugin extends BaseIntegrationPlugin {
 
     for (const device of devices) {
       const light = device.lightList[0];
-      // @ts-ignore
-      light.link(client);
       if (!light) continue;
 
-      const { hue: hueValue, sat: satValue } = rgbToHueSat(
-        color.r,
-        color.g,
-        color.b,
-      );
+      // @ts-ignore - link method exists
+      light.link(client);
 
-      switch (controlType) {
-        case ControlType.ON:
-          if (light.spectrum === "rgb") {
-            light.toggle(true);
-            light.setHue(hueValue);
-            light.setSaturation(satValue);
-            light.setBrightness(brightness);
-          } else {
-            const temp = getTradfriColorTempFromEvent(event);
-            light.toggle(true);
-            light.setColorTemperature(temp ?? 370);
-          }
-          break;
-
-        case ControlType.OFF:
-          light.toggle(false);
-          break;
+      if (controlType === ControlType.ON) {
+        const { hue, sat } = rgbToHueSat(color.r, color.g, color.b);
+        if (light.spectrum === "rgb") {
+          light.toggle(true);
+          light.setHue(hue);
+          light.setSaturation(sat);
+          light.setBrightness(brightness);
+        } else {
+          light.toggle(true);
+          light.setColorTemperature(getTradfriColorTempFromEvent(event) ?? 370);
+        }
+      } else {
+        light.toggle(false);
       }
     }
   }
@@ -125,55 +137,36 @@ export class TradfriPlugin extends BaseIntegrationPlugin {
   }
 
   private async discoverGateway(): Promise<DiscoveredGateway | null> {
-    return await discoverGateway();
+    const gateway = await discoverGateway();
+    if (gateway)
+      this.log("debug", `Discovered Tradfri gateway at ${gateway.host}`);
+    return gateway;
   }
 
-  private async getClient(): Promise<TradfriClient | null> {
-    const gatewayIp = globalConfig.ikeaGatewayIp;
-    const securityCode = globalConfig.ikeaSecurityCode;
-    const identity = globalConfig.ikeaIdentity;
-    const preSharedKey = globalConfig.ikeaPreSharedKey;
+  private async getClient(): Promise<TradfriClient> {
+    this.validateConfiguration();
 
-    if (!gatewayIp) {
-      this.log("error", "No IKEA Tradfri gateway IP set");
-      return null;
-    }
-
-    if (!securityCode) {
-      this.log("error", "No IKEA Tradfri security code set");
-      return null;
-    }
-
-    const tradfriClient = new TradfriClient(gatewayIp, {
+    const tradfriClient = new TradfriClient(globalConfig.ikeaGatewayIp!, {
       watchConnection: true,
     });
 
-    if (!identity || !preSharedKey) {
-      try {
-        const { identity: newIdentity, psk } =
-          await tradfriClient.authenticate(securityCode);
-        if (!newIdentity || !psk) {
-          this.log("error", "Error authenticating with IKEA Tradfri gateway");
-          return null;
-        }
-        await patchConfig({
-          ikeaIdentity: newIdentity,
-          ikeaPreSharedKey: psk,
-        });
-      } catch (error) {
-        this.log("error", `Error authenticating with gateway: ${error}`);
-        return null;
+    // Authenticate if needed
+    if (!globalConfig.ikeaIdentity || !globalConfig.ikeaPreSharedKey) {
+      const { identity, psk } = await tradfriClient.authenticate(
+        globalConfig.ikeaSecurityCode!,
+      );
+      if (!identity || !psk) {
+        throw new IntegrationApiError(
+          "Failed to authenticate with Tradfri gateway",
+        );
       }
+      await patchConfig({ ikeaIdentity: identity, ikeaPreSharedKey: psk });
     }
 
-    const newIdentity = globalConfig.ikeaIdentity;
-    const newPreSharedKey = globalConfig.ikeaPreSharedKey;
-    if (!newIdentity || !newPreSharedKey) {
-      this.log("error", "No IKEA Tradfri identity or PSK");
-      return null;
-    }
-
-    tradfriClient.connect(newIdentity, newPreSharedKey);
+    await tradfriClient.connect(
+      globalConfig.ikeaIdentity!,
+      globalConfig.ikeaPreSharedKey!,
+    );
     return tradfriClient;
   }
 }

@@ -1,11 +1,8 @@
-import fetch from "cross-fetch";
 import converter from "@q42philips/hue-color-converter";
 import { BaseIntegrationPlugin } from "../BaseIntegrationPlugin";
 import { globalConfig } from "../../ipc/config";
-import {
-  fetchWithoutSSLCheck,
-  fetchWithoutSSLCheckWithTimeout,
-} from "../../utils/fetch";
+import { ApiClient, createApiClient } from "../utils/apiClient";
+import { IntegrationApiError } from "../utils/error";
 import {
   IntegrationPlugin,
   IntegrationControlArgs,
@@ -35,123 +32,108 @@ export class PhilipsHuePlugin extends BaseIntegrationPlugin {
     "philipsHueBridgeAuthToken",
   ];
 
-  async initialize(): Promise<void> {
-    const status = await this.healthCheck();
-    if (status === "online") {
-      this.log("debug", "Philips Hue API is online.");
-    } else {
-      this.log(
-        "error",
-        "Could not connect to the Philips Hue API, please make sure that the IP and token are correct!",
+  private discoveryClient = createApiClient({
+    baseUrl: "https://discovery.meethue.com",
+    timeout: 10000,
+  });
+
+  private validateConfiguration(): void {
+    if (!globalConfig.philipsHueBridgeIP) {
+      throw new IntegrationApiError("Philips Hue Bridge IP is not configured");
+    }
+    if (!globalConfig.philipsHueBridgeAuthToken) {
+      throw new IntegrationApiError(
+        "Philips Hue authentication token is not configured",
       );
+    }
+  }
+
+  private getApiClient(): ApiClient {
+    this.validateConfiguration();
+    return createApiClient({
+      baseUrl: `https://${globalConfig.philipsHueBridgeIP}`,
+      headers: {
+        "hue-application-key": globalConfig.philipsHueBridgeAuthToken!,
+      },
+      skipSSLVerification: true,
+      timeout: 5000,
+    });
+  }
+
+  private getLegacyApiClient(): ApiClient {
+    this.validateConfiguration();
+    return createApiClient({
+      baseUrl: `http://${globalConfig.philipsHueBridgeIP}`,
+      skipSSLVerification: true,
+      timeout: 5000,
+    });
+  }
+
+  async initialize(): Promise<void> {
+    this.log("debug", "Initializing Philips Hue...");
+    await this.healthCheck();
+    if (this._isOnline) {
+      this.log("info", "Philips Hue API is online");
     }
   }
 
   async healthCheck(): Promise<IntegrationHealthStatus> {
-    const headers = new Headers();
-    globalConfig.philipsHueBridgeAuthToken &&
-      headers.set(
-        "hue-application-key",
-        globalConfig.philipsHueBridgeAuthToken,
-      );
-
     try {
-      const res = await fetchWithoutSSLCheckWithTimeout(
-        `https://${globalConfig.philipsHueBridgeIP}/clip/v2/resource/bridge`,
-        { headers },
-      );
-
-      this.setOnline(res.status === 200);
-      return res.status === 200 ? "online" : "offline";
+      const client = this.getApiClient();
+      await client.get("/clip/v2/resource/bridge");
+      this.setOnline(true);
+      return IntegrationHealthStatus.ONLINE;
     } catch (error) {
+      const reason = error instanceof Error ? error.message : "Unknown error";
+      this.log("warn", `Health check failed: ${reason}`);
       this.setOnline(false);
-      return "offline";
+      return IntegrationHealthStatus.OFFLINE;
     }
   }
 
   async listDevices(): Promise<ListDevicesResponse> {
-    const headers = new Headers();
-    globalConfig.philipsHueBridgeAuthToken &&
-      headers.set(
-        "hue-application-key",
-        globalConfig.philipsHueBridgeAuthToken,
-      );
+    const client = this.getApiClient();
+    const { data } = await client.get<IHueClipLightResponse>(
+      "/clip/v2/resource/light",
+    );
 
-    try {
-      const res = await fetchWithoutSSLCheck(
-        `https://${globalConfig.philipsHueBridgeIP}/clip/v2/resource/light`,
-        { headers },
-      );
-      const json: IHueClipLightResponse = await res.json();
-
-      const devices = json.data.map((device) => ({
+    return {
+      devices: data.data.map((device) => ({
         id: device.id,
         label: device.metadata.name,
         state: device.on.on,
-      }));
-
-      return {
-        devices,
-        selectedDevices: globalConfig.philipsHueDeviceIds,
-      };
-    } catch (error) {
-      this.log("error", `Failed to list devices: ${error}`);
-      return { devices: [], selectedDevices: [] };
-    }
+      })),
+      selectedDevices: globalConfig.philipsHueDeviceIds,
+    };
   }
 
   async control(args: IntegrationControlArgs): Promise<void> {
     if (!this._isOnline) return;
 
     const { controlType, color, brightness, eventAction } = args;
-
-    const headers = new Headers();
-    headers.set("Content-Type", "application/json");
-    globalConfig.philipsHueBridgeAuthToken &&
-      headers.set(
-        "hue-application-key",
-        globalConfig.philipsHueBridgeAuthToken,
-      );
-
+    const client = this.getApiClient();
     const shouldFade =
-      eventAction && eventAction.philipsHueEnableFade !== undefined
-        ? eventAction.philipsHueEnableFade
-        : globalConfig.philipsHueEnableFade;
+      eventAction?.philipsHueEnableFade ?? globalConfig.philipsHueEnableFade;
 
     // Control individual devices
-    for (const deviceId of globalConfig.philipsHueDeviceIds) {
-      const url = new URL(
-        `https://${globalConfig.philipsHueBridgeIP}/clip/v2/resource/light/${deviceId}`,
-      );
+    const xy = converter.calculateXY(color.r, color.g, color.b);
+    const body = {
+      on: { on: controlType === ControlType.ON },
+      dimming: { brightness },
+      color: { xy: { x: xy[0], y: xy[1] } },
+      ...(!shouldFade && { dynamics: { duration: 0 } }),
+    };
 
-      const xy: number[] = converter.calculateXY(color.r, color.g, color.b);
+    await Promise.all(
+      globalConfig.philipsHueDeviceIds.map((deviceId) =>
+        client.put(`/clip/v2/resource/light/${deviceId}`, body),
+      ),
+    );
 
-      const body = {
-        on: { on: controlType === ControlType.ON },
-        dimming: { brightness },
-        color: { xy: { x: xy[0], y: xy[1] } },
-        ...(!shouldFade && { dynamics: { duration: 0 } }),
-      };
-
-      try {
-        await fetchWithoutSSLCheck(url.toString(), {
-          method: "PUT",
-          headers,
-          body: JSON.stringify(body),
-        });
-      } catch (error) {
-        this.log("error", `Error controlling device ${deviceId}: ${error}`);
-      }
-    }
-
-    // Control groups
-    for (const groupId of globalConfig.philipsHueGroupIds) {
-      const url = new URL(
-        `https://${globalConfig.philipsHueBridgeIP}/api/${globalConfig.philipsHueBridgeAuthToken}/groups/${groupId}/action`,
-      );
-      const xy: number[] = converter.calculateXY(color.r, color.g, color.b);
-
-      const body = {
+    // Control groups (legacy API)
+    if (globalConfig.philipsHueGroupIds.length > 0) {
+      const legacyClient = this.getLegacyApiClient();
+      const groupBody = {
         on: controlType === ControlType.ON,
         xy,
         bri: Math.round((brightness / 100) * 254),
@@ -159,15 +141,14 @@ export class PhilipsHuePlugin extends BaseIntegrationPlugin {
         transitiontime: shouldFade ? undefined : 0,
       };
 
-      try {
-        await fetchWithoutSSLCheck(url.toString(), {
-          method: "PUT",
-          headers,
-          body: JSON.stringify(body),
-        });
-      } catch (error) {
-        this.log("error", `Error controlling group ${groupId}: ${error}`);
-      }
+      await Promise.all(
+        globalConfig.philipsHueGroupIds.map((groupId) =>
+          legacyClient.put(
+            `/api/${globalConfig.philipsHueBridgeAuthToken}/groups/${groupId}/action`,
+            groupBody,
+          ),
+        ),
+      );
     }
   }
 
@@ -192,75 +173,68 @@ export class PhilipsHuePlugin extends BaseIntegrationPlugin {
   }
 
   private async discoverBridge(): Promise<DiscoverPhilipsHueBridgeResponse> {
-    try {
-      const res = await fetch("https://discovery.meethue.com");
-      const json: HueDiscoveryResponse =
-        res.status === 200 ? await res.json() : [];
-      return {
-        status:
-          res.status === 429
-            ? DiscoveryStatus.RATE_LIMIT
-            : json.length > 0
-              ? DiscoveryStatus.SUCCESS
-              : res.status === 200
-                ? DiscoveryStatus.NO_BRIDGE_FOUND
-                : DiscoveryStatus.ERROR,
-        ipAddresses: json.map((device) => device.internalipaddress),
-      };
-    } catch (error) {
-      return { status: DiscoveryStatus.ERROR, ipAddresses: [] };
+    const { response, data } =
+      await this.discoveryClient.get<HueDiscoveryResponse>("/");
+
+    if (response.status === 429) {
+      return { status: DiscoveryStatus.RATE_LIMIT, ipAddresses: [] };
     }
+    if (!Array.isArray(data) || data.length === 0) {
+      return { status: DiscoveryStatus.NO_BRIDGE_FOUND, ipAddresses: [] };
+    }
+    return {
+      status: DiscoveryStatus.SUCCESS,
+      ipAddresses: data.map((device) => device.internalipaddress),
+    };
   }
 
   private async generateAuthToken(): Promise<GeneratePhilipsHueBridgeAuthTokenResponse> {
-    try {
-      const res = await fetch(`http://${globalConfig.philipsHueBridgeIP}/api`, {
-        method: "POST",
-        body: JSON.stringify({
-          devicetype: "f1mvlightsintegration#app",
-          generateclientkey: true,
-        }),
-      });
-
-      const json: HueGenerateAuthTokenResponse = await res.json();
-      return {
-        status:
-          json[0].error?.type === 101
-            ? GenerationStatus.LINK_BUTTON_NOT_PRESSED
-            : json[0].success?.username
-              ? GenerationStatus.SUCCESS
-              : GenerationStatus.ERROR,
-        username: json[0].success?.username,
-      };
-    } catch (error) {
+    if (!globalConfig.philipsHueBridgeIP) {
       return { status: GenerationStatus.ERROR, username: undefined };
     }
+
+    const client = createApiClient({
+      baseUrl: `http://${globalConfig.philipsHueBridgeIP}`,
+      timeout: 5000,
+    });
+
+    const { data } = await client.post<HueGenerateAuthTokenResponse>("/api", {
+      devicetype: "f1mvlightsintegration#app",
+      generateclientkey: true,
+    });
+
+    if (data[0]?.error?.type === 101) {
+      return {
+        status: GenerationStatus.LINK_BUTTON_NOT_PRESSED,
+        username: undefined,
+      };
+    }
+    if (data[0]?.success?.username) {
+      return {
+        status: GenerationStatus.SUCCESS,
+        username: data[0].success.username,
+      };
+    }
+    return { status: GenerationStatus.ERROR, username: undefined };
   }
 
   private async getGroups(): Promise<{
     groups: { id: string; name: string; state: boolean }[];
     selectedGroups: string[];
   }> {
-    try {
-      const res = await fetch(
-        `http://${globalConfig.philipsHueBridgeIP}/api/${globalConfig.philipsHueBridgeAuthToken}/groups`,
-      );
-      const json: IHueApiGroupResponse = await res.json();
+    const client = this.getLegacyApiClient();
+    const { data } = await client.get<IHueApiGroupResponse>(
+      `/api/${globalConfig.philipsHueBridgeAuthToken}/groups`,
+    );
 
-      const groups = Object.entries(json).map(([id, group]) => ({
+    return {
+      groups: Object.entries(data).map(([id, group]) => ({
         id,
         name: group.name,
         state: group.state.all_on,
-      }));
-
-      return {
-        groups,
-        selectedGroups: globalConfig.philipsHueGroupIds,
-      };
-    } catch (error) {
-      this.log("error", `Failed to get groups: ${error}`);
-      return { groups: [], selectedGroups: [] };
-    }
+      })),
+      selectedGroups: globalConfig.philipsHueGroupIds,
+    };
   }
 }
 

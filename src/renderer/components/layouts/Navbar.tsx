@@ -39,6 +39,7 @@ export function Navbar() {
             sx={{
               flexGrow: 1,
               fontSize: "2rem",
+              fontWeight: 600,
               ml: showBackButton ? 1 : undefined,
             }}
           >

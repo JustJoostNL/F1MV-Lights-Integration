@@ -167,6 +167,10 @@ function onReady() {
   );
   initializeIntegrations();
   UserAnalytics.startAnalytics();
+
+  if (globalConfig.startMultiViewerWhenAppStarts) {
+    shell.openExternal("multiviewer://");
+  }
 }
 
 app.on("window-all-closed", async () => {

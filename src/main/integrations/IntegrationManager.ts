@@ -44,7 +44,7 @@ class IntegrationManager {
       );
     }
     this.plugins.set(plugin.id, plugin);
-    log.debug(`Registered integration plugin: ${plugin.name} (${plugin.id})`);
+    log.debug(`Registered integration plugin: ${plugin.id}`);
   }
 
   /**
@@ -104,9 +104,11 @@ class IntegrationManager {
 
     log.info(`Initializing ${enabledIds.length} enabled integrations...`);
 
-    for (const id of enabledIds) {
-      await this.initializeIntegration(id);
-    }
+    await Promise.all(
+      enabledIds.map(async (id) => {
+        await this.initializeIntegration(id);
+      }),
+    );
 
     this.initialized = true;
     this.broadcastStates();
@@ -209,7 +211,7 @@ class IntegrationManager {
           results.set(id, status);
         } catch (error) {
           log.error(`Health check failed for ${plugin.name}: ${error}`);
-          results.set(id, "offline");
+          results.set(id, IntegrationHealthStatus.OFFLINE);
         }
       }
     }
@@ -223,7 +225,7 @@ class IntegrationManager {
    */
   async healthCheck(id: IntegrationPlugin): Promise<IntegrationHealthStatus> {
     const plugin = this.plugins.get(id);
-    if (!plugin?.healthCheck) return "unknown";
+    if (!plugin?.healthCheck) return IntegrationHealthStatus.UNKNOWN;
 
     try {
       const status = await plugin.healthCheck();
@@ -231,7 +233,7 @@ class IntegrationManager {
       return status;
     } catch (error) {
       log.error(`Health check failed for ${plugin.name}: ${error}`);
-      return "offline";
+      return IntegrationHealthStatus.OFFLINE;
     }
   }
 

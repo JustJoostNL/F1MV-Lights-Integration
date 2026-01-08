@@ -16,6 +16,7 @@ import { defaultConfig } from "../../shared/defaultConfig";
 import { broadcastToAllWindows } from "../utils/broadcastToAllWindows";
 import { integrationManager } from "../integrations/IntegrationManager";
 import { updateLogLevel } from "../utils/updateLogLevel";
+import { multiViewerService } from "../MultiViewerService";
 
 const configPath = path.join(
   app.getPath("appData"),
@@ -115,7 +116,7 @@ async function setConfig(config: IConfig) {
     ...otaOverrideConfig,
   };
   updateLogLevel(globalConfig);
-  await maybeRestartIntegrations(prevConfig, globalConfig);
+  await handleConfigChange(prevConfig, globalConfig);
 }
 
 function setConfigSync(config: IConfig) {
@@ -131,7 +132,7 @@ function setConfigSync(config: IConfig) {
     ...otaOverrideConfig,
   };
   updateLogLevel(globalConfig);
-  void maybeRestartIntegrations(prevConfig, globalConfig);
+  void handleConfigChange(prevConfig, globalConfig);
 }
 
 async function patchConfig(configPatch: Partial<IConfig>) {
@@ -157,13 +158,10 @@ async function setOTAConfig(otaConfig: IOTAConfigPayload) {
   };
   broadcastToAllWindows("f1mvli:config:change", globalConfig);
   updateLogLevel(globalConfig);
-  await maybeRestartIntegrations(prevConfig, globalConfig);
+  await handleConfigChange(prevConfig, globalConfig);
 }
 
-async function maybeRestartIntegrations(
-  prevConfig: IConfig,
-  newConfig: IConfig,
-) {
+async function handleConfigChange(prevConfig: IConfig, newConfig: IConfig) {
   const allKeys = new Set([
     ...Object.keys(prevConfig),
     ...Object.keys(newConfig),
@@ -177,6 +175,12 @@ async function maybeRestartIntegrations(
       );
     }),
   );
+
+  if (changedKeys.has("multiviewerCheck")) {
+    newConfig.multiviewerCheck
+      ? multiViewerService.startPolling()
+      : multiViewerService.stopPolling();
+  }
 
   integrationManager.getAllPlugins().forEach((plugin) => {
     const { enabledConfigKey: enabledKey, restartConfigKeys = [] } = plugin;

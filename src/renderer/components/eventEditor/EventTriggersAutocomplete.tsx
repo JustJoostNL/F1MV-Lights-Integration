@@ -1,10 +1,7 @@
 import * as React from "react";
 import { Autocomplete, Checkbox, FormControl, TextField } from "@mui/material";
 import { CheckBox, CheckBoxOutlineBlank } from "@mui/icons-material";
-import {
-  EventType,
-  eventTypeReadableMap,
-} from "../../../shared/types/config";
+import { EventType, eventTypeReadableMap } from "../../../shared/types/config";
 
 interface EventTriggersSelectorProps {
   enabledTriggers: EventType[];

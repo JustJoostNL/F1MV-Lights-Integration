@@ -9,11 +9,13 @@ import {
   Chip,
   Stack,
   Alert,
+  Tooltip,
 } from "@mui/material";
 import {
   SearchRounded,
   ClearRounded,
   FilterListRounded,
+  DeleteOutline,
 } from "@mui/icons-material";
 import useSWR from "swr";
 import { blue, grey, orange, red } from "@mui/material/colors";
@@ -27,7 +29,7 @@ export function LogsPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [filterLevel, setFilterLevel] = useState<LogLevel>("all");
 
-  const { data: logData } = useSWR(
+  const { data: logData, mutate } = useSWR(
     "logs",
     async () => {
       const logs = await window.f1mvli.logger.getLogs();
@@ -67,6 +69,17 @@ export function LogsPage() {
     if (log.toLowerCase().includes("[debug]")) return grey[500];
     return "#fff";
   }, []);
+
+  const clearLogs = useCallback(async () => {
+    if (
+      window.confirm(
+        "Are you sure you want to clear all logs? This cannot be undone.",
+      )
+    ) {
+      await window.f1mvli.logger.clearLogs();
+      mutate();
+    }
+  }, [mutate]);
 
   return (
     <ContentLayout title="Logs" container isLoading={!logData}>
@@ -139,6 +152,11 @@ export function LogsPage() {
                 color={filterLevel === "debug" ? "primary" : "default"}
                 size="small"
               />
+              <Tooltip title="Clear all logs" arrow>
+                <IconButton color="error" onClick={clearLogs} sx={{ ml: 1 }}>
+                  <DeleteOutline />
+                </IconButton>
+              </Tooltip>
             </Box>
           </Stack>
 

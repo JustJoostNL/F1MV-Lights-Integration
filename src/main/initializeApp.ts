@@ -80,5 +80,10 @@ export async function initializeIntegrations(): Promise<void> {
     await handleLiveSessionCheck();
   }, 30000);
 
+  // Periodic health checks for all integrations
+  setInterval(async () => {
+    await integrationManager.healthCheckAll();
+  }, 10000);
+
   log.info("Integration initialization complete");
 }

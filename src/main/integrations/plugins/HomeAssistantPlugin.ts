@@ -1,7 +1,7 @@
-import fetch from "cross-fetch";
 import { BaseIntegrationPlugin } from "../BaseIntegrationPlugin";
 import { getConfig, globalConfig } from "../../ipc/config";
-import { fetchWithTimeout } from "../../utils/fetch";
+import { ApiClient, createApiClient, buildBaseUrl } from "../utils/apiClient";
+import { IntegrationApiError } from "../utils/error";
 import {
   IntegrationPlugin,
   IntegrationControlArgs,
@@ -10,6 +10,7 @@ import {
   IntegrationUtilityFunction,
   ControlType,
 } from "../../../shared/types/integration";
+import { EventType } from "../../../shared/types/config";
 import {
   IHomeAssistantAPIPingResponse,
   IHomeAssistantStatesResponse,
@@ -17,62 +18,96 @@ import {
 } from "../../../shared/types/homeassistant";
 import { rgbToColorTemp } from "../utils/colorConversions";
 
-const requestHeaders = new Headers({
-  "Content-Type": "application/json",
-});
-
 export class HomeAssistantPlugin extends BaseIntegrationPlugin {
   readonly id = IntegrationPlugin.HOME_ASSISTANT;
   readonly name = "Home Assistant";
   readonly enabledConfigKey = "homeAssistantEnabled";
   readonly restartConfigKeys = [];
 
-  async initialize(): Promise<void> {
-    this.log("debug", "Checking if the Home Assistant API is online...");
-
-    const status = await this.healthCheck();
-    if (status === "online") {
-      this.log("debug", "Home Assistant API is online.");
-    } else {
-      this.log(
-        "error",
-        "Could not connect to the Home Assistant API, please make sure that the hostname and port are correct!",
+  private getApiClient(): ApiClient {
+    if (!globalConfig.homeAssistantHost) {
+      throw new IntegrationApiError("Home Assistant host is not configured");
+    }
+    if (!globalConfig.homeAssistantToken) {
+      throw new IntegrationApiError(
+        "Home Assistant access token is not configured",
       );
+    }
+
+    const baseUrl = buildBaseUrl(
+      globalConfig.homeAssistantHost,
+      globalConfig.homeAssistantPort,
+    );
+    if (!baseUrl) {
+      throw new IntegrationApiError("Failed to build Home Assistant API URL");
+    }
+
+    return createApiClient({
+      baseUrl,
+      headers: {
+        Authorization: `Bearer ${globalConfig.homeAssistantToken}`,
+        "Content-Type": "application/json",
+      },
+      timeout: 5000,
+    });
+  }
+
+  async initialize(): Promise<void> {
+    this.log("debug", "Initializing Home Assistant...");
+    await this.healthCheck();
+    if (this._isOnline) {
+      this.log("info", "Home Assistant API is online");
     }
   }
 
   async healthCheck(): Promise<IntegrationHealthStatus> {
-    const url = new URL("/api/", globalConfig.homeAssistantHost);
-    url.port = globalConfig.homeAssistantPort.toString();
-    requestHeaders.set(
-      "Authorization",
-      "Bearer " + globalConfig.homeAssistantToken,
-    );
-
     try {
-      const res = await fetchWithTimeout(url.toString(), {
-        headers: requestHeaders,
-      });
-      const data: IHomeAssistantAPIPingResponse = await res.json();
-      this.setOnline(data.message === "API running.");
-      return this._isOnline ? "online" : "offline";
+      const client = this.getApiClient();
+      const { data } = await client.get<IHomeAssistantAPIPingResponse>("/api/");
+      const isOnline = data.message === "API running.";
+      this.setOnline(isOnline);
+      if (!isOnline) {
+        this.log(
+          "warn",
+          "Health check failed: API response was not 'API running.'",
+        );
+      }
+      return isOnline
+        ? IntegrationHealthStatus.ONLINE
+        : IntegrationHealthStatus.OFFLINE;
     } catch (error) {
+      const reason = error instanceof Error ? error.message : "Unknown error";
+      this.log("warn", `Health check failed: ${reason}`);
       this.setOnline(false);
-      return "offline";
+      return IntegrationHealthStatus.OFFLINE;
     }
   }
 
   async listDevices(): Promise<ListDevicesResponse> {
     const config = await getConfig();
-    const url = new URL("/api/states", config.homeAssistantHost);
-    url.port = config.homeAssistantPort.toString();
-    requestHeaders.set("Authorization", "Bearer " + config.homeAssistantToken);
+    const baseUrl = buildBaseUrl(
+      config.homeAssistantHost,
+      config.homeAssistantPort,
+    );
+    if (!baseUrl || !config.homeAssistantToken) {
+      throw new IntegrationApiError(
+        "Home Assistant is not properly configured",
+      );
+    }
 
-    try {
-      const res = await fetch(url, { headers: requestHeaders });
-      const json: IHomeAssistantStatesResponse[] = await res.json();
+    const client = createApiClient({
+      baseUrl,
+      headers: {
+        Authorization: `Bearer ${config.homeAssistantToken}`,
+        "Content-Type": "application/json",
+      },
+    });
 
-      const devices = json
+    const { data } =
+      await client.get<IHomeAssistantStatesResponse[]>("/api/states");
+
+    return {
+      devices: data
         .filter((item) => item.entity_id.startsWith("light."))
         .map((item) => ({
           id: item.entity_id,
@@ -83,16 +118,9 @@ export class HomeAssistantPlugin extends BaseIntegrationPlugin {
             min_mireds: item.attributes.min_mireds,
             max_mireds: item.attributes.max_mireds,
           },
-        }));
-
-      return {
-        devices,
-        selectedDevices: config.homeAssistantDevices,
-      };
-    } catch (error) {
-      this.log("error", `Failed to list devices: ${error}`);
-      return { devices: [], selectedDevices: [] };
-    }
+        })),
+      selectedDevices: config.homeAssistantDevices,
+    };
   }
 
   async control(args: IntegrationControlArgs): Promise<void> {
@@ -100,45 +128,13 @@ export class HomeAssistantPlugin extends BaseIntegrationPlugin {
 
     const { controlType, color, brightness, event } = args;
     const config = await getConfig();
-    const homeAssistantDevices = config.homeAssistantDevices;
+    const client = this.getApiClient();
     const adjustedBrightness = Math.round((brightness / 100) * 254);
 
-    const onUrl = new URL(
-      "/api/services/light/turn_on",
-      config.homeAssistantHost,
-    );
-    onUrl.port = config.homeAssistantPort.toString();
-
-    const offUrl = new URL(
-      "/api/services/light/turn_off",
-      config.homeAssistantHost,
-    );
-    offUrl.port = config.homeAssistantPort.toString();
-
-    switch (controlType) {
-      case ControlType.ON:
-        for (const entityId of homeAssistantDevices) {
+    if (controlType === ControlType.ON) {
+      await Promise.all(
+        config.homeAssistantDevices.map(async (entityId) => {
           const supportsRGB = await this.checkDeviceSpectrum(entityId);
-
-          let colorTemp = 0;
-
-          if (!supportsRGB) {
-            const deviceList = await this.listDevices();
-            const foundDevice = deviceList.devices.find(
-              (item) => item.id === entityId,
-            );
-            const meta = foundDevice?.metadata as {
-              min_mireds?: number;
-              max_mireds?: number;
-            };
-
-            colorTemp = rgbToColorTemp(
-              event,
-              meta?.min_mireds || 0,
-              meta?.max_mireds || 0,
-            );
-          }
-
           const payload = supportsRGB
             ? {
                 entity_id: entityId,
@@ -147,38 +143,31 @@ export class HomeAssistantPlugin extends BaseIntegrationPlugin {
               }
             : {
                 entity_id: entityId,
-                color_temp: colorTemp,
+                color_temp: await this.getColorTemp(entityId, event),
                 brightness: adjustedBrightness,
               };
-
-          try {
-            await fetch(onUrl, {
-              method: "POST",
-              headers: requestHeaders,
-              body: JSON.stringify(payload),
-            });
-          } catch (error) {
-            this.log("error", `Error turning on device ${entityId}: ${error}`);
-          }
-        }
-        break;
-
-      case ControlType.OFF:
-        for (const entityId of homeAssistantDevices) {
-          const payload = { entity_id: entityId };
-
-          try {
-            await fetch(offUrl, {
-              method: "POST",
-              headers: requestHeaders,
-              body: JSON.stringify(payload),
-            });
-          } catch (error) {
-            this.log("error", `Error turning off device ${entityId}: ${error}`);
-          }
-        }
-        break;
+          await client.post("/api/services/light/turn_on", payload);
+        }),
+      );
+    } else {
+      await Promise.all(
+        config.homeAssistantDevices.map((entityId) =>
+          client.post("/api/services/light/turn_off", { entity_id: entityId }),
+        ),
+      );
     }
+  }
+
+  private async getColorTemp(
+    entityId: string,
+    event: EventType,
+  ): Promise<number> {
+    const deviceList = await this.listDevices();
+    const device = deviceList.devices.find((d) => d.id === entityId);
+    const meta = device?.metadata as
+      | { min_mireds?: number; max_mireds?: number }
+      | undefined;
+    return rgbToColorTemp(event, meta?.min_mireds || 0, meta?.max_mireds || 0);
   }
 
   getUtilityFunctions(): IntegrationUtilityFunction[] {
@@ -196,28 +185,26 @@ export class HomeAssistantPlugin extends BaseIntegrationPlugin {
 
   private async checkDeviceSpectrum(entityId: string): Promise<boolean> {
     const config = await getConfig();
-    const url = new URL("/api/states/" + entityId, config.homeAssistantHost);
-    url.port = config.homeAssistantPort.toString();
-    requestHeaders.set("Authorization", "Bearer " + config.homeAssistantToken);
+    const baseUrl = buildBaseUrl(
+      config.homeAssistantHost,
+      config.homeAssistantPort,
+    );
+    if (!baseUrl || !config.homeAssistantToken) return false;
 
-    try {
-      const res = await fetch(url, {
-        method: "GET",
-        headers: requestHeaders,
-      });
-      const data: IHomeAssistantStateResponse = await res.json();
-      if (!data.attributes.supported_color_modes) return false;
-      return !!data.attributes.supported_color_modes.find(
-        (mode: string) =>
-          mode === "rgb" || mode === "rgbw" || mode === "hs" || mode === "xy",
-      );
-    } catch (error) {
-      this.log(
-        "error",
-        `Error checking if device ${entityId} supports spectrum: ${error}`,
-      );
-      return false;
-    }
+    const client = createApiClient({
+      baseUrl,
+      headers: {
+        Authorization: `Bearer ${config.homeAssistantToken}`,
+        "Content-Type": "application/json",
+      },
+    });
+
+    const { data } = await client.get<IHomeAssistantStateResponse>(
+      `/api/states/${entityId}`,
+    );
+    const modes = data.attributes?.supported_color_modes;
+    if (!modes) return false;
+    return modes.some((m: string) => ["rgb", "rgbw", "hs", "xy"].includes(m));
   }
 }
 

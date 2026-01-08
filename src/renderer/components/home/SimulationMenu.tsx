@@ -39,10 +39,7 @@ import {
   createSvgIcon,
 } from "@mui/material";
 import { blue, green, red } from "@mui/material/colors";
-import {
-  EventType,
-  eventTypeReadableMap,
-} from "../../../shared/types/config";
+import { EventType, eventTypeReadableMap } from "../../../shared/types/config";
 import { useConfig } from "../../hooks/useConfig";
 
 interface Item {

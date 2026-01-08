@@ -1,6 +1,7 @@
 import * as mqtt from "mqtt";
 import { BaseIntegrationPlugin } from "../BaseIntegrationPlugin";
 import { getConfig } from "../../ipc/config";
+import { IntegrationApiError } from "../utils/error";
 import {
   IntegrationPlugin,
   IntegrationControlArgs,
@@ -21,44 +22,56 @@ export class MQTTPlugin extends BaseIntegrationPlugin {
   ];
 
   private client: mqtt.MqttClient | undefined = undefined;
-  private errorCheck: boolean = false;
-  private errorMessage = "";
 
   async initialize(): Promise<void> {
-    const {
-      mqttBrokerHost,
-      mqttBrokerPort,
-      mqttBrokerUsername,
-      mqttBrokerPassword,
-    } = await getConfig();
+    const config = await getConfig();
+    if (!config.mqttBrokerHost) {
+      throw new IntegrationApiError("MQTT broker host is not configured");
+    }
 
-    const host = mqttBrokerHost
-      ?.replace("mqtt://", "")
+    const host = config.mqttBrokerHost
+      .replace("mqtt://", "")
       .replace("localhost", "127.0.0.1");
 
-    try {
-      if (this.client?.connected) {
-        this.client.removeAllListeners();
-        this.client.end();
-      }
+    this.log("debug", "Connecting to MQTT broker...");
 
-      this.client = mqtt.connect(`mqtt://${host}`, {
-        port: mqttBrokerPort,
-        username: mqttBrokerUsername || undefined,
-        password: mqttBrokerPassword || undefined,
-      });
-
-      this.client.on("connect", () => this.onConnect());
-      this.client.on("offline", () => this.onOffline());
-      this.client.on("error", (err) => this.onError(err));
-    } catch (error) {
-      this.setOnline(false);
-      this.log("error", `Failed to connect to MQTT broker: ${error}`);
+    if (this.client?.connected) {
+      this.client.removeAllListeners();
+      this.client.end();
     }
+
+    this.client = mqtt.connect(`mqtt://${host}`, {
+      port: config.mqttBrokerPort,
+      username: config.mqttBrokerUsername || undefined,
+      password: config.mqttBrokerPassword || undefined,
+    });
+
+    this.client.on("connect", () => {
+      this.setOnline(true);
+      this.log("info", "Connected to MQTT broker");
+      this.client?.publish(
+        "F1MV-Lights-Integration/appstate",
+        JSON.stringify({ active: true }),
+      );
+    });
+
+    this.client.on("offline", () => {
+      this.setOnline(false);
+      this.log("debug", "Disconnected from MQTT broker");
+    });
+
+    this.client.on("error", (err) => {
+      this.setOnline(false);
+      this.log("warn", `MQTT connection error: ${err.message}`);
+    });
   }
 
   async shutdown(): Promise<void> {
     if (this.client) {
+      this.client.publish(
+        "F1MV-Lights-Integration/appstate",
+        JSON.stringify({ active: false }),
+      );
       this.client.removeAllListeners();
       this.client.end();
       this.client = undefined;
@@ -67,13 +80,16 @@ export class MQTTPlugin extends BaseIntegrationPlugin {
   }
 
   async healthCheck(): Promise<IntegrationHealthStatus> {
-    return this.client?.connected ? "online" : "offline";
+    const isOnline = this.client?.connected ?? false;
+    this.setOnline(isOnline);
+    return isOnline
+      ? IntegrationHealthStatus.ONLINE
+      : IntegrationHealthStatus.OFFLINE;
   }
 
   async control(args: IntegrationControlArgs): Promise<void> {
     if (!this._isOnline || !this.client) {
-      this.log("error", "Cannot send MQTT message, not connected.");
-      return;
+      throw new IntegrationApiError("MQTT client not connected");
     }
 
     const { controlType, color, brightness, event } = args;
@@ -87,38 +103,6 @@ export class MQTTPlugin extends BaseIntegrationPlugin {
         event,
       }),
     );
-  }
-
-  private onConnect(): void {
-    this.setOnline(true);
-    this.errorCheck = false;
-
-    try {
-      this.client?.publish(
-        "F1MV-Lights-Integration/appstate",
-        JSON.stringify({ active: true }),
-      );
-    } catch (error: unknown) {
-      const errorMessage =
-        error instanceof Error ? error.message : String(error);
-      this.log("error", `Error sending appstate to MQTT: ${errorMessage}`);
-    }
-
-    this.log("debug", "Successfully connected to the MQTT broker.");
-  }
-
-  private onOffline(): void {
-    this.setOnline(false);
-    this.log("debug", "Disconnected from the MQTT broker.");
-  }
-
-  private onError(err: Error): void {
-    if (!this.errorCheck && this.errorMessage !== err.message) {
-      this.errorCheck = true;
-      this.errorMessage = err.message;
-      this.setOnline(false);
-      this.log("error", `MQTT error: ${err.message}`);
-    }
   }
 }
 

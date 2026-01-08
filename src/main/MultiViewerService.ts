@@ -12,7 +12,7 @@ import {
   ITrackStatus,
 } from "../shared/types/multiviewer";
 import { MiscState } from "../shared/types/integration";
-import { getConfig } from "./ipc/config";
+import { getConfig, globalConfig } from "./ipc/config";
 import { integrationManager } from "./integrations/IntegrationManager";
 
 export const statusEventMap: Record<string, EventType> = {
@@ -126,6 +126,7 @@ class MultiViewerService {
    * Start the live timing data polling
    */
   startPolling(): void {
+    if (!globalConfig.multiviewerCheck) return;
     if (this._pollingInterval) return;
 
     log.info("Starting MultiViewer live timing polling...");
