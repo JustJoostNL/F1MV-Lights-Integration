@@ -1,41 +1,12 @@
 import React from "react";
-import { GridColDef } from "@mui/x-data-grid";
-import {
-  DeviceSelector,
-  DeviceSelectorConfig,
-} from "../components/shared/DeviceSelector";
-
-interface IPhilipsHueDevice {
-  id: string;
-  name: string;
-  state: boolean;
-}
-
-const columns: GridColDef[] = [
-  { field: "name", headerName: "Name", flex: 1, minWidth: 200 },
-  { field: "id", headerName: "ID", flex: 1, minWidth: 250 },
-  { field: "state", headerName: "State", width: 100 },
-];
-
-const selectorConfig: DeviceSelectorConfig<
-  { id: string; name: string; state: string },
-  IPhilipsHueDevice
-> = {
-  integrationName: "philipsHue",
-  swrKey: "philipsHueDevices",
-  fetchDevices: async () => {
-    const data = await window.f1mvli.integrations.philipsHue.getDevices();
-    return { devices: data.devices, selectedDevices: data.selectedDevices };
-  },
-  transformDevice: (device) => ({
-    id: device.id,
-    name: device.name,
-    state: device.state ? "On" : "Off",
-  }),
-  columns,
-  configKey: "philipsHueDeviceIds",
-};
+import { DeviceSelector } from "../components/shared/DeviceSelector";
+import { IntegrationPlugin } from "../../shared/types/integration";
 
 export function PhilipsHueDeviceSelector() {
-  return <DeviceSelector config={selectorConfig} />;
+  return (
+    <DeviceSelector
+      integrationId={IntegrationPlugin.PHILIPSHUE}
+      configKey="philipsHueDeviceIds"
+    />
+  );
 }

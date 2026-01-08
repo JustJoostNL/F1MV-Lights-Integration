@@ -14,7 +14,7 @@ import { useDocumentTitle } from "../hooks/useDocumentTitle";
 import { ContentLayout } from "../components/layouts/ContentLayout";
 import { useConfig } from "../hooks/useConfig";
 import { EventDialog } from "../components/eventEditor/EventDialog";
-import { eventTypeReadableMap } from "../../shared/config/config_types";
+import { eventTypeReadableMap } from "../../shared/types/config";
 import { ToolsCell } from "../components/eventEditor/ToolsCell";
 
 export function EventEditorPage() {

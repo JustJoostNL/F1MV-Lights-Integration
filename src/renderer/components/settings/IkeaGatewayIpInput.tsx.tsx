@@ -2,6 +2,7 @@ import React, { useCallback } from "react";
 import { Button, Stack, TextField, Tooltip } from "@mui/material";
 import { enqueueSnackbar } from "notistack";
 import { useConfig } from "../../hooks/useConfig";
+import { IntegrationPlugin } from "../../../shared/types/integration";
 
 export function IkeaGatewayIpInput() {
   const { config, updateConfig } = useConfig();
@@ -15,14 +16,17 @@ export function IkeaGatewayIpInput() {
   );
 
   const handleDiscoverGateway = useCallback(async () => {
-    const data = await window.f1mvli.integrations.tradfri.discoverGateway();
+    const data = (await window.f1mvli.integrationManager.callUtility(
+      IntegrationPlugin.TRADFRI,
+      "discoverGateway",
+    )) as { addresses: string[] } | null;
     if (!data) {
       enqueueSnackbar("Error discovering gateway", { variant: "error" });
-    } else if (data?.addresses.length > 0) {
+    } else if (data.addresses.length > 0) {
       enqueueSnackbar("Gateway found, reloading...", { variant: "success" });
-      await updateConfig({ ikeaGatewayIp: data?.addresses[0] });
+      await updateConfig({ ikeaGatewayIp: data.addresses[0] });
       window.location.reload();
-    } else if (data?.addresses.length === 0) {
+    } else {
       enqueueSnackbar("No gateway found", { variant: "error" });
     }
   }, [updateConfig]);

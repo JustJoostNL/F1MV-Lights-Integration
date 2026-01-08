@@ -16,14 +16,12 @@ import { registerUpdaterIPCHandlers } from "./ipc/updater";
 import { registerUtilsIPCHandlers } from "./ipc/utils";
 import { registerLoggerIPCHandlers } from "./ipc/logger";
 import { registerAppInfoIPCHandlers } from "./ipc/appInfo";
-import { startLiveTimingDataPolling } from "./multiviewer/api";
 import { registerEventManagerIPCHandlers } from "./ipc/eventManager";
-import { registerIntegrationsIPCHandlers } from "./ipc/integrations";
-import { initializeIntegrations } from "./initIntegrations";
-import { UserAnalytics } from "./analytics/api";
+import { registerIntegrationManagerIPCHandlers } from "./ipc/integrationManager";
+import { initializeIntegrations } from "./initializeApp";
+import { UserAnalytics } from "./analytics";
 import { registerDeepLink } from "./deeplinking";
-import { mqttClient } from "./lightController/integrations/mqtt/api";
-import { integrationStates } from "./lightController/integrations/states";
+import { integrationManager } from "./integrations/IntegrationManager";
 
 Sentry.init({
   dsn: "https://e64c3ec745124566b849043192e58711@o4504289317879808.ingest.sentry.io/4504289338392576",
@@ -129,7 +127,7 @@ let _utilsIPCCleanup: () => void;
 let _loggerIPCCleanup: () => void;
 let _appInfoIPCCleanup: () => void;
 let _eventManagerIPCCleanup: () => void;
-let _integrationsIPCCleanup: () => void;
+let _integrationManagerIPCCleanup: () => void;
 
 app.whenReady().then(onReady);
 
@@ -142,7 +140,7 @@ function onReady() {
   _loggerIPCCleanup = registerLoggerIPCHandlers();
   _appInfoIPCCleanup = registerAppInfoIPCHandlers();
   _eventManagerIPCCleanup = registerEventManagerIPCHandlers();
-  _integrationsIPCCleanup = registerIntegrationsIPCHandlers();
+  _integrationManagerIPCCleanup = registerIntegrationManagerIPCHandlers();
   autoUpdater.forceDevUpdateConfig = false;
   autoUpdater.autoDownload = false;
   autoUpdater.disableWebInstaller = true;
@@ -163,38 +161,21 @@ function onReady() {
   registerDeepLink();
   fetchAuthoritativeConfig();
   setInterval(
-    () => {
-      fetchAuthoritativeConfig();
-    },
+    fetchAuthoritativeConfig,
     globalConfig.otaConfigFetchInterval +
       Math.random() * globalConfig.otaConfigFetchJitter,
   );
   initializeIntegrations();
-  startLiveTimingDataPolling();
   UserAnalytics.startAnalytics();
 }
 
 app.on("window-all-closed", async () => {
   await UserAnalytics.stopAnalytics();
-
-  if (mqttClient && integrationStates.mqtt && globalConfig.mqttEnabled) {
-    try {
-      mqttClient?.publish(
-        "F1MV-Lights-Integration/appstate",
-        JSON.stringify({ active: false }),
-      );
-      mqttClient?.end();
-    } catch (error: any) {
-      log.error(
-        "Error while setting active to false, and closing the MQTT client: " +
-          error.message,
-      );
-    }
-  }
+  await integrationManager.shutdownAll();
 
   mainWindow = null;
 
-  if (process.platform !== "darwin") app.quit();
+  app.quit();
 });
 
 app.on("activate", () => {

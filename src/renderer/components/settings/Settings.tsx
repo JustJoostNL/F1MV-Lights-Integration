@@ -2,7 +2,7 @@ import React, { useCallback, useState } from "react";
 import { useHotkeys } from "react-hotkeys-hook";
 import { Button, Card, CardHeader, List, ListItem, Stack } from "@mui/material";
 import { JSONTree } from "react-json-tree";
-import { defaultConfig } from "../../../shared/config/defaultConfig";
+import { defaultConfig } from "../../../shared/defaultConfig";
 import { useConfig } from "../../hooks/useConfig";
 import { AutoMultiViewerStartToggle } from "./AutoMultiViewerStartToggle";
 import { EventSettings } from "./EventSettings";

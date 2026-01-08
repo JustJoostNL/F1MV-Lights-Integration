@@ -8,7 +8,7 @@ import {
   Typography,
 } from "@mui/material";
 import { DeleteRounded } from "@mui/icons-material";
-import { Action, ActionType } from "../../../shared/config/config_types";
+import { Action, ActionType } from "../../../shared/types/config";
 import { ColorSwatch } from "../shared/ColorSwatch";
 import { useConfig } from "../../hooks/useConfig";
 import { ActionTypeAutocomplete } from "./ActionTypeAutocomplete";
@@ -68,7 +68,7 @@ export function EventAction({
           </IconButton>
         </Tooltip>
       </Box>
-      {action.type === ActionType.On && (
+      {action.type === ActionType.ON && (
         <Box mt={2}>
           <ColorSwatch
             color={action.color ?? { r: 0, g: 0, b: 0 }}
@@ -123,7 +123,7 @@ export function EventAction({
           </Box>
         </Box>
       )}
-      {action.type === ActionType.Off && (
+      {action.type === ActionType.OFF && (
         <Box mt={2}>
           {config.philipsHueEnabled && (
             <PhilipsHueEnableFadeToggle
@@ -135,7 +135,7 @@ export function EventAction({
           )}
         </Box>
       )}
-      {action.type === ActionType.Delay && (
+      {action.type === ActionType.DELAY && (
         <TextField
           sx={{ width: 200 }}
           margin="normal"

@@ -9,6 +9,7 @@ import {
 } from "@mui/material";
 import { ColorSwatch } from "../shared/ColorSwatch";
 import { useConfig } from "../../hooks/useConfig";
+import { RGBColor } from "../../../shared/types/integration";
 
 export function GoBackToStaticColorChangeButton() {
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -25,7 +26,7 @@ export function GoBackToStaticColorChangeButton() {
   }, [updateConfig, color, setDialogOpen]);
 
   const handleColorChange = useCallback(
-    (color: { r: number; g: number; b: number }) => {
+    (color: RGBColor) => {
       setColor(color);
     },
     [setColor],

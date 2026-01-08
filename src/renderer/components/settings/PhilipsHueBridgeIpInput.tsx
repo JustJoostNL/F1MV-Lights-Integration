@@ -2,6 +2,7 @@ import React, { useCallback } from "react";
 import { Button, Stack, TextField, Tooltip } from "@mui/material";
 import { enqueueSnackbar } from "notistack";
 import { useConfig } from "../../hooks/useConfig";
+import { IntegrationPlugin } from "../../../shared/types/integration";
 
 export function PhilipsHueBridgeIpInput() {
   const { config, updateConfig } = useConfig();
@@ -15,7 +16,14 @@ export function PhilipsHueBridgeIpInput() {
   );
 
   const handleDiscoverBridge = useCallback(async () => {
-    const data = await window.f1mvli.integrations.philipsHue.discoverBridge();
+    const data = (await window.f1mvli.integrationManager.callUtility(
+      IntegrationPlugin.PHILIPSHUE,
+      "discoverBridge",
+    )) as { status: string; ipAddresses: string[] } | null;
+    if (!data) {
+      enqueueSnackbar("Error discovering bridge", { variant: "error" });
+      return;
+    }
     if (data.status === "success" && data.ipAddresses.length > 0) {
       enqueueSnackbar("Bridge found, reloading...", { variant: "success" });
       await updateConfig({ philipsHueBridgeIP: data.ipAddresses[0] });

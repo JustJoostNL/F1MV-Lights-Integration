@@ -6,7 +6,7 @@ import {
   Switch,
   Tooltip,
 } from "@mui/material";
-import { Action } from "../../../shared/config/config_types";
+import { Action } from "../../../shared/types/config";
 
 interface PhilipsHueEnableFadeToggleProps {
   action: Action;

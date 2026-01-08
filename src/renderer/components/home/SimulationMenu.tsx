@@ -42,7 +42,7 @@ import { blue, green, red } from "@mui/material/colors";
 import {
   EventType,
   eventTypeReadableMap,
-} from "../../../shared/config/config_types";
+} from "../../../shared/types/config";
 import { useConfig } from "../../hooks/useConfig";
 
 interface Item {

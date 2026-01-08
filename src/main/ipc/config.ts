@@ -11,10 +11,11 @@ import path from "path";
 import deepEqual from "deep-equal";
 import { app, ipcMain, shell } from "electron";
 import packageJson from "../../../package.json";
-import { IConfig, IOTAConfigPayload } from "../../shared/config/config_types";
-import { defaultConfig } from "../../shared/config/defaultConfig";
+import { IConfig, IOTAConfigPayload } from "../../shared/types/config";
+import { defaultConfig } from "../../shared/defaultConfig";
 import { broadcastToAllWindows } from "../utils/broadcastToAllWindows";
-import { handleConfigChange } from "../utils/handleConfigChange";
+import { integrationManager } from "../integrations/IntegrationManager";
+import { updateLogLevel } from "../utils/updateLogLevel";
 
 const configPath = path.join(
   app.getPath("appData"),
@@ -102,7 +103,7 @@ function getConfigSync() {
 }
 
 async function setConfig(config: IConfig) {
-  const oldConfig = await getConfig();
+  const prevConfig = await getConfig();
   const configJSON = JSON.stringify(removeDefaultConfig(config));
   broadcastToAllWindows("f1mvli:config:change", config);
   await mkdir(path.dirname(configPath), { recursive: true });
@@ -113,10 +114,12 @@ async function setConfig(config: IConfig) {
     ...removeDefaultConfig(config),
     ...otaOverrideConfig,
   };
-  await handleConfigChange(oldConfig, globalConfig);
+  updateLogLevel(globalConfig);
+  await maybeRestartIntegrations(prevConfig, globalConfig);
 }
 
 function setConfigSync(config: IConfig) {
+  const prevConfig = getConfigSync();
   const configJSON = JSON.stringify(removeDefaultConfig(config));
   broadcastToAllWindows("f1mvli:config:change", config);
   mkdirSync(path.dirname(configPath), { recursive: true });
@@ -127,16 +130,18 @@ function setConfigSync(config: IConfig) {
     ...removeDefaultConfig(config),
     ...otaOverrideConfig,
   };
-  handleConfigChange(globalConfig, config);
+  updateLogLevel(globalConfig);
+  void maybeRestartIntegrations(prevConfig, globalConfig);
 }
 
 async function patchConfig(configPatch: Partial<IConfig>) {
   const config = await getConfig();
   const newConfig = { ...config, ...configPatch };
-  setConfig(newConfig);
+  return setConfig(newConfig);
 }
 
 async function setOTAConfig(otaConfig: IOTAConfigPayload) {
+  const prevConfig = await getConfig();
   if (otaConfig.default_config) {
     otaDefaultConfig = otaConfig.default_config;
   }
@@ -144,13 +149,50 @@ async function setOTAConfig(otaConfig: IOTAConfigPayload) {
     otaOverrideConfig = otaConfig.override_config;
   }
   const config = await getConfig();
-  broadcastToAllWindows("f1mvli:config:change", globalConfig);
   globalConfig = {
     ...defaultConfig,
     ...otaDefaultConfig,
     ...config,
     ...otaOverrideConfig,
   };
+  broadcastToAllWindows("f1mvli:config:change", globalConfig);
+  updateLogLevel(globalConfig);
+  await maybeRestartIntegrations(prevConfig, globalConfig);
+}
+
+async function maybeRestartIntegrations(
+  prevConfig: IConfig,
+  newConfig: IConfig,
+) {
+  const allKeys = new Set([
+    ...Object.keys(prevConfig),
+    ...Object.keys(newConfig),
+  ] as (keyof IConfig)[]);
+
+  const changedKeys = new Set(
+    Array.from(allKeys).filter((k) => {
+      return !deepEqual(
+        prevConfig[k as keyof IConfig],
+        newConfig[k as keyof IConfig],
+      );
+    }),
+  );
+
+  integrationManager.getAllPlugins().forEach((plugin) => {
+    const { enabledConfigKey: enabledKey, restartConfigKeys = [] } = plugin;
+
+    const shouldRestart =
+      (enabledKey != null && changedKeys.has(enabledKey)) ||
+      restartConfigKeys.some((k) => changedKeys.has(k));
+
+    if (!shouldRestart) return;
+
+    integrationManager.shutdownIntegration(plugin.id).then(() => {
+      if (enabledKey == null || newConfig[enabledKey as keyof IConfig]) {
+        integrationManager.initializeIntegration(plugin.id);
+      }
+    });
+  });
 }
 
 async function handleConfigGet(): Promise<IConfig> {
@@ -159,6 +201,13 @@ async function handleConfigGet(): Promise<IConfig> {
 
 async function handleConfigSet(_event: Electron.Event, config: IConfig) {
   return setConfig(config);
+}
+
+async function handleConfigUpdate(
+  _event: Electron.Event,
+  configPatch: Partial<IConfig>,
+) {
+  return patchConfig(configPatch);
 }
 
 async function handleConfigReset() {
@@ -198,6 +247,7 @@ async function fetchAuthoritativeConfig() {
 function registerConfigIPCHandlers() {
   ipcMain.handle("f1mvli:config:get", handleConfigGet);
   ipcMain.handle("f1mvli:config:set", handleConfigSet);
+  ipcMain.handle("f1mvli:config:update", handleConfigUpdate);
   ipcMain.handle("f1mvli:config:reset", handleConfigReset);
   ipcMain.handle("f1mvli:config:open", handleConfigOpen);
   ipcMain.handle("f1mvli:config:ota:get", fetchAuthoritativeConfig);
@@ -205,8 +255,10 @@ function registerConfigIPCHandlers() {
   return () => {
     ipcMain.removeHandler("f1mvli:config:get");
     ipcMain.removeHandler("f1mvli:config:set");
+    ipcMain.removeHandler("f1mvli:config:update");
     ipcMain.removeHandler("f1mvli:config:reset");
     ipcMain.removeHandler("f1mvli:config:open");
+    ipcMain.removeHandler("f1mvli:config:ota:get");
   };
 }
 

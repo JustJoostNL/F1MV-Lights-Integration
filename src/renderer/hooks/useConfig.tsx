@@ -6,26 +6,33 @@ import React, {
   useEffect,
   useState,
 } from "react";
-import { defaultConfig } from "../../shared/config/defaultConfig";
-import { IConfig } from "../../shared/config/config_types";
+import { defaultConfig } from "../../shared/defaultConfig";
+import { IConfig } from "../../shared/types/config";
 
 export const ConfigContext = createContext<IConfig>(defaultConfig);
 export function useConfig() {
-  const currentConfig = useContext(ConfigContext);
+  const config = useContext(ConfigContext);
 
   const setConfig = useCallback(async (config: IConfig) => {
     await window.f1mvli.config.set(config);
   }, []);
 
   const updateConfig = useCallback(
-    async (config: Partial<IConfig>) => {
-      await window.f1mvli.config.set({ ...currentConfig, ...config });
+    async (
+      partialConfig: Partial<IConfig> | ((config: IConfig) => Partial<IConfig>),
+    ) => {
+      const updated =
+        typeof partialConfig === "function"
+          ? partialConfig(config)
+          : partialConfig;
+
+      await window.f1mvli.config.update(updated);
     },
-    [currentConfig],
+    [config],
   );
 
   return {
-    config: currentConfig,
+    config,
     setConfig,
     updateConfig,
   };

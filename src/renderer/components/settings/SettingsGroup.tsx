@@ -23,8 +23,8 @@ import {
 import { alpha } from "@mui/system";
 import { isEqual } from "lodash";
 import { useConfig } from "../../hooks/useConfig";
-import { defaultConfig } from "../../../shared/config/defaultConfig";
-import { IConfig } from "../../../shared/config/config_types";
+import { defaultConfig } from "../../../shared/defaultConfig";
+import { IConfig } from "../../../shared/types/config";
 
 interface Setting {
   type: "setting";

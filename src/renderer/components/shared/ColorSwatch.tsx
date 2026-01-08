@@ -1,14 +1,11 @@
 import { Box, TextField } from "@mui/material";
 import { RgbColorPicker } from "react-colorful";
 import React from "react";
+import { RGBColor } from "../../../shared/types/integration";
 
 interface ColorSwatchProps {
-  color: {
-    r: number;
-    g: number;
-    b: number;
-  };
-  onChange?: (rgbColor: { r: number; g: number; b: number }) => void;
+  color: RGBColor;
+  onChange?: (rgbColor: RGBColor) => void;
 }
 
 export const ColorSwatch: React.FC<ColorSwatchProps> = ({

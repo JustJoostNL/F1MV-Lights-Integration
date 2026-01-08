@@ -5,7 +5,7 @@ import {
   ActionType,
   Event,
   eventTypeReadableMap,
-} from "../../shared/config/config_types";
+} from "../../shared/types/config";
 
 export async function handleOpenWhitelisted(
   url: URL,
@@ -54,15 +54,15 @@ export async function handleAddEvent(
       .map((action, index) => {
         let actionString = `${index + 1}. ${action.type}`;
         switch (action.type) {
-          case ActionType.On:
+          case ActionType.ON:
             actionString += `: ${action.color ? `RGB = ${action.color.r}, ${action.color.g}, ${action.color.b}` : "N/A"}, Brightness = ${action.brightness ?? "N/A"}`;
             break;
-          case ActionType.Off:
+          case ActionType.OFF:
             break;
-          case ActionType.Delay:
+          case ActionType.DELAY:
             actionString += `: ${action.delay ?? "N/A"}ms`;
             break;
-          case ActionType.GoBackToCurrentStatus:
+          case ActionType.GO_BACK_TO_CURRENT_STATUS:
             break;
           default:
             break;

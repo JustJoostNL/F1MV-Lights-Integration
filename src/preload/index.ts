@@ -4,7 +4,7 @@ import { loggerAPI } from "./logger";
 import { appInfoAPI } from "./appInfo";
 import { utilsAPI } from "./utils";
 import { eventManagerAPI } from "./eventManager";
-import { integrationsAPI } from "./integrations";
+import { integrationManagerAPI } from "./integrationManager";
 
 export const f1mvli = {
   config: configAPI,
@@ -15,7 +15,7 @@ export const f1mvli = {
   platform: process.platform,
   arch: process.arch,
   eventManager: eventManagerAPI,
-  integrations: integrationsAPI,
+  integrationManager: integrationManagerAPI,
 };
 
 // @ts-ignore

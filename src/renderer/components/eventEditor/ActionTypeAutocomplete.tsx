@@ -3,7 +3,7 @@ import { Autocomplete, FormControl, TextField } from "@mui/material";
 import {
   ActionType,
   actionTypeReadableMap,
-} from "../../../shared/config/config_types";
+} from "../../../shared/types/config";
 
 interface ActionTypeAutocompleteProps {
   selectedActionType: ActionType;
@@ -26,7 +26,7 @@ export function ActionTypeAutocomplete({
         value={selectedActionType}
         getOptionLabel={(key) => actionTypeReadableMap[key]}
         onChange={(_event, newValue) => {
-          onChange(newValue ?? ActionType.On);
+          onChange(newValue ?? ActionType.ON);
         }}
         renderInput={(params) => <TextField {...params} label="Type" />}
       />

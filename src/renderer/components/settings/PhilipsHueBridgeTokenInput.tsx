@@ -2,6 +2,7 @@ import React, { useCallback } from "react";
 import { Button, Stack, TextField, Tooltip } from "@mui/material";
 import { enqueueSnackbar } from "notistack";
 import { useConfig } from "../../hooks/useConfig";
+import { IntegrationPlugin } from "../../../shared/types/integration";
 
 export function PhilipsHueBridgeTokenInput() {
   const { config, updateConfig } = useConfig();
@@ -15,8 +16,14 @@ export function PhilipsHueBridgeTokenInput() {
   );
 
   const handleGenerateToken = useCallback(async () => {
-    const data =
-      await window.f1mvli.integrations.philipsHue.generateAuthToken();
+    const data = (await window.f1mvli.integrationManager.callUtility(
+      IntegrationPlugin.PHILIPSHUE,
+      "generateAuthToken",
+    )) as { status: string; username?: string } | null;
+    if (!data) {
+      enqueueSnackbar("Error generating token", { variant: "error" });
+      return;
+    }
     if (data.status === "success" && data.username) {
       await updateConfig({ philipsHueBridgeAuthToken: data.username });
       enqueueSnackbar("Token generated", { variant: "success" });

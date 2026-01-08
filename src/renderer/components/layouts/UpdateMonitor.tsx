@@ -81,18 +81,18 @@ export const UpdateMonitor = ({
   const [releaseNotesOpen, setReleaseNotesOpen] = useState(false);
   const [supportsAutoUpdate, setSupportsAutoUpdate] = useState(true);
 
-  const appVersion = useSWR("appVersion", async () => {
+  const { data: appVersion } = useSWR("appVersion", async () => {
     return await window.f1mvli.appInfo.getAppVersion();
-  }).data;
+  });
 
-  const data = useSWR(
+  const { data } = useSWR(
     "update-info",
     async () => {
       const releaseInfo = await window.f1mvli.updater.checkForUpdates();
       return releaseInfo.updateInfo;
     },
     { refreshInterval: 1000 * 60 * 15 }, // 15 minutes
-  ).data;
+  );
 
   const latestVersion = data?.version;
 

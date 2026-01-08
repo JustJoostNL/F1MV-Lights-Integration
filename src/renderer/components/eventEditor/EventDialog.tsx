@@ -13,7 +13,7 @@ import {
   Divider,
 } from "@mui/material";
 import { useConfig } from "../../hooks/useConfig";
-import { ActionType, Event } from "../../../shared/config/config_types";
+import { ActionType, Event } from "../../../shared/types/config";
 import { EventTriggersAutocomplete } from "./EventTriggersAutocomplete";
 import { EventAction } from "./EffectAction";
 
@@ -47,7 +47,7 @@ export function EventDialog({
     if (!event) return;
     const newActions = [...event.actions];
     newActions.push({
-      type: ActionType.On,
+      type: ActionType.ON,
       color: {
         r: 255,
         g: 255,

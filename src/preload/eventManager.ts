@@ -1,5 +1,5 @@
 import { ipcRenderer } from "electron";
-import { EventType } from "../shared/config/config_types";
+import { EventType } from "../shared/types/config";
 
 function simulate(event: EventType): Promise<void> {
   return ipcRenderer.invoke("f1mvli:eventManager:simulate", event);

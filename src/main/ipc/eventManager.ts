@@ -1,11 +1,11 @@
 import { ipcMain } from "electron";
-import { eventHandler } from "../lightController/eventHandler";
-import { ActionType, EventType } from "../../shared/config/config_types";
+import { ActionType, EventType } from "../../shared/types/config";
+import { ControlType } from "../../shared/types/integration";
 import {
-  ControlType,
-  controlAllLights,
+  eventHandler,
   turnOffAllLights,
-} from "../lightController/controlAllLights";
+  controlAllLights,
+} from "../lightController";
 import { getConfig } from "./config";
 
 const handleSimulate = async (event: EventType) => {
@@ -19,11 +19,11 @@ const handleAllOff = async () => {
 const handleSimulateBackToStatic = async () => {
   const config = await getConfig();
   await controlAllLights({
-    controlType: ControlType.On,
+    controlType: ControlType.ON,
     color: config.goBackToStaticColor,
     brightness: config.goBackToStaticBrightness,
     event: EventType.GreenFlag,
-    eventAction: { type: ActionType.On },
+    eventAction: { type: ActionType.ON },
   });
 };
 

@@ -4,7 +4,7 @@ import { CheckBox, CheckBoxOutlineBlank } from "@mui/icons-material";
 import {
   EventType,
   eventTypeReadableMap,
-} from "../../../shared/config/config_types";
+} from "../../../shared/types/config";
 
 interface EventTriggersSelectorProps {
   enabledTriggers: EventType[];

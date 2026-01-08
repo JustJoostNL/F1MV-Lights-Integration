@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   Card,
   CardActionArea,
@@ -11,112 +11,86 @@ import {
   Stack,
   Tooltip,
   Typography,
+  Box,
 } from "@mui/material";
 import {
   KeyboardArrowUpRounded,
   KeyboardArrowDownRounded,
   InfoRounded,
 } from "@mui/icons-material";
-import useSWR from "swr";
-import { IntegrationState } from "./types";
+import {
+  IntegrationStatesMap,
+  MISC_STATE_LABELS,
+} from "../../../shared/types/integration";
 import "./status.css";
+import { useRunOnceOnMount } from "../../hooks/useRunOnceOnMount";
 
-const integrationStateMap: {
-  [key: string]: string;
-} = {
-  tradfri: "IKEA Tradfri",
-  govee: "Govee",
-  philipsHue: "Philips Hue",
-  openrgb: "OpenRGB",
-  homeAssistant: "Home Assistant",
-  homebridge: "Homebridge",
-  streamdeck: "Elgato Stream Deck",
-  wled: "WLED",
-  mqtt: "MQTT",
-  multiviewer: "MultiViewer Live Timing",
-  f1tvLiveSession: "Live Session",
-  webserver: "Webserver",
-};
-
-const integrationExplanationMap: {
-  [key: string]: string;
-} = {
-  f1tvLiveSession:
+const ITEM_EXPLANATIONS: Partial<Record<keyof IntegrationStatesMap, string>> = {
+  livesession:
     "This checks if there is a live session currently active on F1TV.",
 };
 
-async function fetchIntegrationStates() {
-  return await window.f1mvli.utils.getIntegrationStates();
-}
-
 export function IntegrationsMonitor() {
+  const [states, setStates] = useState<Partial<IntegrationStatesMap>>({});
   const [open, setOpen] = useState(true);
+  const [labels, setLabels] = useState<Record<string, string>>({});
+  const pluginsRef = React.useRef<Array<{ id: string; name: string }>>([]);
 
-  const handleToggleOpen = useCallback(() => {
-    setOpen(!open);
-  }, [open]);
+  const toggleOpen = useCallback(() => {
+    setOpen((prev) => !prev);
+  }, []);
 
-  const { data: integrationStates } = useSWR(
-    "integrationStates",
-    fetchIntegrationStates,
-    {
-      refreshInterval: 5000,
-    },
-  );
+  useRunOnceOnMount(() => {
+    (async () => {
+      const initialStates = await window.f1mvli.integrationManager.getStates();
+      setStates(initialStates || {});
 
-  const isLoading =
-    !integrationStates ||
-    integrationStates.length === 0 ||
-    !Array.isArray(integrationStates);
+      const plugins = await window.f1mvli.integrationManager.getAll();
+      pluginsRef.current = plugins || [];
 
-  if (isLoading) {
-    return (
-      <Card
-        sx={{
-          width: "70%",
-        }}
-      >
-        <CardActionArea onClick={handleToggleOpen}>
-          <CardHeader
-            title="Integration States"
-            action={<KeyboardArrowDownRounded />}
-            sx={{
-              "& .MuiCardHeader-action": {
-                mt: 0,
-                mr: 0,
-                mb: 0,
-                alignSelf: "center",
-              },
-            }}
-          />
-        </CardActionArea>
+      const newLabels: Record<string, string> = {};
+      Object.keys(initialStates || {}).forEach((key) => {
+        const plugin = pluginsRef.current.find((p) => p.id === key);
+        newLabels[key] =
+          plugin?.name ||
+          MISC_STATE_LABELS[key as keyof IntegrationStatesMap] ||
+          key;
+      });
 
-        <Collapse in={open}>
-          <Divider />
-          <List disablePadding>
-            <div
-              style={{
-                display: "grid",
-                placeItems: "center",
-                placeContent: "center",
-                height: 80,
-              }}
-            >
-              <CircularProgress />
-            </div>
-          </List>
-        </Collapse>
-      </Card>
-    );
-  }
+      setLabels(newLabels);
+    })();
+  });
+
+  useEffect(() => {
+    const keys = Object.keys(states || {});
+    if (keys.length === 0) return;
+
+    setLabels((prev) => {
+      const next = { ...prev };
+      keys.forEach((key) => {
+        if (next[key]) return;
+        const plugin = pluginsRef.current.find((p) => p.id === key);
+        next[key] =
+          plugin?.name ||
+          MISC_STATE_LABELS[key as keyof IntegrationStatesMap] ||
+          key;
+      });
+      return next;
+    });
+  }, [states]);
+
+  useEffect(() => {
+    const unsubscribe =
+      window.f1mvli.integrationManager.onStatesUpdated(setStates);
+
+    return unsubscribe;
+  }, []);
+
+  const isLoading = !states || Object.keys(states).length === 0;
 
   return (
-    <Card
-      sx={{
-        width: "70%",
-      }}
-    >
-      <CardActionArea onClick={handleToggleOpen}>
+    <Card sx={{ width: "70%" }}>
+      <CardActionArea onClick={toggleOpen}>
         <CardHeader
           title="Integration States"
           action={
@@ -124,10 +98,8 @@ export function IntegrationsMonitor() {
           }
           sx={{
             "& .MuiCardHeader-action": {
-              mt: 0,
-              mr: 0,
-              mb: 0,
               alignSelf: "center",
+              m: 0,
             },
           }}
         />
@@ -136,55 +108,56 @@ export function IntegrationsMonitor() {
       <Collapse in={open}>
         <Divider />
 
-        <List disablePadding>
-          {integrationStates
-            .filter(
-              (integrationState: IntegrationState) =>
-                !integrationState.disabled,
-            )
-            .map((integrationState: IntegrationState) => (
-              <div key={integrationState.name}>
+        {isLoading ? (
+          <Box
+            height={80}
+            display="grid"
+            alignItems="center"
+            justifyContent="center"
+          >
+            <CircularProgress />
+          </Box>
+        ) : (
+          <List disablePadding>
+            {Object.entries(states).map(([key, value]) => (
+              <React.Fragment key={key}>
                 <Divider />
+
                 <CardHeader
                   title={
                     <Stack direction="row" spacing={1} alignItems="center">
-                      <Typography fontSize={18} fontWeight="500">
-                        {integrationStateMap[integrationState.name]}
+                      <Typography fontSize={18} fontWeight={500}>
+                        {labels[key] || "Unknown integration"}
                       </Typography>
 
-                      {integrationExplanationMap[integrationState.name] && (
+                      {ITEM_EXPLANATIONS[key as keyof IntegrationStatesMap] && (
                         <Tooltip
                           arrow
                           title={
-                            integrationExplanationMap[integrationState.name]
+                            ITEM_EXPLANATIONS[key as keyof IntegrationStatesMap]
                           }
                         >
-                          <IconButton size="medium" sx={{ padding: 0 }}>
-                            <InfoRounded color="primary" fontSize="medium" />
+                          <IconButton size="small" sx={{ p: 0 }}>
+                            <InfoRounded color="primary" />
                           </IconButton>
                         </Tooltip>
                       )}
                     </Stack>
                   }
                   action={
-                    <div
-                      className={`status ${
-                        integrationState.state ? "success" : "error"
-                      }`}
-                    ></div>
+                    <div className={`status ${value ? "success" : "error"}`} />
                   }
                   sx={{
                     "& .MuiCardHeader-action": {
-                      mt: 0,
-                      mr: 0,
-                      mb: 0,
                       alignSelf: "center",
+                      m: 0,
                     },
                   }}
                 />
-              </div>
+              </React.Fragment>
             ))}
-        </List>
+          </List>
+        )}
       </Collapse>
     </Card>
   );
