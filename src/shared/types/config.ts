@@ -82,6 +82,12 @@ export enum EventType {
   DriveThroughPenalty = "DriveThroughPenalty",
 }
 
+export const driverAudioEventReadableMap: Record<DriverAudioEventType, string> =
+  {
+    fastest_lap: "Fastest lap",
+    position_gain: "Position gain",
+  };
+
 export const actionTypeReadableMap: Record<ActionType, string> = {
   On: "On",
   Off: "Off",
@@ -113,6 +119,20 @@ export interface Event {
   amount: number;
 }
 
+export enum DriverAudioEventType {
+  FASTEST_LAP = "fastest_lap",
+  POSITION_GAIN = "position_gain",
+}
+
+export interface IDriverAudioAlert {
+  id: number;
+  label?: string;
+  driverNumber: string;
+  filePath?: string;
+  events: DriverAudioEventType[];
+  enabled: boolean;
+}
+
 export interface IConfig {
   hideLogs: boolean;
   startMultiViewerWhenAppStarts: boolean;
@@ -121,6 +141,7 @@ export interface IConfig {
   goBackToStaticDelay?: number;
   goBackToStaticColor?: RGBColor;
   events: Event[];
+  driverAudioAlerts: IDriverAudioAlert[];
   multiviewerLiveTimingURL: string;
   multiviewerCheck: boolean;
   philipsHueEnabled: boolean;

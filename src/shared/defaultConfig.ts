@@ -3,6 +3,7 @@ import { ActionType, IConfig, EventType } from "./types/config";
 export const defaultConfig: IConfig = {
   hideLogs: true,
   startMultiViewerWhenAppStarts: false,
+  driverAudioAlerts: [],
   events: [
     {
       id: 1,

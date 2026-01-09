@@ -70,6 +70,7 @@ export async function createMainWindow() {
       backgroundThrottling: false,
       nodeIntegration: true,
       contextIsolation: false,
+      webSecurity: false,
     },
     resizable: true,
     maximizable: true,

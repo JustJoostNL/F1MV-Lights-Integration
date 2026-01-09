@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo, useState } from "react";
-import { Box, Button } from "@mui/material";
+import { Box, Button, Chip } from "@mui/material";
 import {
   DataGrid,
   GridColDef,
@@ -16,10 +16,11 @@ import { useConfig } from "../hooks/useConfig";
 import { EventDialog } from "../components/eventEditor/EventDialog";
 import { eventTypeReadableMap } from "../../shared/types/config";
 import { ToolsCell } from "../components/eventEditor/ToolsCell";
+import { useDebug } from "../hooks/useDebug";
 
 export function EventEditorPage() {
   const { config, updateConfig } = useConfig();
-  const [debug, setDebug] = useState(false);
+  const debug = useDebug();
   const [editEventDialogOpen, setEditEventDialogOpen] = useState(false);
   const [selectedEventIdIsNew, setSelectedEventIdIsNew] = useState(false);
   const [selectedEventId, setSelectedEventId] = useState<number | null>(null);
@@ -28,10 +29,6 @@ export function EventEditorPage() {
   useDocumentTitle("F1MV Lights Integration - Event Editor");
   useHotkeys("shift+o", () => {
     window.f1mvli.config.open();
-  });
-
-  useHotkeys("shift+d", () => {
-    setDebug((prev) => !prev);
   });
 
   const handleDelete = useCallback(
@@ -132,7 +129,23 @@ export function EventEditorPage() {
     () => [
       { field: "name", headerName: "Name", width: 250 },
       { field: "enabled", headerName: "Enabled", width: 100 },
-      { field: "triggers", headerName: "Triggers", width: 200 },
+      {
+        field: "triggers",
+        headerName: "Triggers",
+        width: 200,
+        renderCell: (params) => (
+          <>
+            {params.value.map((trigger: string) => (
+              <Chip
+                key={trigger}
+                label={trigger}
+                size="small"
+                sx={{ mr: 0.5, mb: 0.5 }}
+              />
+            ))}
+          </>
+        ),
+      },
       { field: "actions", headerName: "Actions", width: 100 },
       { field: "amount", headerName: "Repeat Amount", width: 130 },
       {
@@ -155,21 +168,23 @@ export function EventEditorPage() {
     [handleDelete, handleEdit, handleShare, handleDuplicate],
   );
 
-  const rows = useMemo(() => {
-    return config.events.map((event) => {
-      const triggers = event.triggers.map((trigger) => {
-        return eventTypeReadableMap[trigger];
-      });
-      return {
-        id: event.id,
-        name: event.name,
-        enabled: event.enabled ? "Yes" : "No",
-        triggers: triggers.join(", "),
-        actions: event.actions.length,
-        amount: event.amount,
-      };
-    });
-  }, [config]);
+  const rows = useMemo(
+    () =>
+      config.events.map((event) => {
+        const triggers = event.triggers.map((trigger) => {
+          return eventTypeReadableMap[trigger];
+        });
+        return {
+          id: event.id,
+          name: event.name,
+          enabled: event.enabled ? "Yes" : "No",
+          triggers,
+          actions: event.actions.length,
+          amount: event.amount,
+        };
+      }),
+    [config],
+  );
 
   return (
     <ContentLayout container titleVariant="h2" title="Event Editor">

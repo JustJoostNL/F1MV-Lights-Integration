@@ -1,7 +1,12 @@
+import path from "path";
 import log from "electron-log";
 import fetch from "cross-fetch";
-import { isEqual } from "lodash";
-import { EventType, eventTypeReadableMap } from "../shared/types/config";
+import { debounce, isEqual } from "lodash";
+import {
+  EventType,
+  eventTypeReadableMap,
+  DriverAudioEventType,
+} from "../shared/types/config";
 import {
   IRaceControlMessages,
   ISessionData,
@@ -14,6 +19,7 @@ import {
 import { MiscState } from "../shared/types/integration";
 import { getConfig, globalConfig } from "./ipc/config";
 import { integrationManager } from "./integrations/IntegrationManager";
+import { mainWindow } from ".";
 
 export const statusEventMap: Record<string, EventType> = {
   "1": EventType.GreenFlag,
@@ -88,6 +94,7 @@ class MultiViewerService {
     Messages: [],
   };
   private _errorCheck: boolean = false;
+  private _previousDriverPositions: Map<string, string> = new Map();
 
   private _pollingInterval: ReturnType<typeof setInterval> | null = null;
   private _eventCallback: EventCallback | null = null;
@@ -151,6 +158,7 @@ class MultiViewerService {
       this.checkForNewEventsInRaceControlMessages(
         liveTimingData.RaceControlMessages,
       );
+      this.checkForDriverPositionChanges(liveTimingData.TimingData.Lines);
     }, 500);
   }
 
@@ -270,20 +278,30 @@ class MultiViewerService {
     return minutes * 60 + seconds + milliseconds / 1000;
   }
 
-  private checkForNewFastestLap(
+  private async checkForNewFastestLap(
     _TimingStats: ITimingStats["Lines"],
     TimingData: ITimingData["Lines"],
-  ): void {
-    const fastestLapTimeSeconds = Object.values(TimingData ?? {})
-      .map((line) => {
-        if (line.KnockedOut === true) return "";
-        if (line.Retired === true) return "";
-        if (line.Stopped === true) return "";
-        return line.BestLapTime?.Value;
-      })
-      .filter((lapTime) => lapTime !== "")
-      .map((lapTime) => ({ lapTime, parsed: this.parseLapTime(lapTime) }))
-      .sort((a, b) => a.parsed - b.parsed)[0]?.parsed;
+  ): Promise<void> {
+    let fastestLapTimeSeconds: number | undefined = undefined;
+    let fastestDriverNumber: string | undefined = undefined;
+
+    for (const [driverNumber, line] of Object.entries(TimingData ?? {})) {
+      if (line.KnockedOut === true) continue;
+      if (line.Retired === true) continue;
+      if (line.Stopped === true) continue;
+
+      const lapTime = line.BestLapTime?.Value;
+      if (!lapTime) continue;
+
+      const parsed = this.parseLapTime(lapTime);
+      if (
+        fastestLapTimeSeconds === undefined ||
+        parsed < fastestLapTimeSeconds
+      ) {
+        fastestLapTimeSeconds = parsed;
+        fastestDriverNumber = driverNumber;
+      }
+    }
 
     if (fastestLapTimeSeconds === undefined) return;
 
@@ -297,6 +315,10 @@ class MultiViewerService {
     if (typeof this._currentFastestLapTimeSeconds === "number") {
       this._currentFastestLapTimeSeconds = fastestLapTimeSeconds;
       this.emitEvent(EventType.FastestLap);
+
+      if (fastestDriverNumber) {
+        await this.playDriverAudioForFastestLap(fastestDriverNumber);
+      }
     } else {
       this._currentFastestLapTimeSeconds = fastestLapTimeSeconds;
     }
@@ -390,6 +412,99 @@ class MultiViewerService {
     }
   }
 
+  private async checkForDriverPositionChanges(
+    timingData: ITimingData["Lines"],
+  ): Promise<void> {
+    if (!timingData) return;
+
+    const config = await getConfig();
+    const driverAudioAlerts = config.driverAudioAlerts?.filter(
+      (alert) =>
+        alert.enabled &&
+        alert.events.includes(DriverAudioEventType.POSITION_GAIN),
+    );
+
+    if (!driverAudioAlerts || driverAudioAlerts.length === 0) return;
+
+    for (const [driverNumber, line] of Object.entries(timingData)) {
+      const currentPosition = line.Position;
+      const previousPosition = this._previousDriverPositions.get(driverNumber);
+
+      // Skip if no previous position (first run) or driver is not on track
+      if (!previousPosition || !currentPosition) {
+        this._previousDriverPositions.set(driverNumber, currentPosition);
+        continue;
+      }
+
+      // Check if position improved (lower number = better position)
+      const prevPos = parseInt(previousPosition, 10);
+      const currPos = parseInt(currentPosition, 10);
+
+      if (!isNaN(prevPos) && !isNaN(currPos) && currPos < prevPos) {
+        const matchingAlert = driverAudioAlerts.find(
+          (alert) => alert.driverNumber === driverNumber,
+        );
+
+        if (matchingAlert) {
+          log.debug(
+            `Position gain for driver ${driverNumber}: ${previousPosition} -> ${currentPosition}`,
+          );
+          await this.debouncedPlayDriverAudio(matchingAlert.filePath);
+        }
+      }
+
+      this._previousDriverPositions.set(driverNumber, currentPosition);
+    }
+  }
+
+  private async playDriverAudioForFastestLap(
+    driverNumber: string,
+  ): Promise<void> {
+    const config = await getConfig();
+    const driverAudioAlerts = config.driverAudioAlerts?.filter(
+      (alert) =>
+        alert.enabled &&
+        alert.events.includes(DriverAudioEventType.FASTEST_LAP) &&
+        alert.driverNumber === driverNumber,
+    );
+
+    if (driverAudioAlerts && driverAudioAlerts.length > 0) {
+      const alert = driverAudioAlerts[0];
+      log.debug(`Driver ${driverNumber} set the fastest lap`);
+      await this.debouncedPlayDriverAudio(alert.filePath);
+    }
+  }
+
+  private debouncedPlayDriverAudio = debounce(
+    async (filePath?: string) => {
+      await this.playDriverAudio(filePath);
+    },
+    1000,
+    { leading: true, trailing: false },
+  );
+
+  private async playDriverAudio(filePath?: string): Promise<void> {
+    try {
+      if (mainWindow && !mainWindow.isDestroyed()) {
+        const audioPath =
+          filePath ||
+          (process.env.VITE_DEV_SERVER_URL
+            ? path.join(
+                __dirname,
+                "../../src/renderer/assets/team_radio_f1fx.wav",
+              )
+            : path.join(process.resourcesPath, "assets/team_radio_f1fx.wav"));
+
+        mainWindow.webContents.send("f1mvli:utils:play-audio", {
+          filePath: audioPath,
+          volume: 1.0,
+        });
+      }
+    } catch (error) {
+      log.error("Error playing driver audio:", error);
+    }
+  }
+
   private emitEvent(event: EventType): void {
     if (this._eventCallback) {
       this._eventCallback(event);
@@ -411,6 +526,7 @@ class MultiViewerService {
     this._processedRaceControlMessages = { Messages: [] };
     this._errorCheck = false;
     this._isOnline = false;
+    this._previousDriverPositions.clear();
   }
 }
 

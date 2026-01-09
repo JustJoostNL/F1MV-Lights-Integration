@@ -2,13 +2,13 @@ import React, { useCallback, useMemo, useState } from "react";
 import { DataGrid, GridColDef, GridRowSelectionModel } from "@mui/x-data-grid";
 import { Alert, Box, Paper, TextField, InputAdornment } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
-import { useHotkeys } from "react-hotkeys-hook";
 import { JSONTree } from "react-json-tree";
 import useSWR from "swr";
 import { ContentLayout } from "../layouts/ContentLayout";
 import { useConfig } from "../../hooks/useConfig";
 import { IConfig } from "../../../shared/types/config";
 import { IntegrationPlugin } from "../../../shared/types/integration";
+import { useDebug } from "../../hooks/useDebug";
 
 export interface DeviceSelectorProps {
   /** Integration ID to fetch devices from */
@@ -49,12 +49,9 @@ export function DeviceSelector({
   transformDevice = defaultTransform,
 }: DeviceSelectorProps) {
   const { config, updateConfig } = useConfig();
-  const [debug, setDebug] = useState(false);
+  const debug = useDebug();
   const [searchText, setSearchText] = useState("");
 
-  useHotkeys("shift+d", () => setDebug((prev) => !prev));
-
-  // Fetch devices using the integrationManager API
   const {
     data,
     mutate,
@@ -73,7 +70,6 @@ export function DeviceSelector({
     { refreshInterval: 2000 },
   );
 
-  // Check if integration is online
   const { data: isOnline, error: stateError } = useSWR(
     `online-${integrationId}`,
     () => window.f1mvli.integrationManager.isOnline(integrationId),

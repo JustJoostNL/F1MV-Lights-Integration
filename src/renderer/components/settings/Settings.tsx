@@ -4,6 +4,7 @@ import { Button, Card, CardHeader, List, ListItem, Stack } from "@mui/material";
 import { JSONTree } from "react-json-tree";
 import { defaultConfig } from "../../../shared/defaultConfig";
 import { useConfig } from "../../hooks/useConfig";
+import { useDebug } from "../../hooks/useDebug";
 import { AutoMultiViewerStartToggle } from "./AutoMultiViewerStartToggle";
 import { EventSettings } from "./EventSettings";
 import {
@@ -57,6 +58,7 @@ import { GlobalMaxBrightnessSlider } from "./GlobalMaxBrightnessSlider";
 import { GoBackToStaticDelayInput } from "./GoBackToStaticDelayInput";
 import { GoBackToStaticBrightnessInput } from "./GoBackToStaticBrightnessInput";
 import { GoBackToStaticColorChangeButton } from "./GoBackToStaticColorChangeButton";
+import { DriverAudioSettingsButton } from "./DriverAudioSettingsButton";
 
 interface ISettings extends SettingsGroupProps {
   type?: "normal" | "experimental" | "debug";
@@ -64,12 +66,9 @@ interface ISettings extends SettingsGroupProps {
 
 export function Settings() {
   const { config, setConfig } = useConfig();
-  const [debug, setDebug] = useState(false);
+  const debug = useDebug();
   const [ikeaAdvancedVisible, setIkeaAdvancedVisible] = useState(false);
 
-  useHotkeys("shift+d", () => {
-    setDebug(!debug);
-  });
   useHotkeys("shift+a+2", () => {
     setIkeaAdvancedVisible(!ikeaAdvancedVisible);
   });
@@ -136,6 +135,14 @@ export function Settings() {
             "Here you can enhance your experience by customizing what happens on certain events.",
           configKeys: ["events"],
           input: <EventSettings />,
+        },
+        {
+          type: "setting",
+          title: "Driver audio alerts",
+          description:
+            "Configure custom audio notifications for specific drivers and events.",
+          configKeys: ["driverAudioAlerts"],
+          input: <DriverAudioSettingsButton />,
         },
       ],
     },
