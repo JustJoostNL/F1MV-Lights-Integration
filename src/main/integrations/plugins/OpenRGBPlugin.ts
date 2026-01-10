@@ -1,4 +1,4 @@
-import Client from "openrgb-sdk";
+import { Client } from "openrgb-sdk";
 import { BaseIntegrationPlugin } from "../BaseIntegrationPlugin";
 import { globalConfig } from "../../ipc/config";
 import { IntegrationApiError } from "../utils/error";
