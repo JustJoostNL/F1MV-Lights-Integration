@@ -143,7 +143,7 @@ export function DeviceSelector({
                 disableRowSelectionOnClick
                 pageSizeOptions={[10, 25, 50, 100]}
                 initialState={{
-                  pagination: { paginationModel: { pageSize: 25 } },
+                  pagination: { paginationModel: { pageSize: 10 } },
                 }}
                 rowSelectionModel={{
                   type: "include",

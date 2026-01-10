@@ -5,7 +5,6 @@ import { JSONTree } from "react-json-tree";
 import { defaultConfig } from "../../../shared/defaultConfig";
 import { useConfig } from "../../hooks/useConfig";
 import { useDebug } from "../../hooks/useDebug";
-import { AutoMultiViewerStartToggle } from "./AutoMultiViewerStartToggle";
 import { EventSettings } from "./EventSettings";
 import {
   ListItemTextStyled,
@@ -13,58 +12,19 @@ import {
   SettingsGroupProps,
 } from "./SettingsGroup";
 import { MultiViewerLiveTimingUrlInput } from "./MultiViewerLiveTimingUrlInput";
-import { MultiViewerSyncToggle } from "./MultiViewerSyncToggle";
-import { DebugModeToggle } from "./DebugModeToggle";
-import { PhilipsHueEnabledToggle } from "./PhilipsHueEnabledToggle";
-import { PhilipsHueFadeToggle } from "./PhilipsHueFadeToggle";
-import { IkeaEnabledToggle } from "./IkeaEnabledToggle";
-import { IkeaSecurityCodeInput } from "./IkeaSecurityCodeInput";
 import { PhilipsHueBridgeIpInput } from "./PhilipsHueBridgeIpInput";
 import { PhilipsHueBridgeTokenInput } from "./PhilipsHueBridgeTokenInput";
-import { IkeaIdentityInput } from "./IkeaIdentityInput";
-import { IkeaPreSharedKeyInput } from "./IkeaPreSharedKeyInput";
-import { GoveeEnabledToggle } from "./GoveeEnabledToggle";
-import { OpenRGBEnabledToggle } from "./OpenRGBEnabledToggle";
-import { OpenRGBServerIPInput } from "./OpenRGBServerIPInput";
-import { OpenRGBServerPortInput } from "./OpenRGBServerPortInput";
-import { HomeAssistantEnabledToggle } from "./HomeAssistantEnabledToggle";
-import { HomeAssistantServerHostInput } from "./HomeAssistantServerHostInput";
-import { HomeAssistantServerPortInput } from "./HomeAssistantServerPortInput";
-import { HomeAssistantLongLivedAccessTokenInput } from "./HomeAssistantLongLivedAccessTokenInput";
-import { HomebridgeEnabledToggle } from "./HomebridgeEnabledToggle";
-import { HomebridgeServerHostInput } from "./HomebridgeServerHostInput";
-import { HomebridgeServerPortInput } from "./HomebridgeServerPortInput";
-import { HomebridgeServerUsername } from "./HomebridgeServerUsername";
-import { HomebridgeServerPassword } from "./HomebridgeServerPassword";
-import { WLEDEnabledToggle } from "./WLEDEnabledToggle";
-import { MQTTEnabledToggle } from "./MQTTEnabledToggle";
-import { MQTTBrokerHostInput } from "./MQTTBrokerHostInput";
-import { MQTTBrokerPortInput } from "./MQTTBrokerPortInput";
-import { MQTTBrokerUsernameInput } from "./MQTTBrokerUsernameInput";
-import { MQTTBrokerPasswordInput } from "./MQTTBrokerPasswordInput";
-import { StreamdeckEnabledToggle } from "./StreamdeckEnabledToggle";
-import { DiscordEnabledToggle } from "./DiscordEnabledToggle";
-import { DiscordAvoidSpoilersToggle } from "./DiscordAvoidSpoilersToggle";
-import { WebserverEnabledToggle } from "./WebserverEnabledToggle";
-import { WebserverPortInput } from "./WebserverPortInput";
-import { HomeAssistantDevicesButton } from "./HomeAssistantDevicesButton";
-import { HomebridgeAccessoriesButton } from "./HomebridgeAccessoriesButton";
 import { PhilipsHueSelectButton } from "./PhilipsHueSelectButton";
 import { OpenRGBConnectButton } from "./OpenRGBConnectButton";
-import { WLEDConfigureDevicesButton } from "./WLEDConfigureDevicesButton";
-import { IkeaGatewayIpInput } from "./IkeaGatewayIpInput.tsx";
-import { IkeaSelectButton } from "./IkeaSelectButton";
+import { TradfriGatewayIpInput } from "./TradfriGatewayIpInput";
 import { GlobalMaxBrightnessSlider } from "./GlobalMaxBrightnessSlider";
-import { GoBackToStaticDelayInput } from "./GoBackToStaticDelayInput";
 import { GoBackToStaticBrightnessInput } from "./GoBackToStaticBrightnessInput";
 import { GoBackToStaticColorChangeButton } from "./GoBackToStaticColorChangeButton";
 import { DriverAudioSettingsButton } from "./DriverAudioSettingsButton";
-import { DirigeraEnabledToggle } from "./DirigeraEnabledToggle";
-import { DirigeraHubIpInput } from "./DirigeraHubIpInput";
 import { DirigeraAccessTokenInput } from "./DirigeraAccessTokenInput";
-import { DirigeraDeviceSelectButton } from "./DirigeraDeviceSelectButton";
-import { DirigeraFadeToggle } from "./DirigeraFadeToggle";
-import { GoveeFadeToggle } from "./GoveeFadeToggle";
+import { SettingToggle } from "./SettingToggle";
+import { SettingInput } from "./SettingInput";
+import { DeviceConfigureButton } from "./DeviceConfigureButton";
 
 interface ISettings extends SettingsGroupProps {
   type?: "normal" | "experimental" | "debug";
@@ -100,7 +60,7 @@ export function Settings() {
           description:
             "This will automatically start MultiViewer when the application starts.",
           configKeys: ["startMultiViewerWhenAppStarts"],
-          input: <AutoMultiViewerStartToggle />,
+          input: <SettingToggle configKey="startMultiViewerWhenAppStarts" />,
         },
         {
           type: "setting",
@@ -116,7 +76,14 @@ export function Settings() {
           description:
             "This is the delay in milliseconds the app will wait before going back to the static color.",
           configKeys: ["goBackToStaticDelay"],
-          input: <GoBackToStaticDelayInput />,
+          input: (
+            <SettingInput
+              configKey="goBackToStaticDelay"
+              type="number"
+              label="Delay"
+              endAdornment="milliseconds"
+            />
+          ),
         },
         {
           type: "setting",
@@ -169,7 +136,7 @@ export function Settings() {
           description:
             "When disabled, the app will not sync with the current status of the MultiViewer Live Timing.",
           configKeys: ["multiviewerCheck"],
-          input: <MultiViewerSyncToggle />,
+          input: <SettingToggle configKey="multiviewerCheck" />,
         },
       ],
     },
@@ -187,7 +154,7 @@ export function Settings() {
               description:
                 "This will enable the Philips Hue integration, keep this disabled if you don't have Philips Hue devices.",
               configKeys: ["philipsHueEnabled"],
-              input: <PhilipsHueEnabledToggle />,
+              input: <SettingToggle configKey="philipsHueEnabled" />,
             },
             {
               type: "setting",
@@ -227,7 +194,7 @@ export function Settings() {
               description:
                 "Enable this if you want your Philips Hue devices to fade to the new color instead of instantly changing.",
               configKeys: ["philipsHueEnableFade"],
-              input: <PhilipsHueFadeToggle />,
+              input: <SettingToggle configKey="philipsHueEnableFade" />,
             },
           ],
         },
@@ -241,7 +208,7 @@ export function Settings() {
               description:
                 "This will enable the IKEA Dirigera integration, keep this disabled if you don't have IKEA Dirigera devices.",
               configKeys: ["dirigeraEnabled"],
-              input: <DirigeraEnabledToggle />,
+              input: <SettingToggle configKey="dirigeraEnabled" />,
             },
             {
               type: "setting",
@@ -250,7 +217,13 @@ export function Settings() {
               description:
                 "This is the IP address or hostname of your IKEA Dirigera hub.",
               configKeys: ["dirigeraHubIp"],
-              input: <DirigeraHubIpInput />,
+              input: (
+                <SettingInput
+                  configKey="dirigeraHubIp"
+                  type="string"
+                  label="IP Address or Hostname"
+                />
+              ),
             },
             {
               type: "setting",
@@ -270,7 +243,12 @@ export function Settings() {
               description:
                 "Here you can configure the devices that will be used for the IKEA Dirigera integration.",
               configKeys: ["dirigeraDeviceIds"],
-              input: <DirigeraDeviceSelectButton />,
+              input: (
+                <DeviceConfigureButton
+                  href="#/dirigera-ds"
+                  label="Select devices"
+                />
+              ),
             },
             {
               type: "setting",
@@ -279,7 +257,7 @@ export function Settings() {
               description:
                 "Enable this if you want your IKEA Dirigera devices to fade to the new color instead of instantly changing.",
               configKeys: ["dirigeraFadeEnabled"],
-              input: <DirigeraFadeToggle />,
+              input: <SettingToggle configKey="dirigeraFadeEnabled" />,
             },
           ],
         },
@@ -293,7 +271,7 @@ export function Settings() {
               description:
                 "This will enable the IKEA Trådfri integration, keep this disabled if you don't have IKEA Trådfri devices.",
               configKeys: ["ikeaEnabled"],
-              input: <IkeaEnabledToggle />,
+              input: <SettingToggle configKey="ikeaEnabled" />,
             },
             {
               type: "setting",
@@ -302,7 +280,7 @@ export function Settings() {
               description:
                 "This is the IP address of your IKEA gateway, you can use the button to discover your gateway or you can enter the IP address manually.",
               configKeys: ["ikeaGatewayIp"],
-              input: <IkeaGatewayIpInput />,
+              input: <TradfriGatewayIpInput />,
             },
             {
               type: "setting",
@@ -311,7 +289,13 @@ export function Settings() {
               description:
                 "The security code of your IKEA gateway, you can find this at the back of your gateway.",
               configKeys: ["ikeaSecurityCode"],
-              input: <IkeaSecurityCodeInput />,
+              input: (
+                <SettingInput
+                  configKey="ikeaSecurityCode"
+                  type="string"
+                  label="Security Code"
+                />
+              ),
             },
             {
               type: "setting",
@@ -320,7 +304,13 @@ export function Settings() {
               description:
                 "This is the identity the app uses to pair with the gateway, this is/will be generated automatically.",
               configKeys: ["ikeaIdentity"],
-              input: <IkeaIdentityInput />,
+              input: (
+                <SettingInput
+                  configKey="ikeaIdentity"
+                  type="string"
+                  label="Identity"
+                />
+              ),
             },
             {
               type: "setting",
@@ -329,7 +319,13 @@ export function Settings() {
               description:
                 "This is the pre-shared key the app uses to pair with the gateway, this is/will be generated automatically.",
               configKeys: ["ikeaPreSharedKey"],
-              input: <IkeaPreSharedKeyInput />,
+              input: (
+                <SettingInput
+                  configKey="ikeaPreSharedKey"
+                  type="string"
+                  label="Pre-Shared Key"
+                />
+              ),
             },
             {
               type: "setting",
@@ -338,7 +334,12 @@ export function Settings() {
               description:
                 "Here you can configure the devices that will be used for the IKEA Trådfri integration.",
               configKeys: ["ikeaDeviceIds"],
-              input: <IkeaSelectButton />,
+              input: (
+                <DeviceConfigureButton
+                  href="#/ikea-tradfri-ds"
+                  label="Select devices"
+                />
+              ),
             },
           ],
         },
@@ -352,7 +353,7 @@ export function Settings() {
               description:
                 "This will enable the Govee integration, keep this disabled if you don't have Govee devices.",
               configKeys: ["goveeEnabled"],
-              input: <GoveeEnabledToggle />,
+              input: <SettingToggle configKey="goveeEnabled" />,
             },
             {
               type: "setting",
@@ -361,7 +362,7 @@ export function Settings() {
               description:
                 "Enable this if you want your Govee devices to fade to the new color instead of instantly changing.",
               configKeys: ["goveeFadeEnabled"],
-              input: <GoveeFadeToggle />,
+              input: <SettingToggle configKey="goveeFadeEnabled" />,
             },
           ],
         },
@@ -375,7 +376,7 @@ export function Settings() {
               description:
                 "This will enable the OpenRGB integration, keep this disabled if you don't have OpenRGB devices.",
               configKeys: ["openrgbEnabled"],
-              input: <OpenRGBEnabledToggle />,
+              input: <SettingToggle configKey="openrgbEnabled" />,
             },
             {
               type: "setting",
@@ -384,16 +385,30 @@ export function Settings() {
               description:
                 "This is the hostname or IP of the system OpenRGB is running on. (default is localhost)",
               configKeys: ["openrgbServerIp"],
-              input: <OpenRGBServerIPInput />,
+              input: (
+                <SettingInput
+                  configKey="openrgbServerIp"
+                  type="string"
+                  label="IP Address or Hostname"
+                />
+              ),
             },
             {
               type: "setting",
               title: "OpenRGB Server Port",
               condition: config.openrgbEnabled,
               description:
-                "This is the port of the OpenRGB server, you can find this port in the 'SDK Server' tab in the OpenRGB software. (default is 6742)",
+                "This is the port of the OpenRGB server, you can find this port in the 'SDK Server' tab in the OpenRGB software (default is 6742).",
               configKeys: ["openrgbServerPort"],
-              input: <OpenRGBServerPortInput />,
+              input: (
+                <SettingInput
+                  configKey="openrgbServerPort"
+                  type="number"
+                  label="Port"
+                  min={1}
+                  max={65535}
+                />
+              ),
             },
             {
               type: "setting",
@@ -416,7 +431,7 @@ export function Settings() {
               description:
                 "This will enable the Home Assistant integration, keep this disabled if you don't have Home Assistant.",
               configKeys: ["homeAssistantEnabled"],
-              input: <HomeAssistantEnabledToggle />,
+              input: <SettingToggle configKey="homeAssistantEnabled" />,
             },
             {
               type: "setting",
@@ -425,16 +440,30 @@ export function Settings() {
               description:
                 "This is the hostname or IP of the system Home Assistant is running on. Don't forget to add http:// or https://",
               configKeys: ["homeAssistantHost"],
-              input: <HomeAssistantServerHostInput />,
+              input: (
+                <SettingInput
+                  configKey="homeAssistantHost"
+                  type="string"
+                  label="IP Address or Hostname"
+                />
+              ),
             },
             {
               type: "setting",
               title: "Home Assistant Access Port",
               condition: config.homeAssistantEnabled,
               description:
-                "This is the port of the Home Assistant server. (default is 8123)",
+                "This is the port of the Home Assistant server (default is 8123).",
               configKeys: ["homeAssistantPort"],
-              input: <HomeAssistantServerPortInput />,
+              input: (
+                <SettingInput
+                  configKey="homeAssistantPort"
+                  type="number"
+                  label="Port"
+                  min={1}
+                  max={65535}
+                />
+              ),
             },
             {
               type: "setting",
@@ -443,7 +472,13 @@ export function Settings() {
               description:
                 "This is the long-lived access token you can create in your Home Assistant profile.",
               configKeys: ["homeAssistantToken"],
-              input: <HomeAssistantLongLivedAccessTokenInput />,
+              input: (
+                <SettingInput
+                  configKey="homeAssistantToken"
+                  type="string"
+                  label="Long-Lived Access Token"
+                />
+              ),
             },
             {
               type: "setting",
@@ -452,7 +487,12 @@ export function Settings() {
               description:
                 "Here you can configure the devices that will be used for the Home Assistant integration.",
               configKeys: ["homeAssistantDevices"],
-              input: <HomeAssistantDevicesButton />,
+              input: (
+                <DeviceConfigureButton
+                  href="#/home-assistant-ds"
+                  label="Select devices"
+                />
+              ),
             },
           ],
         },
@@ -466,7 +506,7 @@ export function Settings() {
               description:
                 "This will enable the Homebridge integration, keep this disabled if you don't have Homebridge.",
               configKeys: ["homebridgeEnabled"],
-              input: <HomebridgeEnabledToggle />,
+              input: <SettingToggle configKey="homebridgeEnabled" />,
             },
             {
               type: "setting",
@@ -475,7 +515,13 @@ export function Settings() {
               description:
                 "This is the hostname or IP of the system Homebridge is running on. Don't forget to add http:// or https://",
               configKeys: ["homebridgeHost"],
-              input: <HomebridgeServerHostInput />,
+              input: (
+                <SettingInput
+                  configKey="homebridgeHost"
+                  type="string"
+                  label="IP Address or Hostname"
+                />
+              ),
             },
             {
               type: "setting",
@@ -484,7 +530,15 @@ export function Settings() {
               description:
                 "This is the port of the Homebridge server. (default is 8581)",
               configKeys: ["homebridgePort"],
-              input: <HomebridgeServerPortInput />,
+              input: (
+                <SettingInput
+                  configKey="homebridgePort"
+                  type="number"
+                  label="Port"
+                  min={1}
+                  max={65535}
+                />
+              ),
             },
             {
               type: "setting",
@@ -493,7 +547,13 @@ export function Settings() {
               description:
                 "This is the username you can use to authenticate with the Homebridge server.",
               configKeys: ["homebridgeUsername"],
-              input: <HomebridgeServerUsername />,
+              input: (
+                <SettingInput
+                  configKey="homebridgeUsername"
+                  type="string"
+                  label="Username"
+                />
+              ),
             },
             {
               type: "setting",
@@ -502,7 +562,13 @@ export function Settings() {
               description:
                 "This is the password you can use to authenticate with the Homebridge server.",
               configKeys: ["homebridgePassword"],
-              input: <HomebridgeServerPassword />,
+              input: (
+                <SettingInput
+                  configKey="homebridgePassword"
+                  type="string"
+                  label="Password"
+                />
+              ),
             },
             {
               type: "setting",
@@ -511,7 +577,12 @@ export function Settings() {
               description:
                 "Here you can configure the accessories that will be used for the Homebridge integration.",
               configKeys: ["homebridgeAccessories"],
-              input: <HomebridgeAccessoriesButton />,
+              input: (
+                <DeviceConfigureButton
+                  href="#/homebridge-as"
+                  label="Select accessories"
+                />
+              ),
             },
           ],
         },
@@ -525,7 +596,7 @@ export function Settings() {
               description:
                 "This will enable the WLED integration, keep this disabled if you don't have WLED devices.",
               configKeys: ["wledEnabled"],
-              input: <WLEDEnabledToggle />,
+              input: <SettingToggle configKey="wledEnabled" />,
             },
             {
               type: "setting",
@@ -534,7 +605,12 @@ export function Settings() {
               description:
                 "Here you can configure the devices that will be used for the WLED integration.",
               configKeys: ["wledDevices"],
-              input: <WLEDConfigureDevicesButton />,
+              input: (
+                <DeviceConfigureButton
+                  href="#/wled-ds"
+                  label="Configure devices"
+                />
+              ),
             },
           ],
         },
@@ -548,7 +624,7 @@ export function Settings() {
               description:
                 "This will enable the MQTT integration, keep this disabled if you don't have MQTT.",
               configKeys: ["mqttEnabled"],
-              input: <MQTTEnabledToggle />,
+              input: <SettingToggle configKey="mqttEnabled" />,
             },
             {
               type: "setting",
@@ -557,7 +633,13 @@ export function Settings() {
               description:
                 "This is the hostname or IP the MQTT broker is running on. You don't have to add mqtt://",
               configKeys: ["mqttBrokerHost"],
-              input: <MQTTBrokerHostInput />,
+              input: (
+                <SettingInput
+                  configKey="mqttBrokerHost"
+                  type="string"
+                  label="IP Address or Hostname"
+                />
+              ),
             },
             {
               type: "setting",
@@ -566,7 +648,15 @@ export function Settings() {
               description:
                 "This is the port of the MQTT broker. (default is 1883)",
               configKeys: ["mqttBrokerPort"],
-              input: <MQTTBrokerPortInput />,
+              input: (
+                <SettingInput
+                  configKey="mqttBrokerPort"
+                  type="number"
+                  label="Port"
+                  min={1}
+                  max={65535}
+                />
+              ),
             },
             {
               type: "setting",
@@ -575,7 +665,13 @@ export function Settings() {
               description:
                 "This is the username you can use to authenticate with the MQTT broker.",
               configKeys: ["mqttBrokerUsername"],
-              input: <MQTTBrokerUsernameInput />,
+              input: (
+                <SettingInput
+                  configKey="mqttBrokerUsername"
+                  type="string"
+                  label="Username"
+                />
+              ),
             },
             {
               type: "setting",
@@ -584,7 +680,13 @@ export function Settings() {
               description:
                 "This is the password you can use to authenticate with the MQTT broker.",
               configKeys: ["mqttBrokerPassword"],
-              input: <MQTTBrokerPasswordInput />,
+              input: (
+                <SettingInput
+                  configKey="mqttBrokerPassword"
+                  type="string"
+                  label="Password"
+                />
+              ),
             },
           ],
         },
@@ -598,7 +700,7 @@ export function Settings() {
               description:
                 "This will enable the Elgato Stream Deck integration, keep this disabled if you don't have an Elgato Stream Deck.",
               configKeys: ["streamdeckEnabled"],
-              input: <StreamdeckEnabledToggle />,
+              input: <SettingToggle configKey="streamdeckEnabled" />,
             },
           ],
         },
@@ -612,7 +714,7 @@ export function Settings() {
               description:
                 "This will enable the Discord Rich Presence integration, keep this disabled if you don't want Discord Rich Presence.",
               configKeys: ["discordRPCEnabled"],
-              input: <DiscordEnabledToggle />,
+              input: <SettingToggle configKey="discordRPCEnabled" />,
             },
             {
               type: "setting",
@@ -621,7 +723,7 @@ export function Settings() {
               description:
                 "This will avoid spoilers in the Discord Rich Presence.",
               configKeys: ["discordRPCAvoidSpoilers"],
-              input: <DiscordAvoidSpoilersToggle />,
+              input: <SettingToggle configKey="discordRPCAvoidSpoilers" />,
             },
           ],
         },
@@ -635,7 +737,7 @@ export function Settings() {
               description:
                 "This will enable the webserver, keep this disabled if you don't want the webserver.",
               configKeys: ["webserverEnabled"],
-              input: <WebserverEnabledToggle />,
+              input: <SettingToggle configKey="webserverEnabled" />,
             },
             {
               type: "setting",
@@ -643,7 +745,15 @@ export function Settings() {
               condition: config.webserverEnabled,
               description: "This is the port the webserver will run on.",
               configKeys: ["webserverPort"],
-              input: <WebserverPortInput />,
+              input: (
+                <SettingInput
+                  configKey="webserverPort"
+                  type="number"
+                  label="Port"
+                  min={1}
+                  max={65535}
+                />
+              ),
             },
           ],
         },
@@ -660,7 +770,7 @@ export function Settings() {
           description:
             "This will enable debug mode, enable this if you want to see debug messages in the logs.",
           configKeys: ["debugMode"],
-          input: <DebugModeToggle />,
+          input: <SettingToggle configKey="debugMode" />,
         },
       ],
     },

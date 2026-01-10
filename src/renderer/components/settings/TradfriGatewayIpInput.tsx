@@ -4,7 +4,7 @@ import { enqueueSnackbar } from "notistack";
 import { useConfig } from "../../hooks/useConfig";
 import { IntegrationPlugin } from "../../../shared/types/integration";
 
-export function IkeaGatewayIpInput() {
+export function TradfriGatewayIpInput() {
   const { config, updateConfig } = useConfig();
 
   const handleInputChange = useCallback(
