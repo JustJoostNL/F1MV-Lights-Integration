@@ -187,6 +187,7 @@ export const defaultConfig: IConfig = {
   ikeaPreSharedKey: undefined,
   ikeaDeviceIds: [],
   goveeEnabled: false,
+  goveeFadeEnabled: false,
   openrgbEnabled: false,
   openrgbServerIp: "localhost",
   openrgbServerPort: 6742,

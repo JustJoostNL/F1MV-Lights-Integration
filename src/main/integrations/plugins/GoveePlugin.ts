@@ -6,6 +6,7 @@ import {
   IntegrationControlArgs,
   ControlType,
 } from "../../../shared/types/integration";
+import { globalConfig } from "../../ipc/config";
 
 export class GoveePlugin extends BaseIntegrationPlugin {
   readonly id = IntegrationPlugin.GOVEE;
@@ -52,7 +53,14 @@ export class GoveePlugin extends BaseIntegrationPlugin {
       this.goveeInstance.devicesArray.map(async (device) => {
         if (controlType === ControlType.ON) {
           await device.actions.setBrightness(brightness);
-          await device.actions.setColor({ rgb: [color.r, color.g, color.b] });
+          if (globalConfig.goveeFadeEnabled) {
+            await device.actions.fadeColor({
+              color: { rgb: [color.r, color.g, color.b] },
+              time: 500,
+            });
+          } else {
+            await device.actions.setColor({ rgb: [color.r, color.g, color.b] });
+          }
           if (device.state.isOn === 0) await device.actions.setOn();
         } else {
           await device.actions.setOff();

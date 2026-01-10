@@ -171,7 +171,6 @@ export class DirigeraPlugin extends BaseIntegrationPlugin {
     return [
       {
         name: "authenticate",
-        description: "Authenticate with Dirigera hub (press action button)",
         handler: async () => this.authenticate(),
       },
     ];

@@ -162,6 +162,7 @@ export interface IConfig {
   ikeaPreSharedKey: string | undefined;
   ikeaDeviceIds: number[];
   goveeEnabled: boolean;
+  goveeFadeEnabled: boolean;
   openrgbEnabled: boolean;
   openrgbServerIp: string;
   openrgbServerPort: number;

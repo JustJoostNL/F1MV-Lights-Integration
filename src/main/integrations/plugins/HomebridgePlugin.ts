@@ -64,7 +64,7 @@ export class HomebridgePlugin extends BaseIntegrationPlugin {
         Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
       },
-      timeout: 5000,
+      timeout: 2000,
     });
   }
 
@@ -168,7 +168,7 @@ export class HomebridgePlugin extends BaseIntegrationPlugin {
       throw new IntegrationApiError("Failed to build Homebridge login URL");
     }
 
-    const loginClient = createApiClient({ baseUrl, timeout: 5000 });
+    const loginClient = createApiClient({ baseUrl, timeout: 2000 });
     const { data } = await loginClient.post<IHomebridgeTokenResponse>(
       "/api/auth/login",
       {

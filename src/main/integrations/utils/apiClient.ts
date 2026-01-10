@@ -97,7 +97,6 @@ export class ApiClient {
 
       if (timeoutId) clearTimeout(timeoutId);
 
-      // Check for non-OK responses and throw with meaningful error
       if (!response.ok) {
         throw new IntegrationApiError(
           `${response.statusText} (HTTP ${response.status})`,

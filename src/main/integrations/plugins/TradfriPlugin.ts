@@ -130,7 +130,6 @@ export class TradfriPlugin extends BaseIntegrationPlugin {
     return [
       {
         name: "discoverGateway",
-        description: "Discover IKEA Tradfri gateway on the network",
         handler: async () => this.discoverGateway(),
       },
     ];

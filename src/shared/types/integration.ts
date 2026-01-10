@@ -67,7 +67,6 @@ export interface IntegrationUtilityFunction<
   TResult = unknown,
 > {
   name: string;
-  description?: string;
   handler: (args?: TArgs) => Promise<TResult>;
 }
 

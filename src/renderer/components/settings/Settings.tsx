@@ -64,6 +64,7 @@ import { DirigeraHubIpInput } from "./DirigeraHubIpInput";
 import { DirigeraAccessTokenInput } from "./DirigeraAccessTokenInput";
 import { DirigeraDeviceSelectButton } from "./DirigeraDeviceSelectButton";
 import { DirigeraFadeToggle } from "./DirigeraFadeToggle";
+import { GoveeFadeToggle } from "./GoveeFadeToggle";
 
 interface ISettings extends SettingsGroupProps {
   type?: "normal" | "experimental" | "debug";
@@ -352,6 +353,15 @@ export function Settings() {
                 "This will enable the Govee integration, keep this disabled if you don't have Govee devices.",
               configKeys: ["goveeEnabled"],
               input: <GoveeEnabledToggle />,
+            },
+            {
+              type: "setting",
+              title: "Enable fade",
+              condition: config.goveeEnabled,
+              description:
+                "Enable this if you want your Govee devices to fade to the new color instead of instantly changing.",
+              configKeys: ["goveeFadeEnabled"],
+              input: <GoveeFadeToggle />,
             },
           ],
         },

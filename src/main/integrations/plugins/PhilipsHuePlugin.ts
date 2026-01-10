@@ -58,7 +58,7 @@ export class PhilipsHuePlugin extends BaseIntegrationPlugin {
         },
       }),
       skipSSLVerification: true,
-      timeout: 5000,
+      timeout: 2000,
     });
   }
 
@@ -108,7 +108,6 @@ export class PhilipsHuePlugin extends BaseIntegrationPlugin {
     const shouldFade =
       eventAction?.philipsHueEnableFade ?? globalConfig.philipsHueEnableFade;
 
-    // Control individual devices
     const xy = converter.calculateXY(color.r, color.g, color.b);
     const body = {
       on: { on: controlType === ControlType.ON },
@@ -148,17 +147,14 @@ export class PhilipsHuePlugin extends BaseIntegrationPlugin {
     return [
       {
         name: "discoverBridge",
-        description: "Discover Philips Hue bridges on the network",
         handler: async () => this.discoverBridge(),
       },
       {
         name: "generateAuthToken",
-        description: "Generate authentication token for bridge",
         handler: async () => this.generateAuthToken(),
       },
       {
         name: "getGroups",
-        description: "Get all Philips Hue groups",
         handler: async () => this.getGroups(),
       },
     ];
@@ -188,7 +184,7 @@ export class PhilipsHuePlugin extends BaseIntegrationPlugin {
     const client = createApiClient({
       baseUrl: `https://${globalConfig.philipsHueBridgeIP}`,
       skipSSLVerification: true,
-      timeout: 5000,
+      timeout: 2000,
     });
 
     const { data } = await client.post<HueGenerateAuthTokenResponse>("/api", {

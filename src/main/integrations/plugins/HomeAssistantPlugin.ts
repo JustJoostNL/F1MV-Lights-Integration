@@ -48,7 +48,7 @@ export class HomeAssistantPlugin extends BaseIntegrationPlugin {
         Authorization: `Bearer ${globalConfig.homeAssistantToken}`,
         "Content-Type": "application/json",
       },
-      timeout: 5000,
+      timeout: 2000,
     });
   }
 
@@ -174,7 +174,6 @@ export class HomeAssistantPlugin extends BaseIntegrationPlugin {
     return [
       {
         name: "checkDeviceSpectrum",
-        description: "Check if a device supports RGB color",
         handler: async (entityId?: unknown) => {
           if (typeof entityId !== "string") return false;
           return this.checkDeviceSpectrum(entityId);

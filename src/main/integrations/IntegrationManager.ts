@@ -302,7 +302,6 @@ class IntegrationManager {
       if (!plugin.getUtilityFunctions) continue;
       const functions = plugin.getUtilityFunctions().map((f) => ({
         name: f.name,
-        description: f.description,
       }));
       if (functions.length > 0) {
         result.set(id, functions);
