@@ -153,7 +153,7 @@ export function DeviceSelector({
                 localeText={{
                   noRowsLabel: searchText
                     ? "No devices match your search"
-                    : "No devices found",
+                    : "No (supported) devices found",
                 }}
                 sx={{
                   "&.MuiDataGrid-root .MuiDataGrid-cell:focus-within": {
