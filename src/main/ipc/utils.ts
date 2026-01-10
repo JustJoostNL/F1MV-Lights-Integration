@@ -1,4 +1,3 @@
-import path from "path";
 import {
   BrowserWindow,
   app,
@@ -8,6 +7,7 @@ import {
   OpenDialogOptions,
 } from "electron";
 import { mainWindow } from "..";
+import { getAssetsPath } from "../utils/getAssetsPath";
 
 const handleGetWindowSizes = () => {
   const allWindows = BrowserWindow.getAllWindows();
@@ -48,12 +48,11 @@ const handlePlayAudio = async (
   }
 };
 
-const handleGetAssetsPath = (relativePath?: string) => {
-  const assetsPath = process.env.VITE_DEV_SERVER_URL
-    ? path.join(__dirname, "../../src/renderer/assets")
-    : path.join(process.resourcesPath, "assets");
-
-  return relativePath ? path.join(assetsPath, relativePath) : assetsPath;
+const handleGetAssetsPath = (
+  _event: IpcMainInvokeEvent,
+  relativePath?: string,
+) => {
+  return getAssetsPath(relativePath);
 };
 
 function registerUtilsIPCHandlers() {
@@ -62,9 +61,7 @@ function registerUtilsIPCHandlers() {
   ipcMain.handle("f1mvli:utils:exit-app", handleExitApp);
   ipcMain.handle("f1mvli:utils:show-open-dialog", handleShowOpenDialog);
   ipcMain.handle("f1mvli:utils:play-audio", handlePlayAudio);
-  ipcMain.handle("f1mvli:utils:get-assets-path", (_, relativePath) =>
-    handleGetAssetsPath(relativePath),
-  );
+  ipcMain.handle("f1mvli:utils:get-assets-path", handleGetAssetsPath);
 
   return () => {
     ipcMain.removeHandler("f1mvli:utils:get-window-sizes");

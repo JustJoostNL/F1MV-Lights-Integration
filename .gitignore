@@ -9,4 +9,4 @@ release/
 dist-electron/
 codegen.yml
 yarn-error.log
-```
+.DS_Store

@@ -78,9 +78,12 @@ export async function initializeIntegrations(): Promise<void> {
   }, 5000);
 
   // Run misc state checks periodically
-  setInterval(async () => {
-    await handleLiveSessionCheck();
-  }, 30000);
+  setInterval(
+    async () => {
+      await handleLiveSessionCheck();
+    },
+    45000 + Math.random() * 30000, // Every 45-75 seconds
+  );
 
   // Periodic health checks for all integrations
   setInterval(async () => {

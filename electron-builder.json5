@@ -2,7 +2,7 @@
   "$schema": "https://raw.githubusercontent.com/electron-userland/electron-builder/refs/heads/master/packages/app-builder-lib/scheme.json",
   "productName": "F1MV-Lights-Integration",
   "appId": "com.justjoostnl.f1mv.lights.integration",
-  "copyright": "Copyright © 2025 JustJoostNL",
+  "copyright": "Copyright © 2026 JustJoostNL",
   "asar": true,
   "buildDependenciesFromSource": true,
   "nodeGypRebuild": false,
@@ -17,6 +17,13 @@
     "!node_modules/node-hid/build/Release/.forge-meta",
     "dist-electron",
     "dist"
+  ],
+  "extraResources": [
+    {
+      "from": "src/shared/assets",
+      "to": "assets",
+      "filter": ["**/*.wav"]
+    }
   ],
   "mac": {
     "hardenedRuntime": true,

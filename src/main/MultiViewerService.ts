@@ -1,4 +1,3 @@
-import path from "path";
 import log from "electron-log";
 import fetch from "cross-fetch";
 import { debounce, isEqual } from "lodash";
@@ -19,6 +18,7 @@ import {
 import { MiscState } from "../shared/types/integration";
 import { getConfig, globalConfig } from "./ipc/config";
 import { integrationManager } from "./integrations/IntegrationManager";
+import { getAssetsPath } from "./utils/getAssetsPath";
 import { mainWindow } from ".";
 
 export const statusEventMap: Record<string, EventType> = {
@@ -486,14 +486,7 @@ class MultiViewerService {
   private async playDriverAudio(filePath?: string): Promise<void> {
     try {
       if (mainWindow && !mainWindow.isDestroyed()) {
-        const audioPath =
-          filePath ||
-          (process.env.VITE_DEV_SERVER_URL
-            ? path.join(
-                __dirname,
-                "../../src/renderer/assets/team_radio_f1fx.wav",
-              )
-            : path.join(process.resourcesPath, "assets/team_radio_f1fx.wav"));
+        const audioPath = filePath || getAssetsPath("team_radio_f1fx.wav");
 
         mainWindow.webContents.send("f1mvli:utils:play-audio", {
           filePath: audioPath,
