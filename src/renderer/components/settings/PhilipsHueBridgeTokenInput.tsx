@@ -10,7 +10,7 @@ export function PhilipsHueBridgeTokenInput() {
   const handleInputChange = useCallback(
     async (event: React.ChangeEvent<HTMLInputElement>) => {
       const value = event.target.value === "" ? undefined : event.target.value;
-      await updateConfig({ philipsHueBridgeAuthToken: value });
+      updateConfig({ philipsHueBridgeAuthToken: value });
     },
     [updateConfig],
   );
@@ -25,9 +25,8 @@ export function PhilipsHueBridgeTokenInput() {
       return;
     }
     if (data.status === "success" && data.username) {
-      await updateConfig({ philipsHueBridgeAuthToken: data.username });
+      updateConfig({ philipsHueBridgeAuthToken: data.username });
       enqueueSnackbar("Token generated", { variant: "success" });
-      window.location.reload();
     } else if (data.status === "link_button_not_pressed") {
       enqueueSnackbar("Link button not pressed", { variant: "error" });
     } else {
@@ -50,7 +49,7 @@ export function PhilipsHueBridgeTokenInput() {
         </Button>
       </Tooltip>
       <TextField
-        defaultValue={config.philipsHueBridgeAuthToken}
+        value={config.philipsHueBridgeAuthToken || ""}
         onChange={handleInputChange}
         label="Bridge Token"
         variant="outlined"

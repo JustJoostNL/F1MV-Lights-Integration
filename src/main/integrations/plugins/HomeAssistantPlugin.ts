@@ -132,7 +132,7 @@ export class HomeAssistantPlugin extends BaseIntegrationPlugin {
     const adjustedBrightness = Math.round((brightness / 100) * 254);
 
     if (controlType === ControlType.ON) {
-      await Promise.all(
+      await Promise.allSettled(
         config.homeAssistantDevices.map(async (entityId) => {
           const supportsRGB = await this.checkDeviceSpectrum(entityId);
           const payload = supportsRGB
@@ -150,7 +150,7 @@ export class HomeAssistantPlugin extends BaseIntegrationPlugin {
         }),
       );
     } else {
-      await Promise.all(
+      await Promise.allSettled(
         config.homeAssistantDevices.map((entityId) =>
           client.post("/api/services/light/turn_off", { entity_id: entityId }),
         ),

@@ -9,11 +9,11 @@ export function MQTTBrokerPortInput() {
     async (event: React.ChangeEvent<HTMLInputElement>) => {
       const value = event.target.value === "" ? undefined : event.target.value;
       if (!value) {
-        await updateConfig({ mqttBrokerPort: undefined });
+        updateConfig({ mqttBrokerPort: undefined });
         return;
       }
       const intValue = parseInt(value, 10);
-      await updateConfig({ mqttBrokerPort: intValue });
+      updateConfig({ mqttBrokerPort: intValue });
     },
     [updateConfig],
   );

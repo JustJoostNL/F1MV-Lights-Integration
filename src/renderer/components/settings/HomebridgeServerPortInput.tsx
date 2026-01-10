@@ -9,11 +9,11 @@ export function HomebridgeServerPortInput() {
     async (event: React.ChangeEvent<HTMLInputElement>) => {
       const value = event.target.value === "" ? undefined : event.target.value;
       if (!value) {
-        await updateConfig({ homebridgePort: undefined });
+        updateConfig({ homebridgePort: undefined });
         return;
       }
       const intValue = parseInt(value, 10);
-      await updateConfig({ homebridgePort: intValue });
+      updateConfig({ homebridgePort: intValue });
     },
     [updateConfig],
   );

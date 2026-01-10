@@ -29,6 +29,7 @@
     "colortranslator": "^5.0.0",
     "cross-fetch": "^4.1.0",
     "deep-equal": "^2.2.3",
+    "dirigera": "^1.8.0",
     "discord-rpc": "github:JustJoostNL/DiscordRPC",
     "electron-log": "^5.4.3",
     "electron-updater": "^6.7.3",

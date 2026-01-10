@@ -150,6 +150,11 @@ export interface IConfig {
   philipsHueGroupIds: string[];
   philipsHueBridgeAuthToken: string | undefined;
   philipsHueEnableFade: boolean;
+  dirigeraEnabled: boolean;
+  dirigeraHubIp: string | undefined;
+  dirigeraAccessToken: string | undefined;
+  dirigeraDeviceIds: string[];
+  dirigeraFadeEnabled: boolean;
   ikeaEnabled: boolean;
   ikeaSecurityCode: string | undefined;
   ikeaGatewayIp: string | undefined;

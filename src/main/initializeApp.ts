@@ -3,6 +3,7 @@ import { MiscState } from "../shared/types/integration";
 import { multiViewerService } from "./MultiViewerService";
 import { eventHandler } from "./lightController";
 import { integrationManager } from "./integrations/IntegrationManager";
+import { dirigeraPlugin } from "./integrations/plugins/DirigeraPlugin";
 import { discordPlugin } from "./integrations/plugins/DiscordPlugin";
 import { goveePlugin } from "./integrations/plugins/GoveePlugin";
 import { homeAssistantPlugin } from "./integrations/plugins/HomeAssistantPlugin";
@@ -38,6 +39,7 @@ function registerAllPlugins(): void {
     streamdeckPlugin,
     openrgbPlugin,
     tradfriPlugin,
+    dirigeraPlugin,
     webserverPlugin,
     discordPlugin,
   ]);

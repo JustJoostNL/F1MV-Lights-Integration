@@ -90,11 +90,13 @@ export class OpenRGBPlugin extends BaseIntegrationPlugin {
         ? { red: color.r, green: color.g, blue: color.b }
         : { red: 0, green: 0, blue: 0 };
 
-    for (let i = 0; i < deviceCount; i++) {
-      const device = await this.client.getControllerData(i);
-      const colors = Array(device.colors.length).fill(targetColor);
-      this.client.updateLeds(i, colors);
-    }
+    await Promise.allSettled(
+      Array.from({ length: deviceCount }, async (_, i) => {
+        const device = await this.client!.getControllerData(i);
+        const colors = Array(device.colors.length).fill(targetColor);
+        this.client!.updateLeds(i, colors);
+      }),
+    );
   }
 }
 

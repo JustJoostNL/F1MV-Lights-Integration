@@ -8,7 +8,7 @@ export function IkeaPreSharedKeyInput() {
   const handleInputChange = useCallback(
     async (event: React.ChangeEvent<HTMLInputElement>) => {
       const value = event.target.value === "" ? undefined : event.target.value;
-      await updateConfig({ ikeaPreSharedKey: value });
+      updateConfig({ ikeaPreSharedKey: value });
     },
     [updateConfig],
   );

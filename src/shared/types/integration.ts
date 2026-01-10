@@ -10,6 +10,7 @@ export enum IntegrationPlugin {
   STREAMDECK = "streamdeck",
   OPENRGB = "openrgb",
   TRADFRI = "tradfri",
+  DIRIGERA = "dirigera",
   WEBSERVER = "webserver",
   DISCORD = "discord",
 }

@@ -10,7 +10,7 @@ export function IkeaGatewayIpInput() {
   const handleInputChange = useCallback(
     async (event: React.ChangeEvent<HTMLInputElement>) => {
       const value = event.target.value === "" ? undefined : event.target.value;
-      await updateConfig({ ikeaGatewayIp: value });
+      updateConfig({ ikeaGatewayIp: value });
     },
     [updateConfig],
   );
@@ -24,7 +24,7 @@ export function IkeaGatewayIpInput() {
       enqueueSnackbar("Error discovering gateway", { variant: "error" });
     } else if (data.addresses.length > 0) {
       enqueueSnackbar("Gateway found, reloading...", { variant: "success" });
-      await updateConfig({ ikeaGatewayIp: data.addresses[0] });
+      updateConfig({ ikeaGatewayIp: data.addresses[0] });
       window.location.reload();
     } else {
       enqueueSnackbar("No gateway found", { variant: "error" });

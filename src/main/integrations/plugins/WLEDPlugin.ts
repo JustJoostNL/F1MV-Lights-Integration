@@ -93,31 +93,33 @@ export class WLEDPlugin extends BaseIntegrationPlugin {
     const { controlType, color, brightness } = args;
     const convertedBrightness = Math.round((brightness / 100) * 255);
 
-    for (const deviceIp of globalConfig.wledDevices) {
-      const device = new WLEDClient(deviceIp);
-      await device.connect();
+    await Promise.allSettled(
+      globalConfig.wledDevices.map(async (deviceIp) => {
+        const device = new WLEDClient(deviceIp);
+        await device.connect();
 
-      if (controlType === ControlType.ON) {
-        await device.clearSegments();
-        await device.updateState({
-          on: true,
-          brightness: convertedBrightness,
-          mainSegmentId: 0,
-          segments: [
-            {
-              effectId: 0,
-              colors: [[color.r, color.g, color.b]],
-              start: 0,
-              stop: device.info.leds.count,
-            },
-          ],
-        });
-      } else {
-        await device.updateState({ on: false });
-      }
+        if (controlType === ControlType.ON) {
+          await device.clearSegments();
+          await device.updateState({
+            on: true,
+            brightness: convertedBrightness,
+            mainSegmentId: 0,
+            segments: [
+              {
+                effectId: 0,
+                colors: [[color.r, color.g, color.b]],
+                start: 0,
+                stop: device.info.leds.count,
+              },
+            ],
+          });
+        } else {
+          await device.updateState({ on: false });
+        }
 
-      device.disconnect();
-    }
+        device.disconnect();
+      }),
+    );
   }
 }
 

@@ -8,7 +8,7 @@ export function HomebridgeServerPassword() {
   const handleInputChange = useCallback(
     async (event: React.ChangeEvent<HTMLInputElement>) => {
       const value = event.target.value === "" ? undefined : event.target.value;
-      await updateConfig({ homebridgePassword: value });
+      updateConfig({ homebridgePassword: value });
     },
     [updateConfig],
   );

@@ -48,15 +48,17 @@ export class GoveePlugin extends BaseIntegrationPlugin {
 
     const { controlType, color, brightness } = args;
 
-    for (const device of this.goveeInstance.devicesArray) {
-      if (controlType === ControlType.ON) {
-        device.actions.setBrightness(brightness);
-        device.actions.setColor({ rgb: [color.r, color.g, color.b] });
-        if (device.state.isOn === 0) device.actions.setOn();
-      } else {
-        device.actions.setOff();
-      }
-    }
+    await Promise.allSettled(
+      this.goveeInstance.devicesArray.map(async (device) => {
+        if (controlType === ControlType.ON) {
+          await device.actions.setBrightness(brightness);
+          await device.actions.setColor({ rgb: [color.r, color.g, color.b] });
+          if (device.state.isOn === 0) await device.actions.setOn();
+        } else {
+          await device.actions.setOff();
+        }
+      }),
+    );
   }
 }
 

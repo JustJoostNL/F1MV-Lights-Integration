@@ -102,7 +102,7 @@ export function DeviceSelector({
   );
 
   const hasError = devicesError || stateError;
-  const isLoading = isOnline === undefined && !hasError;
+  const isLoading = !data?.devices && !devicesError;
 
   return (
     <ContentLayout container title="" hideTitle isLoading={isLoading}>

@@ -9,11 +9,11 @@ export function GoBackToStaticDelayInput() {
     async (event: React.ChangeEvent<HTMLInputElement>) => {
       const value = event.target.value === "" ? undefined : event.target.value;
       if (!value) {
-        await updateConfig({ goBackToStaticDelay: undefined });
+        updateConfig({ goBackToStaticDelay: undefined });
         return;
       }
       const intValue = parseInt(value, 10);
-      await updateConfig({ goBackToStaticDelay: intValue });
+      updateConfig({ goBackToStaticDelay: intValue });
     },
     [updateConfig],
   );

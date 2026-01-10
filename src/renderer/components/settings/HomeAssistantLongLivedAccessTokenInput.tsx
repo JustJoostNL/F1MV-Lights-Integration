@@ -8,7 +8,7 @@ export function HomeAssistantLongLivedAccessTokenInput() {
   const handleInputChange = useCallback(
     async (event: React.ChangeEvent<HTMLInputElement>) => {
       const value = event.target.value === "" ? undefined : event.target.value;
-      await updateConfig({ homeAssistantToken: value });
+      updateConfig({ homeAssistantToken: value });
     },
     [updateConfig],
   );

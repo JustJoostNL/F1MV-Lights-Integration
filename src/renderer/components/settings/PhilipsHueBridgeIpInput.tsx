@@ -10,7 +10,7 @@ export function PhilipsHueBridgeIpInput() {
   const handleInputChange = useCallback(
     async (event: React.ChangeEvent<HTMLInputElement>) => {
       const value = event.target.value === "" ? undefined : event.target.value;
-      await updateConfig({ philipsHueBridgeIP: value });
+      updateConfig({ philipsHueBridgeIP: value });
     },
     [updateConfig],
   );
@@ -20,14 +20,15 @@ export function PhilipsHueBridgeIpInput() {
       IntegrationPlugin.PHILIPSHUE,
       "discoverBridge",
     )) as { status: string; ipAddresses: string[] } | null;
+
     if (!data) {
       enqueueSnackbar("Error discovering bridge", { variant: "error" });
       return;
     }
+
     if (data.status === "success" && data.ipAddresses.length > 0) {
-      enqueueSnackbar("Bridge found, reloading...", { variant: "success" });
-      await updateConfig({ philipsHueBridgeIP: data.ipAddresses[0] });
-      window.location.reload();
+      enqueueSnackbar("Bridge found successfully", { variant: "success" });
+      updateConfig({ philipsHueBridgeIP: data.ipAddresses[0] });
     } else if (data.status === "rate_limit") {
       enqueueSnackbar("Rate limit reached, try again later", {
         variant: "error",
@@ -40,7 +41,7 @@ export function PhilipsHueBridgeIpInput() {
   return (
     <Stack direction="row" spacing={2}>
       <Tooltip
-        title="This will try and discover your Philips Hue Bridge automatically. If a Bridge is found, the window will reload."
+        title="This will try and discover your Philips Hue Bridge automatically."
         arrow
       >
         <Button
@@ -52,7 +53,7 @@ export function PhilipsHueBridgeIpInput() {
         </Button>
       </Tooltip>
       <TextField
-        defaultValue={config.philipsHueBridgeIP}
+        value={config.philipsHueBridgeIP || ""}
         onChange={handleInputChange}
         label="Bridge IP"
         variant="outlined"

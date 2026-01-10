@@ -1,6 +1,7 @@
 import { ColorTranslator } from "colortranslator";
 import log from "electron-log";
 import { EventType } from "../../../shared/types/config";
+import { RGBColor } from "../../../shared/types/integration";
 
 export function rgbToHueSat(r: number, g: number, b: number) {
   const color = new ColorTranslator("rgb(" + r + "," + g + "," + b + ")");
@@ -46,6 +47,19 @@ export function rgbToColorTemp(
     default:
       return 0;
   }
+}
+
+export function calculateColorTemperature(
+  color: RGBColor,
+  minTemp: number,
+  maxTemp: number,
+): number {
+  const warmth = (color.r - color.g - color.b) / 255;
+  const warmthNormalized = (warmth + 1) / 2;
+
+  const colorTemp = minTemp + warmthNormalized * (maxTemp - minTemp);
+
+  return Math.round(colorTemp);
 }
 
 export function getTradfriColorTempFromEvent(event: EventType) {

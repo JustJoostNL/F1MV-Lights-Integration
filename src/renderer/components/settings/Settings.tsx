@@ -59,6 +59,11 @@ import { GoBackToStaticDelayInput } from "./GoBackToStaticDelayInput";
 import { GoBackToStaticBrightnessInput } from "./GoBackToStaticBrightnessInput";
 import { GoBackToStaticColorChangeButton } from "./GoBackToStaticColorChangeButton";
 import { DriverAudioSettingsButton } from "./DriverAudioSettingsButton";
+import { DirigeraEnabledToggle } from "./DirigeraEnabledToggle";
+import { DirigeraHubIpInput } from "./DirigeraHubIpInput";
+import { DirigeraAccessTokenInput } from "./DirigeraAccessTokenInput";
+import { DirigeraDeviceSelectButton } from "./DirigeraDeviceSelectButton";
+import { DirigeraFadeToggle } from "./DirigeraFadeToggle";
 
 interface ISettings extends SettingsGroupProps {
   type?: "normal" | "experimental" | "debug";
@@ -222,6 +227,58 @@ export function Settings() {
                 "Enable this if you want your Philips Hue devices to fade to the new color instead of instantly changing.",
               configKeys: ["philipsHueEnableFade"],
               input: <PhilipsHueFadeToggle />,
+            },
+          ],
+        },
+        {
+          type: "subgroup",
+          title: "IKEA Dirigera",
+          settings: [
+            {
+              type: "setting",
+              title: "Enable IKEA Dirigera integration",
+              description:
+                "This will enable the IKEA Dirigera integration, keep this disabled if you don't have IKEA Dirigera devices.",
+              configKeys: ["dirigeraEnabled"],
+              input: <DirigeraEnabledToggle />,
+            },
+            {
+              type: "setting",
+              title: "Dirigera hub IP",
+              condition: config.dirigeraEnabled,
+              description:
+                "This is the IP address or hostname of your IKEA Dirigera hub.",
+              configKeys: ["dirigeraHubIp"],
+              input: <DirigeraHubIpInput />,
+            },
+            {
+              type: "setting",
+              title: "Dirigera access token",
+              condition:
+                config.dirigeraEnabled &&
+                typeof config.dirigeraHubIp === "string",
+              description:
+                "This is the authentication token for your IKEA Dirigera hub. You can generate a token or enter one manually.",
+              configKeys: ["dirigeraAccessToken"],
+              input: <DirigeraAccessTokenInput />,
+            },
+            {
+              type: "setting",
+              title: "Dirigera devices",
+              condition: config.dirigeraEnabled,
+              description:
+                "Here you can configure the devices that will be used for the IKEA Dirigera integration.",
+              configKeys: ["dirigeraDeviceIds"],
+              input: <DirigeraDeviceSelectButton />,
+            },
+            {
+              type: "setting",
+              title: "Enable fade",
+              condition: config.dirigeraEnabled,
+              description:
+                "Enable this if you want your IKEA Dirigera devices to fade to the new color instead of instantly changing.",
+              configKeys: ["dirigeraFadeEnabled"],
+              input: <DirigeraFadeToggle />,
             },
           ],
         },

@@ -8,7 +8,7 @@ export function MultiViewerLiveTimingUrlInput() {
   const handleInputChange = useCallback(
     async (event: React.ChangeEvent<HTMLInputElement>) => {
       const value = event.target.value;
-      await updateConfig({ multiviewerLiveTimingURL: value });
+      updateConfig({ multiviewerLiveTimingURL: value });
     },
     [updateConfig],
   );

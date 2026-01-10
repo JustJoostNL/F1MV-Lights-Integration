@@ -14,11 +14,7 @@ export function SettingsPage() {
 
   return (
     <ContentLayout title="Settings" titleVariant="h2">
-      <Container
-        sx={{
-          mt: 3,
-        }}
-      >
+      <Container sx={{ mt: 3 }}>
         <Settings />
       </Container>
     </ContentLayout>

@@ -135,7 +135,7 @@ export class HomebridgePlugin extends BaseIntegrationPlugin {
         { characteristicType: "Brightness", value: brightness },
       ];
 
-      await Promise.all(
+      await Promise.allSettled(
         config.homebridgeAccessories.flatMap((uniqueId) =>
           payloads.map((payload) =>
             client.put(`/api/accessories/${uniqueId}`, payload),
@@ -143,7 +143,7 @@ export class HomebridgePlugin extends BaseIntegrationPlugin {
         ),
       );
     } else {
-      await Promise.all(
+      await Promise.allSettled(
         config.homebridgeAccessories.map((uniqueId) =>
           client.put(`/api/accessories/${uniqueId}`, {
             characteristicType: "On",

@@ -22,6 +22,7 @@ import { WLEDDeviceSelector } from "./pages/WLEDDeviceSelector";
 import { IkeaTradfriDeviceSelector } from "./pages/IkeaTradfriDeviceSelector";
 import { DriverAudioEditorPage } from "./pages/DriverAudioEditor";
 import { initializeAudioPlayer } from "./utils/audioPlayer";
+import { DirigeraDeviceSelector } from "./pages/DirigeraDeviceSelector";
 
 // Initialize audio player event listener
 initializeAudioPlayer();
@@ -108,6 +109,7 @@ root.render(
                 path="/ikea-tradfri-ds"
                 element={<IkeaTradfriDeviceSelector />}
               />
+              <Route path="/dirigera-ds" element={<DirigeraDeviceSelector />} />
             </Routes>
           </HashRouter>
         </ThemeProvider>

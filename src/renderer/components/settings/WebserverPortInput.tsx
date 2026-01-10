@@ -9,11 +9,11 @@ export function WebserverPortInput() {
     async (event: React.ChangeEvent<HTMLInputElement>) => {
       const value = event.target.value === "" ? undefined : event.target.value;
       if (!value) {
-        await updateConfig({ webserverPort: undefined });
+        updateConfig({ webserverPort: undefined });
         return;
       }
       const intValue = parseInt(value, 10);
-      await updateConfig({ webserverPort: intValue });
+      updateConfig({ webserverPort: intValue });
     },
     [updateConfig],
   );

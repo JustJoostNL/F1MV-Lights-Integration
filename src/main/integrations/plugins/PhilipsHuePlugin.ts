@@ -48,22 +48,15 @@ export class PhilipsHuePlugin extends BaseIntegrationPlugin {
     }
   }
 
-  private getApiClient(): ApiClient {
+  private getApiClient(useAuthHeader: boolean = true): ApiClient {
     this.validateConfiguration();
     return createApiClient({
       baseUrl: `https://${globalConfig.philipsHueBridgeIP}`,
-      headers: {
-        "hue-application-key": globalConfig.philipsHueBridgeAuthToken!,
-      },
-      skipSSLVerification: true,
-      timeout: 5000,
-    });
-  }
-
-  private getLegacyApiClient(): ApiClient {
-    this.validateConfiguration();
-    return createApiClient({
-      baseUrl: `http://${globalConfig.philipsHueBridgeIP}`,
+      ...(useAuthHeader && {
+        headers: {
+          "hue-application-key": globalConfig.philipsHueBridgeAuthToken!,
+        },
+      }),
       skipSSLVerification: true,
       timeout: 5000,
     });
@@ -130,9 +123,8 @@ export class PhilipsHuePlugin extends BaseIntegrationPlugin {
       ),
     );
 
-    // Control groups (legacy API)
     if (globalConfig.philipsHueGroupIds.length > 0) {
-      const legacyClient = this.getLegacyApiClient();
+      const legacyClient = this.getApiClient(false);
       const groupBody = {
         on: controlType === ControlType.ON,
         xy,
@@ -194,7 +186,8 @@ export class PhilipsHuePlugin extends BaseIntegrationPlugin {
     }
 
     const client = createApiClient({
-      baseUrl: `http://${globalConfig.philipsHueBridgeIP}`,
+      baseUrl: `https://${globalConfig.philipsHueBridgeIP}`,
+      skipSSLVerification: true,
       timeout: 5000,
     });
 
@@ -222,7 +215,7 @@ export class PhilipsHuePlugin extends BaseIntegrationPlugin {
     groups: { id: string; name: string; state: boolean }[];
     selectedGroups: string[];
   }> {
-    const client = this.getLegacyApiClient();
+    const client = this.getApiClient(false);
     const { data } = await client.get<IHueApiGroupResponse>(
       `/api/${globalConfig.philipsHueBridgeAuthToken}/groups`,
     );

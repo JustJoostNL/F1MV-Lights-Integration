@@ -9,11 +9,11 @@ export function OpenRGBServerPortInput() {
     async (event: React.ChangeEvent<HTMLInputElement>) => {
       const value = event.target.value === "" ? undefined : event.target.value;
       if (!value) {
-        await updateConfig({ openrgbServerPort: undefined });
+        updateConfig({ openrgbServerPort: undefined });
         return;
       }
       const intValue = parseInt(value, 10);
-      await updateConfig({ openrgbServerPort: intValue });
+      updateConfig({ openrgbServerPort: intValue });
     },
     [updateConfig],
   );
