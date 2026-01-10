@@ -23,7 +23,7 @@
     "@mui/icons-material": "7.3.7",
     "@mui/lab": "^7.0.0",
     "@mui/material": "7.3.7",
-    "@mui/x-data-grid": "^8.23.0",
+    "@mui/x-data-grid": "^8.24.0",
     "@q42philips/hue-color-converter": "^1.0.0",
     "@sentry/electron": "^7.5.0",
     "colortranslator": "^5.0.0",
