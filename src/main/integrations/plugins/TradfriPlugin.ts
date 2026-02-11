@@ -50,7 +50,7 @@ export class TradfriPlugin extends BaseIntegrationPlugin {
   async healthCheck(): Promise<IntegrationHealthStatus> {
     try {
       const client = await this.getClient();
-      const ping = await client.ping();
+      const ping = await client.ping(10000);
       this.setOnline(ping);
       if (!ping) {
         this.log(
