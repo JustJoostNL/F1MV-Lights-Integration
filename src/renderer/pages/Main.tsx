@@ -7,7 +7,7 @@ import {
   styled,
 } from "@mui/material";
 import log from "electron-log";
-import { ipcRenderer, shell } from "electron";
+import { shell } from "electron";
 import { ErrorOutlineRounded } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 import { useHotkeys } from "react-hotkeys-hook";
@@ -100,11 +100,18 @@ export function IndexPage() {
       setUpdating(false);
     };
 
-    ipcRenderer.on("update-downloaded", handleInstallUpdate);
-    ipcRenderer.on("update-error", handleUpdateError);
+    const cleanupDownloadListener = window.f1mvli.utils.on(
+      "update-downloaded",
+      handleInstallUpdate,
+    );
+    const cleanupErrorListener = window.f1mvli.utils.on(
+      "update-error",
+      handleUpdateError,
+    );
 
     return () => {
-      ipcRenderer.removeListener("update-downloaded", handleInstallUpdate);
+      cleanupDownloadListener();
+      cleanupErrorListener();
     };
   }, [updating, doneChecking]);
 
