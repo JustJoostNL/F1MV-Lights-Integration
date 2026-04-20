@@ -29,6 +29,8 @@ import {
   SearchOffRounded,
   StopCircleRounded,
   TimerOffRounded,
+  FastForwardRounded,
+  AddRoadRounded,
 } from "@mui/icons-material";
 import {
   ListItemIcon,
@@ -99,6 +101,21 @@ const icons: Record<EventType, JSX.Element> = {
   [EventType.LowGripConditions]: <SlipperyIcon />,
   [EventType.SessionStartAborted]: <CloseRounded sx={{ color: red[500] }} />,
   [EventType.DriveThroughPenalty]: <TimerOffRounded sx={{ color: red[500] }} />,
+  [EventType.OvertakeModeEnabled]: (
+    <FastForwardRounded sx={{ color: green[500] }} />
+  ),
+  [EventType.OvertakeModeDisabled]: (
+    <FastForwardRounded sx={{ color: red[500] }} />
+  ),
+  [EventType.StraightLineModeLowGrip]: (
+    <AddRoadRounded sx={{ color: blue[500] }} />
+  ),
+  [EventType.StraightLineModeNormalGrip]: (
+    <AddRoadRounded sx={{ color: green[500] }} />
+  ),
+  [EventType.StraightLineModeDisabled]: (
+    <AddRoadRounded sx={{ color: red[500] }} />
+  ),
 };
 
 export function SimulationMenu() {

@@ -33,6 +33,14 @@ export const statusEventMap: Record<string, EventType> = {
 const messagePatterns: [RegExp, EventType][] = [
   [/CHEQUERED FLAG/i, EventType.ChequeredFlag],
   [/BLUE FLAG/i, EventType.BlueFlag],
+  [/^STRAIGHT (LINE )?MODE.*\bLOW GRIP\b/i, EventType.StraightLineModeLowGrip],
+  [
+    /^STRAIGHT (LINE )?MODE.*\bNORMAL GRIP\b/i,
+    EventType.StraightLineModeNormalGrip,
+  ],
+  [/^STRAIGHT (LINE )?MODE.*\bDISABLED\b/i, EventType.StraightLineModeDisabled],
+  [/^OVERTAKE.*\bENABLED\b/i, EventType.OvertakeModeEnabled],
+  [/^OVERTAKE.*\bDISABLED\b/i, EventType.OvertakeModeDisabled],
   [/DRS ENABLED/i, EventType.DrsEnabled],
   [/DRS DISABLED/i, EventType.DrsDisabled],
   [/PIT LANE ENTRY CLOSED/i, EventType.PitLaneEntryClosed],
