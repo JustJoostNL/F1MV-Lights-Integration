@@ -14,13 +14,14 @@ export class GoveePlugin extends BaseIntegrationPlugin {
   readonly enabledConfigKey = "goveeEnabled";
   readonly restartConfigKeys = [];
 
-  private goveeInstance: Govee | undefined = undefined;
+  private goveeInstance: any = undefined;
 
   async initialize(): Promise<void> {
     this.log("debug", "Initializing Govee...");
 
-    // @ts-ignore - Govee default export issue
-    this.goveeInstance = new Govee.default();
+    // Support both CommonJS and ES module default exports
+    const GoveeCtor = (Govee as any)?.default ?? (Govee as any);
+    this.goveeInstance = new GoveeCtor();
     this.setOnline(true);
 
     this.goveeInstance?.on("ready", () => {
